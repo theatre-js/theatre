@@ -52,7 +52,7 @@ const Tooltip = styled.div`
   position: absolute;
   top: -${() => topStripHeight + 2};
   transform: translateX(-50%);
-  ${HitZone}:hover &, ${HitZone}.dragging & {
+  ${HitZone}:hover &, ${Handler}.dragging & {
     display: block;
     color: white;
     background-color: '#000000';
@@ -117,6 +117,8 @@ const FocusRangeThumb: React.FC<{
             focusRangeStripTheme.highlight.backgroundColor
           handlerRef.current.style.stroke =
             focusRangeStripTheme.highlight.stroke
+          handlerRef.current.style
+          handlerRef.current.classList.add('dragging')
         }
       },
       onDrag(dx) {
@@ -166,6 +168,8 @@ const FocusRangeThumb: React.FC<{
       },
       onDragEnd() {
         if (handlerRef.current) {
+          handlerRef.current.classList.remove('dragging')
+
           if (originalBackground) {
             handlerRef.current.style.background = originalBackground
           }
