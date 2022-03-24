@@ -32,7 +32,7 @@ export default class AudioPlaybackController implements IPlaybackController {
     this._mainGain = this._audioContext.createGain()
     this._mainGain.connect(this._nodeDestination)
   }
-  // TODO implement me
+
   playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
     throw new Error('Method not implemented.')
   }

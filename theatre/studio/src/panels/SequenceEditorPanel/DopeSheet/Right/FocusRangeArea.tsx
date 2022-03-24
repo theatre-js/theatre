@@ -19,6 +19,8 @@ const focusRangeAreaTheme = {
 
 const Container = styled.div`
   position: absolute;
+  opacity: ${focusRangeAreaTheme.enabled.opacity};
+  background: transparent;
   left: 0;
   top: 0;
 `
@@ -43,14 +45,7 @@ const FocusRangeArea: React.FC<{
 
     const range = existingRange?.range || {start: 0, end: 0}
 
-    const opacity = focusRangeAreaTheme.enabled.opacity
-    let background = 'transparent'
-
     const height = val(layoutP.rightDims.height) + topStripHeight
-
-    if (existingRange?.enabled === true) {
-      background = focusRangeAreaTheme.enabled.backgroundColor
-    }
 
     let startPosInClippedSpace: number,
       endPosInClippedSpace: number,
@@ -58,8 +53,7 @@ const FocusRangeArea: React.FC<{
         | {
             width: number
             transform: string
-            background: string
-            opacity: number
+            background?: string
           }
         | undefined
 
@@ -69,13 +63,17 @@ const FocusRangeArea: React.FC<{
       )
 
       endPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(range.end)
+
       conditionalStyleProps = {
         width: endPosInClippedSpace - startPosInClippedSpace,
         transform: `translate3d(${
           startPosInClippedSpace - val(layoutP.clippedSpace.fromUnitSpace)(0)
         }px, 0, 0)`,
-        background,
-        opacity,
+      }
+
+      if (existingRange.enabled === true) {
+        conditionalStyleProps.background =
+          focusRangeAreaTheme.enabled.backgroundColor
       }
     }
 

@@ -86,13 +86,10 @@ const FocusRangeThumb: React.FC<{
   const focusRangeEnabled = existingRangeD.getValue()?.enabled || false
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    const defaultFocusRange = {start: 0, end: sequence.length}
-    let range = existingRangeD.getValue()?.range || defaultFocusRange
+    const defaultRange = {start: 0, end: sequence.length}
+    let range = existingRangeD.getValue()?.range || defaultRange
     let focusRangeEnabled: boolean
-    let posBeforeDrag =
-      typeof range !== 'undefined'
-        ? range[thumbType]
-        : defaultFocusRange[thumbType]
+    let posBeforeDrag = range[thumbType]
     let tempTransaction: CommitOrDiscard | undefined
     let dragHappened = false
     let originalBackground: string
@@ -101,12 +98,14 @@ const FocusRangeThumb: React.FC<{
 
     return {
       onDragStart() {
-        focusRangeEnabled = existingRangeD.getValue()?.enabled || false
+        let existingRange = existingRangeD.getValue() || {
+          range: defaultRange,
+          enabled: false,
+        }
+        focusRangeEnabled = existingRange.enabled
         dragHappened = false
         sequence = val(layoutP.sheet).getSequence()
-        posBeforeDrag =
-          existingRangeD.getValue()?.range[thumbType] ||
-          defaultFocusRange[thumbType]
+        posBeforeDrag = existingRange.range[thumbType]
         minFocusRangeStripWidth = scaledSpaceToUnitSpace(
           focusRangeStripTheme.rangeStripMinWidth,
         )
@@ -122,13 +121,15 @@ const FocusRangeThumb: React.FC<{
       },
       onDrag(dx) {
         dragHappened = true
-        range = existingRangeD.getValue()?.range || defaultFocusRange
+        range = existingRangeD.getValue()?.range || defaultRange
 
         const deltaPos = scaledSpaceToUnitSpace(dx)
         let newPosition: number
         const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
 
+        // Make sure that the focus range has a minimal width
         if (thumbType === 'start') {
+          // Prevent the start thumb from going below 0
           newPosition = Math.max(
             Math.min(
               oldPosPlusDeltaPos,
@@ -137,6 +138,7 @@ const FocusRangeThumb: React.FC<{
             0,
           )
         } else {
+          // Prevent the start thumb from going over the length of the sequence
           newPosition = Math.min(
             Math.max(
               oldPosPlusDeltaPos,
