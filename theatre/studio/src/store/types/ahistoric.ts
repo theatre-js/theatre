@@ -4,10 +4,9 @@ import type {IRange, StrictRecord} from '@theatre/shared/utils/types'
 
 export type StudioAhistoricState = {
   visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
-
   clipboard?: {
     keyframes?: Keyframe[]
-    // future clipboard data goes here.
+    // future clipboard data goes here
   }
   theTrigger: {
     position: {

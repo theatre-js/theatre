@@ -90,7 +90,9 @@ const pasteKeyframesContextMenuItem = (
     const sequence = sheet.getSequence()
 
     getStudio()!.transaction(({stateEditors}) => {
+      sequence.position = sequence.closestGridPosition(sequence.position)
       const keyframeOffset = earliestKeyframe(keyframes)?.position!
+
       for (const keyframe of keyframes) {
         stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
           {

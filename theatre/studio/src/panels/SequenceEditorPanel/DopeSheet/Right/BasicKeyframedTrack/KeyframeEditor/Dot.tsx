@@ -105,75 +105,14 @@ const Dot: React.FC<IProps> = (props) => {
 
 export default Dot
 
-const copyKeyFrameContextMenuItem = (props: IProps) => ({
-  label: 'Copy Keyframes',
-  callback: () => {
-    const selection = props.selection
-    if (!selection) return
-    for (const objectKey of Object.keys(selection.byObjectKey)) {
-      const {byTrackId} = selection.byObjectKey[objectKey]!
-      for (const trackId of Object.keys(byTrackId)) {
-        const {byKeyframeId} = byTrackId[trackId]!
-
-        const keyframeIds = Object.keys(byKeyframeId)
-
-        const keyframes = keyframeIds.map(
-          (keyframeId) =>
-            props.trackData.keyframes.find(
-              (keyframe) => keyframe.id === keyframeId,
-            )!,
-        )
-
-        getStudio!().transaction((api) => {
-          api.stateEditors.studio.ahistoric.setClipboardKeyframes(keyframes)
-        })
-      }
-    }
-  },
-})
-
-const selectionContainsKeyFramesInOnlyASingleTrack = (
-  selection: DopeSheetSelection | undefined,
-) => {
-  if (!selection) return false
-  const objectKeys = Object.keys(selection.byObjectKey)
-  if (objectKeys.length !== 1) return false
-  const object = selection.byObjectKey[objectKeys[0]]
-  if (!object) return false
-  const trackIds = Object.keys(object.byTrackId)
-  if (trackIds.length !== 1) return false
-  return true
-}
-
 function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
   return useContextMenu(node, {
     items: () => {
       return [
-        /**
-         * Add the ability to copy a selection of keyFrames that can then be pasted to another track.
-         * If the selection contains keyframes on multiple tracks, copying is not possible for now.
-         */
-        ...(selectionContainsKeyFramesInOnlyASingleTrack(props.selection)
+        ...(containsKeyFramesInOnlyASingleTrack(props.selection)
           ? [copyKeyFrameContextMenuItem(props)]
           : []),
-        {
-          label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
-          callback: () => {
-            if (props.selection) {
-              props.selection.delete()
-            } else {
-              getStudio()!.transaction(({stateEditors}) => {
-                stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
-                  {
-                    ...props.leaf.sheetObject.address,
-                    keyframeIds: [props.keyframe.id],
-                    trackId: props.leaf.trackId,
-                  },
-                )
-              })
-            }
-          },
-        },
+        deleteSelectionOrKeyframeContextMenuItem(props),
       ]
     },
   })
@@ -295,4 +234,67 @@ function useDragKeyframe(
   useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   return [isDragging]
+}
+
+function deleteSelectionOrKeyframeContextMenuItem(props: IProps) {
+  return {
+    label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
+    callback: () => {
+      if (props.selection) {
+        props.selection.delete()
+      } else {
+        getStudio()!.transaction(({stateEditors}) => {
+          stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+            {
+              ...props.leaf.sheetObject.address,
+              keyframeIds: [props.keyframe.id],
+              trackId: props.leaf.trackId,
+            },
+          )
+        })
+      }
+    },
+  }
+}
+
+function copyKeyFrameContextMenuItem(props: IProps) {
+  return {
+    label: 'Copy Keyframes',
+    callback: () => {
+      const selection = props.selection
+      if (!selection) return
+      for (const objectKey of Object.keys(selection.byObjectKey)) {
+        const {byTrackId} = selection.byObjectKey[objectKey]!
+        for (const trackId of Object.keys(byTrackId)) {
+          const {byKeyframeId} = byTrackId[trackId]!
+
+          const keyframeIds = Object.keys(byKeyframeId)
+
+          const keyframes = keyframeIds.map(
+            (keyframeId) =>
+              props.trackData.keyframes.find(
+                (keyframe) => keyframe.id === keyframeId,
+              )!,
+          )
+
+          getStudio!().transaction((api) => {
+            api.stateEditors.studio.ahistoric.setClipboardKeyframes(keyframes)
+          })
+        }
+      }
+    },
+  }
+}
+
+function containsKeyFramesInOnlyASingleTrack(
+  selection: DopeSheetSelection | undefined,
+) {
+  if (!selection) return false
+  const objectKeys = Object.keys(selection.byObjectKey)
+  if (objectKeys.length !== 1) return false
+  const object = selection.byObjectKey[objectKeys[0]]
+  if (!object) return false
+  const trackIds = Object.keys(object.byTrackId)
+  if (trackIds.length !== 1) return false
+  return true
 }
