@@ -41,7 +41,7 @@ export const F2 = styled.div`
   padding: 0;
 `
 
-export const titleBarHeight = 20
+export const titleBarHeight = 18
 
 export const TitleBar = styled.div`
   height: ${titleBarHeight}px;

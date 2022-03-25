@@ -67,6 +67,9 @@ export type StrictRecord<Key extends string, V> = {[K in Key]?: V}
  */
 export type Nominal<T, N extends string> = T
 
+/**
+ * TODO: We should deprecate this and just use `[start: number, end: number]`
+ */
 export type IRange<T extends number = number> = {start: T; end: T}
 
 /** For `any`s that aren't meant to stay `any`*/

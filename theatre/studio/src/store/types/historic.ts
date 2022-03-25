@@ -81,6 +81,7 @@ export type StudioHistoricState = {
       }
     >
   }
+
   panels?: Panels
   panelPositions?: {[panelIdOrPaneId in string]?: PanelPosition}
   panelInstanceDesceriptors: {

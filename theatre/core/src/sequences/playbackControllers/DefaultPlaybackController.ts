@@ -4,7 +4,7 @@ import type {
 } from '@theatre/core/sequences/Sequence'
 import {defer} from '@theatre/shared/utils/defer'
 import noop from '@theatre/shared/utils/noop'
-import type {Pointer, Ticker} from '@theatre/dataverse'
+import type {IDerivation, Pointer, Ticker} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 
 export interface IPlaybackState {
@@ -24,6 +24,19 @@ export interface IPlaybackController {
     rate: number,
     direction: IPlaybackDirection,
   ): Promise<boolean>
+
+  /**
+   * Controls the playback within a range. Repeats infinitely unless stopped.
+   *
+   * @remarks
+   *   One use case for this is to play the playback within the focus range.
+   *
+   * @param rangeD The derivation that contains the range that will be used for the playback
+   *
+   * @returns  a promise that gets rejected if the playback stopped for whatever reason
+   *
+   */
+  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown>
 
   pause(): void
 }
@@ -184,6 +197,61 @@ export default class DefaultPlaybackController implements IPlaybackController {
       ticker.offNextTick(tick)
 
       if (this.playing) deferred.resolve(false)
+    }
+    const requestNextTick = () => ticker.onNextTick(tick)
+    ticker.onThisOrNextTick(tick)
+    return deferred.promise
+  }
+
+  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
+    if (this.playing) {
+      this.pause()
+    }
+
+    this.playing = true
+
+    const ticker = this._ticker
+
+    const deferred = defer<boolean>()
+
+    // We're keeping the rangeD hot, so we can read from it on every tick without
+    // causing unnecessary recalculations
+    const untapFromRangeD = rangeD.keepHot()
+    // We'll release our subscription once this promise resolves/rejects, for whatever reason
+    deferred.promise.then(untapFromRangeD, untapFromRangeD)
+
+    let lastTickerTime = ticker.time
+
+    const tick = (currentTickerTime: number) => {
+      const elapsedSinceLastTick = Math.max(
+        currentTickerTime - lastTickerTime,
+        0,
+      )
+      lastTickerTime = currentTickerTime
+      const elapsedSinceLastTickInSeconds = elapsedSinceLastTick / 1000
+
+      const lastPosition = this.getCurrentPosition()
+
+      const range = rangeD.getValue()
+
+      if (lastPosition < range[0] || lastPosition > range[1]) {
+        this.gotoPosition(range[0])
+      } else {
+        let newPosition = lastPosition + elapsedSinceLastTickInSeconds
+        if (newPosition > range[1]) {
+          newPosition = range[0] + (newPosition - range[1])
+        }
+        this.gotoPosition(newPosition)
+      }
+
+      requestNextTick()
+    }
+
+    this._stopPlayCallback = () => {
+      ticker.offThisOrNextTick(tick)
+      ticker.offNextTick(tick)
+
+      deferred.resolve(false)
     }
     const requestNextTick = () => ticker.onNextTick(tick)
     ticker.onThisOrNextTick(tick)

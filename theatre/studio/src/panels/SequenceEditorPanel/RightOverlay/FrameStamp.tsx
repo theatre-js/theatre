@@ -12,6 +12,13 @@ import {
   useFrameStampPositionD,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
+const Container = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: 0px;
+`
+
 const Label = styled.div`
   position: absolute;
   top: 16px;
@@ -63,21 +70,23 @@ const FrameStamp: React.FC<{
 
   return (
     <>
-      <Label
-        style={{
-          opacity: isVisible ? 1 : 0,
-          transform: `translate3d(calc(${posInClippedSpace}px - 50%), 0, 0)`,
-        }}
-      >
-        {formatter.formatForPlayhead(snappedPosInUnitSpace)}
-      </Label>
-      <Line
-        posType={posType}
-        style={{
-          opacity: isVisible ? 1 : 0,
-          transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
-        }}
-      />
+      <Container>
+        <Label
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: `translate3d(calc(${posInClippedSpace}px - 50%), 0, 0)`,
+          }}
+        >
+          {formatter.formatForPlayhead(snappedPosInUnitSpace)}
+        </Label>
+        <Line
+          posType={posType}
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
+          }}
+        />
+      </Container>{' '}
     </>
   )
 })

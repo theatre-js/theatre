@@ -26,7 +26,9 @@ export interface ProjectEphemeralState {
 }
 
 /**
- * Historic state is both persisted and is undoable
+ * This is the state of each project that is consumable by `@theatre/core`.
+ * If the studio is present, this part of the state joins the studio's historic state,
+ * at {@link StudioHistoricState.coreByProject}
  */
 export interface ProjectState_Historic {
   sheetsById: StrictRecord<string, SheetState_Historic>

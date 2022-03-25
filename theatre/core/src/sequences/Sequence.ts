@@ -175,6 +175,21 @@ export default class Sequence {
     })
   }
 
+  /**
+   * Controls the playback within a range. Repeats infinitely unless stopped.
+   *
+   * @remarks
+   *   One use case for this is to play the playback within the focus range.
+   *
+   * @param rangeD The derivation that contains the range that will be used for the playback
+   *
+   * @returns  a promise that gets rejected if the playback stopped for whatever reason
+   *
+   */
+  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
+    return this._playbackControllerBox.get().playDynamicRange(rangeD)
+  }
+
   async play(
     conf?: Partial<{
       iterationCount: number

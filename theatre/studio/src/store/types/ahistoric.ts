@@ -23,7 +23,27 @@ export type StudioAhistoricState = {
           string,
           {
             sequence?: {
+              /**
+               * Stores the zoom level and scroll position of the sequence editor panel
+               * for this particular sheet.
+               */
               clippedSpaceRange?: IRange
+
+              /**
+               * @remarks
+               * We just added this in 0.4.8. Because of that, we defined this as an optional
+               * prop, so that a user upgrading from 0.4.7 where `focusRange` did not exist,
+               * would not be shown an error.
+               *
+               * Basically, as the store's state evolves, it should always be backwards-compatible.
+               * In other words, the state of `<0.4.8` should always be valid state for `>=0.4.8`.
+               *
+               * If that is not feasible, then we should write a migration script.
+               */
+              focusRange?: {
+                enabled: boolean
+                range: IRange
+              }
             }
           }
         >
