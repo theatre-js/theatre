@@ -29,6 +29,11 @@ export function getPropConfigByPath(
   return getPropConfigByPath(sub, rest)
 }
 
+/**
+ * @param value An arbitrary value. May be matching the prop's type or not
+ * @param propConfig The configuration object for a prop
+ * @returns value if it matches the prop's type, otherwise returns the default value for the prop
+ */
 export function valueInProp(value: unknown, propConfig: PropTypeConfig) {
   const sanitizedVal = propConfig.sanitize!(value)
   if (typeof sanitizedVal === 'undefined') {
