@@ -3,10 +3,14 @@ import React, {forwardRef, useLayoutEffect, useRef, useState} from 'react'
 import type {
   DirectionalLight,
   Group,
+  Line,
+  LineLoop,
+  LineSegments,
   Mesh,
   OrthographicCamera,
   PerspectiveCamera,
   PointLight,
+  Points,
   SpotLight,
 } from 'three'
 import {Vector3} from 'three'
@@ -23,6 +27,10 @@ import {useCurrentSheet} from '../SheetProvider'
 interface Elements {
   group: Group
   mesh: Mesh
+  points: Points
+  line: Line
+  lineLoop: LineLoop
+  lineSegments: LineSegments
   spotLight: SpotLight
   directionalLight: DirectionalLight
   perspectiveCamera: PerspectiveCamera
@@ -213,6 +221,10 @@ const createEditable = <T extends EditableType>(type: T) =>
 editable.primitive = editable('primitive', null)
 editable.group = createEditable('group')
 editable.mesh = createEditable('mesh')
+editable.points = createEditable('points')
+editable.line = createEditable('line')
+editable.lineLoop = createEditable('lineLoop')
+editable.lineSegments = createEditable('lineSegments')
 editable.spotLight = createEditable('spotLight')
 editable.directionalLight = createEditable('directionalLight')
 editable.pointLight = createEditable('pointLight')

@@ -89,8 +89,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({
     case 'orthographicCamera':
       Helper = CameraHelper
       break
-    case 'group':
-    case 'mesh':
+    default:
       Helper = BoxHelper
   }
 
@@ -103,23 +102,18 @@ const EditableProxy: VFC<EditableProxyProps> = ({
     case 'pointLight':
       helperArgs = [size, color]
       break
-    case 'group':
-    case 'mesh':
-    case 'spotLight':
-      helperArgs = [color]
-      break
     case 'perspectiveCamera':
     case 'orthographicCamera':
       helperArgs = []
+      break
+    default:
+      helperArgs = [color]
   }
 
   let icon: ReactElement<IconType>
   switch (editableType) {
     case 'group':
       icon = <BsFillCollectionFill />
-      break
-    case 'mesh':
-      icon = <GiCube />
       break
     case 'pointLight':
       icon = <GiLightBulb />
@@ -133,6 +127,10 @@ const EditableProxy: VFC<EditableProxyProps> = ({
     case 'perspectiveCamera':
     case 'orthographicCamera':
       icon = <BsCameraVideoFill />
+      break
+    default:
+      icon = <GiCube />
+      break
   }
 
   const objectRef = useRef(object)

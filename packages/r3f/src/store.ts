@@ -8,6 +8,10 @@ import {types} from '@theatre/core'
 export type EditableType =
   | 'group'
   | 'mesh'
+  | 'points'
+  | 'line'
+  | 'lineLoop'
+  | 'lineSegments'
   | 'spotLight'
   | 'directionalLight'
   | 'pointLight'
@@ -59,6 +63,22 @@ export interface EditableMesh extends AbstractEditable<'mesh'> {
   sheetObject?: BaseSheetObjectType
 }
 
+export interface EditablePoints extends AbstractEditable<'points'> {
+  sheetObject?: BaseSheetObjectType
+}
+
+export interface EditableLine extends AbstractEditable<'line'> {
+  sheetObject?: BaseSheetObjectType
+}
+
+export interface EditableLineLoop extends AbstractEditable<'lineLoop'> {
+  sheetObject?: BaseSheetObjectType
+}
+
+export interface EditableLineSegments extends AbstractEditable<'lineSegments'> {
+  sheetObject?: BaseSheetObjectType
+}
+
 export interface EditableSpotLight extends AbstractEditable<'spotLight'> {
   sheetObject?: BaseSheetObjectType
 }
@@ -85,6 +105,10 @@ export interface EditableOrthographicCamera
 export type Editable =
   | EditableGroup
   | EditableMesh
+  | EditablePoints
+  | EditableLine
+  | EditableLineLoop
+  | EditableLineSegments
   | EditableSpotLight
   | EditableDirectionalLight
   | EditablePointLight
@@ -105,6 +129,18 @@ export interface SerializedEditableGroup
 export interface SerializedEditableMesh
   extends AbstractSerializedEditable<'mesh'> {}
 
+export interface SerializedEditablePoints
+  extends AbstractSerializedEditable<'points'> {}
+
+export interface SerializedEditableLine
+  extends AbstractSerializedEditable<'line'> {}
+
+export interface SerializedEditableLineLoop
+  extends AbstractSerializedEditable<'lineLoop'> {}
+
+export interface SerializedEditableLineSegments
+  extends AbstractSerializedEditable<'lineSegments'> {}
+
 export interface SerializedEditableSpotLight
   extends AbstractSerializedEditable<'spotLight'> {}
 
@@ -123,6 +159,10 @@ export interface SerializedEditableOrthographicCamera
 export type SerializedEditable =
   | SerializedEditableGroup
   | SerializedEditableMesh
+  | SerializedEditablePoints
+  | SerializedEditableLine
+  | SerializedEditableLineLoop
+  | SerializedEditableLineSegments
   | SerializedEditableSpotLight
   | SerializedEditableDirectionalLight
   | SerializedEditablePointLight
@@ -194,7 +234,7 @@ const config: StateCreator<EditorStore> = (set, get) => {
             console.error(`Warning: There is a mismatch between the serialized type of ${uniqueName} and the one set when adding it to the scene.
   Serialized: ${state.editables[uniqueName].type}.
   Current: ${type}.
-  
+
   This might have happened either because you changed the type of an object, in which case a re-export will solve the issue, or because you re-used the uniqueName for an object of a different type, which is an error.`)
           }
           if (
