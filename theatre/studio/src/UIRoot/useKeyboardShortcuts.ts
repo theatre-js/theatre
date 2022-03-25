@@ -39,12 +39,25 @@ export default function useKeyboardShortcuts() {
         !e.altKey &&
         !e.ctrlKey
       ) {
+        // Control the playback using the `Space` key
         const seq = getSelectedSequence()
         if (seq) {
           if (seq.playing) {
             seq.pause()
           } else {
+            /*
+             * The sequence will be played in its whole length unless all of the
+             * following conditions are met:
+             *  1. the focus range is set and enabled
+             *  2. the playback starts within the focus range.
+             */
             const {projectId, sheetId} = seq.address
+
+            /*
+             * The value of this derivation is an array that contains the
+             * range of the playback (start and end), and a boolean that is
+             * `true` if the playback should be played within that range.
+             */
             const controlledPlaybackStateD = prism(
               (): {range: IPlaybackRange; isFollowingARange: boolean} => {
                 const focusRange = val(
@@ -53,6 +66,8 @@ export default function useKeyboardShortcuts() {
                   ].stateBySheetId[sheetId].sequence.focusRange,
                 )
 
+                // Determines whether the playback should be played
+                // within the focus range.
                 const shouldFollowFocusRange = prism.memo<boolean>(
                   'shouldFollowFocusRange',
                   (): boolean => {
@@ -98,9 +113,6 @@ export default function useKeyboardShortcuts() {
             )
 
             const playbackStateBox = getPlaybackStateBox(seq)
-            if (playbackStateBox.get()) {
-              console.warn('this is a bug. fix it before merge :D')
-            }
 
             playbackPromise.finally(() => {
               playbackStateBox.set(undefined)
@@ -149,6 +161,12 @@ const getPlaybackStateBox = memoizeFn(
   },
 )
 
+/*
+ * A memoized function that returns a derivation with a boolean value.
+ * This value is set to `true` if:
+ * 1. the playback is playing and using the focus range instead of the whole sequence
+ * 2. the playback is stopped, but would use the focus range if it were started.
+ */
 export const getIsPlayheadAttachedToFocusRange = memoizeFn(
   (sequence: Sequence) =>
     prism<boolean>(() => {

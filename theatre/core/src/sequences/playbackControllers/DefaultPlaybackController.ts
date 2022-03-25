@@ -25,6 +25,17 @@ export interface IPlaybackController {
     direction: IPlaybackDirection,
   ): Promise<boolean>
 
+  /**
+   * Controls the playback within a range. Repeats infinitely unless stopped.
+   *
+   * @remarks
+   *   One use case for this is to play the playback within the focus range.
+   *
+   * @param rangeD The derivation that contains the range that will be used for the playback
+   *
+   * @returns  a promise that gets rejected if the playback stopped for whatever reason
+   *
+   */
   playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown>
 
   pause(): void
@@ -203,10 +214,10 @@ export default class DefaultPlaybackController implements IPlaybackController {
 
     const deferred = defer<boolean>()
 
-    // we're keeping the rangeD hot, so we can read from it on every tick without
+    // We're keeping the rangeD hot, so we can read from it on every tick without
     // causing unnecessary recalculations
     const untapFromRangeD = rangeD.keepHot()
-    // we'll release our subscription once this promise resolves/rejects, for whatever reason
+    // We'll release our subscription once this promise resolves/rejects, for whatever reason
     deferred.promise.then(untapFromRangeD, untapFromRangeD)
 
     let lastTickerTime = ticker.time
