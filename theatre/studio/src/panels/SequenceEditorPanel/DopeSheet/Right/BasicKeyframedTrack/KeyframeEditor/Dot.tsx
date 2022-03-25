@@ -107,17 +107,19 @@ const Dot: React.FC<IProps> = (props) => {
 export default Dot
 
 function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
-  const maybeKeyframeIds = selectedKeyframeIdsIfInSingleTrack(props.selection)
+  const maybeSelectedKeyframeIds = selectedKeyframeIdsIfInSingleTrack(
+    props.selection,
+  )
 
-  const keyframeSelectionItems = maybeKeyframeIds
-    ? [copyKeyFrameContextMenuItem(props, maybeKeyframeIds)]
-    : []
+  const keyframeSelectionItem = maybeSelectedKeyframeIds
+    ? copyKeyFrameContextMenuItem(props, maybeSelectedKeyframeIds)
+    : copyKeyFrameContextMenuItem(props, [props.keyframe.id])
 
   const deleteItem = deleteSelectionOrKeyframeContextMenuItem(props)
 
   return useContextMenu(node, {
     items: () => {
-      return [...keyframeSelectionItems, deleteItem]
+      return [keyframeSelectionItem, deleteItem]
     },
   })
 }
@@ -263,7 +265,7 @@ function deleteSelectionOrKeyframeContextMenuItem(props: IProps) {
 
 function copyKeyFrameContextMenuItem(props: IProps, keyframeIds: string[]) {
   return {
-    label: 'Copy Keyframes',
+    label: keyframeIds.length > 1 ? 'Copy selection' : 'Copy keyframe',
     callback: () => {
       const keyframes = keyframeIds.map(
         (keyframeId) =>
