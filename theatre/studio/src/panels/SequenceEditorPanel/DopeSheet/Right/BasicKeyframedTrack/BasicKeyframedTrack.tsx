@@ -118,6 +118,7 @@ function pasteKeyframesContextMenuItem(
               ...props.leaf.sheetObject.address,
               trackId: props.leaf.trackId,
               position: sequence.position + keyframe.position - keyframeOffset,
+              handles: keyframe.handles,
               value: keyframe.value,
               snappingFunction: sequence.closestGridPosition,
             },

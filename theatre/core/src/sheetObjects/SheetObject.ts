@@ -23,7 +23,7 @@ import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
 import type {Interpolator} from '@theatre/core/propTypes'
-import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
+import {getPropConfigByPath, valueInProp} from '@theatre/shared/propTypes/utils'
 
 // type Everything = {
 //   final: SerializableMap
@@ -159,7 +159,6 @@ export default class SheetObject implements IdentityDerivationProvider {
               pathToProp,
             )!
 
-            const sanitize = propConfig.sanitize!
             const interpolate =
               propConfig.interpolate! as Interpolator<$IntentionalAny>
 
@@ -169,21 +168,12 @@ export default class SheetObject implements IdentityDerivationProvider {
               if (!triple)
                 return valsAtom.setIn(pathToProp, propConfig!.default)
 
-              const leftSanitized = sanitize(triple.left)
-
-              const left =
-                typeof leftSanitized === 'undefined'
-                  ? propConfig.default
-                  : leftSanitized
+              const left = valueInProp(triple.left, propConfig)
 
               if (triple.right === undefined)
                 return valsAtom.setIn(pathToProp, left)
 
-              const rightSanitized = sanitize(triple.right)
-              const right =
-                typeof rightSanitized === 'undefined'
-                  ? propConfig.default
-                  : rightSanitized
+              const right = valueInProp(triple.right, propConfig)
 
               return valsAtom.setIn(
                 pathToProp,

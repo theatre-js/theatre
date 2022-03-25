@@ -1,4 +1,5 @@
 import type {
+  IBasePropType,
   PropTypeConfig,
   PropTypeConfig_Compound,
   PropTypeConfig_Enum,
@@ -27,4 +28,25 @@ export function getPropConfigByPath(
       : (parentConf as $IntentionalAny).props[key]
 
   return getPropConfigByPath(sub, rest)
+}
+
+/**
+ * @param value - An arbitrary value. May be matching the prop's type or not
+ * @param propConfig - The configuration object for a prop
+ * @returns value if it matches the prop's type (or if the prop doesn't have a sanitizer),
+ * otherwise returns the default value for the prop
+ */
+export function valueInProp<PropValueType>(
+  value: unknown,
+  propConfig: IBasePropType<PropValueType>,
+): PropValueType | unknown {
+  const sanitize = propConfig.sanitize
+  if (!sanitize) return value
+
+  const sanitizedVal = sanitize(value)
+  if (typeof sanitizedVal === 'undefined') {
+    return propConfig.default
+  } else {
+    return sanitizedVal
+  }
 }
