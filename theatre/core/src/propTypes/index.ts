@@ -506,7 +506,7 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
 export type Sanitizer<T> = (value: unknown) => T | undefined
 export type Interpolator<T> = (left: T, right: T, progression: number) => T
 
-interface IBasePropType<ValueType, PropTypes = ValueType> {
+export interface IBasePropType<ValueType, PropTypes = ValueType> {
   valueType: ValueType
   [propTypeSymbol]: 'TheatrePropType'
   label: string | undefined
