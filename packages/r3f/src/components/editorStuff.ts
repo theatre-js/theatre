@@ -50,7 +50,6 @@ const editorSheetObjectConfig = {
 }
 
 export function getEditorSheet(): ISheet {
-  console.log('new stuff who dis')
   if (!sheet) {
     sheet = studio.getStudioProject().sheet('R3F UI')
   }

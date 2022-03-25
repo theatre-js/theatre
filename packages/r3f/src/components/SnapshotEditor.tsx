@@ -167,7 +167,6 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                     colorManagement
                     onCreated={({gl}) => {
                       gl.setClearColor('white')
-                      gl.physicallyCorrectLights = true
                     }}
                     shadowMap
                     dpr={[1, 2]}
