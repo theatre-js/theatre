@@ -2,7 +2,6 @@ import type {
   IBasePropType,
   PropTypeConfig,
   PropTypeConfig_Compound,
-  PropTypeConfig_Number,
   PropTypeConfig_Enum,
 } from '@theatre/core/propTypes'
 import type {PathToProp} from '@theatre/shared/utils/addresses'
@@ -12,12 +11,6 @@ export function isPropConfigComposite(
   c: PropTypeConfig,
 ): c is PropTypeConfig_Compound<{}> | PropTypeConfig_Enum {
   return c.type === 'compound' || c.type === 'enum'
-}
-
-export function isPropConfigScalar(
-  propConfig: PropTypeConfig,
-): propConfig is PropTypeConfig_Number {
-  return propConfig.isScalar === true
 }
 
 export function getPropConfigByPath(
@@ -40,14 +33,15 @@ export function getPropConfigByPath(
 /**
  * @param value - An arbitrary value. May be matching the prop's type or not
  * @param propConfig - The configuration object for a prop
- * @returns value if it matches the prop's type, otherwise returns the default value for the prop
+ * @returns value if it matches the prop's type (or if the prop doesn't have a sanitizer),
+ * otherwise returns the default value for the prop
  */
 export function valueInProp<PropValueType>(
   value: unknown,
   propConfig: IBasePropType<PropValueType>,
-): PropValueType {
+): PropValueType | unknown {
   const sanitize = propConfig.sanitize
-  if (!sanitize) return propConfig.default
+  if (!sanitize) return value
 
   const sanitizedVal = sanitize(value)
   if (typeof sanitizedVal === 'undefined') {
