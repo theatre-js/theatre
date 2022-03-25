@@ -11,7 +11,8 @@ import React, {useMemo, useRef, useState} from 'react'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import KeyframeEditor from './KeyframeEditor/KeyframeEditor'
-import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
+import {getPropConfigByPath, valueInProp} from '@theatre/shared/propTypes/utils'
+import type {PropTypeConfig} from '@theatre/core/propTypes'
 
 export type ExtremumSpace = {
   fromValueSpace: (v: number) => number
@@ -55,7 +56,7 @@ const BasicKeyframedTrack: React.FC<{
     const extremumSpace: ExtremumSpace = useMemo(() => {
       const extremums =
         propConfig.isScalar === true
-          ? calculateScalarExtremums(trackData.keyframes)
+          ? calculateScalarExtremums(trackData.keyframes, propConfig)
           : calculateNonScalarExtremums(trackData.keyframes)
 
       const fromValueSpace = (val: number): number =>
@@ -84,6 +85,7 @@ const BasicKeyframedTrack: React.FC<{
 
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
       <KeyframeEditor
+        propConfig={propConfig}
         keyframe={kf}
         index={index}
         trackData={trackData}
@@ -114,7 +116,10 @@ export default BasicKeyframedTrack
 
 type Extremums = [min: number, max: number]
 
-function calculateScalarExtremums(keyframes: Keyframe[]): Extremums {
+function calculateScalarExtremums(
+  keyframes: Keyframe[],
+  propConfig: PropTypeConfig,
+): Extremums {
   let min = Infinity,
     max = -Infinity
 
@@ -124,7 +129,7 @@ function calculateScalarExtremums(keyframes: Keyframe[]): Extremums {
   }
 
   keyframes.forEach((cur, i) => {
-    const curVal = typeof cur.value === 'number' ? cur.value : 0
+    const curVal = valueInProp(cur.value, propConfig)
     check(curVal)
     if (!cur.connectedRight) return
     const next = keyframes[i + 1]

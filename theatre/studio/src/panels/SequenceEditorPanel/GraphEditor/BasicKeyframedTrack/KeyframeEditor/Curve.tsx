@@ -1,3 +1,4 @@
+import {valueInProp} from '@theatre/shared/propTypes/utils'
 import getStudio from '@theatre/studio/getStudio'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -25,8 +26,10 @@ const Curve: React.FC<IProps> = (props) => {
 
   const [contextMenu] = useConnectorContextMenu(node, props)
 
-  const curValue = props.isScalar ? (cur.value as number) : 0
-  const nextValue = props.isScalar ? (next.value as number) : 1
+  const curValue = props.isScalar ? valueInProp(cur.value, props.propConfig) : 0
+  const nextValue = props.isScalar
+    ? valueInProp(next.value, props.propConfig)
+    : 1
   const leftYInExtremumSpace = props.extremumSpace.fromValueSpace(curValue)
   const rightYInExtremumSpace = props.extremumSpace.fromValueSpace(nextValue)
 

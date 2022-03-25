@@ -28,3 +28,12 @@ export function getPropConfigByPath(
 
   return getPropConfigByPath(sub, rest)
 }
+
+export function valueInProp(value: unknown, propConfig: PropTypeConfig) {
+  const sanitizedVal = propConfig.sanitize!(value)
+  if (typeof sanitizedVal === 'undefined') {
+    return propConfig.default
+  } else {
+    return sanitizedVal
+  }
+}
