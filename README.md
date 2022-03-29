@@ -12,7 +12,7 @@
  <a href="https://www.youtube.com/channel/UCsp9XOCs8v2twyq5kMLzS2Q">
   <img src="https://img.shields.io/youtube/channel/views/UCsp9XOCs8v2twyq5kMLzS2Q?label=TheatreJS&style=social" alt="Watch on YouTube">
  </a> ⎯◈⎯
- <a href="https://theatrejs.com" style="color: black; border-bottom: 1px solid black; text-decoration: none;">
+ <a href="https://theatrejs.com">
   <img src="https://docs.theatrejs.com/public/theatrejs-logo-black.svg" alt="TheatreJS" width="70">.com
  </a>
 </p>
