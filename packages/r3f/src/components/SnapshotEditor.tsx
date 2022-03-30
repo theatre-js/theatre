@@ -1,4 +1,4 @@
-import {useCallback, useLayoutEffect, useMemo} from 'react'
+import {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import React from 'react'
 import {Canvas} from '@react-three/fiber'
 import type {BaseSheetObjectType} from '../store'
@@ -15,6 +15,7 @@ import useSnapshotEditorCamera from './useSnapshotEditorCamera'
 import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
+import type {Camera, Scene, WebGLRenderer} from 'three'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -105,6 +106,12 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   const snapshotEditorSheet = getEditorSheet()
   const paneId = props.paneId
   const editorObject = getEditorSheetObject()
+  const [gl, setGL] = useState<WebGLRenderer>()
+  const [scene, setScene] = useState<Scene>()
+  const [camera, setCamera] = useState<Camera>()
+
+  const viewportLighting =
+    useVal(editorObject?.props.viewport.lighting) ?? 'physical'
 
   const [sceneSnapshot, createSnapshot] = useEditorStore(
     (state) => [state.sceneSnapshot, state.createSnapshot],
@@ -125,6 +132,13 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
       }
     }
   }, [editorOpen])
+
+  useEffect(() => {
+    if (gl && scene && camera) {
+      gl.physicallyCorrectLights = viewportLighting === 'physical'
+      gl.compile(scene, camera)
+    }
+  }, [gl, viewportLighting])
 
   const onPointerMissed = useCallback(() => {
     // This callback runs when the user clicks in an empty space inside a SnapshotEditor.
@@ -165,8 +179,11 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                   <Canvas
                     // @ts-ignore
                     colorManagement
-                    onCreated={({gl}) => {
+                    onCreated={({gl, scene, camera}) => {
                       gl.setClearColor('white')
+                      setGL(gl)
+                      setScene(scene)
+                      setCamera(camera)
                     }}
                     shadowMap
                     dpr={[1, 2]}
