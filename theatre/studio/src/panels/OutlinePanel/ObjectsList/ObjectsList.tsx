@@ -19,15 +19,17 @@ const ObjectsList: React.FC<{
 
     return (
       <>
-        {objectsEntries.map(([objectPath, object]) => {
-          return (
-            <ObjectItem
-              depth={depth}
-              key={'objectPath(' + objectPath + ')'}
-              sheetObject={object}
-            />
-          )
-        })}
+        {objectsEntries
+          .sort(([pathA], [pathB]) => (pathA > pathB ? 1 : -1))
+          .map(([objectPath, object]) => {
+            return (
+              <ObjectItem
+                depth={depth}
+                key={'objectPath(' + objectPath + ')'}
+                sheetObject={object}
+              />
+            )
+          })}
       </>
     )
   }, [sheet, depth])
