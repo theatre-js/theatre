@@ -40,6 +40,7 @@ configure your local environment before running the examples).
 2. [Observing values](#observing-values)
 3. [`map()`](#map)
 4. [`prism()`](#prism)
+5. [`Atom`](#atom)
 
 ### Setup
 
@@ -224,4 +225,169 @@ const areaD = prism(() => {
 console.log('area: ', areaD.getValue())
 widthB.set(10)
 console.log('new area: ', areaD.getValue())
+```
+
+### `usePrism()`
+
+You can also use derivations inside of React components with the `usePrism()`
+hook, which accepts a dependency array for the second argument. All the
+derivations whose values are tracked should be included in the dependency array.
+
+An example for this would be having a Box that contains the width and height of
+a div (let's call it `panel`). Imagine that you want to have a button that
+changes the width of the `panel` to a random number when clicked.
+
+```typescriptreact
+import {Box} from '@theatre/dataverse'
+import {usePrism} from '@theatre/react'
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+// Set the original width and height
+const panelB = new Box({
+  dims: {width: 100, height: 100},
+})
+
+function changePanelWidth() {
+  const oldValue = panelB.get()
+  // Change `width` to a random number between 1 and 100
+  panelB.set({dims: {...oldValue.dims, width: Math.floor(Math.random() * 100)}})
+}
+
+const Comp = () => {
+  const render = usePrism(() => {
+    const {dims} = panelB.derivation.getValue()
+    return (
+      <>
+        <button
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: 25,
+            width: 200,
+          }}
+          onClick={() => changePanelWidth()}
+        >
+          Change the width
+        </button>
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 25,
+            width: dims.width,
+            height: dims.height,
+            backgroundColor: '#bd6888',
+          }}
+        ></div>
+      </>
+    )
+  }, [panelB]) // Note that `panelB` is in the dependency array
+
+  return render
+}
+
+ReactDOM.render(
+  <div>
+    <Comp />
+  </div>,
+  document.querySelector('body'),
+)
+```
+
+### `Atom`
+
+Remember how we compared `Box`-es to cells in the spreadsheet-analogy? `Atom`-s
+are also like cells in the sense that they also hold a value (they only work
+with objects), but there's a huge difference in how their value gets updated.
+
+`Box` uses strict equality for comparing new and old values, while `Atom` tracks
+the individual properties and subproperties of an object. The following example
+illustrates the difference between these two update mechanisms pretty well:
+
+```typescript
+import {Atom, Box, val, valueDerivation} from '@theatre/dataverse'
+
+const originalValue = {width: 200, height: 100}
+
+// Create a `Box` that holds an object
+const panelB = new Box(originalValue)
+
+console.log('old value (Box): ', panelB.derivation.getValue())
+// Print the new value of `panelB` to the console
+// every time it changes
+panelB.derivation
+  .changesWithoutValues()
+  .tap(() => console.log('new value: (Box) ', panelB.derivation.getValue()))
+
+// Set the value of the `panelB` to a new object that has
+// the same properties with the same values as `panelB`.
+// Note that this will get recognized as a change, since
+// the two objects are not strictly equal.
+panelB.set({...panelB.get()})
+
+// Create an `Atom` that holds an object
+const panelA = new Atom({width: 200, height: 100})
+
+console.log('old value (Atom):', val(panelA.pointer))
+
+// Create a derivation to track the value of `panelA`
+// There are a lot of new information here, we'll come back
+// to this line later.
+const panelFromAtomD = valueDerivation(panelA.pointer)
+
+// Print the new value of `panelA` to the console
+// every time it changes
+panelFromAtomD
+  .changesWithoutValues()
+  .tap(() => console.log('new value (Atom):', val(panelA.pointer)))
+
+// Since the next line sets changes the value of `panelA` to what it
+// already holds, it does not get recognized as a change.
+// The `.setIn()` method is also new, we'll cover it later.
+panelA.setIn(['width'], 200)
+
+// The next line will trigger a change as expected
+panelA.setIn(['width'], 400)
+```
+
+#### Pointers
+
+You might have wondered what `val(panelA.pointer)` meant when you read this
+line:
+
+```typescript
+console.log('old value (Atom):', val(panelA.pointer))
+```
+
+`dataverse` uses pointers that point to the properties and nested properties of
+the object that the `Atom` instance holds as its value.
+
+You can use the pointers to get the value of the property they point to, or to
+convert them to a derivation using the `val()` and `useDerivation()` functions:
+
+```typescript
+const panelA = new Atom({width: 200, height: 100})
+
+// Create a derivation
+const panelFromAtomD = valueDerivation(panelA.pointer)
+// Print the value of the property that belongs to the pointer
+console.log(val(panelA.pointer)) // prints `{width: 200, height: 100}`
+console.log(val(panelA.pointer.width)) // prints `100`
+console.log(val(panelA.pointer.height)) // prints `200`
+```
+
+#### Updating the values of `Atoms`
+
+If you want to update the value of the `Atom`, you have to select first the
+property/subproperty that you want to update. Then you can use the names of its
+ancestor properties in an array to define the path to the property for the
+`setIn()` method:
+
+```typescript
+const panelA = new Atom({dims: {width: 200, height: 100}})
+
+// Sets the value of panelA to `{dims: {width: 400, height: 100}}`
+panelA.setIn(['dims', 'width'], 400)
 ```
