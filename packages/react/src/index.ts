@@ -37,6 +37,13 @@ function useForceUpdate(debugLabel?: string) {
   return update
 }
 
+/**
+ * A React hook that executes the callback function and returns its return value whenever the values in the dependency array change.
+ *
+ * @param fn - The callback function
+ * @param deps - The dependency array
+ * @param debugLabel - The label used by the debugger
+ */
 export function usePrism<T>(
   fn: () => T,
   deps: unknown[],
