@@ -100,7 +100,7 @@ if you're just getting started with the codebase.
 ### Helping with documentation
 
 The documentation website's repo is
-[here](https://github.com/ariaminaei/theatre-docs/).
+[here](https://github.com/theatre-js/theatre-docs/).
 
 ### Writing/recording tutorials
 
