@@ -23,14 +23,7 @@ import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
 import type {Interpolator} from '@theatre/core/propTypes'
-import {getPropConfigByPath, valueInProp} from '@theatre/shared/propTypes/utils'
-
-// type Everything = {
-//   final: SerializableMap
-//   statics: SerializableMap
-//   defaults: SerializableMap
-//   sequenced: SerializableMap
-// }
+import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 
 export default class SheetObject implements IdentityDerivationProvider {
   get type(): 'Theatre_SheetObject' {
