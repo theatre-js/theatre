@@ -1,6 +1,6 @@
 <h1 align="center">
-  <img src="https://docs.theatrejs.com/public/theatrejs-logo-white.svg#gh-dark-mode-only" alt="Theatre.js" width="200">
-  <img src="https://docs.theatrejs.com/public/theatrejs-logo-black.svg#gh-light-mode-only" alt="Theatre.js" width="200">
+  <a href="https://github.com/theatre-js/theatre#gh-dark-mode-only"><img src="https://docs.theatrejs.com/public/theatrejs-logo-white.svg" alt="Theatre.js" width="200"></a>
+  <a href="https://github.com/theatre-js/theatre#gh-light-mode-only"><img src="https://docs.theatrejs.com/public/theatrejs-logo-black.svg" alt="Theatre.js" width="200"></a>
 </h1>
 <p align="center">Motion Design, for the web</p>
 <p align="center">
