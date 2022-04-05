@@ -69,6 +69,7 @@ export default function createTransactionPrivateApi(
     set: (pointer, value) => {
       ensureRunning()
       const _value = cloneDeepSerializable(value)
+      if (typeof _value === 'undefined') return
 
       const {root, path} = getPointerParts(pointer as Pointer<$FixMe>)
       if (isSheetObject(root)) {
@@ -103,6 +104,11 @@ export default function createTransactionPrivateApi(
             return
           }
 
+          const deserialized = cloneDeepSerializable(
+            propConfig.deserialize(value),
+          )
+          if (typeof deserialized === 'undefined') return
+
           const propAddress = {...root.address, pathToProp: path}
 
           const trackId = get(sequenceTracksTree, path) as $FixMe as
@@ -110,11 +116,6 @@ export default function createTransactionPrivateApi(
             | undefined
 
           if (typeof trackId === 'string') {
-            // TODO: Make sure this causes no problems wrt decorated
-            // or otherwise unserializable stuff that sanitize might return.
-            // value needs to be serializable.
-            if (propConfig?.sanitize) value = propConfig.sanitize(value)
-
             const seq = root.sheet.getSequence()
             seq.position = seq.closestGridPosition(seq.position)
             stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
@@ -126,7 +127,7 @@ export default function createTransactionPrivateApi(
                 snappingFunction: seq.closestGridPosition,
               },
             )
-          } else if (propConfig !== undefined) {
+          } else {
             stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.setValueOfPrimitiveProp(
               {...propAddress, value: value as $FixMe},
             )
