@@ -1,6 +1,5 @@
 <h1 align="center">
-  <a href="https://github.com/theatre-js/theatre#gh-dark-mode-only"><img src="https://docs.theatrejs.com/public/theatrejs-logo-white.svg" alt="Theatre.js" width="200"></a>
-  <a href="https://github.com/theatre-js/theatre#gh-light-mode-only"><img src="https://docs.theatrejs.com/public/theatrejs-logo-black.svg" alt="Theatre.js" width="200"></a>
+  <a href="https://github.com/theatre-js/theatre#gh-dark-mode-only"><img src="https://docs.theatrejs.com/public/theatrejs-logo-white.svg" alt="Theatre.js" width="200"></a><a href="https://github.com/theatre-js/theatre#gh-light-mode-only"><img src="https://docs.theatrejs.com/public/theatrejs-logo-black.svg" alt="Theatre.js" width="200"></a>
 </h1>
 <p align="center">Motion Design, for the web</p>
 <p align="center">
@@ -13,7 +12,10 @@
  <a href="https://www.youtube.com/channel/UCsp9XOCs8v2twyq5kMLzS2Q">
   <img src="https://img.shields.io/youtube/channel/views/UCsp9XOCs8v2twyq5kMLzS2Q?label=TheatreJS&style=social" alt="Watch on YouTube">
  </a> ⎯◈⎯
- <a href="https://theatrejs.com">
+ <a href="https://theatrejs.com#gh-dark-mode-only">
+  <img src="https://docs.theatrejs.com/public/theatrejs-logo-white.svg" alt="TheatreJS" width="70">.com
+ </a>
+ <a href="https://theatrejs.com#gh-light-mode-only">
   <img src="https://docs.theatrejs.com/public/theatrejs-logo-black.svg" alt="TheatreJS" width="70">.com
  </a>
 </p>
