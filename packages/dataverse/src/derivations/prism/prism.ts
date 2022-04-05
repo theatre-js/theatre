@@ -198,6 +198,14 @@ function ref<T>(key: string, initialValue: T): IRef<T> {
   }
 }
 
+/**
+ * An effect hook, similar to react's `useEffect()`.
+ *
+ * @param key: the key for the effect
+ * @param cb: the callback  function
+ * @param deps?: the dependency array
+ *
+ */
 function effect(key: string, cb: () => () => void, deps?: unknown[]): void {
   const scope = hookScopeStack.peek()
   if (!scope) {
