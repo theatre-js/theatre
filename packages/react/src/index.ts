@@ -38,7 +38,10 @@ function useForceUpdate(debugLabel?: string) {
 }
 
 /**
- * A React hook that executes the callback function and returns its return value whenever the values in the dependency array change.
+ * A React hook that executes the callback function and returns its return value
+ * whenever there's a change in the values of the dependency array, or in the
+ * derivations that are used within the callback function.
+ *
  *
  * @param fn - The callback function
  * @param deps - The dependency array
