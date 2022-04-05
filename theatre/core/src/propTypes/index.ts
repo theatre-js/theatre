@@ -63,7 +63,7 @@ const validateCommonOpts = (fnCallSignature: string, opts?: CommonOpts) => {
  *
  * // nesting
  * const foo = {bar: {baz: {quo: 0}}}
- * assert(sheet.object('some object', foo).bar.baz.quo === 0)
+ * assert(sheet.object('some object', foo).value.bar.baz.quo === 0)
  *
  * // With additional options:
  * const position = t.compound(
