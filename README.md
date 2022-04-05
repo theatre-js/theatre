@@ -56,7 +56,10 @@ You can use Theatre.js to:
 
 The docs are at [docs.theatrejs.com](https://docs.theatrejs.com):
 
-- [Getting started](https://docs.theatrejs.com/getting-started/)
+- [Getting started guide](https://docs.theatrejs.com/getting-started/)
+  - [Install Theatre.js](https://docs.theatrejs.com/getting-started/install/)
+  - [Quickly try Theatre.js out](https://docs.theatrejs.com/getting-started/try-it-out/)
+  - [Learn the basics](https://docs.theatrejs.com/getting-started/basics/)
 - [In depth guide](https://docs.theatrejs.com/in-depth/)
 - [API docs](https://docs.theatrejs.com/api/)
 - [Extensions](https://docs.theatrejs.com/extensions/)
