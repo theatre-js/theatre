@@ -227,15 +227,9 @@ console.log('new area: ', areaD.getValue())
 
 You can also use derivations inside of React components with the `usePrism()`
 hook from the `@theatre/react` package, which accepts a dependency array for the
-second argument. All the values that are tracked should be included in the
+second argument. If the prism uses a value that is not a derivation (such as a
+simple number, or a pointer), then you need to provide that value to the
 dependency array.
-
-> Note that all the changes of the derivations' values inside the callback
-> function (first argument of `usePrism()`) will be tracked, since `usePrism()`
-> uses the `prism()` function under the hood. However, if the derivations are
-> not provided in the dependency array of `usePrism()`, then it will not know if
-> the derivations themselves have changed. Don't worry if it sounds confusing,
-> we'll cover this behavior later.
 
 #### A simple example
 
