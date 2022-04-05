@@ -1,7 +1,7 @@
 import type {} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {
   PropTypeConfig,
-  PropTypeConfig_AllPrimitives,
+  PropTypeConfig_AllNonCompounds,
   PropTypeConfig_Compound,
 } from '@theatre/core/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
@@ -53,7 +53,7 @@ export type SequenceEditorTree_PrimitiveProp =
     sheetObject: SheetObject
     pathToProp: PathToProp
     trackId: SequenceTrackId
-    propConf: PropTypeConfig_AllPrimitives
+    propConf: PropTypeConfig_AllNonCompounds
   }
 
 export type SequenceEditorTree_AllRowTypes =
@@ -231,7 +231,7 @@ export const calculateSequenceEditorTree = (
     sheetObject: SheetObject,
     trackId: SequenceTrackId,
     pathToProp: PathToProp,
-    propConf: PropTypeConfig_AllPrimitives,
+    propConf: PropTypeConfig_AllNonCompounds,
     arrayOfChildren: Array<
       SequenceEditorTree_PrimitiveProp | SequenceEditorTree_PropWithChildren
     >,

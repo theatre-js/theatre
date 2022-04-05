@@ -259,7 +259,6 @@ export const number = (
     nudgeFn: opts?.nudgeFn ?? defaultNumberNudgeFn,
     nudgeMultiplier:
       typeof opts?.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
-    isScalar: true,
     sanitize: sanitize,
     interpolate: opts?.interpolate ?? _interpolateNumber,
     deserialize: (json: unknown): undefined | number => {
@@ -585,20 +584,27 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
 export type Sanitizer<T> = (value: unknown) => T | undefined
 export type Interpolator<T> = (left: T, right: T, progression: number) => T
 
-export interface IBasePropType<ValueType, PropTypes = ValueType> {
+export interface IBasePropType<
+  LiteralIdentifier extends string,
+  ValueType,
+  PropTypes = ValueType,
+  DeserializeType = ValueType,
+> {
+  type: LiteralIdentifier
   valueType: ValueType
   [propTypeSymbol]: 'TheatrePropType'
   label: string | undefined
-  isScalar?: true
   sanitize?: Sanitizer<PropTypes>
   interpolate?: Interpolator<PropTypes>
   default: ValueType
-  deserialize: (json: unknown) => $FixMe
+  deserialize: (json: unknown) => undefined | DeserializeType
 }
 
-export interface PropTypeConfig_Number extends IBasePropType<number> {
-  type: 'number'
-  default: number
+interface ISimplePropType<LiteralIdentifier extends string, ValueType>
+  extends IBasePropType<LiteralIdentifier, ValueType, ValueType, ValueType> {}
+
+export interface PropTypeConfig_Number
+  extends ISimplePropType<'number', number> {
   range?: [min: number, max: number]
   nudgeFn: NumberNudgeFn
   nudgeMultiplier: number
@@ -627,54 +633,53 @@ const defaultNumberNudgeFn: NumberNudgeFn = ({
   return deltaX * magnitude * config.nudgeMultiplier
 }
 
-export interface PropTypeConfig_Boolean extends IBasePropType<boolean> {
-  type: 'boolean'
-  default: boolean
-}
+export interface PropTypeConfig_Boolean
+  extends ISimplePropType<'boolean', boolean> {}
 
 interface CommonOpts {
   label?: string
 }
 
-export interface PropTypeConfig_String extends IBasePropType<string> {
-  type: 'string'
-  default: string
-}
+export interface PropTypeConfig_String
+  extends ISimplePropType<'string', string> {}
 
 export interface PropTypeConfig_StringLiteral<T extends string>
-  extends IBasePropType<T> {
-  type: 'stringLiteral'
-  default: T
+  extends ISimplePropType<'stringLiteral', T> {
   options: Record<T, string>
   as: 'menu' | 'switch'
 }
 
-export interface PropTypeConfig_Rgba extends IBasePropType<Rgba> {
-  type: 'rgba'
-  default: Rgba
+export interface PropTypeConfig_Rgba extends ISimplePropType<'rgba', Rgba> {}
+
+type DeepPartialCompound<Props extends IValidCompoundProps> = {
+  [K in keyof Props]?: DeepPartial<Props[K]>
 }
 
-/**
- *
- */
+type DeepPartial<Conf extends PropTypeConfig> =
+  Conf extends PropTypeConfig_AllNonCompounds
+    ? Conf['valueType']
+    : Conf extends PropTypeConfig_Compound<infer T>
+    ? DeepPartialCompound<T>
+    : never
+
 export interface PropTypeConfig_Compound<
   Props extends IValidCompoundProps,
   PropTypes = Props,
 > extends IBasePropType<
+    'compound',
     {[K in keyof Props]: Props[K]['valueType']},
-    PropTypes
+    PropTypes,
+    DeepPartialCompound<Props>
   > {
-  type: 'compound'
   props: Record<string, PropTypeConfig>
 }
 
-export interface PropTypeConfig_Enum extends IBasePropType<{}> {
-  type: 'enum'
+export interface PropTypeConfig_Enum extends IBasePropType<'enum', {}> {
   cases: Record<string, PropTypeConfig>
   defaultCase: string
 }
 
-export type PropTypeConfig_AllPrimitives =
+export type PropTypeConfig_AllNonCompounds =
   | PropTypeConfig_Number
   | PropTypeConfig_Boolean
   | PropTypeConfig_String
@@ -682,6 +687,6 @@ export type PropTypeConfig_AllPrimitives =
   | PropTypeConfig_Rgba
 
 export type PropTypeConfig =
-  | PropTypeConfig_AllPrimitives
+  | PropTypeConfig_AllNonCompounds
   | PropTypeConfig_Compound<$IntentionalAny>
   | PropTypeConfig_Enum
