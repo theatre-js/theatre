@@ -237,7 +237,7 @@ Here's a simple example: we have a Box that contains the width and height of a
 div (let's call it `panel`). Imagine that we want to have a button that changes
 the width of the `panel` to a random number when clicked.
 
-```typescriptreact
+```typescript
 import {Box} from '@theatre/dataverse'
 import {usePrism} from '@theatre/react'
 import React from 'react'
