@@ -1,32 +1,27 @@
 # Into the dataverse - Get started with `@theatre/dataverse`
 
-Dataverse is the reactive dataflow library
-[Theatre.js](https://www.theatrejs.com) is built on. It is inspired by ideas in
+This guide will help you to get started with `dataverse`, the reactive dataflow
+library that [Theatre.js](https://www.theatrejs.com) is built on. It is inspired
+by ideas in
 [functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming)
-and it is optimised for interactivity and animation. This guide will help you to
-get started with the library.
+and it is optimised for interactivity and animation.
 
 ## Main concepts
 
 A good analogy for `dataverse` would be a spreadsheet editor application. In a
 spreadsheet editor you have cells that store values, cells that store functions,
-that manipulate the values of other cells and the cells have identifiers (eg.
-A1, B3, etc..., pointers) that are used to reference them in functions. These
-are similiar to the set of tools that `dataverse` provides for manipulating
-data. Here's a quick comparison:
+that manipulate the values of other cells. The cells have identifiers (e.g.
+`A1`, `B3`, etc...) that are used to reference them in the functions. These are
+similar to the set of tools that `dataverse` provides for manipulating data.
+Here's a quick comparison:
 
-| `dataverse`             | Spreadsheet editor analogy          | role                                                                                            |
-| ----------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------- |
-| sources (`Box`, `Atom`) | a cell that holds a value           | `Box`: holds a simple value, `Atom`: holds an object with (sub)props to be tracked              |
-| derivations             | functions                           | changes recorded on the value of an `Box` or `Atom`                                             |
-| pointers                | addresses of the cells (`A1`, `B3`) | they point to a source, don't contain values themselves                                         |
-| tappables               | -                                   | objects that can be observed for changes to execute a callback function when the change happens |
+| `dataverse`             | Spreadsheet editor analogy          | role                                                                               |
+| ----------------------- | ----------------------------------- | ---------------------------------------------------------------------------------- |
+| sources (`Box`, `Atom`) | a cell that holds a value           | `Box`: holds a simple value, `Atom`: holds an object with (sub)props to be tracked |
+| derivations             | functions                           | changes recorded on the value of an `Box` or `Atom`                                |
+| pointers                | addresses of the cells (`A1`, `B3`) | they point to a (sub)prop of an `Atom`                                             |
 
-Some concepts in `dataverse` go beyond the spreadsheet analogy. For example we
-want to make the changes performant, so we make them on-demand and only show
-them when it's necessary (eg.: only show a change in an animated value when the
-screen gets repainted) which introduces new concepts like `Ticker`-s (we'll have
-a look at them later).
+Note that some concepts in `dataverse` go beyond the spreadsheet analogy.
 
 ## Practical Examples
 
@@ -40,7 +35,8 @@ configure your local environment before running the examples).
 2. [Observing values](#observing-values)
 3. [`map()`](#map)
 4. [`prism()`](#prism)
-5. [`Atom`](#atom)
+5. [`usePrism()` (from `@theatre/react`)](#useprism)
+6. [`Atom`](#atom)
 
 ### Setup
 
@@ -154,10 +150,10 @@ It is also possible to create a derivation based on an existing derivation:
 
 ```typescript
 const niceNumberB = new Box(5)
-const isNiceNumberOddD = niceNumberB.derivation.map((v) => v % 2 === 0)
+const isNiceNumberEvenD = niceNumberB.derivation.map((v) => v % 2 === 0)
 
 // the following line will print '5, false' to the console
-console.log(niceNumberB.get(), isNiceNumberOddD.getValue())
+console.log(niceNumberB.get(), isNiceNumberEvenD.getValue())
 ```
 
 The new derivation will be always up to date with the value of the original
@@ -167,17 +163,17 @@ derivation:
 import {Box} from '@theatre/dataverse'
 
 const niceNumberB = new Box(5)
-const isNiceNumberOddD = niceNumberB.derivation.map((v) =>
+const isNiceNumberEvenD = niceNumberB.derivation.map((v) =>
   v % 2 === 0 ? 'even' : 'odd',
 )
 
-const untap = isNiceNumberOddD.changesWithoutValues().tap(() => {})
+const untap = isNiceNumberEvenD.changesWithoutValues().tap(() => {})
 
 const interval1 = setInterval(untap, 5000)
 const interval2 = setInterval(() => {
   niceNumberB.set(niceNumberB.get() + 1)
   console.log(
-    `${niceNumberB.get()} is an ${isNiceNumberOddD.getValue()} number.`,
+    `${niceNumberB.get()} is an ${isNiceNumberEvenD.getValue()} number.`,
   )
 }, 1000)
 
@@ -195,7 +191,7 @@ setTimeout(() => {
 
 ### `prism()`
 
-At this point we can make derivations that can track the value of an other
+At this point we can make derivations that track the value of an other
 derivation with [the `.map()` method](#map), but what if we want to track the
 value of multiple derivations at once for the new derivation? This is where the
 `prism()` function comes into play.
@@ -230,12 +226,22 @@ console.log('new area: ', areaD.getValue())
 ### `usePrism()`
 
 You can also use derivations inside of React components with the `usePrism()`
-hook, which accepts a dependency array for the second argument. All the
-derivations whose values are tracked should be included in the dependency array.
+hook from the `@theatre/react` package, which accepts a dependency array for the
+second argument. All the values that are tracked should be included in the
+dependency array.
 
-An example for this would be having a Box that contains the width and height of
-a div (let's call it `panel`). Imagine that you want to have a button that
-changes the width of the `panel` to a random number when clicked.
+> Note that all the changes of the derivations' values inside the callback
+> function (first argument of `usePrism()`) will be tracked, since `usePrism()`
+> uses the `prism()` function under the hood. However, if the derivations are
+> not provided in the dependency array of `usePrism()`, then it will not know if
+> the derivations themselves have changed. Don't worry if it sounds confusing,
+> we'll cover this behavior later.
+
+#### A simple example
+
+Here's a simple example: we have a Box that contains the width and height of a
+div (let's call it `panel`). Imagine that we want to have a button that changes
+the width of the `panel` to a random number when clicked.
 
 ```typescriptreact
 import {Box} from '@theatre/dataverse'
@@ -245,13 +251,13 @@ import ReactDOM from 'react-dom'
 
 // Set the original width and height
 const panelB = new Box({
-  dims: {width: 100, height: 100},
+  dims: {width: 200, height: 100},
 })
 
 function changePanelWidth() {
   const oldValue = panelB.get()
-  // Change `width` to a random number between 1 and 100
-  panelB.set({dims: {...oldValue.dims, width: Math.floor(Math.random() * 100)}})
+  // Change `width` to a random number between 0 and 200
+  panelB.set({dims: {...oldValue.dims, width: Math.round(Math.random() * 200)}})
 }
 
 const Comp = () => {
@@ -261,9 +267,7 @@ const Comp = () => {
       <>
         <button
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
+            display: 'block',
             height: 25,
             width: 200,
           }}
@@ -273,9 +277,7 @@ const Comp = () => {
         </button>
         <div
           style={{
-            position: 'absolute',
-            left: 0,
-            top: 25,
+            display: 'block'
             width: dims.width,
             height: dims.height,
             backgroundColor: '#bd6888',
@@ -296,15 +298,125 @@ ReactDOM.render(
 )
 ```
 
+#### The dependency array
+
+If you remove `panelB` from the dependency array in the previous example you
+might see that there's no change in the functionality of the `Change the width`
+button. It surprisingly still works:
+
+```typescript
+// ...
+const Comp = () => {
+  const render = usePrism(() => {
+    // ...
+  }, []) // Here we removed `panelB` from the dependency array
+
+  return render
+}
+// ...
+```
+
+The reason behind this behavior is that even though the value of `panelB` - the
+`Box` instance - is cached, the cached `Box` instance's value is still tracked
+inside the callback function (which uses `prism()` under the hood, and handles
+every derivation inside as its dependency). However, if you change the value of
+the `panelB` variable to another `Box` instance, then that change won't be
+recognized inside the callback function if `panelB` is not included in the
+dependency array of `usePrism()`. Let's look at another example to make things a
+bit more clear:
+
+```typescript
+// ...
+
+// Set the original width and height
+const panelB = new Box({
+  dims: {width: 200, height: 100},
+})
+
+// Create two new `Box` instances
+const theme1B = new Box({backgroundColor: '#bd6888', opacity: 1})
+const theme2B = new Box({backgroundColor: '#5ac777', opacity: 1})
+
+function changePanelWidthAndThemeOpacity() {
+  const oldValue = panelB.get()
+  // Change `width` to a random number between 0 and 200
+  const width = Math.round(Math.random() * 200)
+  panelB.set({dims: {...oldValue.dims, width}})
+  // Change opacity in the themes:
+  const opacity = width > 100 ? width / 200 : width / 100
+  theme1B.set({...theme1B.get(), opacity})
+  theme2B.set({...theme2B.get(), opacity})
+}
+
+// DEPENDENCY ARRAYS DEMO
+const Comp = () => {
+  // Get the width of the panel
+  const {width} = panelB.derivation.getValue().dims
+  // If the width of the panel is greater than 100, then
+  // set the value of the `theme` variable to `theme1B`,
+  // otherwise use `theme2B`
+  const theme = width > 100 ? theme1B : theme2B
+
+  const render = usePrism(() => {
+    const {dims} = panelB.derivation.getValue()
+    const {backgroundColor, opacity} = theme.get()
+    return (
+      <>
+        <button
+          style={{
+            display: 'block',
+            height: 25,
+            width: 200,
+          }}
+          onClick={() => changePanelWidthAndThemeOpacity()}
+        >
+          Change the width
+        </button>
+        <div
+          style={{
+            display: 'block',
+            width: dims.width,
+            height: dims.height,
+            opacity,
+            backgroundColor,
+          }}
+        ></div>
+      </>
+    )
+    // Note that if the `theme` variable weren't included in the
+    // dependency array, then the background color of the div
+    // wouldn't be updated (the opacity still would).
+    // (Feel free to try  it out.)
+  }, [theme])
+
+  return render
+}
+
+// ...
+```
+
+If you omit the `theme` variable from the previous example, then the background
+color of the `div` element will not be updated when the value of the `theme`
+variable does, while the opacity would track the changes of the width. This
+happens, because in that case the callback function in `usePrism()` caches the
+value of `theme`, which is `theme1B` when `usePrims()` is called for the first
+time, and updates whenever `theme1B` changes. If you pass down `theme` as a
+dependency to `usePrism()`, then the callback function will always use new new
+value of `theme` (which is set to `theme2B` if the `div`'s width is smaller than
+or equal to `100`), whenever it changes.
+
 ### `Atom`
 
 Remember how we compared `Box`-es to cells in the spreadsheet-analogy? `Atom`-s
-are also like cells in the sense that they also hold a value (they only work
-with objects), but there's a huge difference in how their value gets updated.
+are also like cells in the sense that they also hold a value (although they only
+work with objects), but there's a huge difference in how their value gets
+updated.
+
+#### `Atom` vs `Box`
 
 `Box` uses strict equality for comparing new and old values, while `Atom` tracks
-the individual properties and subproperties of an object. The following example
-illustrates the difference between these two update mechanisms pretty well:
+the individual properties and nested properties of an object. The following
+example illustrates this difference between the two pretty well:
 
 ```typescript
 import {Atom, Box, val, valueDerivation} from '@theatre/dataverse'
@@ -372,6 +484,7 @@ const panelA = new Atom({width: 200, height: 100})
 
 // Create a derivation
 const panelFromAtomD = valueDerivation(panelA.pointer)
+
 // Print the value of the property that belongs to the pointer
 console.log(val(panelA.pointer)) // prints `{width: 200, height: 100}`
 console.log(val(panelA.pointer.width)) // prints `100`
@@ -380,9 +493,9 @@ console.log(val(panelA.pointer.height)) // prints `200`
 
 #### Updating the values of `Atoms`
 
-If you want to update the value of the `Atom`, you have to select first the
-property/subproperty that you want to update. Then you can use the names of its
-ancestor properties in an array to define the path to the property for the
+If you want to update the value of the `Atom`, you have first choose the
+property/nested property that you want to update. Then you can use the names of
+its ancestor properties in an array to define the path to the property for the
 `setIn()` method:
 
 ```typescript
@@ -391,3 +504,9 @@ const panelA = new Atom({dims: {width: 200, height: 100}})
 // Sets the value of panelA to `{dims: {width: 400, height: 100}}`
 panelA.setIn(['dims', 'width'], 400)
 ```
+
+## Summary
+
+We only covered the basics, there are much more to `Box`-es, `Atom`-s and
+everything else in `dataverse`. You can always check the source code for more
+information.
