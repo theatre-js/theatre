@@ -296,6 +296,14 @@ mousePositionD.changesWithoutValues().tap(() => {
 })
 ```
 
+#### Other methods of `prism`
+
+Prism has other methods (`prism.memo()`, `prism.scope()`, `prism.ref()`, etc)
+inspired by React hooks, but they aren't used that much in `@theatre/core` and
+`@theatre/studio`. You can check out the
+[tests](../src/derivations/prism/prism.test.ts) or the
+[source code](../src/derivations/prism/prism.ts) to get more familiar with them.
+
 ### `usePrism()`
 
 You can also use derivations inside of React components with the `usePrism()`
