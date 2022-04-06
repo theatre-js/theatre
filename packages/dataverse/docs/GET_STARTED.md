@@ -23,7 +23,7 @@ Here's a quick comparison:
 
 Note that some concepts in `dataverse` go beyond the spreadsheet analogy.
 
-## Practical Examples
+## Practical Introduction
 
 Here we collected a few examples that introduce the main concepts/tools in
 `dataverse` through practical examples. We strongly recommend running the
@@ -35,8 +35,14 @@ configure your local environment before running the examples).
 2. [Observing values](#observing-values)
 3. [`map()`](#map)
 4. [`prism()`](#prism)
+   - [A basic example](#a-basic-example)
+   - [`prism.state()` and `prism.effect()`](#prism.state-and-prism.effect)
+   - [Other methods of `prism()`](#other-methods-of-prism)
 5. [`usePrism()` (from `@theatre/react`)](#useprism)
 6. [`Atom`](#atom)
+   - [`Atom` vs `Box`](#atom-vs-box)
+   - [`Pointers`](#pointers)
+   - [Updating the values of an `Atom`](#updating-the-value-of-an-atom)
 
 ### Setup
 
@@ -568,9 +574,9 @@ console.log(val(panelA.pointer.width)) // prints `100`
 console.log(val(panelA.pointer.height)) // prints `200`
 ```
 
-#### Updating the values of `Atoms`
+#### Updating the of an `Atom`
 
-If you want to update the value of the `Atom`, you have first choose the
+If you want to update the value of an `Atom`, you have first choose the
 property/nested property that you want to update. Then you can use the names of
 its ancestor properties in an array to define the path to the property for the
 `setIn()` method:
