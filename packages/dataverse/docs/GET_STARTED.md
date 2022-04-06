@@ -590,6 +590,81 @@ const panelA = new Atom({dims: {width: 200, height: 100}})
 panelA.setIn(['dims', 'width'], 400)
 ```
 
+### `Ticker` and `studioTicker`
+
+The `Ticker` class helps us to schedule callbacks using a strategy. One such
+strategy could by synchronizing the execution of certain actions with the
+browser's repaint schedule to avoid changes that are invisible for the user and
+would only worsen the performance. This could be implemented using the
+`studioTicker` from the `@theatre/studio` package.
+
+Here's an example: we want to increase the value of a counter variable by 1 in
+every 10 ms and print the current value on every repaint for 1 s:
+
+```typescript
+import {Box} from '@theatre/dataverse'
+import studioTicker from '@theatre/studio/studioTicker'
+
+// Clear the console to make tracking the relevant logs easier
+console.clear()
+
+// Create a counter variable
+const counterB = new Box(0)
+// Create a variable to track the number of repaints
+let numberOfRepaints = 0
+
+// Increase the value of the counter variable by 1
+// in every 10 ms
+const interval = setInterval(() => {
+  counterB.set(counterB.get() + 1)
+  console.log(counterB.get())
+}, 10)
+
+// Increase the number of repaints by one every time
+// a repaint happens
+const untap = counterB.derivation
+  .changes(studioTicker)
+  .tap((newCounterValue) => {
+    ++numberOfRepaints
+    console.log(`VALUE ON REPAINT: ${newCounterValue}`)
+  })
+
+// Clean up everything after 1 s
+setTimeout(() => {
+  clearInterval(interval)
+  untap()
+  console.log('interval is cleared.')
+  console.log(`Number of times when the counter got updated: ${counterB.get()}`)
+  console.log(`Number of repaints: ${numberOfRepaints}`)
+}, 1000)
+```
+
+When I run the example above using a 60 Hz refresh rate monitor (or when the
+browser itself limits the repaints to 60 times per second), I see something like
+this in the console:
+
+```
+Number of times when the counter got updated: 98
+Number of repaints: 60
+```
+
+What happens is that the counter gets updated about `1000ms / 10ms = 100` times,
+but only 60 of these changes can be shown on screen due to the refresh rate of
+my monitor. The values of the counter when the repaints happen are also printed
+to the console:
+
+```
+...
+94
+VALUE ON REPAINT: 94
+95
+96
+VALUE ON REPAINT: 96
+97
+98
+...
+```
+
 ## Summary
 
 We only covered the basics, there are much more to `Box`-es, `Atom`-s and
