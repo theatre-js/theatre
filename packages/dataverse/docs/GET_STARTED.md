@@ -233,10 +233,13 @@ internal states and perform side effects using the `prism.state()` and
 The important thing to know about them is that:
 
 - `prism.state()` returns a state variable and a function that updates it.
-- `prism.state()` receives a callback function as an argument that gets executed
-  when the derivation is created (or the dependencies in the dependency array
-  change). The callback function may return a clean up function that runs when
-  the derivation gets updated or removed.
+- `prism.effect()` receives two arguments:
+  1. The first one is a key (a string), which should be unique to this effect
+     inside the prism
+  2. The second one is a callback function as an argument that gets executed
+     when the derivation is created (or the dependencies in the dependency array
+     change). The callback function may return a clean up function that runs
+     when the derivation gets updated or removed.
 
 Let's say you want to create a derivation that tracks the position of the mouse.
 This would require the derivation to do the following steps:
