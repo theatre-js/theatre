@@ -43,6 +43,7 @@ configure your local environment before running the examples).
    - [`Atom` vs `Box`](#atom-vs-box)
    - [`Pointers`](#pointers)
    - [Update the value of an `Atom`](#update-the-value-of-an-atom)
+7. [`Ticker`](#ticker-and-studioticker)
 
 ### Setup
 
