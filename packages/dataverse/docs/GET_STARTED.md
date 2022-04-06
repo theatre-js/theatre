@@ -112,7 +112,7 @@ A few notes about the example above:
 
 - `variableB.derivation.changesWithoutValues()` returns a tappable that we can
   tap into (observe).
-- The `tap()` method returns the `untap()` function which aborts th
+- The `tap()` method returns the `untap()` function which unsubscribes the observer function
 - As long as `variableB` is tapped (observed) `variableB.derivation.isHot` will
   bet set to `true` automatically
 
@@ -214,7 +214,7 @@ recalculate their value, the third cell will also do the same.
 Here's how we would solve this problem in `dataverse`:
 
 ```typescript
-import {Box, prism} from '@theatre/dataverse'
+import { Box, prism } from '@theatre/dataverse'
 
 const widthB = new Box(1)
 const heightB = new Box(2)
@@ -262,12 +262,12 @@ This would require the derivation to do the following steps:
 This is how this derivation would look like in code:
 
 ```typescript
-import {prism} from '@theatre/dataverse'
+import { prism } from '@theatre/dataverse'
 
 const mousePositionD = prism(() => {
   // Create an internal state (`pos`) where the position of the mouse
   // will be stored, and a function that updates it (`setPos`)
-  const [pos, setPos] = prism.state<[x: number, y: number]>('pos', [0, 0])
+  const [pos, setPos] = prism.state('pos', { x: 0, y: 0 })
 
   // Create a side effect that attaches the `mousemove` event listeners
   // to the `document`
@@ -293,14 +293,14 @@ const mousePositionD = prism(() => {
 
 // Display the current position of the mouse using a `h2` element
 const p = document.createElement('h2')
-const [x, y] = mousePositionD.getValue()
+const { x, y } = mousePositionD.getValue()
 p.textContent = `Position of the cursor: [${x}, ${y}]`
 document.querySelector('body')?.append(p)
 
 // Update the element's content when the position of the mouse
 // changes
 mousePositionD.changesWithoutValues().tap(() => {
-  const [x, y] = mousePositionD.getValue()
+  const { x, y } = mousePositionD.getValue()
   p.textContent = `Position of the cursor: [${x}, ${y}]`
 })
 ```
