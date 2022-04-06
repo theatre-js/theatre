@@ -561,6 +561,8 @@ const panelA = new Atom({width: 200, height: 100})
 const panelFromAtomD = valueDerivation(panelA.pointer)
 
 // Print the value of the property that belongs to the pointer
+// Note that `panelA.pointer` and `panelA.pointer.width` are both
+// pointers.
 console.log(val(panelA.pointer)) // prints `{width: 200, height: 100}`
 console.log(val(panelA.pointer.width)) // prints `100`
 console.log(val(panelA.pointer.height)) // prints `200`
