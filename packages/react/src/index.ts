@@ -37,6 +37,16 @@ function useForceUpdate(debugLabel?: string) {
   return update
 }
 
+/**
+ * A React hook that executes the callback function and returns its return value
+ * whenever there's a change in the values of the dependency array, or in the
+ * derivations that are used within the callback function.
+ *
+ *
+ * @param fn - The callback function
+ * @param deps - The dependency array
+ * @param debugLabel - The label used by the debugger
+ */
 export function usePrism<T>(
   fn: () => T,
   deps: unknown[],
@@ -151,15 +161,17 @@ function queueIfNeeded() {
 }
 
 /**
+ * A React hook that returns the value of the derivation that it received as the first argument. It works like an implementation of Dataverse's Ticker, except that it runs the side effects in an order where a component's derivation is guaranteed to run before any of its descendents' derivations.
+ *
+ * @param der - The derivation
+ * @param debugLabel - The label used by the debugger
+ *
  * @remarks
  * It looks like this new implementation of useDerivation() manages to:
  * 1. Not over-calculate the derivations
  * 2. Render derivation in ancestor -\> descendent order
  * 3. Not set off React's concurrent mode alarms
  *
- * It works like an implementation of Dataverse's Ticker, except that it runs
- * the side effects in an order where a component's derivation is guaranteed
- * to run before any of its descendents' derivations.
  *
  * I'm happy with how little bookkeeping we ended up doing here.
  */
