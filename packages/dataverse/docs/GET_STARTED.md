@@ -223,6 +223,76 @@ widthB.set(10)
 console.log('new area: ', areaD.getValue())
 ```
 
+#### `prism.state()` and `prism.effect()`
+
+Prisms don't always follow the rules of functional programming: they can have
+internal states and perform side effects using the `prism.state()` and
+`prism.effect()` methods. Their concept and API is very similar to React's
+`useState()` and `useEffect()` hooks.
+
+The important thing to know about them is that:
+
+- `prism.state()` returns a state variable and a function that updates it.
+- `prism.state()` receives a callback function as an argument that gets executed
+  when the derivation is created (or the dependencies in the dependency array
+  change). The callback function may return a clean up function that runs when
+  the derivation gets updated or removed.
+
+Let's say you want to create a derivation that tracks the position of the mouse.
+This would require the derivation to do the following steps:
+
+1. Create an internal state where the position of the mouse is stored
+2. Attach an event listener that listens to `mousemove` events to the `document`
+3. Update the internal state of the position whenever the `mousemove` event is
+   fired
+4. Remove the event listener once the derivation is gone (clean up)
+
+This is how this derivation would look like in code:
+
+```typescript
+import {prism} from '@theatre/dataverse'
+
+const mousePositionD = prism(() => {
+  // Create an internal state (`pos`) where the position of the mouse
+  // will be stored, and a function that updates it (`setPos`)
+  const [pos, setPos] = prism.state<[x: number, y: number]>('pos', [0, 0])
+
+  // Create a side effect that attaches the `mousemove` event listeners
+  // to the `document`
+  prism.effect(
+    'setupListeners',
+    () => {
+      const handleMouseMove = (e: MouseEvent) => {
+        setPos([e.screenX, e.screenY])
+      }
+      document.addEventListener('mousemove', handleMouseMove)
+
+      // Clean up after the derivation is gone (remove the event
+      // listener)
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove)
+      }
+    },
+    [],
+  )
+
+  return pos
+})
+
+// Display the current position of the mouse using a `h2` element
+const p = document.createElement('h2')
+const [x, y] = mousePositionD.getValue()
+p.textContent = `Position of the cursor: [${x}, ${y}]`
+document.querySelector('body')?.append(p)
+
+// Update the element's content when the position of the mouse
+// changes
+mousePositionD.changesWithoutValues().tap(() => {
+  const [x, y] = mousePositionD.getValue()
+  p.textContent = `Position of the cursor: [${x}, ${y}]`
+})
+```
+
 ### `usePrism()`
 
 You can also use derivations inside of React components with the `usePrism()`
