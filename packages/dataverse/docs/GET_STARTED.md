@@ -36,7 +36,7 @@ configure your local environment before running the examples).
 3. [`map()`](#map)
 4. [`prism()`](#prism)
    - [A basic example](#a-basic-example)
-   - [`prism.state()` and `prism.effect()`](#prism.state-and-prism.effect)
+   - [`prism.state()` and `prism.effect()`](#prismstate-and-prismeffect)
    - [Other methods of `prism()`](#other-methods-of-prism)
 5. [`usePrism()` (from `@theatre/react`)](#useprism)
 6. [`Atom`](#atom)
@@ -201,6 +201,8 @@ At this point we can make derivations that track the value of an other
 derivation with [the `.map()` method](#map), but what if we want to track the
 value of multiple derivations at once for the new derivation? This is where the
 `prism()` function comes into play.
+
+#### A basic example
 
 Let's say that we have two derivations and we want to create a derivation that
 returns the product of their values. In the spreadsheet analogy it would be like
@@ -574,7 +576,7 @@ console.log(val(panelA.pointer.width)) // prints `100`
 console.log(val(panelA.pointer.height)) // prints `200`
 ```
 
-#### Updating the of an `Atom`
+#### Updating the values of an `Atom`
 
 If you want to update the value of an `Atom`, you have first choose the
 property/nested property that you want to update. Then you can use the names of
