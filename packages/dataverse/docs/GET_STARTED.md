@@ -30,9 +30,9 @@ Here we collected a few examples that introduce the main concepts/tools in
 examples on your local machine (see the [Setup](#setup) section to see how to
 configure your local environment before running the examples).
 
-0. [Setup: How to configure your local environment before running the examples](#setup)
-1. [`Box`](#box-storing-simple-values)
-2. [Observing values](#observing-values)
+0. [Setup your local environment for running the examples](#setup)
+1. [`Box`](#box-store-simple-values)
+2. [Observe values](#observe-values)
 3. [`map()`](#map)
 4. [`prism()`](#prism)
    - [A basic example](#a-basic-example)
@@ -42,7 +42,7 @@ configure your local environment before running the examples).
 6. [`Atom`](#atom)
    - [`Atom` vs `Box`](#atom-vs-box)
    - [`Pointers`](#pointers)
-   - [Updating the values of an `Atom`](#updating-the-value-of-an-atom)
+   - [Update the value of an `Atom`](#update-the-value-of-an-atom)
 
 ### Setup
 
@@ -52,7 +52,7 @@ a new directory and file called `dataverse/index.tsx` in
 `theatre/packages/playground/src/personal/` (this directory is already added to
 `.gitignore`, so you don't have to worry about that).
 
-### `Box`: storing simple values
+### `Box`: store simple values
 
 Let's start with creating a variable that holds a simple value, which we can
 change and observe later:
@@ -76,7 +76,7 @@ variableB.set('some new value')
 console.log(variableB.get()) // prints 'some new value' in the console
 ```
 
-### Observing values
+### Observe values
 
 Let's say you want to watch the value of `variableB` for changes and execute a
 callback when it does change.
@@ -576,7 +576,7 @@ console.log(val(panelA.pointer.width)) // prints `100`
 console.log(val(panelA.pointer.height)) // prints `200`
 ```
 
-#### Updating the values of an `Atom`
+#### Update the value of an `Atom`
 
 If you want to update the value of an `Atom`, you have first choose the
 property/nested property that you want to update. Then you can use the names of
