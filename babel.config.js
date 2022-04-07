@@ -4,6 +4,7 @@ module.exports = function (api) {
   const config = {
     presets: [['@babel/preset-react'], ['@babel/preset-typescript']],
     babelrcRoots: ['.', './packages/*', './theatre/*', './examples/*'],
+    plugins: [],
   }
   if (env === 'test') {
     config.presets.unshift(['@babel/preset-env', {targets: {node: 'current'}}])
