@@ -1,0 +1,28 @@
+{
+  "name": "@build_tests/parcel",
+  "version": "1.0.0",
+  "private": true,
+  "installConfig": {
+    "hoistingLimits": "dependencies"
+  },
+  "description": "Theatre.js project using parcel",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "@theatre/core": "workspace:*",
+    "parcel-bundler": "^1.6.1",
+    "three": "0.132.2"
+  },
+  "devDependencies": {
+    "@babel/core": "7.2.0",
+    "@theatre/studio": "workspace:*",
+    "typescript": "^4.4.3"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  },
+  "keywords": []
+}
