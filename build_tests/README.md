@@ -1,10 +1,10 @@
 # Build tests
 
 Inspired by the
-[#help(https://discord.com/channels/870988717190426644/870988717190426647)
-channel on our Discord] we collect examples for including `Theatre.js` in
-project that use different tools (`parcel`, `Next.js`, `vanilla Rollup`,
-etc...). These example projects are tested in the CI.
+[#help channel on our Discord](https://discord.com/channels/870988717190426644/870988717190426647)
+we collect examples for including `Theatre.js` in project that use different
+tools (`parcel`, `Next.js`, `vanilla Rollup`, etc...). These example projects
+are tested in the CI.
 
 ## The currently tested setups
 
