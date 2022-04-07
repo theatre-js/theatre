@@ -46,6 +46,11 @@ jobs:
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       # TODO: Run the build tests automatically
+      - name: Setup for the test builds
+        run: |
+          yarn build:ts
+          yarn workspace theatre build
+          yarn workspace @theatre/dataverse build
       - name: Test build with parcel v1
         run: yarn workspace @build_tests/parcel build
       - name: Test build with parcel v2
