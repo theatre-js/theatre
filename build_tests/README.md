@@ -38,7 +38,7 @@ etc...). These example projects are tested in the CI.
     "name": "@build_tests/your-new-setup",
     "installConfig": {
       "hoistingLimits": "dependencies"
-      },
+    },
     "dependencies": {
       ...
     },
