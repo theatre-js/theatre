@@ -45,3 +45,8 @@ jobs:
           custom-command: 'yarn test:e2e:ci'
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      # TODO: Run the build tests automatically
+      - name: Test build with parcel v1
+        run: yarn workspace @build_tests/parcel build
+      - name: Test build with parcel v2
+        run: yarn workspace @build_tests/parcel_v2 build
