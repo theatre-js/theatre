@@ -3,6 +3,7 @@
 /packages/*/dist
 /theatre/*/dist
 /examples/*/dist
+/build_tests/*/dist
 *.log
 *.temp
 /.vscode
