@@ -19,3 +19,7 @@
 !.yarn/sdks
 !.yarn/versions
 
+# parcel v1
+.cache/
+# parcel v2
+.parcel-cache/*
