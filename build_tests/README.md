@@ -6,6 +6,12 @@ channel on our Discord] we collect examples for including `Theatre.js` in
 project that use different tools (`parcel`, `Next.js`, `vanilla Rollup`,
 etc...). These example projects are tested in the CI.
 
+## The currently tested setups
+
+| project             | tools                      | `package.json`              |
+| ------------------- | -------------------------- | --------------------------- |
+| @build_tests/parcel | `parcel 1.x`, `typescript` | [link](parcel/package.json) |
+
 ## How to include a new setup
 
 1.  Create a new directory in `theatre/build_tests/` with the new setup
