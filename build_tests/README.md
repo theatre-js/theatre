@@ -8,9 +8,10 @@ are tested in the CI.
 
 ## The currently tested setups
 
-| project             | tools                      | `package.json`              |
-| ------------------- | -------------------------- | --------------------------- |
-| @build_tests/parcel | `parcel 1.x`, `typescript` | [link](parcel/package.json) |
+| project                | tools                      | `package.json`                 |
+| ---------------------- | -------------------------- | ------------------------------ |
+| @build_tests/parcel    | `parcel 1.x`, `typescript` | [link](parcel/package.json)    |
+| @build_tests/parcel_v2 | `parcel 2.x`               | [link](parcel_v2/package.json) |
 
 ## How to include a new setup
 
