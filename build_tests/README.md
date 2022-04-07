@@ -13,7 +13,25 @@ are tested in the CI.
 | @build_tests/parcel    | `parcel 1.x`, `typescript` | [link](parcel/package.json)    |
 | @build_tests/parcel_v2 | `parcel 2.x`               | [link](parcel_v2/package.json) |
 
-## How to include a new setup
+## Testing the configurations locally
+
+1. **Setup**
+
+Run the following commands:
+
+```sh
+yarn build:ts
+yarn workspace theatre build
+yarn workspace @theatre/dataverse build
+```
+
+2. **Build the project** (`@build_tests/parcel_v2` in this case)
+
+```sh
+yarn workspace @build_tests/parcel_v2 build
+```
+
+## Adding a new setup
 
 1.  Create a new directory in `theatre/build_tests/` with the new setup
 2.  Add `@theatre/core` and `@theatre/studio` as dependencies to the
