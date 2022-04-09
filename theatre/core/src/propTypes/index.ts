@@ -86,15 +86,13 @@ export const compound = <Props extends IShorthandCompoundProps>(
     label?: string
   },
 ): PropTypeConfig_Compound<
-  ShorthandCompoundPropsToLonghandCompoundProps<Props>,
-  Props
+  ShorthandCompoundPropsToLonghandCompoundProps<Props>
 > => {
   validateCommonOpts('t.compound(props, opts)', opts)
   const sanitizedProps = sanitizeCompoundProps(props)
   const deserializationCache = new WeakMap<{}, unknown>()
   const config: PropTypeConfig_Compound<
-    ShorthandCompoundPropsToLonghandCompoundProps<Props>,
-    Props
+    ShorthandCompoundPropsToLonghandCompoundProps<Props>
   > = {
     type: 'compound',
     props: sanitizedProps,
@@ -132,8 +130,6 @@ export const compound = <Props extends IShorthandCompoundProps>(
   }
   return config
 }
-
-const deserializationCache = new WeakMap<{}, unknown>()
 
 /**
  * A number prop type.
@@ -183,8 +179,6 @@ export const number = (
     range?: PropTypeConfig_Number['range']
     nudgeMultiplier?: number
     label?: string
-    sanitize?: Sanitizer<number>
-    interpolate?: Interpolator<number>
   },
 ): PropTypeConfig_Number => {
   if (process.env.NODE_ENV !== 'production') {
@@ -246,14 +240,6 @@ export const number = (
       }
     }
   }
-  const sanitize = !opts?.sanitize
-    ? _sanitizeNumber
-    : (val: unknown): number | undefined => {
-        const n = _sanitizeNumber(val)
-        if (typeof n === 'number') {
-          return opts.sanitize!(n)
-        }
-      }
 
   return {
     type: 'number',
@@ -265,20 +251,20 @@ export const number = (
     nudgeFn: opts?.nudgeFn ?? defaultNumberNudgeFn,
     nudgeMultiplier:
       typeof opts?.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
-    sanitize: sanitize,
-    interpolate: opts?.interpolate ?? _interpolateNumber,
-    deserialize: (json: unknown): undefined | number => {
-      if (!(typeof json === 'number' && isFinite(json))) return undefined
-      if (opts?.range) {
-        return clamp(json, opts.range[0], opts.range[1])
-      } else {
-        return json
-      }
-    },
+    interpolate: _interpolateNumber,
+    deserialize: numberDeserializer(opts?.range),
   }
 }
 
-const _sanitizeNumber = (value: unknown): undefined | number =>
+const numberDeserializer = (range?: PropTypeConfig_Number['range']) =>
+  range
+    ? (json: unknown): undefined | number => {
+        if (!(typeof json === 'number' && isFinite(json))) return undefined
+        return clamp(json, range[0], range[1])
+      }
+    : _ensureNumber
+
+const _ensureNumber = (value: unknown): undefined | number =>
   typeof value === 'number' && isFinite(value) ? value : undefined
 
 const _interpolateNumber = (
@@ -335,23 +321,8 @@ export const rgba = (
     default: decorateRgba(sanitized as Rgba),
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
-    sanitize: _sanitizeRgba,
     interpolate: _interpolateRgba,
-    deserialize(json: unknown): undefined | Rgba {
-      if (typeof json !== 'object' || !json) return undefined
-      let valid = true
-      for (const p of ['r', 'g', 'b', 'a']) {
-        if (
-          !Object.prototype.hasOwnProperty.call(defaultValue, p) ||
-          typeof (defaultValue as $IntentionalAny)[p] !== 'number'
-        ) {
-          valid = false
-        }
-      }
-      if (!valid) return undefined
-      const validJson = json as Rgba
-      return {r: validJson.r, g: validJson.g, b: validJson.b, a: validJson.a}
-    },
+    deserialize: _sanitizeRgba,
   }
 }
 
@@ -366,6 +337,8 @@ const _sanitizeRgba = (val: unknown): Rgba | undefined => {
     }
   }
 
+  if (!valid) return undefined
+
   // Clamp defaultValue components between 0 and 1
   const sanitized = {}
   for (const c of ['r', 'g', 'b', 'a']) {
@@ -375,7 +348,7 @@ const _sanitizeRgba = (val: unknown): Rgba | undefined => {
     )
   }
 
-  return valid ? decorateRgba(sanitized as Rgba) : undefined
+  return decorateRgba(sanitized as Rgba)
 }
 
 const _interpolateRgba = (
@@ -422,7 +395,6 @@ export const boolean = (
   defaultValue: boolean,
   opts?: {
     label?: string
-    sanitize?: Sanitizer<boolean>
     interpolate?: Interpolator<boolean>
   },
 ): PropTypeConfig_Boolean => {
@@ -443,19 +415,12 @@ export const boolean = (
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
-    sanitize: _sanitizeBoolean,
-    interpolate: leftInterpolate,
-    deserialize: (json: unknown): boolean | undefined => {
-      if (typeof json === 'boolean') {
-        return json
-      } else {
-        return undefined
-      }
-    },
+    interpolate: opts?.interpolate ?? leftInterpolate,
+    deserialize: _ensureBoolean,
   }
 }
 
-const _sanitizeBoolean = (val: unknown): boolean | undefined => {
+const _ensureBoolean = (val: unknown): boolean | undefined => {
   return typeof val === 'boolean' ? val : undefined
 }
 
@@ -488,7 +453,6 @@ export const string = (
   defaultValue: string,
   opts?: {
     label?: string
-    sanitize?: Sanitizer<string>
     interpolate?: Interpolator<string>
   },
 ): PropTypeConfig_String => {
@@ -508,19 +472,13 @@ export const string = (
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts?.label,
-    sanitize(value: unknown) {
-      if (opts?.sanitize) return opts.sanitize(value)
-      return typeof value === 'string' ? value : undefined
-    },
     interpolate: opts?.interpolate ?? leftInterpolate,
-    deserialize: (json: unknown): string | undefined => {
-      if (typeof json !== 'string') {
-        return undefined
-      } else {
-        return json
-      }
-    },
+    deserialize: _ensureString,
   }
+}
+
+function _ensureString(s: unknown): string | undefined {
+  return typeof s === 'string' ? s : undefined
 }
 
 /**
@@ -557,7 +515,11 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
   /**
    * opts.as Determines if editor is shown as a menu or a switch. Either 'menu' or 'switch'.  Default: 'menu'
    */
-  opts?: {as?: 'menu' | 'switch'; label?: string},
+  opts?: {
+    as?: 'menu' | 'switch'
+    label?: string
+    interpolate?: Interpolator<Extract<keyof Opts, string>>
+  },
 ): PropTypeConfig_StringLiteral<Extract<keyof Opts, string>> {
   return {
     type: 'stringLiteral',
@@ -567,15 +529,7 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     valueType: null as $IntentionalAny,
     as: opts?.as ?? 'menu',
     label: opts?.label,
-    sanitize(value: unknown) {
-      if (typeof value !== 'string') return undefined
-      if (Object.prototype.hasOwnProperty.call(options, value)) {
-        return value as $IntentionalAny
-      } else {
-        return undefined
-      }
-    },
-    interpolate: leftInterpolate,
+    interpolate: opts?.interpolate ?? leftInterpolate,
     deserialize(json: unknown): undefined | Extract<keyof Opts, string> {
       if (typeof json !== 'string') return undefined
       if (Object.prototype.hasOwnProperty.call(options, json)) {
@@ -593,21 +547,20 @@ export type Interpolator<T> = (left: T, right: T, progression: number) => T
 export interface IBasePropType<
   LiteralIdentifier extends string,
   ValueType,
-  PropTypes = ValueType,
   DeserializeType = ValueType,
 > {
   type: LiteralIdentifier
   valueType: ValueType
   [propTypeSymbol]: 'TheatrePropType'
   label: string | undefined
-  sanitize?: Sanitizer<PropTypes>
-  interpolate?: Interpolator<PropTypes>
   default: ValueType
   deserialize: (json: unknown) => undefined | DeserializeType
 }
 
 interface ISimplePropType<LiteralIdentifier extends string, ValueType>
-  extends IBasePropType<LiteralIdentifier, ValueType, ValueType, ValueType> {}
+  extends IBasePropType<LiteralIdentifier, ValueType, ValueType> {
+  interpolate: Interpolator<ValueType>
+}
 
 export interface PropTypeConfig_Number
   extends ISimplePropType<'number', number> {
@@ -668,13 +621,10 @@ type DeepPartial<Conf extends PropTypeConfig> =
     ? DeepPartialCompound<T>
     : never
 
-export interface PropTypeConfig_Compound<
-  Props extends IValidCompoundProps,
-  PropTypes = Props,
-> extends IBasePropType<
+export interface PropTypeConfig_Compound<Props extends IValidCompoundProps>
+  extends IBasePropType<
     'compound',
     {[K in keyof Props]: Props[K]['valueType']},
-    PropTypes,
     DeepPartialCompound<Props>
   > {
   props: Record<string, PropTypeConfig>

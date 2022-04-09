@@ -180,11 +180,11 @@ describe(`SheetObject`, () => {
         test(`should allow setting an override`, async () => {
           const {teardown, objValues, studio, objPublicAPI} = await setup()
           studio.transaction(({set}) => {
-            set(objPublicAPI.props.color, {r: 1, g: 2, b: 3, a: 0.5})
+            set(objPublicAPI.props.color, {r: 0.1, g: 0.2, b: 0.3, a: 0.5})
           })
 
           expect(objValues.next().value).toMatchObject({
-            color: {r: 1, g: 2, b: 3, a: 0.5},
+            color: {r: 0.1, g: 0.2, b: 0.3, a: 0.5},
           })
 
           teardown()
@@ -212,7 +212,7 @@ describe(`SheetObject`, () => {
         test(`should allow unsetting an override`, async () => {
           const {teardown, objValues, studio, objPublicAPI} = await setup()
           studio.transaction(({set}) => {
-            set(objPublicAPI.props.color, {r: 1, g: 2, b: 3, a: 0.5})
+            set(objPublicAPI.props.color, {r: 0.1, g: 0.2, b: 0.3, a: 0.5})
           })
 
           studio.transaction(({unset}) => {
@@ -229,7 +229,7 @@ describe(`SheetObject`, () => {
         test(`should disallow unsetting an override on sub-props`, async () => {
           const {teardown, objValues, studio, objPublicAPI} = await setup()
           studio.transaction(({set}) => {
-            set(objPublicAPI.props.color, {r: 1, g: 2, b: 3, a: 0.5})
+            set(objPublicAPI.props.color, {r: 0.1, g: 0.2, b: 0.3, a: 0.5})
           })
 
           // TODO: also disallow in types
@@ -240,7 +240,7 @@ describe(`SheetObject`, () => {
           }).toThrow()
 
           expect(objValues.next().value).toMatchObject({
-            color: {r: 1, g: 2, b: 3, a: 0.5},
+            color: {r: 0.1, g: 0.2, b: 0.3, a: 0.5},
           })
 
           teardown()
