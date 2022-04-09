@@ -22,7 +22,7 @@ import type {
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
-import type {Interpolator} from '@theatre/core/propTypes'
+import type {Interpolator, PropTypeConfig} from '@theatre/core/propTypes'
 import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 
 export default class SheetObject implements IdentityDerivationProvider {
@@ -150,7 +150,7 @@ export default class SheetObject implements IdentityDerivationProvider {
             const propConfig = getPropConfigByPath(
               this.template.config,
               pathToProp,
-            )!
+            )! as Extract<PropTypeConfig, {interpolate: $IntentionalAny}>
 
             const deserialize = propConfig.deserialize
             const interpolate =
