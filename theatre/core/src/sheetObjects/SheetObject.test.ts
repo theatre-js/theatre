@@ -29,6 +29,7 @@ describe(`SheetObject`, () => {
     describe(`conformance`, () => {
       test(`invalid static overrides should get ignored`, async () => {
         const {teardown, objValues} = await setup({
+          nonExistentProp: 1,
           position: {
             // valid
             x: 10,
@@ -44,7 +45,8 @@ describe(`SheetObject`, () => {
             },
           },
         })
-        expect(objValues.next().value).toMatchObject({
+        const {value} = objValues.next()
+        expect(value).toMatchObject({
           position: {x: 10, y: 0, z: 0},
           color: {r: 0, g: 0, b: 0, a: 1},
           deeply: {
@@ -53,6 +55,7 @@ describe(`SheetObject`, () => {
             },
           },
         })
+        expect(value).not.toHaveProperty('nonExistentProp')
         teardown()
       })
     })
