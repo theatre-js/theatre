@@ -80,13 +80,11 @@ export default function createTransactionPrivateApi(
         const propConfig = getPropConfigByPath(root.template.config, path)
 
         if (!propConfig) {
-          // TODO: should we just throw here?
-          console.error(
+          throw new Error(
             `Object ${
               root.address.objectKey
             } does not have a prop at ${JSON.stringify(path)}`,
           )
-          return
         }
 
         // if (isPropConfigComposite(propConfig)) {

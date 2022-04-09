@@ -93,6 +93,89 @@ describe(`SheetObject`, () => {
 
       teardown()
     })
+
+    describe(`simple props as json objects`, () => {
+      test(`with no overrides`, async () => {
+        const {teardown, objValues, studio, objPublicAPI} = await setup()
+
+        expect(objValues.next().value).toMatchObject({
+          color: {r: 0, g: 0, b: 0, a: 1},
+        })
+
+        teardown()
+      })
+
+      describe(`setting overrides`, () => {
+        test(`should allow setting an override`, async () => {
+          const {teardown, objValues, studio, objPublicAPI} = await setup()
+          studio.transaction(({set}) => {
+            set(objPublicAPI.props.color, {r: 1, g: 2, b: 3, a: 0.5})
+          })
+
+          expect(objValues.next().value).toMatchObject({
+            color: {r: 1, g: 2, b: 3, a: 0.5},
+          })
+
+          teardown()
+        })
+
+        test(`should disallow setting an override on json sub-props`, async () => {
+          const {teardown, objValues, studio, objPublicAPI} = await setup()
+
+          // TODO also disallow in typescript
+          expect(() => {
+            studio.transaction(({set}) => {
+              set(objPublicAPI.props.color.r, 1)
+            })
+          }).toThrow()
+
+          expect(objValues.next().value).toMatchObject({
+            color: {r: 0, g: 0, b: 0, a: 1},
+          })
+
+          teardown()
+        })
+      })
+
+      describe(`unsetting overrides`, () => {
+        test(`should allow unsetting an override`, async () => {
+          const {teardown, objValues, studio, objPublicAPI} = await setup()
+          studio.transaction(({set}) => {
+            set(objPublicAPI.props.color, {r: 1, g: 2, b: 3, a: 0.5})
+          })
+
+          studio.transaction(({unset}) => {
+            unset(objPublicAPI.props.color)
+          })
+
+          expect(objValues.next().value).toMatchObject({
+            color: {r: 0, g: 0, b: 0, a: 1},
+          })
+
+          teardown()
+        })
+
+        test(`should disallow unsetting an override on sub-props`, async () => {
+          const {teardown, objValues, studio, objPublicAPI} = await setup()
+          studio.transaction(({set}) => {
+            set(objPublicAPI.props.color, {r: 1, g: 2, b: 3, a: 0.5})
+          })
+
+          // TODO: also disallow in types
+          expect(() => {
+            studio.transaction(({unset}) => {
+              unset(objPublicAPI.props.color.r)
+            })
+          }).toThrow()
+
+          expect(objValues.next().value).toMatchObject({
+            color: {r: 1, g: 2, b: 3, a: 0.5},
+          })
+
+          teardown()
+        })
+      })
+    })
   })
 
   describe(`sequenced overrides`, () => {
