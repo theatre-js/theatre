@@ -135,14 +135,21 @@ export default function createTransactionPrivateApi(
         }
 
         if (propConfig.type === 'compound') {
+          const pathToTopPointer = getPointerParts(
+            pointer as $IntentionalAny,
+          ).path
+
+          const lengthOfTopPointer = pathToTopPointer.length
           // If we are dealing with a compound prop, we recurse through its
           // nested properties.
           forEachDeepSimplePropOfCompoundProp(
             propConfig,
-
-            getPointerParts(pointer as Pointer<$IntentionalAny>).path,
+            pathToTopPointer,
             (primitivePropConfig, pathToProp) => {
-              const v = getDeep(_value, pathToProp)
+              const pathToPropInProvidedValue =
+                pathToProp.slice(lengthOfTopPointer)
+
+              const v = getDeep(_value, pathToPropInProvidedValue)
               if (typeof v !== 'undefined') {
                 setStaticOrKeyframeProp(v, primitivePropConfig, pathToProp)
               }

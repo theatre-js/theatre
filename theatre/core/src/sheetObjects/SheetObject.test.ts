@@ -7,48 +7,92 @@ import {asKeyframeId, asSequenceTrackId} from '@theatre/shared/utils/ids'
 import {iterateOver, prism} from '@theatre/dataverse'
 
 describe(`SheetObject`, () => {
-  test('it should support setting/unsetting static props', async () => {
-    const {studio, objPublicAPI} = await setupTestSheet({
-      staticOverrides: {
-        byObject: {
-          obj: {
-            position: {
-              x: 10,
+  describe('static overrides', () => {
+    const setup = async () => {
+      const {studio, objPublicAPI} = await setupTestSheet({
+        staticOverrides: {
+          byObject: {
+            obj: {
+              position: {
+                x: 10,
+              },
             },
           },
         },
-      },
+      })
+
+      const objValues = iterateOver(prism(() => objPublicAPI.value))
+      const teardown = () => objValues.return()
+
+      return {studio, objPublicAPI, objValues, teardown}
+    }
+    test(`should be a deep merge of default values and static overrides`, async () => {
+      const {teardown, objValues} = await setup()
+      expect(objValues.next().value).toMatchObject({
+        position: {x: 10, y: 0, z: 0},
+      })
+      teardown()
     })
 
-    const objValues = iterateOver(
-      prism(() => {
-        return objPublicAPI.value
-      }),
-    )
+    test(`should allow introducing a static override to a simple prop`, async () => {
+      const {teardown, objValues, studio, objPublicAPI} = await setup()
+      studio.transaction(({set}) => {
+        set(objPublicAPI.props.position.y, 5)
+      })
 
-    expect(objValues.next().value).toMatchObject({
-      position: {x: 10, y: 1, z: 2},
+      expect(objValues.next().value).toMatchObject({
+        position: {x: 10, y: 5, z: 0},
+      })
+
+      teardown()
     })
 
-    // setting a static
-    studio.transaction(({set}) => {
-      set(objPublicAPI.props.position.y, 5)
+    test(`should allow introducing a static override to a compound prop`, async () => {
+      const {teardown, objValues, studio, objPublicAPI} = await setup()
+      studio.transaction(({set}) => {
+        set(objPublicAPI.props.position, {x: 1, y: 2, z: 3})
+      })
+
+      expect(objValues.next().value).toMatchObject({
+        position: {x: 1, y: 2, z: 3},
+      })
+
+      teardown()
     })
 
-    expect(objValues.next().value).toMatchObject({
-      position: {x: 10, y: 5, z: 2},
+    test(`should allow removing a static override to a simple prop`, async () => {
+      const {teardown, objValues, studio, objPublicAPI} = await setup()
+      studio.transaction(({set}) => {
+        set(objPublicAPI.props.position, {x: 1, y: 2, z: 3})
+      })
+
+      studio.transaction(({unset}) => {
+        unset(objPublicAPI.props.position.z)
+      })
+
+      expect(objValues.next().value).toMatchObject({
+        position: {x: 1, y: 2, z: 0},
+      })
+
+      teardown()
     })
 
-    // unsetting a static
-    studio.transaction(({unset}) => {
-      unset(objPublicAPI.props.position.y)
-    })
+    test(`should allow removing a static override to a compound prop`, async () => {
+      const {teardown, objValues, studio, objPublicAPI} = await setup()
+      studio.transaction(({set}) => {
+        set(objPublicAPI.props.position, {x: 1, y: 2, z: 3})
+      })
 
-    expect(objValues.next().value).toMatchObject({
-      position: {x: 10, y: 1, z: 2},
-    })
+      studio.transaction(({unset}) => {
+        unset(objPublicAPI.props.position)
+      })
 
-    objValues.return()
+      expect(objValues.next().value).toMatchObject({
+        position: {x: 0, y: 0, z: 0},
+      })
+
+      teardown()
+    })
   })
 
   test('it should support sequenced props', async () => {
@@ -98,28 +142,28 @@ describe(`SheetObject`, () => {
     expect(seq.position).toEqual(0)
 
     expect(objValues.next().value).toMatchObject({
-      position: {x: 0, y: 3, z: 2},
+      position: {x: 0, y: 3, z: 0},
     })
 
     seq.position = 5
     expect(seq.position).toEqual(5)
     expect(objValues.next().value).toMatchObject({
-      position: {x: 0, y: 3, z: 2},
+      position: {x: 0, y: 3, z: 0},
     })
 
     seq.position = 11
     expect(objValues.next().value).toMatchObject({
-      position: {x: 0, y: 3.29999747758308, z: 2},
+      position: {x: 0, y: 3.29999747758308, z: 0},
     })
 
     seq.position = 15
     expect(objValues.next().value).toMatchObject({
-      position: {x: 0, y: 4.5, z: 2},
+      position: {x: 0, y: 4.5, z: 0},
     })
 
     seq.position = 22
     expect(objValues.next().value).toMatchObject({
-      position: {x: 0, y: 6, z: 2},
+      position: {x: 0, y: 6, z: 0},
     })
 
     objValues.return()
