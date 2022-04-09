@@ -159,8 +159,7 @@ export default class SheetObject implements IdentityDerivationProvider {
             const updateSequenceValueFromItsDerivation = () => {
               const triple = derivation.getValue()
 
-              if (!triple)
-                return valsAtom.setIn(pathToProp, propConfig!.default)
+              if (!triple) return valsAtom.setIn(pathToProp, undefined)
 
               const leftDeserialized = deserialize(triple.left)
 
