@@ -5,18 +5,17 @@ import {setupTestSheet} from '@theatre/shared/testUtils'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
 import {asKeyframeId, asSequenceTrackId} from '@theatre/shared/utils/ids'
 import {iterateOver, prism} from '@theatre/dataverse'
+import type {SheetState_Historic} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 describe(`SheetObject`, () => {
   describe('static overrides', () => {
-    const setup = async () => {
+    const setup = async (
+      staticOverrides: SheetState_Historic['staticOverrides']['byObject'][string] = {},
+    ) => {
       const {studio, objPublicAPI} = await setupTestSheet({
         staticOverrides: {
           byObject: {
-            obj: {
-              position: {
-                x: 10,
-              },
-            },
+            obj: staticOverrides,
           },
         },
       })
@@ -26,8 +25,40 @@ describe(`SheetObject`, () => {
 
       return {studio, objPublicAPI, objValues, teardown}
     }
+
+    describe(`conformance`, () => {
+      test(`invalid static overrides should get ignored`, async () => {
+        const {teardown, objValues} = await setup({
+          position: {
+            // valid
+            x: 10,
+            // invalid
+            y: '20',
+          },
+          // invalid
+          color: 'ss',
+          deeply: {
+            nested: {
+              // invalid
+              checkbox: 0,
+            },
+          },
+        })
+        expect(objValues.next().value).toMatchObject({
+          position: {x: 10, y: 0, z: 0},
+          color: {r: 0, g: 0, b: 0, a: 1},
+          deeply: {
+            nested: {
+              checkbox: true,
+            },
+          },
+        })
+        teardown()
+      })
+    })
+
     test(`should be a deep merge of default values and static overrides`, async () => {
-      const {teardown, objValues} = await setup()
+      const {teardown, objValues} = await setup({position: {x: 10}})
       expect(objValues.next().value).toMatchObject({
         position: {x: 10, y: 0, z: 0},
       })
@@ -35,7 +66,9 @@ describe(`SheetObject`, () => {
     })
 
     test(`should allow introducing a static override to a simple prop`, async () => {
-      const {teardown, objValues, studio, objPublicAPI} = await setup()
+      const {teardown, objValues, studio, objPublicAPI} = await setup({
+        position: {x: 10},
+      })
       studio.transaction(({set}) => {
         set(objPublicAPI.props.position.y, 5)
       })

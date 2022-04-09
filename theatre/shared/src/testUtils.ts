@@ -17,6 +17,11 @@ const defaultProps = {
     z: 0,
   },
   color: t.rgba(),
+  deeply: {
+    nested: {
+      checkbox: true,
+    },
+  },
 }
 
 let lastProjectN = 0
