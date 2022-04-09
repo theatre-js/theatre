@@ -4,11 +4,11 @@
 import {setupTestSheet} from '@theatre/shared/testUtils'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
 import {asKeyframeId, asSequenceTrackId} from '@theatre/shared/utils/ids'
-import {iterateOver, prism, val} from '@theatre/dataverse'
+import {iterateOver, prism} from '@theatre/dataverse'
 
 describe(`SheetObject`, () => {
   test('it should support setting/unsetting static props', async () => {
-    const {obj, studio} = await setupTestSheet({
+    const {studio, objPublicAPI} = await setupTestSheet({
       staticOverrides: {
         byObject: {
           obj: {
@@ -22,7 +22,7 @@ describe(`SheetObject`, () => {
 
     const objValues = iterateOver(
       prism(() => {
-        return val(val(obj.getValues()))
+        return objPublicAPI.value
       }),
     )
 
@@ -32,7 +32,7 @@ describe(`SheetObject`, () => {
 
     // setting a static
     studio.transaction(({set}) => {
-      set(obj.propsP.position.y, 5)
+      set(objPublicAPI.props.position.y, 5)
     })
 
     expect(objValues.next().value).toMatchObject({
@@ -41,7 +41,7 @@ describe(`SheetObject`, () => {
 
     // unsetting a static
     studio.transaction(({unset}) => {
-      unset(obj.propsP.position.y)
+      unset(objPublicAPI.props.position.y)
     })
 
     expect(objValues.next().value).toMatchObject({
@@ -52,7 +52,7 @@ describe(`SheetObject`, () => {
   })
 
   test('it should support sequenced props', async () => {
-    const {obj, sheet} = await setupTestSheet({
+    const {objPublicAPI, sheet} = await setupTestSheet({
       staticOverrides: {
         byObject: {},
       },
@@ -93,11 +93,7 @@ describe(`SheetObject`, () => {
 
     const seq = sheet.publicApi.sequence
 
-    const objValues = iterateOver(
-      prism(() => {
-        return val(val(obj.getValues()))
-      }),
-    )
+    const objValues = iterateOver(prism(() => objPublicAPI.value))
 
     expect(seq.position).toEqual(0)
 
