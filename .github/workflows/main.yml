@@ -35,7 +35,7 @@ jobs:
 
       - run: yarn install
       - run: yarn typecheck
-      - run: yarn lint:all
+      - run: yarn lint:all --max-warnings 0
       - run: yarn test
       - name: Download playwright
         run: yarn workspace playground run playwright install
