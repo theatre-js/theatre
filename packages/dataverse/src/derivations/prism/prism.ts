@@ -201,9 +201,9 @@ function ref<T>(key: string, initialValue: T): IRef<T> {
 /**
  * An effect hook, similar to react's `useEffect()`.
  *
- * @param key: the key for the effect. Should be uniqe inside of the prism.
- * @param cb: the callback  function. Optionally returns a cleanup function.
- * @param deps?: the dependency array
+ * @param key - the key for the effect. Should be uniqe inside of the prism.
+ * @param cb - the callback  function. Optionally returns a cleanup function.
+ * @param deps - the dependency array
  *
  */
 function effect(key: string, cb: () => () => void, deps?: unknown[]): void {
