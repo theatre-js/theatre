@@ -113,6 +113,10 @@ export const compound = <Props extends IShorthandCompoundProps>(
         return deserializationCache.get(json)
       }
 
+      // TODO we should probably also check here whether `json` is a pure object rather
+      // than an instance of a class, just to avoid the possible edge cases of handling
+      // class instances.
+
       const deserialized: $FixMe = {}
       let atLeastOnePropWasDeserialized = false
       for (const [key, propConfig] of Object.entries(sanitizedProps)) {
