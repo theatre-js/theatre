@@ -23,6 +23,13 @@ import {propTypeSymbol} from './internals'
 // Composite types are not directly sequenceable yet. Their simple sub/ancestor props are.
 // We’ll provide a nice UX to manage keyframing of multiple sub-props.
 
+/**
+ * Validates the common options given to all prop types, such as `opts.label`
+ *
+ * @param fnCallSignature - See references for examples
+ * @param opts - The common options of all prop types
+ * @returns void - will throw if options are invalid
+ */
 const validateCommonOpts = (fnCallSignature: string, opts?: CommonOpts) => {
   if (process.env.NODE_ENV !== 'production') {
     if (opts === undefined) return
