@@ -10,6 +10,20 @@ import coreTicker from '@theatre/core/coreTicker'
 import globals from './globals'
 /* eslint-enable no-restricted-syntax */
 
+const defaultProps = {
+  position: {
+    x: 0,
+    y: 0,
+    z: 0,
+  },
+  color: t.rgba(),
+  deeply: {
+    nested: {
+      checkbox: true,
+    },
+  },
+}
+
 let lastProjectN = 0
 export async function setupTestSheet(sheetState: SheetState_Historic) {
   const studio = getStudio()!
@@ -31,13 +45,7 @@ export async function setupTestSheet(sheetState: SheetState_Historic) {
   ticker.tick()
   await project.ready
   const sheetPublicAPI = project.sheet('Sheet')
-  const objPublicAPI = sheetPublicAPI.object('obj', {
-    position: {
-      x: 0,
-      y: t.number(1),
-      z: t.number(2),
-    },
-  })
+  const objPublicAPI = sheetPublicAPI.object('obj', defaultProps)
 
   const obj = privateAPI(objPublicAPI)
 

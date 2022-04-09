@@ -22,15 +22,8 @@ import type {
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
-import type {Interpolator} from '@theatre/core/propTypes'
-import {getPropConfigByPath, valueInProp} from '@theatre/shared/propTypes/utils'
-
-// type Everything = {
-//   final: SerializableMap
-//   statics: SerializableMap
-//   defaults: SerializableMap
-//   sequenced: SerializableMap
-// }
+import type {Interpolator, PropTypeConfig} from '@theatre/core/propTypes'
+import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 
 export default class SheetObject implements IdentityDerivationProvider {
   get type(): 'Theatre_SheetObject' {
@@ -157,23 +150,32 @@ export default class SheetObject implements IdentityDerivationProvider {
             const propConfig = getPropConfigByPath(
               this.template.config,
               pathToProp,
-            )!
+            )! as Extract<PropTypeConfig, {interpolate: $IntentionalAny}>
 
+            const deserialize = propConfig.deserialize
             const interpolate =
               propConfig.interpolate! as Interpolator<$IntentionalAny>
 
             const updateSequenceValueFromItsDerivation = () => {
               const triple = derivation.getValue()
 
-              if (!triple)
-                return valsAtom.setIn(pathToProp, propConfig!.default)
+              if (!triple) return valsAtom.setIn(pathToProp, undefined)
 
-              const left = valueInProp(triple.left, propConfig)
+              const leftDeserialized = deserialize(triple.left)
+
+              const left =
+                typeof leftDeserialized === 'undefined'
+                  ? propConfig.default
+                  : leftDeserialized
 
               if (triple.right === undefined)
                 return valsAtom.setIn(pathToProp, left)
 
-              const right = valueInProp(triple.right, propConfig)
+              const rightDeserialized = deserialize(triple.right)
+              const right =
+                typeof rightDeserialized === 'undefined'
+                  ? propConfig.default
+                  : rightDeserialized
 
               return valsAtom.setIn(
                 pathToProp,

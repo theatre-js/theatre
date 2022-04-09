@@ -7,6 +7,10 @@ type PointerMeta = {
   path: (string | number)[]
 }
 
+const symbolForUnpointableTypes = Symbol()
+
+export type OpaqueToPointers = {[symbolForUnpointableTypes]: true}
+
 export type UnindexableTypesForPointer =
   | number
   | string
@@ -15,6 +19,7 @@ export type UnindexableTypesForPointer =
   | void
   | undefined
   | Function // eslint-disable-line @typescript-eslint/ban-types
+  | OpaqueToPointers
 
 export type UnindexablePointer = {
   [K in $IntentionalAny]: Pointer<undefined>
@@ -34,6 +39,19 @@ export type PointerType<O> = {
  * explanation of pointers.
  *
  * @see Atom
+ *
+ * @remarks
+ * The Pointer type is quite tricky because it doesn't play well with `any` and other inexact types.
+ * Here is an example that one would expect to work, but currently doesn't:
+ * ```ts
+ * declare function expectAnyPointer(pointer: Pointer<any>): void
+ *
+ * expectAnyPointer(null as Pointer<{}>) // doesn't work
+ * ```
+ *
+ * The current solution is to just avoid using `any` with pointer-related code (or type-test it well).
+ * But if you enjoy solving typescript puzzles, consider fixing this :)
+ *
  */
 export type Pointer<O> = PointerType<O> &
   (O extends UnindexableTypesForPointer

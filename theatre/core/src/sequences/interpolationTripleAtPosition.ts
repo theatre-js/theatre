@@ -14,12 +14,12 @@ export type InterpolationTriple = {
   progression: number
 }
 
-// @remarks This new implementation supports sequencing non-scalars, but it's also heavier
+// @remarks This new implementation supports sequencing non-numeric props, but it's also heavier
 // on the GC. This shouldn't be a problem for the vast majority of users, but it's also a
 // low-hanging fruit for perf optimization.
 // It can be improved by:
 // 1. Not creating a new InterpolationTriple object on every change
-// 2. Caching propConfig.sanitize(value)
+// 2. Caching propConfig.deserialize(value)
 
 export default function interpolationTripleAtPosition(
   trackP: Pointer<TrackData | undefined>,

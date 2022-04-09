@@ -1,6 +1,7 @@
 import type {
   IBasePropType,
   PropTypeConfig,
+  PropTypeConfig_AllNonCompounds,
   PropTypeConfig_Compound,
   PropTypeConfig_Enum,
 } from '@theatre/core/propTypes'
@@ -33,20 +34,27 @@ export function getPropConfigByPath(
 /**
  * @param value - An arbitrary value. May be matching the prop's type or not
  * @param propConfig - The configuration object for a prop
- * @returns value if it matches the prop's type (or if the prop doesn't have a sanitizer),
+ * @returns value if it matches the prop's type
  * otherwise returns the default value for the prop
  */
-export function valueInProp<PropValueType>(
+export function valueInProp<PropConfig extends PropTypeConfig_AllNonCompounds>(
   value: unknown,
-  propConfig: IBasePropType<PropValueType>,
-): PropValueType | unknown {
-  const sanitize = propConfig.sanitize
-  if (!sanitize) return value
+  propConfig: PropConfig,
+): PropConfig extends IBasePropType<$IntentionalAny, $IntentionalAny, infer T>
+  ? T
+  : never {
+  const deserialize = propConfig.deserialize
 
-  const sanitizedVal = sanitize(value)
+  const sanitizedVal = deserialize(value)
   if (typeof sanitizedVal === 'undefined') {
     return propConfig.default
   } else {
     return sanitizedVal
   }
+}
+
+export function isPropConfSequencable(
+  conf: PropTypeConfig,
+): conf is Extract<PropTypeConfig, {interpolate: any}> {
+  return Object.prototype.hasOwnProperty.call(conf, 'interpolate')
 }

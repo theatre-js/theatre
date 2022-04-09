@@ -13,6 +13,7 @@ import React from 'react'
 import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
+import {isPropConfSequencable} from '@theatre/shared/propTypes/utils'
 
 interface CommonStuff<T> {
   value: T
@@ -309,7 +310,3 @@ type Shade =
   | 'Sequenced_OnKeyframe_BeingScrubbed'
   | 'Sequenced_BeingInterpolated'
   | 'Sequened_NotBeingInterpolated'
-
-function isPropConfSequencable(conf: PropTypeConfig): boolean {
-  return conf.type === 'number' || (!!conf.sanitize && !!conf.interpolate)
-}

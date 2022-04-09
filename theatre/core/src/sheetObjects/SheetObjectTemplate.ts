@@ -24,7 +24,10 @@ import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
 import logger from '@theatre/shared/logger'
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
-import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
+import {
+  getPropConfigByPath,
+  isPropConfSequencable,
+} from '@theatre/shared/propTypes/utils'
 import getOrderingOfPropTypeConfig from './getOrderingOfPropTypeConfig'
 
 export type IPropPathToTrackIdTree = {
@@ -91,14 +94,16 @@ export default class SheetObjectTemplate {
             this.address.sheetId
           ]
 
-        const value =
+        const json =
           val(
             pointerToSheetState.staticOverrides.byObject[
               this.address.objectKey
             ],
           ) || {}
 
-        return value
+        const config = val(this._config.pointer)
+        const deserialized = config.deserialize(json) || {}
+        return deserialized
       }),
     )
   }
@@ -138,8 +143,7 @@ export default class SheetObjectTemplate {
 
           const propConfig = getPropConfigByPath(this.config, pathToProp)
 
-          if (!propConfig || !propConfig?.sanitize || !propConfig.interpolate)
-            continue
+          if (!propConfig || !isPropConfSequencable(propConfig)) continue
 
           arrayOfIds.push({pathToProp, trackId: trackId!})
         }
