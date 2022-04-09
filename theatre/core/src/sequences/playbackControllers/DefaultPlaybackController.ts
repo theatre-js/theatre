@@ -31,7 +31,7 @@ export interface IPlaybackController {
    * @remarks
    *   One use case for this is to play the playback within the focus range.
    *
-   * @param rangeD The derivation that contains the range that will be used for the playback
+   * @param rangeD - The derivation that contains the range that will be used for the playback
    *
    * @returns  a promise that gets rejected if the playback stopped for whatever reason
    *
