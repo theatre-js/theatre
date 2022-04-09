@@ -58,6 +58,41 @@ describe(`SheetObject`, () => {
         expect(value).not.toHaveProperty('nonExistentProp')
         teardown()
       })
+
+      test(`setting a compound prop should only work if all its sub-props are present`, async () => {
+        const {teardown, objValues, objPublicAPI, studio} = await setup({})
+        expect(() => {
+          studio.transaction(({set}) => {
+            set(objPublicAPI.props.position, {x: 1, y: 2} as any as {
+              x: number
+              y: number
+              z: number
+            })
+          })
+        }).toThrow()
+      })
+
+      test(`setting a compound prop should only work if all its sub-props are valid`, async () => {
+        const {teardown, objValues, objPublicAPI, studio} = await setup({})
+        expect(() => {
+          studio.transaction(({set}) => {
+            set(objPublicAPI.props.position, {x: 1, y: 2, z: 'bad'} as any as {
+              x: number
+              y: number
+              z: number
+            })
+          })
+        }).toThrow()
+      })
+
+      test(`setting a simple prop should only work if it is valid`, async () => {
+        const {teardown, objValues, objPublicAPI, studio} = await setup({})
+        expect(() => {
+          studio.transaction(({set}) => {
+            set(objPublicAPI.props.position.x, 'bad' as any as number)
+          })
+        }).toThrow()
+      })
     })
 
     test(`should be a deep merge of default values and static overrides`, async () => {

@@ -15,6 +15,7 @@ import type {
 import type {PathToProp} from '@theatre/shared/src/utils/addresses'
 import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 import {isPlainObject} from 'lodash-es'
+import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 
 function cloneDeepSerializable<T>(v: T): T | undefined {
   if (
@@ -88,8 +89,9 @@ export default function createTransactionPrivateApi(
         }
 
         // if (isPropConfigComposite(propConfig)) {
-        //   propConfig.validatePartial(_value)
+        //   propConfig.validate(_value)
         // } else {
+
         //   propConfig.validate(_value)
         // }
 
@@ -105,7 +107,15 @@ export default function createTransactionPrivateApi(
           const deserialized = cloneDeepSerializable(
             propConfig.deserialize(value),
           )
-          if (typeof deserialized === 'undefined') return
+          if (typeof deserialized === 'undefined') {
+            throw new Error(
+              `Invalid value ${userReadableTypeOfValue(
+                value,
+              )} for object.props${path
+                .map((key) => `[${JSON.stringify(key)}]`)
+                .join('')} is invalid`,
+            )
+          }
 
           const propAddress = {...root.address, pathToProp: path}
 
@@ -150,6 +160,12 @@ export default function createTransactionPrivateApi(
               const v = getDeep(_value, pathToPropInProvidedValue)
               if (typeof v !== 'undefined') {
                 setStaticOrKeyframeProp(v, primitivePropConfig, pathToProp)
+              } else {
+                throw new Error(
+                  `Property object.props${pathToProp
+                    .map((key) => `[${JSON.stringify(key)}]`)
+                    .join('')} is required but not provided`,
+                )
               }
             },
           )
