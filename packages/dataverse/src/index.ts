@@ -17,6 +17,6 @@ export {default as iterateAndCountTicks} from './derivations/iterateAndCountTick
 export {default as iterateOver} from './derivations/iterateOver'
 export {default as prism} from './derivations/prism/prism'
 export {default as pointer, getPointerParts, isPointer} from './pointer'
-export type {Pointer, PointerType, OpaqueToPointers} from './pointer'
+export type {Pointer, PointerType} from './pointer'
 export {default as Ticker} from './Ticker'
 export {default as PointerProxy} from './PointerProxy'

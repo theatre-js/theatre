@@ -7,10 +7,6 @@ type PointerMeta = {
   path: (string | number)[]
 }
 
-const symbolForUnpointableTypes = Symbol()
-
-export type OpaqueToPointers = {[symbolForUnpointableTypes]: true}
-
 export type UnindexableTypesForPointer =
   | number
   | string
@@ -19,7 +15,6 @@ export type UnindexableTypesForPointer =
   | void
   | undefined
   | Function // eslint-disable-line @typescript-eslint/ban-types
-  | OpaqueToPointers
 
 export type UnindexablePointer = {
   [K in $IntentionalAny]: Pointer<undefined>
