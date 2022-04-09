@@ -52,3 +52,9 @@ export function valueInProp<PropConfig extends PropTypeConfig_AllNonCompounds>(
     return sanitizedVal
   }
 }
+
+export function isPropConfSequencable(
+  conf: PropTypeConfig,
+): conf is Extract<PropTypeConfig, {interpolate: any}> {
+  return Object.prototype.hasOwnProperty.call(conf, 'interpolate')
+}
