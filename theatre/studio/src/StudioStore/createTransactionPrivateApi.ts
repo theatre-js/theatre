@@ -105,7 +105,7 @@ export default function createTransactionPrivateApi(
           }
 
           const deserialized = cloneDeepSerializable(
-            propConfig.deserialize(value),
+            propConfig.deserializeAndSanitize(value),
           )
           if (typeof deserialized === 'undefined') {
             throw new Error(

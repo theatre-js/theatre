@@ -19,7 +19,7 @@ export type InterpolationTriple = {
 // low-hanging fruit for perf optimization.
 // It can be improved by:
 // 1. Not creating a new InterpolationTriple object on every change
-// 2. Caching propConfig.deserialize(value)
+// 2. Caching propConfig.deserializeAndSanitize(value)
 
 export default function interpolationTripleAtPosition(
   trackP: Pointer<TrackData | undefined>,

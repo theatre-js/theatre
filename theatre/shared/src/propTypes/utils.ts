@@ -43,9 +43,7 @@ export function valueInProp<PropConfig extends PropTypeConfig_AllNonCompounds>(
 ): PropConfig extends IBasePropType<$IntentionalAny, $IntentionalAny, infer T>
   ? T
   : never {
-  const deserialize = propConfig.deserialize
-
-  const sanitizedVal = deserialize(value)
+  const sanitizedVal = propConfig.deserializeAndSanitize(value)
   if (typeof sanitizedVal === 'undefined') {
     return propConfig.default
   } else {

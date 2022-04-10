@@ -102,7 +102,7 @@ export default class SheetObjectTemplate {
           ) || {}
 
         const config = val(this._config.pointer)
-        const deserialized = config.deserialize(json) || {}
+        const deserialized = config.deserializeAndSanitize(json) || {}
         return deserialized
       }),
     )

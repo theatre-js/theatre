@@ -109,7 +109,7 @@ export const compound = <Props extends IShorthandCompoundProps>(
     [propTypeSymbol]: 'TheatrePropType',
     label: opts.label,
     default: mapValues(sanitizedProps, (p) => p.default) as $IntentionalAny,
-    deserialize: (json: unknown) => {
+    deserializeAndSanitize: (json: unknown) => {
       if (typeof json !== 'object' || !json) return undefined
       if (deserializationCache.has(json)) {
         return deserializationCache.get(json)
@@ -123,7 +123,7 @@ export const compound = <Props extends IShorthandCompoundProps>(
       let atLeastOnePropWasDeserialized = false
       for (const [key, propConfig] of Object.entries(sanitizedProps)) {
         if (Object.prototype.hasOwnProperty.call(json, key)) {
-          const deserializedSub = propConfig.deserialize(
+          const deserializedSub = propConfig.deserializeAndSanitize(
             (json as $IntentionalAny)[key] as unknown,
           )
           if (deserializedSub != null) {
@@ -262,7 +262,7 @@ export const number = (
     nudgeMultiplier:
       typeof opts.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
     interpolate: _interpolateNumber,
-    deserialize: numberDeserializer(opts.range),
+    deserializeAndSanitize: numberDeserializer(opts.range),
   }
 }
 
@@ -332,7 +332,7 @@ export const rgba = (
     [propTypeSymbol]: 'TheatrePropType',
     label: opts.label,
     interpolate: _interpolateRgba,
-    deserialize: _sanitizeRgba,
+    deserializeAndSanitize: _sanitizeRgba,
   }
 }
 
@@ -426,7 +426,7 @@ export const boolean = (
     [propTypeSymbol]: 'TheatrePropType',
     label: opts.label,
     interpolate: opts.interpolate ?? leftInterpolate,
-    deserialize: _ensureBoolean,
+    deserializeAndSanitize: _ensureBoolean,
   }
 }
 
@@ -483,7 +483,7 @@ export const string = (
     [propTypeSymbol]: 'TheatrePropType',
     label: opts.label,
     interpolate: opts.interpolate ?? leftInterpolate,
-    deserialize: _ensureString,
+    deserializeAndSanitize: _ensureString,
   }
 }
 
@@ -540,7 +540,9 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     as: opts.as ?? 'menu',
     label: opts.label,
     interpolate: opts.interpolate ?? leftInterpolate,
-    deserialize(json: unknown): undefined | Extract<keyof Opts, string> {
+    deserializeAndSanitize(
+      json: unknown,
+    ): undefined | Extract<keyof Opts, string> {
       if (typeof json !== 'string') return undefined
       if (Object.prototype.hasOwnProperty.call(options, json)) {
         return json as $IntentionalAny
@@ -584,13 +586,13 @@ export interface IBasePropType<
   label: string | undefined
   default: ValueType
   /**
-   * Each prop config has a `deserialize()` function that deserializes
+   * Each prop config has a `deserializeAndSanitize()` function that deserializes and sanitizes
    * any js value into one that is acceptable by this prop config, or `undefined`.
    *
    * The `DeserializeType` is usually equal to `ValueType`. That is the case with
    * all simple prop configs, such as `number`, `string`, or `rgba`. However, composite
-   * configs such as `compound` or `enum` may deserialize into a partial value. For example,
-   * a prop config of `t.compound({x: t.number(0), y: t.number(0)})` may deserialize into `{x: 10}`.
+   * configs such as `compound` or `enum` may deserialize+sanitize into a partial value. For example,
+   * a prop config of `t.compound({x: t.number(0), y: t.number(0)})` may deserialize+sanitize into `{x: 10}`.
    * This behavior is used by {@link SheetObject.getValues} to replace the missing sub-props
    * with their default value.
    *
@@ -601,7 +603,7 @@ export interface IBasePropType<
    * Additionally, returning an `undefined` allows {@link SheetObject.getValues} to
    * replace the `undefined` with the default value of that prop.
    */
-  deserialize: (json: unknown) => undefined | DeserializeType
+  deserializeAndSanitize: (json: unknown) => undefined | DeserializeType
 }
 
 interface ISimplePropType<LiteralIdentifier extends string, ValueType>
