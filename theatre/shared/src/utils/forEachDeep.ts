@@ -12,7 +12,7 @@ export default function forEachDeep<
     for (const [key, value] of Object.entries(m)) {
       forEachDeep(value!, fn, [...startingPath, key])
     }
-  } else if (typeof m === 'undefined' || m === null) {
+  } else if (m === undefined || m === null) {
     return
   } else {
     fn(m as $IntentionalAny as Primitive, startingPath)

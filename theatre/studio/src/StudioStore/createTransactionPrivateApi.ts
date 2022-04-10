@@ -100,14 +100,14 @@ export default function createTransactionPrivateApi(
           propConfig: PropTypeConfig_AllNonCompounds,
           path: PathToProp,
         ) => {
-          if (typeof value === 'undefined' || value === null) {
+          if (value === undefined || value === null) {
             return
           }
 
           const deserialized = cloneDeepSerializable(
             propConfig.deserializeAndSanitize(value),
           )
-          if (typeof deserialized === 'undefined') {
+          if (deserialized === undefined) {
             throw new Error(
               `Invalid value ${userReadableTypeOfValue(
                 value,

@@ -24,7 +24,7 @@ export default function deepMergeWithCache<T extends SerializableMap>(
     merged[key] =
       typeof valueInOverride === 'object' && typeof valueInBase === 'object'
         ? deepMergeWithCache(valueInBase, valueInOverride, cache)
-        : typeof valueInOverride === 'undefined'
+        : valueInOverride === undefined
         ? valueInBase
         : valueInOverride
   }

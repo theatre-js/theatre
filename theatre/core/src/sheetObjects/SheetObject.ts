@@ -164,7 +164,7 @@ export default class SheetObject implements IdentityDerivationProvider {
               const leftDeserialized = deserializeAndSanitize(triple.left)
 
               const left =
-                typeof leftDeserialized === 'undefined'
+                leftDeserialized === undefined
                   ? propConfig.default
                   : leftDeserialized
 
@@ -173,7 +173,7 @@ export default class SheetObject implements IdentityDerivationProvider {
 
               const rightDeserialized = deserializeAndSanitize(triple.right)
               const right =
-                typeof rightDeserialized === 'undefined'
+                rightDeserialized === undefined
                   ? propConfig.default
                   : rightDeserialized
 

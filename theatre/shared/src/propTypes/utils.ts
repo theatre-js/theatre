@@ -20,7 +20,7 @@ export function getPropConfigByPath(
 ): undefined | PropTypeConfig {
   if (!parentConf) return undefined
   const [key, ...rest] = path
-  if (typeof key === 'undefined') return parentConf
+  if (key === undefined) return parentConf
   if (!isPropConfigComposite(parentConf)) return undefined
 
   const sub =
@@ -44,7 +44,7 @@ export function valueInProp<PropConfig extends PropTypeConfig_AllNonCompounds>(
   ? T
   : never {
   const sanitizedVal = propConfig.deserializeAndSanitize(value)
-  if (typeof sanitizedVal === 'undefined') {
+  if (sanitizedVal === undefined) {
     return propConfig.default
   } else {
     return sanitizedVal

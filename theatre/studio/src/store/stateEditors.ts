@@ -58,7 +58,7 @@ export const setDrafts__onlyMeantToBeCalledByTransaction = (
 let currentDrafts: undefined | Drafts
 
 const drafts = (): Drafts => {
-  if (typeof currentDrafts === 'undefined') {
+  if (currentDrafts === undefined) {
     throw new Error(
       `Calling stateEditors outside of a transaction is not allowed.`,
     )
