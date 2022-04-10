@@ -31,13 +31,13 @@ const StringLiteralPropEditor: React.FC<{
         <BasicSelect
           value={stuff.value}
           onChange={onChange}
-          options={propConfig.options}
+          options={propConfig.valuesAndLabels}
         />
       ) : (
         <BasicSwitch
           value={stuff.value}
           onChange={onChange}
-          options={propConfig.options}
+          options={propConfig.valuesAndLabels}
         />
       )}
     </SingleRowPropEditor>

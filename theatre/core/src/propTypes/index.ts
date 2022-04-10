@@ -511,30 +511,32 @@ function _ensureString(s: unknown): string | undefined {
  * @returns A stringLiteral prop type
  *
  */
-export function stringLiteral<Opts extends {[key in string]: string}>(
+export function stringLiteral<
+  ValuesAndLabels extends {[key in string]: string},
+>(
   /**
    * Default value (a string that equals one of the options)
    */
-  defaultValue: Extract<keyof Opts, string>,
+  defaultValue: Extract<keyof ValuesAndLabels, string>,
   /**
    * The options. Use the `"value": "Label"` format.
    *
    * An object like `{[value]: Label}`. Example: `{r: "Red", "g": "Green"}`
    */
-  options: Opts,
+  valuesAndLabels: ValuesAndLabels,
   /**
    * opts.as Determines if editor is shown as a menu or a switch. Either 'menu' or 'switch'.  Default: 'menu'
    */
   opts: {
     as?: 'menu' | 'switch'
     label?: string
-    interpolate?: Interpolator<Extract<keyof Opts, string>>
+    interpolate?: Interpolator<Extract<keyof ValuesAndLabels, string>>
   } = {},
-): PropTypeConfig_StringLiteral<Extract<keyof Opts, string>> {
+): PropTypeConfig_StringLiteral<Extract<keyof ValuesAndLabels, string>> {
   return {
     type: 'stringLiteral',
     default: defaultValue,
-    options: {...options},
+    valuesAndLabels: {...valuesAndLabels},
     [propTypeSymbol]: 'TheatrePropType',
     valueType: null as $IntentionalAny,
     as: opts.as ?? 'menu',
@@ -542,9 +544,9 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     interpolate: opts.interpolate ?? leftInterpolate,
     deserializeAndSanitize(
       json: unknown,
-    ): undefined | Extract<keyof Opts, string> {
+    ): undefined | Extract<keyof ValuesAndLabels, string> {
       if (typeof json !== 'string') return undefined
-      if (Object.prototype.hasOwnProperty.call(options, json)) {
+      if (Object.prototype.hasOwnProperty.call(valuesAndLabels, json)) {
         return json as $IntentionalAny
       } else {
         return undefined
@@ -665,7 +667,7 @@ export interface PropTypeConfig_String
 
 export interface PropTypeConfig_StringLiteral<T extends string>
   extends ISimplePropType<'stringLiteral', T> {
-  options: Record<T, string>
+  valuesAndLabels: Record<T, string>
   as: 'menu' | 'switch'
 }
 
