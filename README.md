@@ -3,21 +3,15 @@
 </h1>
 <p align="center">Motion Design, for the web</p>
 <p align="center">
- <a href="https://discord.gg/Tku4CJKf4B">
-   <img src="https://img.shields.io/discord/870988717190426644?label=Discord" alt="Join us on Discord">
- </a> ⎯◈⎯
+ <a href="#"><img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/theatre-js/theatre/main?label=build"></a>
+ <a href="https://discord.gg/Tku4CJKf4B"><img src="https://img.shields.io/discord/870988717190426644?label=Discord" alt="Join us on Discord"></a>
  <a href="https://twitter.com/theatre_js">
-  <img src="https://img.shields.io/twitter/follow/theatre_js?style=social" alt="Follow us on Twitter">
- </a> ⎯◈⎯
+   <img alt="Follow Theatre.js on Twitter" src="https://img.shields.io/twitter/url?label=%40theatre_js&url=https%3A%2F%2Ftwitter.com%2Ftheatre_js">
+ </a>
  <a href="https://www.youtube.com/channel/UCsp9XOCs8v2twyq5kMLzS2Q">
-  <img src="https://img.shields.io/youtube/channel/views/UCsp9XOCs8v2twyq5kMLzS2Q?label=TheatreJS&style=social" alt="Watch on YouTube">
- </a> ⎯◈⎯
- <a href="https://theatrejs.com#gh-dark-mode-only">
-  <img src="https://docs.theatrejs.com/public/theatrejs-logo-white.svg" alt="TheatreJS" width="70">.com
+  <img src="https://img.shields.io/youtube/channel/views/UCsp9XOCs8v2twyq5kMLzS2Q?label=YouTube&style=social" alt="Watch on YouTube">
  </a>
- <a href="https://theatrejs.com#gh-light-mode-only">
-  <img src="https://docs.theatrejs.com/public/theatrejs-logo-black.svg" alt="TheatreJS" width="70">.com
- </a>
+ 
 </p>
 
 > ✨ Update: [We're hiring – join the core team!](https://join.theatrejs.com/)
