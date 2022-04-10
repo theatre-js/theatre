@@ -91,9 +91,9 @@ const validateCommonOpts = (fnCallSignature: string, opts?: CommonOpts) => {
  */
 export const compound = <Props extends IShorthandCompoundProps>(
   props: Props,
-  opts?: {
+  opts: {
     label?: string
-  },
+  } = {},
 ): PropTypeConfig_Compound<
   ShorthandCompoundPropsToLonghandCompoundProps<Props>
 > => {
@@ -107,7 +107,7 @@ export const compound = <Props extends IShorthandCompoundProps>(
     props: sanitizedProps,
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
-    label: opts?.label,
+    label: opts.label,
     default: mapValues(sanitizedProps, (p) => p.default) as $IntentionalAny,
     deserialize: (json: unknown) => {
       if (typeof json !== 'object' || !json) return undefined
@@ -184,12 +184,12 @@ export const compound = <Props extends IShorthandCompoundProps>(
  */
 export const number = (
   defaultValue: number,
-  opts?: {
+  opts: {
     nudgeFn?: PropTypeConfig_Number['nudgeFn']
     range?: PropTypeConfig_Number['range']
     nudgeMultiplier?: number
     label?: string
-  },
+  } = {},
 ): PropTypeConfig_Number => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.number(defaultValue, opts)', opts)
@@ -229,21 +229,21 @@ export const number = (
       }
       if (Object.prototype.hasOwnProperty.call(opts, 'nudgeMultiplier')) {
         if (
-          typeof opts!.nudgeMultiplier !== 'number' ||
-          !isFinite(opts!.nudgeMultiplier)
+          typeof opts.nudgeMultiplier !== 'number' ||
+          !isFinite(opts.nudgeMultiplier)
         ) {
           throw new Error(
             `opts.nudgeMultiplier in t.number(defaultValue, opts) must be a finite number. ${userReadableTypeOfValue(
-              opts!.nudgeMultiplier,
+              opts.nudgeMultiplier,
             )} given.`,
           )
         }
       }
       if (Object.prototype.hasOwnProperty.call(opts, 'nudgeFn')) {
-        if (typeof opts?.nudgeFn !== 'function') {
+        if (typeof opts.nudgeFn !== 'function') {
           throw new Error(
             `opts.nudgeFn in t.number(defaultValue, opts) must be a function. ${userReadableTypeOfValue(
-              opts!.nudgeFn,
+              opts.nudgeFn,
             )} given.`,
           )
         }
@@ -257,12 +257,12 @@ export const number = (
     default: defaultValue,
     [propTypeSymbol]: 'TheatrePropType',
     ...(opts ? opts : {}),
-    label: opts?.label,
-    nudgeFn: opts?.nudgeFn ?? defaultNumberNudgeFn,
+    label: opts.label,
+    nudgeFn: opts.nudgeFn ?? defaultNumberNudgeFn,
     nudgeMultiplier:
-      typeof opts?.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
+      typeof opts.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
     interpolate: _interpolateNumber,
-    deserialize: numberDeserializer(opts?.range),
+    deserialize: numberDeserializer(opts.range),
   }
 }
 
@@ -287,9 +287,9 @@ const _interpolateNumber = (
 
 export const rgba = (
   defaultValue: Rgba = {r: 0, g: 0, b: 0, a: 1},
-  opts?: {
+  opts: {
     label?: string
-  },
+  } = {},
 ): PropTypeConfig_Rgba => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.rgba(defaultValue, opts)', opts)
@@ -330,7 +330,7 @@ export const rgba = (
     valueType: null as $IntentionalAny,
     default: decorateRgba(sanitized as Rgba),
     [propTypeSymbol]: 'TheatrePropType',
-    label: opts?.label,
+    label: opts.label,
     interpolate: _interpolateRgba,
     deserialize: _sanitizeRgba,
   }
@@ -403,10 +403,10 @@ const _interpolateRgba = (
  */
 export const boolean = (
   defaultValue: boolean,
-  opts?: {
+  opts: {
     label?: string
     interpolate?: Interpolator<boolean>
-  },
+  } = {},
 ): PropTypeConfig_Boolean => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.boolean(defaultValue, opts)', opts)
@@ -424,8 +424,8 @@ export const boolean = (
     default: defaultValue,
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
-    label: opts?.label,
-    interpolate: opts?.interpolate ?? leftInterpolate,
+    label: opts.label,
+    interpolate: opts.interpolate ?? leftInterpolate,
     deserialize: _ensureBoolean,
   }
 }
@@ -461,10 +461,10 @@ function leftInterpolate<T>(left: T): T {
  */
 export const string = (
   defaultValue: string,
-  opts?: {
+  opts: {
     label?: string
     interpolate?: Interpolator<string>
-  },
+  } = {},
 ): PropTypeConfig_String => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.string(defaultValue, opts)', opts)
@@ -481,8 +481,8 @@ export const string = (
     default: defaultValue,
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
-    label: opts?.label,
-    interpolate: opts?.interpolate ?? leftInterpolate,
+    label: opts.label,
+    interpolate: opts.interpolate ?? leftInterpolate,
     deserialize: _ensureString,
   }
 }
@@ -525,11 +525,11 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
   /**
    * opts.as Determines if editor is shown as a menu or a switch. Either 'menu' or 'switch'.  Default: 'menu'
    */
-  opts?: {
+  opts: {
     as?: 'menu' | 'switch'
     label?: string
     interpolate?: Interpolator<Extract<keyof Opts, string>>
-  },
+  } = {},
 ): PropTypeConfig_StringLiteral<Extract<keyof Opts, string>> {
   return {
     type: 'stringLiteral',
@@ -537,9 +537,9 @@ export function stringLiteral<Opts extends {[key in string]: string}>(
     options: {...options},
     [propTypeSymbol]: 'TheatrePropType',
     valueType: null as $IntentionalAny,
-    as: opts?.as ?? 'menu',
-    label: opts?.label,
-    interpolate: opts?.interpolate ?? leftInterpolate,
+    as: opts.as ?? 'menu',
+    label: opts.label,
+    interpolate: opts.interpolate ?? leftInterpolate,
     deserialize(json: unknown): undefined | Extract<keyof Opts, string> {
       if (typeof json !== 'string') return undefined
       if (Object.prototype.hasOwnProperty.call(options, json)) {
