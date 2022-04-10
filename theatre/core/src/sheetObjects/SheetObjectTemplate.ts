@@ -143,7 +143,9 @@ export default class SheetObjectTemplate {
 
           const propConfig = getPropConfigByPath(this.config, pathToProp)
 
-          if (!propConfig || !isPropConfSequencable(propConfig)) continue
+          const isSequencable = propConfig && isPropConfSequencable(propConfig)
+
+          if (!isSequencable) continue
 
           arrayOfIds.push({pathToProp, trackId: trackId!})
         }
