@@ -124,10 +124,7 @@ export const compound = <Props extends IShorthandCompoundProps>(
           const deserializedSub = propConfig.deserialize(
             (json as $IntentionalAny)[key] as unknown,
           )
-          if (
-            typeof deserializedSub !== 'undefined' &&
-            deserializedSub !== null
-          ) {
+          if (deserializedSub != null) {
             atLeastOnePropWasDeserialized = true
             deserialized[key] = deserializedSub
           }
