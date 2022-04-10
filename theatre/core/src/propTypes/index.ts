@@ -16,6 +16,8 @@ import type {
 } from './internals'
 import {sanitizeCompoundProps} from './internals'
 import {propTypeSymbol} from './internals'
+// eslint-disable-next-line unused-imports/no-unused-imports
+import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
 // Notes on naming:
 // As of now, prop types are either `simple` or `composite`.
@@ -557,11 +559,48 @@ export interface IBasePropType<
   ValueType,
   DeserializeType = ValueType,
 > {
+  /**
+   * Each prop config has a string literal identifying it. For example,
+   * `assert.equal(t.number(10).type, 'number')`
+   */
   type: LiteralIdentifier
+  /**
+   * the `valueType` is only used by typescript. It won't be present in runtime.
+   */
   valueType: ValueType
   [propTypeSymbol]: 'TheatrePropType'
+  /**
+   * Each prop type may be given a custom label instead of the name of the sub-prop
+   * it is in.
+   *
+   * @example
+   * ```ts
+   * const position = {
+   *   x: t.number(0), // label would be 'x'
+   *   y: t.number(0, {label: 'top'}) // label would be 'top'
+   * }
+   * ```
+   */
   label: string | undefined
   default: ValueType
+  /**
+   * Each prop config has a `deserialize()` function that deserializes
+   * any js value into one that is acceptable by this prop config, or `undefined`.
+   *
+   * The `DeserializeType` is usually equal to `ValueType`. That is the case with
+   * all simple prop configs, such as `number`, `string`, or `rgba`. However, composite
+   * configs such as `compound` or `enum` may deserialize into a partial value. For example,
+   * a prop config of `t.compound({x: t.number(0), y: t.number(0)})` may deserialize into `{x: 10}`.
+   * This behavior is used by {@link SheetObject.getValues} to replace the missing sub-props
+   * with their default value.
+   *
+   * Admittedly, this partial deserialization behavior is not what the word "deserialize"
+   * typically implies in most codebases, so feel free to change this name into a more
+   * appropriate one.
+   *
+   * Additionally, returning an `undefined` allows {@link SheetObject.getValues} to
+   * replace the `undefined` with the default value of that prop.
+   */
   deserialize: (json: unknown) => undefined | DeserializeType
 }
 
@@ -604,6 +643,18 @@ export interface PropTypeConfig_Boolean
   extends ISimplePropType<'boolean', boolean> {}
 
 interface CommonOpts {
+  /**
+   * Each prop type may be given a custom label instead of the name of the sub-prop
+   * it is in.
+   *
+   * @example
+   * ```ts
+   * const position = {
+   *   x: t.number(0), // label would be 'x'
+   *   y: t.number(0, {label: 'top'}) // label would be 'top'
+   * }
+   * ```
+   */
   label?: string
 }
 
