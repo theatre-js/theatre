@@ -17,7 +17,15 @@ import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 import {isPlainObject} from 'lodash-es'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 
-function cloneDeepSerializable<T>(v: T): T | undefined {
+/**
+ * Deep-clones a plain JS object or a `string | number | boolean`. In case of a plain
+ * object, all its sub-props that aren't `string | number | boolean` get pruned. Also,
+ * all empty objects (i.e. `{}`) get pruned.
+ *
+ * This is only used by {@link ITransactionPrivateApi.set} and it follows the global rule
+ * that values pointed to by `object.props[...]` are never `null | undefined` or an empty object.
+ */
+function cloneDeepSerializableAndPrune<T>(v: T): T | undefined {
   if (
     typeof v === 'boolean' ||
     typeof v === 'string' ||
@@ -28,8 +36,8 @@ function cloneDeepSerializable<T>(v: T): T | undefined {
     const cloned: $IntentionalAny = {}
     let clonedAtLeastOneProp = false
     for (const [key, val] of Object.entries(v)) {
-      const clonedVal = cloneDeepSerializable(val)
-      if (typeof clonedVal !== 'undefined') {
+      const clonedVal = cloneDeepSerializableAndPrune(val)
+      if (clonedVal !== undefined) {
         cloned[key] = val
         clonedAtLeastOneProp = true
       }
@@ -69,7 +77,7 @@ export default function createTransactionPrivateApi(
   return {
     set: (pointer, value) => {
       ensureRunning()
-      const _value = cloneDeepSerializable(value)
+      const _value = cloneDeepSerializableAndPrune(value)
       if (typeof _value === 'undefined') return
 
       const {root, path} = getPointerParts(pointer as Pointer<$FixMe>)
@@ -104,7 +112,7 @@ export default function createTransactionPrivateApi(
             return
           }
 
-          const deserialized = cloneDeepSerializable(
+          const deserialized = cloneDeepSerializableAndPrune(
             propConfig.deserializeAndSanitize(value),
           )
           if (deserialized === undefined) {

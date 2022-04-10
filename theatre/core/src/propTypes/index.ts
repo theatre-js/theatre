@@ -609,6 +609,11 @@ export interface IBasePropType<
    * Each prop config has a `deserializeAndSanitize()` function that deserializes and sanitizes
    * any js value into one that is acceptable by this prop config, or `undefined`.
    *
+   * As a rule, the value returned by this function should not hold any reference to `json` or any
+   * other value referenced by the descendent props of `json`. This is to ensure that json values
+   * controlled by the user can never change the values in the store. See `deserializeAndSanitize()` in
+   * `t.compound()` or `t.rgba()` as examples.
+   *
    * The `DeserializeType` is usually equal to `ValueType`. That is the case with
    * all simple prop configs, such as `number`, `string`, or `rgba`. However, composite
    * configs such as `compound` or `enum` may deserialize+sanitize into a partial value. For example,
