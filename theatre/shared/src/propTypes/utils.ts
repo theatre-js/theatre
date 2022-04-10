@@ -1,7 +1,7 @@
 import type {
   IBasePropType,
   PropTypeConfig,
-  PropTypeConfig_AllNonCompounds,
+  PropTypeConfig_AllSimples,
   PropTypeConfig_Compound,
   PropTypeConfig_Enum,
 } from '@theatre/core/propTypes'
@@ -37,7 +37,7 @@ export function getPropConfigByPath(
  * @returns value if it matches the prop's type
  * otherwise returns the default value for the prop
  */
-export function valueInProp<PropConfig extends PropTypeConfig_AllNonCompounds>(
+export function valueInProp<PropConfig extends PropTypeConfig_AllSimples>(
   value: unknown,
   propConfig: PropConfig,
 ): PropConfig extends IBasePropType<$IntentionalAny, $IntentionalAny, infer T>

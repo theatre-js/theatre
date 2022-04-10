@@ -701,7 +701,7 @@ type DeepPartialCompound<Props extends IValidCompoundProps> = {
 }
 
 type DeepPartial<Conf extends PropTypeConfig> =
-  Conf extends PropTypeConfig_AllNonCompounds
+  Conf extends PropTypeConfig_AllSimples
     ? Conf['valueType']
     : Conf extends PropTypeConfig_Compound<infer T>
     ? DeepPartialCompound<T>
@@ -721,7 +721,7 @@ export interface PropTypeConfig_Enum extends IBasePropType<'enum', {}> {
   defaultCase: string
 }
 
-export type PropTypeConfig_AllNonCompounds =
+export type PropTypeConfig_AllSimples =
   | PropTypeConfig_Number
   | PropTypeConfig_Boolean
   | PropTypeConfig_String
@@ -729,6 +729,6 @@ export type PropTypeConfig_AllNonCompounds =
   | PropTypeConfig_Rgba
 
 export type PropTypeConfig =
-  | PropTypeConfig_AllNonCompounds
+  | PropTypeConfig_AllSimples
   | PropTypeConfig_Compound<$IntentionalAny>
   | PropTypeConfig_Enum

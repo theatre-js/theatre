@@ -9,7 +9,7 @@ import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import {getPointerParts} from '@theatre/dataverse'
 import type {
   PropTypeConfig,
-  PropTypeConfig_AllNonCompounds,
+  PropTypeConfig_AllSimples,
   PropTypeConfig_Compound,
 } from '@theatre/core/propTypes'
 import type {PathToProp} from '@theatre/shared/src/utils/addresses'
@@ -54,7 +54,7 @@ function forEachDeepSimplePropOfCompoundProp(
   propType: PropTypeConfig_Compound<$IntentionalAny>,
   path: Array<string | number>,
   callback: (
-    propType: PropTypeConfig_AllNonCompounds,
+    propType: PropTypeConfig_AllSimples,
     path: Array<string | number>,
   ) => void,
 ) {
@@ -105,7 +105,7 @@ export default function createTransactionPrivateApi(
 
         const setStaticOrKeyframeProp = <T>(
           value: T,
-          propConfig: PropTypeConfig_AllNonCompounds,
+          propConfig: PropTypeConfig_AllSimples,
           path: PathToProp,
         ) => {
           if (value === undefined || value === null) {

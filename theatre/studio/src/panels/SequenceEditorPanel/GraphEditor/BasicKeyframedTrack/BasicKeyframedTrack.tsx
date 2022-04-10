@@ -16,7 +16,7 @@ import {
   isPropConfigComposite,
   valueInProp,
 } from '@theatre/shared/propTypes/utils'
-import type {PropTypeConfig_AllNonCompounds} from '@theatre/core/propTypes'
+import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 
 export type ExtremumSpace = {
   fromValueSpace: (v: number) => number
@@ -37,7 +37,7 @@ const BasicKeyframedTrack: React.FC<{
     const propConfig = getPropConfigByPath(
       sheetObject.template.config,
       pathToProp,
-    )! as PropTypeConfig_AllNonCompounds
+    )! as PropTypeConfig_AllSimples
 
     if (isPropConfigComposite(propConfig)) {
       console.error(`Composite prop types cannot be keyframed`)
@@ -127,7 +127,7 @@ type Extremums = [min: number, max: number]
 
 function calculateScalarExtremums(
   keyframes: Keyframe[],
-  propConfig: PropTypeConfig_AllNonCompounds,
+  propConfig: PropTypeConfig_AllSimples,
 ): Extremums {
   let min = Infinity,
     max = -Infinity
