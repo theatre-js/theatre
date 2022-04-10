@@ -556,6 +556,24 @@ export function stringLiteral<
 }
 
 export type Sanitizer<T> = (value: unknown) => T | undefined
+
+/**
+ * A linear interpolator for a certain value type.
+ *
+ * @param left - the value to interpolate from (beginning)
+ * @param right - the value to interpolate to (end)
+ * @param progression - the amount of progression. Starts at 0 and ends at 1. But could overshoot in either direction
+ *
+ * @example
+ * ```ts
+ * const numberInterpolator: Interpolator<number> = (left, right, progression) => left + progression * (right - left)
+ *
+ * numberInterpolator(-50, 50, 0.5) === 0
+ * numberInterpolator(-50, 50, 0) === -50
+ * numberInterpolator(-50, 50, 1) === 50
+ * numberInterpolator(-50, 50, 2) === 150 // overshoot
+ * ```
+ */
 export type Interpolator<T> = (left: T, right: T, progression: number) => T
 
 export interface IBasePropType<
