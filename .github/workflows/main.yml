@@ -45,7 +45,7 @@ jobs:
           custom-command: 'yarn test:e2e:ci'
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      # TODO: Run the build tests automatically
+      # TODO: Run the build tests without explicitly declaring them here
       - name: Setup for the test builds
         run: |
           yarn build:ts
@@ -55,3 +55,5 @@ jobs:
         run: yarn workspace @build_tests/parcel build
       - name: Test build with parcel v2
         run: yarn workspace @build_tests/parcel_v2 build
+      - name: Test build with vanilla rollup
+        run: yarn workspace @build_tests/vanilla_rollup build-prod
