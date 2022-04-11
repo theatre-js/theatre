@@ -8,10 +8,11 @@ are tested in the CI.
 
 ## The currently tested setups
 
-| project                | tools                      | `package.json`                 |
-| ---------------------- | -------------------------- | ------------------------------ |
-| @build_tests/parcel    | `parcel 1.x`, `typescript` | [link](parcel/package.json)    |
-| @build_tests/parcel_v2 | `parcel 2.x`               | [link](parcel_v2/package.json) |
+| project                     | tools                      | `package.json`                      |
+| --------------------------- | -------------------------- | ----------------------------------- |
+| @build_tests/parcel         | `parcel 1.x`, `typescript` | [link](parcel/package.json)         |
+| @build_tests/parcel_v2      | `parcel 2.x`               | [link](parcel_v2/package.json)      |
+| @build_tests/vanilla_rollup | `rollup 2.x`               | [link](vanilla_rollup/package.json) |
 
 ## Testing the configurations locally
 
