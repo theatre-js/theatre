@@ -1,7 +1,9 @@
 {
   "name": "@build_tests/vanilla_rollup",
+  "version": "1.0.0",
+  "private": true,
   "installConfig": {
-    "hoistingLimits": "none"
+    "hoistingLimits": "dependencies"
   },
   "description": "Theatre.js project using vanilla rollup",
   "dependencies": {

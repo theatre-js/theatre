@@ -4,6 +4,7 @@
 /theatre/*/dist
 /examples/*/dist
 /build_tests/*/dist
+/build_tests/*/public
 *.log
 *.temp
 /.vscode
