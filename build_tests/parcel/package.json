@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "installConfig": {
-    "hoistingLimits": "dependencies"
+    "hoistingLimits": "workspaces"
   },
   "description": "Theatre.js project using parcel",
   "main": "index.html",

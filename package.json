@@ -5,6 +5,7 @@
   "workspaces": [
     "packages/*",
     "examples/*",
+    "build_tests/*",
     "theatre"
   ],
   "scripts": {
