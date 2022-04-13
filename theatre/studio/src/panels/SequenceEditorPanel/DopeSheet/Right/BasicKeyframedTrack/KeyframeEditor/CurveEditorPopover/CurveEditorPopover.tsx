@@ -41,7 +41,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  width: 230px;
+  width: 100px;
 `
 
 const InputContainer = styled.div`
@@ -65,9 +65,9 @@ const OptionsContainer = styled.div`
 
 const EasingOption = styled.div`
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  padding: 10px;
   overflow: hidden;
 
   background: rgba(255, 255, 255, 0.1);
@@ -118,16 +118,16 @@ const SearchBox = styled.input.attrs({type: 'text'})`
   }
 `
 
-const CurveEditorPopover: React.FC<
-  {
-    layoutP: Pointer<SequenceEditorPanelLayout>
+type IProps = {
+  layoutP: Pointer<SequenceEditorPanelLayout>
 
-    /**
-     * Called when user hits enter/escape
-     */
-    onRequestClose: () => void
-  } & Parameters<typeof KeyframeEditor>[0]
-> = (props) => {
+  /**
+   * Called when user hits enter/escape
+   */
+  onRequestClose: () => void
+} & Parameters<typeof KeyframeEditor>[0]
+
+const CurveEditorPopover: React.FC<IProps> = (props) => {
   const [filter, setFilter] = useState<string>('')
 
   const presetSearchResults = useMemo(
@@ -372,42 +372,36 @@ const CurveEditorPopover: React.FC<
                     fns.discardTemporaryValue()
                   }}
                 >
-                  <EasingCurveContainer>
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox={`0 0 ${1 + svgPadding * 2} ${
-                        1 + svgPadding * 2
-                      }`}
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d={`M${svgPadding} ${1 + svgPadding} C${
-                          easing[0] + svgPadding
-                        } ${1 - easing[1] + svgPadding} ${
-                          easing[2] + svgPadding
-                        } ${1 - easing[3] + svgPadding} ${
-                          1 + svgPadding
-                        } ${svgPadding}`}
-                        stroke={svgColor}
-                        strokeWidth="0.08"
-                      />
-                      <circle
-                        cx={svgPadding}
-                        cy={1 + svgPadding}
-                        r={svgCircleRadius}
-                        fill={svgColor}
-                      />
-                      <circle
-                        cx={1 + svgPadding}
-                        cy={svgPadding}
-                        r={svgCircleRadius}
-                        fill={svgColor}
-                      />
-                    </svg>
-                  </EasingCurveContainer>
-                  <span>
+                  <svg
+                    viewBox={`0 0 ${1 + svgPadding * 2} ${1 + svgPadding * 2}`}
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d={`M${svgPadding} ${1 + svgPadding} C${
+                        easing[0] + svgPadding
+                      } ${1 - easing[1] + svgPadding} ${
+                        easing[2] + svgPadding
+                      } ${1 - easing[3] + svgPadding} ${
+                        1 + svgPadding
+                      } ${svgPadding}`}
+                      stroke={svgColor}
+                      strokeWidth="0.08"
+                    />
+                    <circle
+                      cx={svgPadding}
+                      cy={1 + svgPadding}
+                      r={svgCircleRadius}
+                      fill={svgColor}
+                    />
+                    <circle
+                      cx={1 + svgPadding}
+                      cy={svgPadding}
+                      r={svgCircleRadius}
+                      fill={svgColor}
+                    />
+                  </svg>
+                  {/* <span>
                     {useQuery ? (
                       <span
                         dangerouslySetInnerHTML={{
@@ -417,13 +411,43 @@ const CurveEditorPopover: React.FC<
                     ) : (
                       preset.label
                     )}
-                  </span>
+                  </span> */}
                 </EasingOption>
               )
             })}
           </div>
         </OptionsContainer>
       )}
+      <svg
+        viewBox={`0 0 ${1 + svgPadding * 2} ${1 + svgPadding * 2}`}
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d={`M${svgPadding} ${1 + svgPadding} C${
+            cur.handles[2] + svgPadding
+          } ${1 - cur.handles[3] + svgPadding} ${
+            next.handles[0] + svgPadding
+          } ${1 - next.handles[1] + svgPadding} ${
+            1 + svgPadding
+          } ${svgPadding}`}
+          stroke={svgColor}
+          strokeWidth="0.08"
+        />
+        <circle
+          cx={svgPadding}
+          cy={1 + svgPadding}
+          r={svgCircleRadius}
+          fill={svgColor}
+        />
+        <circle
+          cx={1 + svgPadding}
+          cy={svgPadding}
+          r={svgCircleRadius}
+          fill={svgColor}
+        />
+      </svg>
+      {/* <GraphEditor key={'1' + '-graphEditor'} layoutP={props.layoutP} /> */}
     </Container>
   )
 }

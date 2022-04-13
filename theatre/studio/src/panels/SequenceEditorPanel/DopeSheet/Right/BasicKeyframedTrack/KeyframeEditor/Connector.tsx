@@ -110,6 +110,9 @@ const Connector: React.FC<IProps> = (props) => {
           connectorLengthInUnitSpace / connectorWidthUnscaled
         }), 1, 1)`,
       }}
+      onClick={(e) => {
+        if (node) openPopover(e, node)
+      }}
     >
       {popoverNode}
       {contextMenu}
