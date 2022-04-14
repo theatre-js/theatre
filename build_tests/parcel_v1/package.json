@@ -9,8 +9,6 @@
     "yalc:add-theatre": "yalc add @theatre/core @theatre/studio"
   },
   "dependencies": {
-    "@theatre/core": "file:.yalc/@theatre/core",
-    "@theatre/studio": "file:.yalc/@theatre/studio",
     "deasync": "^0.1.26",
     "node-gyp": "^9.0.0",
     "parcel-bundler": "^1.6.1",
