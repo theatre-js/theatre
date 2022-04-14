@@ -19,3 +19,12 @@
 !.yarn/sdks
 !.yarn/versions
 
+
+/build_tests/*/dist
+/build_tests/*/.cache
+/build_tests/*/.yarn
+/build_tests/*/.yalc
+/build_tests/*/yalc.lock
+# yarn.lock is not usable for projects that are
+# managed with `yalc`
+/build_tests/*/yarn.lock

@@ -37,6 +37,15 @@ jobs:
       - run: yarn typecheck
       - run: yarn lint:all --max-warnings 0
       - run: yarn test
+      - name: Run build tests
+        run: |
+          yarn publish:yalc
+          cd build_tests/parcel_v1
+          touch yarn.lock
+          yarn yalc:add-theatre
+          yarn
+          yarn build
+          cd ../../
       - name: Download playwright
         run: yarn workspace playground run playwright install
       - name: Run e2e tests with percy

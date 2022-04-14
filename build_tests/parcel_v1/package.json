@@ -1,0 +1,25 @@
+{
+  "name": "theatrejs-hello-world",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html",
+    "yalc:add-theatre": "yalc add @theatre/core @theatre/studio"
+  },
+  "dependencies": {
+    "deasync": "^0.1.26",
+    "node-gyp": "^9.0.0",
+    "parcel-bundler": "^1.6.1",
+    "yalc": "^1.0.0-pre.53"
+  },
+  "devDependencies": {
+    "@babel/core": "7.2.0",
+    "typescript": "^4.4.3"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  },
+  "keywords": []
+}
