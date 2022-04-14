@@ -39,7 +39,7 @@ jobs:
       - run: yarn test
       - name: Run build tests
         run: |
-          yarn publish:yalc
+          yarn yalc:publish
           cd build_tests/parcel_v1
           touch yarn.lock
           yarn yalc:add-theatre

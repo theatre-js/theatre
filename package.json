@@ -19,7 +19,7 @@
     "release": "zx scripts/release.mjs",
     "build:api-docs": "zx scripts/build-api-docs.mjs",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules",
-    "yalc:publish": "yarn build:ts && USING_YALC='true' yalc publish theatre/core && USING_YALC='true' yalc publish theatre/dataverse"
+    "yalc:publish": "yarn build:ts && USING_YALC='true' yalc publish theatre/core && USING_YALC='true' yalc publish theatre/studio"
   },
   "lint-staged": {
     "(theatre|packages)/**/*.(t|j)s?(x)": [
