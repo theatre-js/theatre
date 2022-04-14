@@ -34,9 +34,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - run: yarn install
-      # - run: yarn typecheck
-      # - run: yarn lint:all --max-warnings 0
-      # - run: yarn test
+      - run: yarn typecheck
+      - run: yarn lint:all --max-warnings 0
+      - run: yarn test
       - name: Build setup tests
         run: yarn build
       - run: yarn yalc:publish
@@ -52,7 +52,6 @@ jobs:
         working-directory: build_tests/parcel_v1
       - run: yarn build
         working-directory: build_tests/parcel_v1
-      - run: exit 1 # make sure it exists with an error code
       - name: Download playwright
         run: yarn workspace playground run playwright install
       - name: Run e2e tests with percy
