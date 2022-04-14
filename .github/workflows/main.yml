@@ -45,6 +45,8 @@ jobs:
         working-directory: build_tests/parcel_v1
       - run: yarn yalc:add-theatre
         working-directory: build_tests/parcel_v1
+      - run: rm yarn.lock && touch yarn.lock
+        working-directory: build_tests/parcel_v1
       - run: yarn install
         working-directory: build_tests/parcel_v1
       - run: yarn build
