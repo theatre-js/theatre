@@ -27,4 +27,4 @@
 /build_tests/*/yalc.lock
 # yarn.lock is not usable for projects that are
 # managed with `yalc`
-/build_tests/*/yarn.lock
+# /build_tests/*/yarn.lock

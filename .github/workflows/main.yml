@@ -39,12 +39,14 @@ jobs:
       # - run: yarn test
       - name: Build setup tests
         run: yarn yalc:publish
-      - run: cd build_tests/parcel_v1
-      - run: touch yarn.lock && pwd
+      - run: pwd && ls
+        working-directory: build_tests/parcel_v1
       - run: yarn
-      - run: yalc:add-theatre
-      - run: yarn
-      - run: build
+        working-directory: build_tests/parcel_v1
+      - run: yarn yalc:add-theatre
+        working-directory: build_tests/parcel_v1
+      - run: yarn build
+        working-directory: build_tests/parcel_v1
       - run: exit 1 # make sure it exists with an error code
       - name: Download playwright
         run: yarn workspace playground run playwright install
