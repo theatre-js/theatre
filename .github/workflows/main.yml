@@ -42,6 +42,7 @@ jobs:
           yarn yalc:publish
           cd build_tests/parcel_v1
           touch yarn.lock
+          yarn
           yarn yalc:add-theatre
           yarn
           yarn build
