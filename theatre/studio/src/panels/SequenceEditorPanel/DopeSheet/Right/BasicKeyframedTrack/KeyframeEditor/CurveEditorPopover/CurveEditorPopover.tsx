@@ -8,6 +8,7 @@ import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type KeyframeEditor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/KeyframeEditor'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import CurveSegmentEditor from './CurveSegmentEditor'
 
 const presets = [
   {label: 'Linear', value: '0.5, 0.5, 0.5, 0.5'},
@@ -373,33 +374,20 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
                   }}
                 >
                   <svg
-                    viewBox={`0 0 ${1 + svgPadding * 2} ${1 + svgPadding * 2}`}
+                    viewBox={`${0 - svgPadding} ${0 - svgPadding} ${
+                      1 + svgPadding * 2
+                    } ${1 + svgPadding * 2}`}
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
-                      d={`M${svgPadding} ${1 + svgPadding} C${
-                        easing[0] + svgPadding
-                      } ${1 - easing[1] + svgPadding} ${
-                        easing[2] + svgPadding
-                      } ${1 - easing[3] + svgPadding} ${
-                        1 + svgPadding
-                      } ${svgPadding}`}
+                      d={`M0 1 C${easing[0]} ${1 - easing[1]} ${easing[2]} 
+                      ${1 - easing[3]} 1 0`}
                       stroke={svgColor}
                       strokeWidth="0.08"
                     />
-                    <circle
-                      cx={svgPadding}
-                      cy={1 + svgPadding}
-                      r={svgCircleRadius}
-                      fill={svgColor}
-                    />
-                    <circle
-                      cx={1 + svgPadding}
-                      cy={svgPadding}
-                      r={svgCircleRadius}
-                      fill={svgColor}
-                    />
+                    <circle cx={0} cy={1} r={svgCircleRadius} fill={svgColor} />
+                    <circle cx={1} cy={0} r={svgCircleRadius} fill={svgColor} />
                   </svg>
                   {/* <span>
                     {useQuery ? (
@@ -418,36 +406,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
           </div>
         </OptionsContainer>
       )}
-      <svg
-        viewBox={`0 0 ${1 + svgPadding * 2} ${1 + svgPadding * 2}`}
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d={`M${svgPadding} ${1 + svgPadding} C${
-            cur.handles[2] + svgPadding
-          } ${1 - cur.handles[3] + svgPadding} ${
-            next.handles[0] + svgPadding
-          } ${1 - next.handles[1] + svgPadding} ${
-            1 + svgPadding
-          } ${svgPadding}`}
-          stroke={svgColor}
-          strokeWidth="0.08"
-        />
-        <circle
-          cx={svgPadding}
-          cy={1 + svgPadding}
-          r={svgCircleRadius}
-          fill={svgColor}
-        />
-        <circle
-          cx={1 + svgPadding}
-          cy={svgPadding}
-          r={svgCircleRadius}
-          fill={svgColor}
-        />
-      </svg>
-      {/* <GraphEditor key={'1' + '-graphEditor'} layoutP={props.layoutP} /> */}
+      <CurveSegmentEditor {...props}></CurveSegmentEditor>
     </Container>
   )
 }
