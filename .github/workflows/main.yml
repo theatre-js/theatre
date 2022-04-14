@@ -45,6 +45,8 @@ jobs:
         working-directory: build_tests/parcel_v1
       - run: yarn yalc:add-theatre
         working-directory: build_tests/parcel_v1
+      - run: yarn install
+        working-directory: build_tests/parcel_v1
       - run: yarn build
         working-directory: build_tests/parcel_v1
       - run: exit 1 # make sure it exists with an error code
