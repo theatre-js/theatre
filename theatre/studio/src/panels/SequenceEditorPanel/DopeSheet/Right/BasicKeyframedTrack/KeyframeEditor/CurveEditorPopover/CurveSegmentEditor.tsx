@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react'
+import React, {useMemo, useRef, useState} from 'react'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {Keyframe} from '@theatre/core/src/projects/store/types/SheetState_Historic'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -7,10 +7,34 @@ import type CurveEditorPopover from './CurveEditorPopover'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import getStudio from '@theatre/studio/getStudio'
 import {val} from '@theatre/dataverse'
+import styled from 'styled-components'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const SVG_CURVE_COLOR = '#b98b08'
 const SVG_PADDING = 0.12
 const SVG_CIRCLE_RADIUS = 0.08
+
+const Circle = styled.circle`
+  stroke-width: 0.1px;
+  vector-effect: non-scaling-stroke;
+  fill: #b98b08;
+  r: 0.05px;
+  pointer-events: none;
+`
+
+const HitZone = styled.circle`
+  stroke-width: 0.1px;
+  vector-effect: non-scaling-stroke;
+  r: 0.2px;
+  fill: transparent;
+  cursor: move;
+  ${pointerEventsAutoInNormalMode};
+  &:hover {
+  }
+  &:hover + ${Circle} {
+    r: 0.1px;
+  }
+`
 
 type IProps = Parameters<typeof CurveEditorPopover>[0]
 
@@ -52,13 +76,12 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
         stroke={SVG_CURVE_COLOR}
         strokeWidth="0.01"
       />
-      <circle
+      <HitZone
         ref={refLeft}
         cx={cur.handles[2]}
         cy={1 - cur.handles[3]}
-        r={0.03}
-        fill={SVG_CURVE_COLOR}
-      />
+      ></HitZone>
+      <Circle cx={cur.handles[2]} cy={1 - cur.handles[3]}></Circle>
 
       <circle cx={1} cy={0} r={SVG_CIRCLE_RADIUS} fill={SVG_CURVE_COLOR} />
       <line
@@ -87,15 +110,17 @@ function useLeftDrag(
   props: IProps,
   keyframe: Keyframe,
 ): void {
-  const handlers = useRefreshableMemo<Parameters<typeof useDrag>[1]>(
-    (refresh) => {
+  const handlers = useFreezableMemo<Parameters<typeof useDrag>[1]>(
+    (setFreeze) => {
       // Considered using "scrub" instead to manage a not-necessarilly commital change over time
       // But it appears that scrub doesn't allow to change a "pointer" for the keyframes
       let tempTransaction: CommitOrDiscard | undefined
 
       return {
         lockCursorTo: 'move',
-        onDragStart() {},
+        onDragStart() {
+          setFreeze(true)
+        },
         onDrag(dx, dy) {
           if (!svgNode) return
           tempTransaction?.discard()
@@ -134,17 +159,14 @@ function useLeftDrag(
           })
         },
         onDragEnd(dragHappened) {
-          if (dragHappened) {
-            tempTransaction?.commit()
-            // now that we've actually updated the studio, we actually need to re-evaluate with the newest keyframe
-            // this is gross, but it is what it is
-            refresh()
-          } else tempTransaction?.discard()
+          setFreeze(false)
+          if (dragHappened) tempTransaction?.commit()
+          else tempTransaction?.discard()
           tempTransaction = undefined
         },
       }
     },
-    [svgNode, getStudio()],
+    [svgNode, keyframe],
   )
 
   useDrag(node, handlers)
@@ -156,15 +178,17 @@ function useRightDrag(
   props: IProps,
   keyframe: Keyframe,
 ): void {
-  const handlers = useRefreshableMemo<Parameters<typeof useDrag>[1]>(
-    (refresh) => {
+  const handlers = useFreezableMemo<Parameters<typeof useDrag>[1]>(
+    (setFrozen) => {
       // Considered using "scrub" instead to manage a not-necessarilly commital change over time
       // But it appears that scrub doesn't allow to change a "pointer" for the keyframes
       let tempTransaction: CommitOrDiscard | undefined
 
       return {
         lockCursorTo: 'move',
-        onDragStart() {},
+        onDragStart() {
+          setFrozen(true)
+        },
         onDrag(dx, dy) {
           if (!svgNode) return
           tempTransaction?.discard()
@@ -203,20 +227,37 @@ function useRightDrag(
           })
         },
         onDragEnd(dragHappened) {
-          if (dragHappened) {
-            tempTransaction?.commit()
-            // now that we've actually updated the studio, we actually need to re-evaluate with the newest keyframe
-            // this is gross, but it is what it is
-            refresh()
-          } else tempTransaction?.discard()
+          setFrozen(false)
+          if (dragHappened) tempTransaction?.commit()
+          else tempTransaction?.discard()
           tempTransaction = undefined
         },
       }
     },
-    [svgNode],
+    [svgNode, keyframe],
   )
 
   useDrag(node, handlers)
+}
+
+/**
+ * The same as useMemo except that it can be frozen so that
+ * the memoized function is not recomputed even if the dependencies
+ * change. It can also be unfrozen.
+ *
+ * An unfrozen useFreezableMemo is the same as useMemo.
+ *
+ */
+function useFreezableMemo<T>(
+  fn: (setFreeze: (isFrozen: boolean) => void) => T,
+  deps: any[],
+): T {
+  const [isFrozen, setFreeze] = useState<boolean>(false)
+  const freezableDeps = useRef(deps)
+
+  if (!isFrozen) freezableDeps.current = deps
+
+  return useMemo(() => fn(setFreeze), freezableDeps.current)
 }
 
 function useRefreshableMemo<T>(
