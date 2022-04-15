@@ -67,7 +67,9 @@ const FocusRangeArea: React.FC<{
       conditionalStyleProps = {
         width: endPosInClippedSpace - startPosInClippedSpace,
         transform: `translate3d(${
-          startPosInClippedSpace - val(layoutP.clippedSpace.fromUnitSpace)(0)
+          val(layoutP.scaledSpace.leftPadding) +
+          startPosInClippedSpace -
+          val(layoutP.clippedSpace.fromUnitSpace)(0)
         }px, 0, 0)`,
       }
 
