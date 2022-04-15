@@ -17,12 +17,16 @@ const focusRangeAreaTheme = {
   },
 }
 
+const divWidth = 1000
+
 const Container = styled.div`
   position: absolute;
   opacity: ${focusRangeAreaTheme.enabled.opacity};
   background: transparent;
   left: 0;
   top: 0;
+  width: ${divWidth}px;
+  transform-origin: top left;
 `
 const FocusRangeArea: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
@@ -51,7 +55,6 @@ const FocusRangeArea: React.FC<{
       endPosInClippedSpace: number,
       conditionalStyleProps:
         | {
-            width: number
             transform: string
             background?: string
           }
@@ -64,13 +67,14 @@ const FocusRangeArea: React.FC<{
 
       endPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(range.end)
 
+      const desiredWidth = endPosInClippedSpace - startPosInClippedSpace
+
       conditionalStyleProps = {
-        width: endPosInClippedSpace - startPosInClippedSpace,
-        transform: `translate3d(${
+        transform: `translateX(${
           val(layoutP.scaledSpace.leftPadding) +
           startPosInClippedSpace -
           val(layoutP.clippedSpace.fromUnitSpace)(0)
-        }px, 0, 0)`,
+        }px) scaleX(${desiredWidth / divWidth})`,
       }
 
       if (existingRange.enabled === true) {
