@@ -1,6 +1,6 @@
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
-import {usePrism} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
@@ -156,7 +156,8 @@ const FocusRangeStrip: React.FC<{
     },
   })
 
-  const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+  const scaledSpaceToUnitSpace = useVal(layoutP.scaledSpace.toUnitSpace)
+  const [isDraggingRef, isDragging] = useRefAndState(false)
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     let sequence = sheet.getSequence()
@@ -178,7 +179,9 @@ const FocusRangeStrip: React.FC<{
           dragHappened = false
           sequence = val(layoutP.sheet).getSequence()
           target = event.target as HTMLDivElement
-          target.classList.add('dragging')
+          isDraggingRef.current = true
+        } else {
+          return false
         }
       },
       onDrag(dx) {
@@ -218,6 +221,7 @@ const FocusRangeStrip: React.FC<{
         }
       },
       onDragEnd() {
+        isDraggingRef.current = false
         if (existingRange?.enabled) {
           if (dragHappened && tempTransaction !== undefined) {
             tempTransaction.commit()
@@ -227,7 +231,6 @@ const FocusRangeStrip: React.FC<{
           tempTransaction = undefined
         }
         if (target !== undefined) {
-          target.classList.remove('dragging')
           target = undefined
         }
       },
@@ -266,23 +269,24 @@ const FocusRangeStrip: React.FC<{
       cursor?: string
     } = {}
 
-    if (existingRange !== undefined) {
-      if (existingRange.enabled === false) {
-        conditionalStyleProps.background =
-          focusRangeStripTheme.disabled.backgroundColor
-        conditionalStyleProps.cursor = 'default'
-      } else {
-        conditionalStyleProps.cursor = 'grab'
-      }
+    if (!existingRange) return <></>
+
+    if (existingRange.enabled === false) {
+      conditionalStyleProps.background =
+        focusRangeStripTheme.disabled.backgroundColor
+      conditionalStyleProps.cursor = 'default'
+    } else {
+      conditionalStyleProps.cursor = 'grab'
     }
 
-    return existingRange === undefined ? (
-      <></>
-    ) : (
+    return (
       <>
         {contextMenu}
         <RangeStrip
           id="range-strip"
+          className={`${isDragging ? 'dragging' : ''} ${
+            existingRange.enabled ? 'enabled' : ''
+          }`}
           ref={rangeStripRef as $IntentionalAny}
           style={{
             transform: `translateX(${translateX}px) scale(${scaleX}, 1)`,
@@ -291,7 +295,7 @@ const FocusRangeStrip: React.FC<{
         />
       </>
     )
-  }, [layoutP, rangeStripRef, existingRangeD, contextMenu])
+  }, [layoutP, rangeStripRef, existingRangeD, contextMenu, isDragging])
 }
 
 export default FocusRangeStrip
