@@ -68,6 +68,10 @@ const PointerEventsHandler: React.FC<{
   )
 }
 
+/**
+ * Question: Is this referring to the user's pointer input device?
+ * Or is this locking related to the playhead "cursor"?
+ */
 export const useCursorLock = (
   enabled: boolean,
   className: string,
