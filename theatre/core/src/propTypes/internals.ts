@@ -17,6 +17,8 @@ export type IValidCompoundProps = {
   [K in string]: PropTypeConfig
 }
 
+// Question: Why doesn't this include Rgba? Should it include Marker?
+//  - Is this just for compound props?
 type IShorthandProp =
   | string
   | number
