@@ -1,0 +1,12 @@
+**/node_modules
+**/xeno
+dist
+public
+*.log
+*.temp
+/.vscode
+/.history
+**/.DS_Store
+*.tsbuildinfo
+
+.yarn/*
