@@ -13,7 +13,7 @@ import {RgbaColorPicker} from '@theatre/studio/uiComponents/colorPicker'
 import styled from 'styled-components'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
-import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
+import {popoverBackgroundColor} from '@theatre/studio/uiComponents/Popover/BasicPopover'
 
 const RowContainer = styled.div`
   display: flex;
@@ -31,7 +31,7 @@ const Puck = styled.div.attrs<PuckProps>((props) => ({
     background: props.background,
   },
 }))<PuckProps>`
-  height: calc(100% - 4px);
+  height: calc(100% - 12px);
   aspect-ratio: 1;
   border-radius: 2px;
 `
@@ -41,6 +41,24 @@ const HexInput = styled(BasicStringInput)`
 `
 
 const noop = () => {}
+
+const Popover = styled.div`
+  position: absolute;
+  background-color: ${popoverBackgroundColor};
+  color: white;
+  padding: 0;
+  margin: 0;
+  cursor: default;
+  border-radius: 3px;
+  z-index: 10000;
+  backdrop-filter: blur(8px);
+
+  padding: 4;
+  pointer-events: all;
+
+  border: none;
+  box-shadow: none;
+`
 
 const RgbaPropEditor: React.FC<{
   propConfig: PropTypeConfig_Rgba
@@ -65,33 +83,26 @@ const RgbaPropEditor: React.FC<{
 
   const [popoverNode, openPopover] = usePopover({}, () => {
     return (
-      <BasicPopover>
-        <div
-          style={{
-            margin: 8,
-            pointerEvents: 'all',
+      <Popover>
+        <RgbaColorPicker
+          color={{
+            r: stuff.value.r,
+            g: stuff.value.g,
+            b: stuff.value.b,
+            a: stuff.value.a,
           }}
-        >
-          <RgbaColorPicker
-            color={{
-              r: stuff.value.r,
-              g: stuff.value.g,
-              b: stuff.value.b,
-              a: stuff.value.a,
-            }}
-            temporarilySetValue={(color) => {
-              const rgba = decorateRgba(color)
-              stuff.temporarilySetValue(rgba)
-            }}
-            permanentlySetValue={(color) => {
-              // console.log('perm')
-              const rgba = decorateRgba(color)
-              stuff.permenantlySetValue(rgba)
-            }}
-            discardTemporaryValue={stuff.discardTemporaryValue}
-          />
-        </div>
-      </BasicPopover>
+          temporarilySetValue={(color) => {
+            const rgba = decorateRgba(color)
+            stuff.temporarilySetValue(rgba)
+          }}
+          permanentlySetValue={(color) => {
+            // console.log('perm')
+            const rgba = decorateRgba(color)
+            stuff.permenantlySetValue(rgba)
+          }}
+          discardTemporaryValue={stuff.discardTemporaryValue}
+        />
+      </Popover>
     )
   })
 
