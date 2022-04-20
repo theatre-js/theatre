@@ -9,7 +9,6 @@
 .yarn
 
 dist
-.parcel-cache
 
 .yalc
 yalc.lock
