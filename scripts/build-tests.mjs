@@ -52,13 +52,14 @@ for (let i = 0; i < build_tests_directory_entries.length; i++) {
 
 /*
 Install the dependencies of the projects and
-Link the dependencies with yalc
+link the @theatre packages with `yalc link`
 */
 const linking_errors = []
 for (const project of project_list) {
   try {
     cd(project)
     for (let pkg of packagesToLink) {
+      await $`yarn`
       await $`npx yalc link ${pkg}`
     }
   } catch {
