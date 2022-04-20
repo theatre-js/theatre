@@ -41,6 +41,8 @@ jobs:
         run: yarn yalc:publish
       - name: Run the build tests
         run: yarn test:build
+      - name: Download playwright
+        run: yarn workspace playground run playwright install
       - name: Run e2e tests with percy
         uses: percy/exec-action@v0.3.1
         with:
