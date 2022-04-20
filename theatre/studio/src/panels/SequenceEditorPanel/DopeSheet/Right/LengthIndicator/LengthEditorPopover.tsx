@@ -57,7 +57,7 @@ const LengthEditorPopover: React.FC<{
           tempTransaction = undefined
         }
       },
-      permenantlySetValue(newLength: number): void {
+      permanentlySetValue(newLength: number): void {
         if (tempTransaction) {
           tempTransaction.discard()
           tempTransaction = undefined

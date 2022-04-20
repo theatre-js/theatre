@@ -68,9 +68,23 @@ const PointerEventsHandler: React.FC<{
   )
 }
 
-export const useCursorLock = (
+/**
+ * A "locking" mechanism for managing style.cursor values.
+ *
+ * Putting this behind a lock is important so we can properly manage
+ * multiple features all coordinating to style the cursor.
+ *
+ * This will also track a stack of different cursor styles so that
+ * adding a style to be the "foremost" cursor can override a previous style,
+ * but then "unlocking" that style will again reveal the existing styles.
+ *
+ * It behaves a bit like a stack.
+ */
+export const useCssCursorLock = (
+  /** Whether to enable the provided cursor style */
   enabled: boolean,
   className: string,
+  /** e.g. `"ew"`, `"help"`, `"pointer"`, `"text"`, etc */
   cursor: string,
 ) => {
   const ctx = useContext(context)

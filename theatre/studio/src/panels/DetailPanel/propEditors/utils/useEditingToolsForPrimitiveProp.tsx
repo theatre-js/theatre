@@ -23,7 +23,7 @@ interface CommonStuff<T> {
 
   temporarilySetValue(v: T): void
   discardTemporaryValue(): void
-  permenantlySetValue(v: T): void
+  permanentlySetValue(v: T): void
 }
 
 interface Default<T> extends CommonStuff<T> {
@@ -76,7 +76,7 @@ export function useEditingToolsForPrimitiveProp<
               currentScrub = null
             }
           },
-          permenantlySetValue(v: T): void {
+          permanentlySetValue(v: T): void {
             if (currentScrub) {
               currentScrub.capture((api) => {
                 api.set(pointerToProp, v)

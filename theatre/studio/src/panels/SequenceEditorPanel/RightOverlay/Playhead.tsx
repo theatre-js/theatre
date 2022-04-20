@@ -133,6 +133,8 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 
   const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
 
+  // This may not currently snap correctly like it does when grabbing the "Rod".
+  // See https://www.notion.so/theatrejs/dragging-from-playhead-does-not-snap-dadac4fa755149cebbcb70a655c3a0d5
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     const setIsSeeking = val(layoutP.seeker.setIsSeeking)
 

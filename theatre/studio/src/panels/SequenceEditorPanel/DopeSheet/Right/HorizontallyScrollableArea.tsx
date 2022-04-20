@@ -10,7 +10,7 @@ import React, {useLayoutEffect, useMemo} from 'react'
 import styled from 'styled-components'
 import {useReceiveVerticalWheelEvent} from '@theatre/studio/panels/SequenceEditorPanel/VerticalScrollContainer'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import type {IRange} from '@theatre/shared/utils/types'
 
 const Container = styled.div`
@@ -80,7 +80,7 @@ function useDragHandlers(
     const setIsSeeking = val(layoutP.seeker.setIsSeeking)
 
     return {
-      onDrag(dx: number, _, event) {
+      onDrag(dx, _, event) {
         const deltaPos = scaledSpaceToUnitSpace(dx)
         const unsnappedPos = clamp(posBeforeSeek + deltaPos, 0, sequence.length)
 
@@ -104,8 +104,12 @@ function useDragHandlers(
         sequence.position = newPosition
       },
       onDragStart(event) {
-        if (event.target instanceof HTMLInputElement) return false
+        if (event.target instanceof HTMLInputElement) {
+          // editing some value
+          return false
+        }
         if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
+          // e.g. marquee selection has shiftKey
           return false
         }
         if (
@@ -113,6 +117,9 @@ function useDragHandlers(
             .composedPath()
             .some((el) => el instanceof HTMLElement && el.draggable === true)
         ) {
+          // Question: I think to check if we want another descendent element
+          // to be able to take control of this drag event.
+          // Question: e.g. for `useDragKeyframe`?
           return false
         }
 
@@ -139,9 +146,9 @@ function useDragHandlers(
     }
   }, [layoutP, containerEl])
 
-  const [isDragigng] = useDrag(containerEl, handlers)
+  const [isDragging] = useDrag(containerEl, handlers)
 
-  useCursorLock(isDragigng, 'draggingPositionInSequenceEditor', 'ew-resize')
+  useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 }
 
 function useHandlePanAndZoom(

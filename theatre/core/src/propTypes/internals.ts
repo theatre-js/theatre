@@ -17,6 +17,16 @@ export type IValidCompoundProps = {
   [K in string]: PropTypeConfig
 }
 
+/**
+ *
+ * This does not include Rgba since Rgba does not have a predictable
+ * object shape. We prefer to infer that compound props are described as
+ * `Record<string, IShorthandProp>` for now.
+ *
+ * In the future, it might be reasonable to wrap these types up into something
+ * which would allow us to differentiate between values at runtime
+ * (e.g. `val.type = "Rgba"` vs `val.type = "Compound"` etc)
+ */
 type IShorthandProp =
   | string
   | number

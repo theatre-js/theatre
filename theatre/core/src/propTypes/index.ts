@@ -14,8 +14,7 @@ import type {
   IValidCompoundProps,
   ShorthandCompoundPropsToLonghandCompoundProps,
 } from './internals'
-import {sanitizeCompoundProps} from './internals'
-import {propTypeSymbol} from './internals'
+import {propTypeSymbol, sanitizeCompoundProps} from './internals'
 // eslint-disable-next-line unused-imports/no-unused-imports
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
@@ -91,9 +90,7 @@ const validateCommonOpts = (fnCallSignature: string, opts?: CommonOpts) => {
  */
 export const compound = <Props extends IShorthandCompoundProps>(
   props: Props,
-  opts: {
-    label?: string
-  } = {},
+  opts: CommonOpts = {},
 ): PropTypeConfig_Compound<
   ShorthandCompoundPropsToLonghandCompoundProps<Props>
 > => {
@@ -287,9 +284,7 @@ const _interpolateNumber = (
 
 export const rgba = (
   defaultValue: Rgba = {r: 0, g: 0, b: 0, a: 1},
-  opts: {
-    label?: string
-  } = {},
+  opts: CommonOpts = {},
 ): PropTypeConfig_Rgba => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.rgba(defaultValue, opts)', opts)
@@ -337,6 +332,7 @@ export const rgba = (
 }
 
 const _sanitizeRgba = (val: unknown): Rgba | undefined => {
+  if (!val) return undefined
   let valid = true
   for (const c of ['r', 'g', 'b', 'a']) {
     if (
@@ -555,8 +551,6 @@ export function stringLiteral<
   }
 }
 
-export type Sanitizer<T> = (value: unknown) => T | undefined
-
 /**
  * A linear interpolator for a certain value type.
  *
@@ -669,7 +663,7 @@ const defaultNumberNudgeFn: NumberNudgeFn = ({
 export interface PropTypeConfig_Boolean
   extends ISimplePropType<'boolean', boolean> {}
 
-interface CommonOpts {
+type CommonOpts = {
   /**
    * Each prop type may be given a custom label instead of the name of the sub-prop
    * it is in.

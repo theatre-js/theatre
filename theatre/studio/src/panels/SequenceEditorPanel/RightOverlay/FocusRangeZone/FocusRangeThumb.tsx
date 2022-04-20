@@ -7,7 +7,7 @@ import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo, useRef, useState} from 'react'
@@ -211,7 +211,7 @@ const FocusRangeThumb: React.FC<{
 
   useDrag(hitZoneNode, gestureHandlers)
 
-  useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
+  useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()

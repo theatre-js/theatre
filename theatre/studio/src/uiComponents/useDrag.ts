@@ -1,7 +1,7 @@
 import type {$FixMe} from '@theatre/shared/utils/types'
 import {useLayoutEffect, useRef} from 'react'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import {useCursorLock} from './PointerEventsHandler'
+import {useCssCursorLock} from './PointerEventsHandler'
 
 export type UseDragOpts = {
   /**
@@ -52,7 +52,7 @@ export default function useDrag(
     'dragStartCalled' | 'dragging' | 'notDragging'
   >('notDragging')
 
-  useCursorLock(
+  useCssCursorLock(
     mode === 'dragging' && typeof opts.lockCursorTo === 'string',
     'dragging',
     opts.lockCursorTo!,
