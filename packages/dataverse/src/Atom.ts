@@ -266,7 +266,7 @@ export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
   let derivation = identityDerivationWeakMap.get(meta)
   if (!derivation) {
     const root = meta.root
-    if (!isIdentityChangeProvider(root)) {
+    if (!isIdentityDerivationProvider(root)) {
       throw new Error(
         `Cannot run valueDerivation() on a pointer whose root is not an IdentityChangeProvider`,
       )
@@ -278,8 +278,7 @@ export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
   return derivation as $IntentionalAny
 }
 
-// TODO: Rename it to isIdentityDerivationProvider
-function isIdentityChangeProvider(
+function isIdentityDerivationProvider(
   val: unknown,
 ): val is IdentityDerivationProvider {
   return (
