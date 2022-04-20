@@ -8,6 +8,7 @@ import NumberPropEditor from './NumberPropEditor'
 import StringLiteralPropEditor from './StringLiteralPropEditor'
 import StringPropEditor from './StringPropEditor'
 import RgbaPropEditor from './RgbaPropEditor'
+import MarkerPropEditor from './MetaMarkerPropEditor'
 
 /**
  * Returns the PropTypeConfig by path. Assumes `path` is a valid prop path and that
@@ -71,6 +72,7 @@ const propEditorByPropType: {
   boolean: BooleanPropEditor,
   stringLiteral: StringLiteralPropEditor,
   rgba: RgbaPropEditor,
+  marker: MarkerPropEditor,
 }
 
 const DeterminePropEditor: React.FC<{

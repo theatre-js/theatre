@@ -1,3 +1,6 @@
+import type {Rgba} from './color'
+import type {MarkerPropType} from './markerPropType'
+
 export type GenericAction = {type: string; payload: unknown}
 
 export type ReduxReducer<State extends {}> = (
@@ -42,7 +45,8 @@ export type SerializablePrimitive =
   | string
   | number
   | boolean
-  | {r: number; g: number; b: number; a: number}
+  | Rgba
+  | MarkerPropType
 
 export type SerializableValue<
   Primitives extends SerializablePrimitive = SerializablePrimitive,

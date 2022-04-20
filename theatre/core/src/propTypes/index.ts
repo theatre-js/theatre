@@ -17,6 +17,7 @@ import type {
 import {propTypeSymbol, sanitizeCompoundProps} from './internals'
 // eslint-disable-next-line unused-imports/no-unused-imports
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import type {MarkerPropType} from '@theatre/shared/utils/markerPropType'
 
 // Notes on naming:
 // As of now, prop types are either `simple` or `composite`.
@@ -328,6 +329,47 @@ export const rgba = (
     label: opts.label,
     interpolate: _interpolateRgba,
     deserializeAndSanitize: _sanitizeRgba,
+  }
+}
+
+/**
+ * Create prop type config for markers.
+ *
+ * Progress 1/10:
+ *  * It seems good that we can quickly re-use a lot of the code by making markers
+ *    its own property, but I'm a little fearful that the amount of inheritance/extension
+ *    being applied to these areas could make an approach of special-casing unmaintainable
+ *    in the long run.
+ *
+ * @param opts - Options for this markers properties (e.g. a labelled section of a certain type of markers?)
+ */
+export const marker = (opts: CommonOpts = {}): PropTypeConfig_Marker => {
+  if (process.env.NODE_ENV !== 'production') {
+    validateCommonOpts('t.marker(opts)', opts)
+    // don't validate marker default, because we're not so good to ourselves.
+    // perhaps consider using a validation library like zod to help consolidate
+    // these cases for us.
+  }
+
+  return {
+    type: 'marker',
+    valueType: null as $IntentionalAny,
+    default: {
+      metaType: 'marker',
+    },
+    [propTypeSymbol]: 'TheatrePropType',
+    label: opts.label,
+    // always show the current label section if directly hovered
+    // do not show if not directly hovered, in case they double click to
+    // create a new marker we want that label to be empty.
+    // Additionally, we want people to know exactly which marker they are on (or not on!).
+    interpolate: (left, _right, progression) =>
+      progression === 0 ? left : {metaType: 'marker'},
+    deserializeAndSanitize: (json) => ({
+      metaType: 'marker',
+      rgba: _sanitizeRgba((json as $IntentionalAny)['rgba']),
+      text: _ensureString((json as $IntentionalAny)['text']),
+    }),
   }
 }
 
@@ -682,6 +724,9 @@ type CommonOpts = {
 export interface PropTypeConfig_String
   extends ISimplePropType<'string', string> {}
 
+export interface PropTypeConfig_Marker
+  extends ISimplePropType<'marker', MarkerPropType> {}
+
 export interface PropTypeConfig_StringLiteral<T extends string>
   extends ISimplePropType<'stringLiteral', T> {
   valuesAndLabels: Record<T, string>
@@ -718,6 +763,7 @@ export interface PropTypeConfig_Enum extends IBasePropType<'enum', {}> {
 export type PropTypeConfig_AllSimples =
   | PropTypeConfig_Number
   | PropTypeConfig_Boolean
+  | PropTypeConfig_Marker
   | PropTypeConfig_String
   | PropTypeConfig_StringLiteral<$IntentionalAny>
   | PropTypeConfig_Rgba

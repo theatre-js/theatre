@@ -5,6 +5,7 @@ import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {IProject, ISheet} from '@theatre/core'
 import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
+import type {MarkerPropType} from '@theatre/shared/utils/markerPropType'
 
 studio.initialize({usePersistentStorage: false})
 
@@ -25,6 +26,7 @@ const boxObjectConfig = {
   x: types.number(200),
   y: types.number(200),
   color: types.rgba({r: 1, g: 0, b: 0, a: 1}),
+  markers: types.marker({label: 'MARKERS'}),
 }
 
 const Box: React.FC<{
@@ -43,6 +45,7 @@ const Box: React.FC<{
     test: string
     testLiteral: string
     bool: boolean
+    markers: MarkerPropType
     color: {
       r: number
       g: number
@@ -83,6 +86,7 @@ const Box: React.FC<{
             testLiteral: initial.testLiteral,
             bool: initial.bool,
             color: initial.color,
+            markers: initial.markers,
           })
         })
       },
