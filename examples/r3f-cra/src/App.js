@@ -4,11 +4,13 @@ import {useState, useEffect, useRef} from 'react'
 import {useFrame, Canvas} from '@react-three/fiber'
 import {Shadow, softShadows} from '@react-three/drei'
 import React from 'react'
-import {editable as e, SheetProvider, extension} from '@theatre/r3f'
 import studio from '@theatre/studio'
+import {editable as e, SheetProvider, extension} from '@theatre/r3f'
 
-studio.extend(extension)
-studio.initialize()
+if (process.env.NODE_ENV === 'development') {
+  studio.extend(extension)
+  studio.initialize()
+}
 
 // Soft shadows are expensive, comment and refresh when it's too slow
 softShadows()
