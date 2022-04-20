@@ -1,15 +1,13 @@
-**/node_modules
-*.log
-*.temp
+node_modules
+.cache
 /.vscode
 /.history
 **/.DS_Store
 *.tsbuildinfo
+dist
 
 .yarn
 
-dist
-.parcel-cache
-
 .yalc
 yalc.lock
+

@@ -1,12 +1,11 @@
-**/node_modules
-**/xeno
-dist
-public
-*.log
-*.temp
-/.vscode
-/.history
-**/.DS_Store
-*.tsbuildinfo
+.DS_Store
+node_modules
+package-lock.json
+public/bundle*
 
-.yarn/*
+
+.yarn
+
+.yalc
+yalc.lock
+

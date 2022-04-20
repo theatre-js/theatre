@@ -10,9 +10,5 @@
   "keywords": [],
   "devDependencies": {
     "parcel": "^2.4.1"
-  },
-  "dependencies": {
-    "@theatre/core": "file:.yalc/@theatre/core",
-    "@theatre/studio": "file:.yalc/@theatre/studio"
   }
 }
