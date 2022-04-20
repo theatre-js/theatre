@@ -14,7 +14,7 @@ import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 
@@ -237,7 +237,7 @@ function useDragKeyframe(
 
   useDrag(node, gestureHandlers)
 
-  useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
+  useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   return [isDragging]
 }

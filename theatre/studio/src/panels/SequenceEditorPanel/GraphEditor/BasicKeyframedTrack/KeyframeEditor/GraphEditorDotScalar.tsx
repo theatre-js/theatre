@@ -13,7 +13,7 @@ import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Histo
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 
 export const dotSize = 6
 
@@ -224,7 +224,7 @@ function useDragKeyframe(
   }, [])
 
   useDrag(node, gestureHandlers)
-  useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'move')
+  useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'move')
   return isDragging
 }
 

@@ -10,7 +10,7 @@ import React, {useLayoutEffect, useMemo} from 'react'
 import styled from 'styled-components'
 import {useReceiveVerticalWheelEvent} from '@theatre/studio/panels/SequenceEditorPanel/VerticalScrollContainer'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import type {IRange} from '@theatre/shared/utils/types'
 
 const Container = styled.div`
@@ -148,7 +148,7 @@ function useDragHandlers(
 
   const [isDragging] = useDrag(containerEl, handlers)
 
-  useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
+  useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 }
 
 function useHandlePanAndZoom(
