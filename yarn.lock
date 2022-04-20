@@ -4790,7 +4790,6 @@ __metadata:
     "@theatre/studio": "workspace:*"
     react-scripts: ^5.0.1
     three: ^0.130.1
-    typescript: ^4.7.0-beta
     web-vitals: ^1.0.1
   languageName: unknown
   linkType: soft
@@ -28304,16 +28303,6 @@ fsevents@^1.2.7:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 194e08e9d1971d667d6fd1a0554616b7022312a2319d70e81a64e502a265992061ee7817ed9a69b52bbabe7a9b85e7938cb8c11c433e40a516b277f8c4dacd51
-  languageName: node
-  linkType: hard
-
-"typescript@npm:^4.7.0-beta":
-  version: 4.7.0-dev.20220408
-  resolution: "typescript@npm:4.7.0-dev.20220408"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 7d2c4efe9d340812127384fd4923dfbcd87dcec3d77044475c997b5eb56bd10b17781a924eecfd032d4040765531096afee74a7fb9c533f4fd958c188bb895ec
   languageName: node
   linkType: hard
 
