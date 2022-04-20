@@ -37,23 +37,10 @@ jobs:
       - run: yarn typecheck
       - run: yarn lint:all --max-warnings 0
       - run: yarn test
-      - name: Build setup tests
-        run: yarn build
-      - run: yarn yalc:publish
-      - run: pwd && ls
-        working-directory: build_tests/parcel_v1
-      - run: yarn
-        working-directory: build_tests/parcel_v1
-      - run: yarn yalc:add-theatre
-        working-directory: build_tests/parcel_v1
-      - run: rm yarn.lock && touch yarn.lock
-        working-directory: build_tests/parcel_v1
-      - run: yarn install
-        working-directory: build_tests/parcel_v1
-      - run: yarn build
-        working-directory: build_tests/parcel_v1
-      - name: Download playwright
-        run: yarn workspace playground run playwright install
+      - name: Setup for the build tests
+        run: yarn yalc:publish
+      - name: Run the build tests
+        run: yarn test:build
       - name: Run e2e tests with percy
         uses: percy/exec-action@v0.3.1
         with:

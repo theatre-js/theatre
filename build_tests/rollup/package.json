@@ -10,7 +10,7 @@
     "serve": "^11.3.2"
   },
   "scripts": {
-    "build-prod": "rollup -c --environment NODE_ENV:'production'",
+    "build": "rollup -c --environment NODE_ENV:'production'",
     "build-dev": "rollup -c --environment NODE_ENV:'development'",
     "watch-dev": "rollup -c -w --environment NODE_ENV:'development'",
     "watch-prod": "rollup -c -w --environment NODE_ENV:'production'",
