@@ -55,7 +55,7 @@ const PlayheadPositionPopover: React.FC<{
           sequence.position = originalPosition
         }
       },
-      permenantlySetValue(newPosition: number): void {
+      permanentlySetValue(newPosition: number): void {
         if (tempPosition) {
           tempPosition = undefined
         }

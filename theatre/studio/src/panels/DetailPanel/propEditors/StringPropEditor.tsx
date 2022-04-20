@@ -22,7 +22,7 @@ const StringPropEditor: React.FC<{
         value={stuff.value}
         temporarilySetValue={stuff.temporarilySetValue}
         discardTemporaryValue={stuff.discardTemporaryValue}
-        permenantlySetValue={stuff.permenantlySetValue}
+        permanentlySetValue={stuff.permanentlySetValue}
       />
     </SingleRowPropEditor>
   )

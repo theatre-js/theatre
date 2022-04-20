@@ -23,7 +23,7 @@ const BooleanPropEditor: React.FC<{
 
   const onChange = useCallback(
     (el: React.ChangeEvent<HTMLInputElement>) => {
-      stuff.permenantlySetValue(Boolean(el.target.checked))
+      stuff.permanentlySetValue(Boolean(el.target.checked))
     },
     [propConfig, pointerToProp, obj],
   )
