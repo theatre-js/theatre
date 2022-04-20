@@ -1,7 +1,9 @@
 import type {VFC} from 'react'
 import React from 'react'
 import type {ViewportShading} from '../../store'
-import {FaCube, GiCube, GiIceCube, BiCube} from 'react-icons/all'
+import {FaCube} from 'react-icons/fa'
+import {GiCube, GiIceCube} from 'react-icons/gi'
+import {BiCube} from 'react-icons/bi'
 import {ToolbarSwitchSelect} from '@theatre/studio'
 
 export interface ViewportShadingSelectProps {

@@ -12,14 +12,9 @@ import {useHelper, Sphere, Html} from '@react-three/drei'
 import type {EditableType} from '../store'
 import {useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
-import {
-  BiSun,
-  BsCameraVideoFill,
-  BsFillCollectionFill,
-  GiCube,
-  GiLightBulb,
-  GiLightProjector,
-} from 'react-icons/all'
+import {GiCube, GiLightBulb, GiLightProjector} from 'react-icons/gi'
+import {BsCameraVideoFill, BsFillCollectionFill} from 'react-icons/bs'
+import {BiSun} from 'react-icons/bi'
 import type {IconType} from 'react-icons'
 import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
