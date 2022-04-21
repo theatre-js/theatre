@@ -90,7 +90,14 @@ const TooltipWrapper: React.FC<{
         props.onPointerOutside.callback,
       )
     }
-  }, [containerRect, container, props.target, targetRect, windowSize])
+  }, [
+    containerRect,
+    container,
+    props.target,
+    targetRect,
+    windowSize,
+    props.onPointerOutside,
+  ])
 
   useOnClickOutside(container, props.onClickOutside ?? noop)
 

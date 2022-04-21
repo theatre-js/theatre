@@ -190,6 +190,7 @@ const FocusRangeStrip: React.FC<{
     let newStartPosition: number, newEndPosition: number
 
     return {
+      debugName: 'FocusRangeStrip',
       onDragStart(event) {
         existingRange = existingRangeD.getValue()
 

@@ -151,6 +151,7 @@ const PanelResizeHandle: React.FC<{
     let unlock: VoidFn | undefined
 
     return {
+      debugName: 'PanelResizeHandle',
       lockCursorTo: cursors[which],
       onDragStart() {
         stuffBeforeDrag = panelStuffRef.current

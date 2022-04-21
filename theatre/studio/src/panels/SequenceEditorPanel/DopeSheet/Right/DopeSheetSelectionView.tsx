@@ -57,6 +57,7 @@ function useCaptureSelection(
     containerNode,
     useMemo((): Parameters<typeof useDrag>[1] => {
       return {
+        debugName: 'DopeSheetSelectionView/useCaptureSelection',
         dontBlockMouseDown: true,
         lockCursorTo: 'cell',
         onDragStart(event) {
@@ -202,6 +203,7 @@ namespace utils {
 
         let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
         return {
+          debugName: 'DopeSheetSelectionView/boundsToSelection',
           onDragStart() {
             toUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
           },
