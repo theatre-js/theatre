@@ -18,9 +18,10 @@ import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandle
 import SnapCursor from './SnapCursor.svg'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 
-export const DOT_SIZE = 6
-const HIT_ZONE_SIZE = 12
-const SNAP_CURSOR_SIZE = 34
+export const DOT_SIZE_PX = 6
+const HIT_ZONE_SIZE_PX = 12
+const SNAP_CURSOR_SIZE_PX = 34
+const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
 
 const dims = (size: number) => `
   left: ${-size / 2}px;
@@ -44,12 +45,12 @@ const Square = styled.div<{isSelected: boolean}>`
 
   z-index: 1;
   pointer-events: none;
-  ${(props) => dims(props.isSelected ? DOT_SIZE : DOT_SIZE)}
+  ${dims(DOT_SIZE_PX)}
 `
 
 const HitZone = styled.div`
   position: absolute;
-  ${dims(HIT_ZONE_SIZE)};
+  ${dims(HIT_ZONE_SIZE_PX)};
 
   z-index: 1;
 
@@ -59,10 +60,10 @@ const HitZone = styled.div`
     pointer-events: auto;
     &:hover:after {
       position: absolute;
-      top: calc(50% - ${SNAP_CURSOR_SIZE / 2}px);
-      left: calc(50% - ${SNAP_CURSOR_SIZE / 2}px);
-      width: ${SNAP_CURSOR_SIZE}px;
-      height: ${SNAP_CURSOR_SIZE}px;
+      top: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
+      left: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
+      width: ${SNAP_CURSOR_SIZE_PX}px;
+      height: ${SNAP_CURSOR_SIZE_PX}px;
       display: block;
       content: ' ';
       background: url(${SnapCursor}) no-repeat 100% 100%;
@@ -75,7 +76,7 @@ const HitZone = styled.div`
   }
 
   &:hover + ${Square}, &.beingDragged + ${Square} {
-    ${dims(DOT_SIZE + 5)}
+    ${dims(DOT_HOVER_SIZE_PX)}
   }
 `
 

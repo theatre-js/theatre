@@ -31,7 +31,7 @@ export type UseDragOpts = {
    * gesture will end with `onDragEnd(true)`.
    *
    *
-   * @return
+   * @returns
    * onDragStart can be undefined, in which case, we always handle useDrag,
    * but when defined, we can allow the handler to return false to indicate ignore this dragging
    */

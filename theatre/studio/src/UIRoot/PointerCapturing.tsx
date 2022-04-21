@@ -11,8 +11,8 @@ export type CapturedPointer = {
  * Goal is to be able to determine if the pointer is being captured somewhere in studio (e.g. dragging).
  *
  * Some other ideas we considered before going with the PointerCapturing provider and context
- * - provider - onPointerCaptureChanged
- * - onDragging={isMouseActive = true} / onMouseActive={isMouseActive = true}
+ * - provider: `onPointerCaptureChanged`
+ * - `onDragging={isMouseActive = true}` / `onMouseActive={isMouseActive = true}`
  * - dragging tracked application wide (ahistoric state) in popover
  *
  * Caveats: I wonder if there's a shared abstraction we should use for "releasing" e.g. unsubscribe / untap in rxjs / tapable patterns.

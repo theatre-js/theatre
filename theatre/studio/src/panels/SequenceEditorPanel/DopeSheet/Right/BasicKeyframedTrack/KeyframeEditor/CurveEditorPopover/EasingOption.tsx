@@ -5,26 +5,25 @@ import styled from 'styled-components'
 import {bezierPointsFromString} from './shared'
 import SVGCurveSegment from './SVGCurveSegment'
 import mergeRefs from 'react-merge-refs'
+import {COLOR_BASE, COLOR_FOCUS_OUTLINE} from './colors'
 
 const Wrapper = styled.div`
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0px;
   overflow: hidden;
   aspect-ratio: 1;
 
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.75);
-  border-radius: 4px;
+  background: ${COLOR_BASE};
+  border-radius: 2px;
   cursor: pointer;
 
   // The candidate preset is going to be applied when enter is pressed
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgb(78, 134, 136);
+    border: 1px solid ${COLOR_FOCUS_OUTLINE};
   }
 
   &:hover {
@@ -48,19 +47,9 @@ const EasingOption: React.FC<IProps> = React.forwardRef((props, ref) => {
     <Wrapper ref={mergeRefs([tooltipHostRef, ref])} {...props}>
       {tooltip}
       <SVGCurveSegment easing={bezierPointsFromString(props.easing.value)} />
-      {/* <span>
-                    {useQuery ? (
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: fuzzySort.highlight(
-                            presetSearchResults[index] as any,
-                          )!,
-                        }}
-                      />
-                    ) : (
-                      preset.label
-                    )}
-                  </span> */}
+      {/* In the past we used `dangerouslySetInnerHTML={{ _html: fuzzySort.highlight(presetSearchResults[index])}}` 
+          to display the name of the easing option, including an underline for the parts of it matching the search
+          query. */}
     </Wrapper>
   )
 })
