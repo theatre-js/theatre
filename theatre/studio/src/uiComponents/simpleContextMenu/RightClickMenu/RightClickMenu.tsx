@@ -45,7 +45,6 @@ const RightClickMenu: React.FC<{
   items: IContextMenuItem[] | (() => IContextMenuItem[])
   rightClickPoint: {clientX: number; clientY: number}
   onRequestClose: () => void
-  keepOpen?: boolean
 }> = (props) => {
   const [container, setContainer] = useState<HTMLElement | null>(null)
   const rect = useBoundingClientRect(container)
@@ -81,7 +80,7 @@ const RightClickMenu: React.FC<{
 
     const onMouseMove = (e: MouseEvent) => {
       if (
-        (!props.keepOpen && e.clientX < pos.left - pointerDistanceThreshold) ||
+        e.clientX < pos.left - pointerDistanceThreshold ||
         e.clientX > pos.left + rect.width + pointerDistanceThreshold ||
         e.clientY < pos.top - pointerDistanceThreshold ||
         e.clientY > pos.top + rect.height + pointerDistanceThreshold

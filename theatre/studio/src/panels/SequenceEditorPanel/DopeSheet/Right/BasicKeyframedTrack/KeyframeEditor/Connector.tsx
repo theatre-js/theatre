@@ -12,7 +12,7 @@ import type {
   SequenceEditorPanelLayout,
   DopeSheetSelection,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import {DOT_SIZE} from './Dot'
+import {DOT_SIZE_PX} from './Dot'
 import type KeyframeEditor from './KeyframeEditor'
 import type Sequence from '@theatre/core/sequences/Sequence'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
@@ -23,7 +23,7 @@ import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
 
-const CONNECTOR_HEIGHT = DOT_SIZE / 2 + 1
+const CONNECTOR_HEIGHT = DOT_SIZE_PX / 2 + 1
 const CONNECTOR_WIDTH_UNSCALED = 1000
 
 export const CONNECTOR_THEME = {
