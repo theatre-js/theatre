@@ -11,11 +11,11 @@
 
 /**
  * Colorize a message.
-*/
+ */
 const colorize = {
-  red: message =>  '\x1b[31m' + message + '\x1b[0m',
-  green: message => '\x1b[32m' + message + '\x1b[0m',
-  yellow: message => '\x1b[33m' + message + '\x1b[0m'
+  red: (message) => '\x1b[31m' + message + '\x1b[0m',
+  green: (message) => '\x1b[32m' + message + '\x1b[0m',
+  yellow: (message) => '\x1b[33m' + message + '\x1b[0m',
 }
 
 import fs from 'fs'
@@ -24,7 +24,7 @@ import path from 'path'
 const root = path.normalize(path.join(__dirname, '..'))
 
 // The packages that should be linked with `yalc`
-const packagesToLink = ["@theatre/core", "@theatre/studio"]
+const packagesToLink = ['@theatre/core', '@theatre/studio']
 
 // Get all the projects from `./build_tests/`
 const build_tests_directory = path.join(root, 'build_tests')
@@ -73,10 +73,15 @@ Stop if there were any errors during the linking process,
 and print all of them to the console.
 */
 if (linking_errors.length !== 0) {
-  console.error("@theatre packages could not be linked for some of the projects. See the errors below!")
-  throw new Error(`The following projects had problems with in the linking stage:\n${colorize.red(linking_errors.join('\n'))}`)
+  console.error(
+    '@theatre packages could not be linked for some of the projects. See the errors below!',
+  )
+  throw new Error(
+    `The following projects had problems with in the linking stage:\n${colorize.red(
+      linking_errors.join('\n'),
+    )}`,
+  )
 }
-
 
 /*
 Build the projects one-by-one.
@@ -98,7 +103,15 @@ Stop if there were any errors during the build process,
 and print all of them to the console.
 */
 if (buildErrors.length !== 0) {
-  throw new Error(`The following projects could not be built:\n${colorize.red(buildErrors.join("\n"))}`)
+  throw new Error(
+    `The following projects could not be built:\n${colorize.red(
+      buildErrors.join('\n'),
+    )}`,
+  )
 }
 
-console.log(colorize.green(`All the projects in "${build_tests_directory}" have been successfully built.`))
+console.log(
+  colorize.green(
+    `All the projects in "${build_tests_directory}" have been successfully built.`,
+  ),
+)

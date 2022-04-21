@@ -10,18 +10,17 @@ const root = path.normalize(path.join(__dirname, '..'))
 // Make sure the script runs in the root of the monorepo
 cd(root)
 
-
 /*
  * Build the packages before publishing them
  */
 await $`yarn build`
 
-const packagesToPublish = ["theatre/core", "theatre/studio"]
+const packagesToPublish = ['theatre/core', 'theatre/studio']
 
 /*
  * Publish the packages
  */
-process.env.USING_YALC = "true"
+process.env.USING_YALC = 'true'
 
 for (const pkg of packagesToPublish) {
   await $`npx yalc publish ${pkg}`
