@@ -99,6 +99,7 @@ const FocusRangeThumb: React.FC<{
     let minFocusRangeStripWidth: number
 
     return {
+      debugName: 'FocusRangeThumb',
       onDragStart() {
         let existingRange = existingRangeD.getValue() || {
           range: defaultRange,

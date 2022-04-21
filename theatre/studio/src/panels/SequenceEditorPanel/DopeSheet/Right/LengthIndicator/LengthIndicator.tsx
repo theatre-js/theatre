@@ -227,6 +227,7 @@ function useDragBulge(
     let initialLength: number
 
     return {
+      debugName: 'LengthIndicator/useDragBulge',
       lockCursorTo: 'ew-resize',
       onDragStart(event) {
         setIsDragging(true)

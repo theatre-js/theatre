@@ -12,7 +12,7 @@ import type {
   SequenceEditorPanelLayout,
   DopeSheetSelection,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import {dotSize} from './Dot'
+import {DOT_SIZE} from './Dot'
 import type KeyframeEditor from './KeyframeEditor'
 import type Sequence from '@theatre/core/sequences/Sequence'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
@@ -21,20 +21,21 @@ import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
 
-const connectorHeight = dotSize / 2 + 1
-const connectorWidthUnscaled = 1000
+const CONNECTOR_HEIGHT = DOT_SIZE / 2 + 1
+const CONNECTOR_WIDTH_UNSCALED = 1000
 
-export const connectorTheme = {
+export const CONNECTOR_THEME = {
   normalColor: `#365b59`,
   get hoverColor() {
-    return lighten(0.1, connectorTheme.normalColor)
+    return lighten(0.1, CONNECTOR_THEME.normalColor)
   },
   get selectedColor() {
-    return lighten(0.2, connectorTheme.normalColor)
+    return lighten(0.2, CONNECTOR_THEME.normalColor)
   },
   get selectedHoverColor() {
-    return lighten(0.4, connectorTheme.normalColor)
+    return lighten(0.4, CONNECTOR_THEME.normalColor)
   },
 }
 
@@ -42,13 +43,13 @@ const Container = styled.div<{isSelected: boolean}>`
   position: absolute;
   background: ${(props) =>
     props.isSelected
-      ? connectorTheme.selectedColor
-      : connectorTheme.normalColor};
-  height: ${connectorHeight}px;
-  width: ${connectorWidthUnscaled}px;
+      ? CONNECTOR_THEME.selectedColor
+      : CONNECTOR_THEME.normalColor};
+  height: ${CONNECTOR_HEIGHT}px;
+  width: ${CONNECTOR_WIDTH_UNSCALED}px;
 
   left: 0;
-  top: -${connectorHeight / 2}px;
+  top: -${CONNECTOR_HEIGHT / 2}px;
   transform-origin: top left;
   z-index: 0;
   cursor: ew-resize;
@@ -66,8 +67,8 @@ const Container = styled.div<{isSelected: boolean}>`
   &:hover {
     background: ${(props) =>
       props.isSelected
-        ? connectorTheme.selectedHoverColor
-        : connectorTheme.hoverColor};
+        ? CONNECTOR_THEME.selectedHoverColor
+        : CONNECTOR_THEME.hoverColor};
   }
 `
 type IProps = Parameters<typeof KeyframeEditor>[0]
@@ -77,12 +78,16 @@ const Connector: React.FC<IProps> = (props) => {
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
 
-  const connectorLengthInUnitSpace = next.position - cur.position
-
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
 
+  const {isPointerBeingCaptured} = usePointerCapturing(
+    'KeyframeEditor Connector',
+  )
+
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
-    {},
+    {
+      closeWhenPointerIsDistant: !isPointerBeingCaptured(),
+    },
     () => {
       return (
         <BasicPopover>
@@ -101,13 +106,15 @@ const Connector: React.FC<IProps> = (props) => {
   )
   useDragKeyframe(node, props)
 
+  const connectorLengthInUnitSpace = next.position - cur.position
+
   return (
     <Container
       isSelected={!!props.selection}
       ref={nodeRef}
       style={{
         transform: `scale3d(calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
-          connectorLengthInUnitSpace / connectorWidthUnscaled
+          connectorLengthInUnitSpace / CONNECTOR_WIDTH_UNSCALED
         }), 1, 1)`,
       }}
       onClick={(e) => {
@@ -135,6 +142,7 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
       | undefined
     let sequence: Sequence
     return {
+      debugName: 'useDragKeyframe',
       lockCursorTo: 'ew-resize',
       onDragStart(event) {
         const props = propsRef.current

@@ -111,6 +111,7 @@ function useDragKeyframe(
     let unlockExtremums: VoidFn | undefined
 
     return {
+      debugName: 'GraphEditorDotNonScalar/useDragKeyframe',
       lockCursorTo: 'ew-resize',
       onDragStart(event) {
         setIsDragging(true)

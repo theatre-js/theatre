@@ -18,9 +18,9 @@ import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandle
 import SnapCursor from './SnapCursor.svg'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 
-export const dotSize = 6
-const hitZoneSize = 12
-const snapCursorSize = 34
+export const DOT_SIZE = 6
+const HIT_ZONE_SIZE = 12
+const SNAP_CURSOR_SIZE = 34
 
 const dims = (size: number) => `
   left: ${-size / 2}px;
@@ -44,12 +44,12 @@ const Square = styled.div<{isSelected: boolean}>`
 
   z-index: 1;
   pointer-events: none;
-  ${(props) => dims(props.isSelected ? dotSize : dotSize)}
+  ${(props) => dims(props.isSelected ? DOT_SIZE : DOT_SIZE)}
 `
 
 const HitZone = styled.div`
   position: absolute;
-  ${dims(hitZoneSize)};
+  ${dims(HIT_ZONE_SIZE)};
 
   z-index: 1;
 
@@ -59,10 +59,10 @@ const HitZone = styled.div`
     pointer-events: auto;
     &:hover:after {
       position: absolute;
-      top: calc(50% - ${snapCursorSize / 2}px);
-      left: calc(50% - ${snapCursorSize / 2}px);
-      width: ${snapCursorSize}px;
-      height: ${snapCursorSize}px;
+      top: calc(50% - ${SNAP_CURSOR_SIZE / 2}px);
+      left: calc(50% - ${SNAP_CURSOR_SIZE / 2}px);
+      width: ${SNAP_CURSOR_SIZE}px;
+      height: ${SNAP_CURSOR_SIZE}px;
       display: block;
       content: ' ';
       background: url(${SnapCursor}) no-repeat 100% 100%;
@@ -75,7 +75,7 @@ const HitZone = styled.div`
   }
 
   &:hover + ${Square}, &.beingDragged + ${Square} {
-    ${dims(dotSize + 5)}
+    ${dims(DOT_SIZE + 5)}
   }
 `
 
@@ -138,13 +138,13 @@ function useDragKeyframe(
     let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
     let tempTransaction: CommitOrDiscard | undefined
     let propsAtStartOfDrag: IProps
-    let startingLayout: SequenceEditorPanelLayout
 
     let selectionDragHandlers:
       | ReturnType<DopeSheetSelection['getDragHandlers']>
       | undefined
 
     return {
+      debugName: 'Dot/useDragKeyframe',
       onDragStart(event) {
         setIsDragging(true)
         const props = propsRef.current

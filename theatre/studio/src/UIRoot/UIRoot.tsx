@@ -12,6 +12,7 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import useKeyboardShortcuts from './useKeyboardShortcuts'
 import PointerEventsHandler from '@theatre/studio/uiComponents/PointerEventsHandler'
 import TooltipContext from '@theatre/studio/uiComponents/Popover/TooltipContext'
+import {ProvidePointerCapturing} from './PointerCapturing'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -67,6 +68,7 @@ export default function UIRoot() {
   )
 
   useKeyboardShortcuts()
+
   const visiblityState = useVal(studio.atomP.ahistoric.visibilityState)
   useEffect(() => {
     if (visiblityState === 'everythingIsHidden') {
@@ -93,21 +95,23 @@ export default function UIRoot() {
       >
         <>
           <GlobalStyle />
-          <ProvideTheme>
-            <PortalContext.Provider value={portalLayer}>
-              <TooltipContext>
-                <Container
-                  className={
-                    visiblityState === 'everythingIsHidden' ? 'invisible' : ''
-                  }
-                >
-                  <PortalLayer ref={portalLayerRef} />
-                  {<GlobalToolbar />}
-                  {<PanelsRoot />}
-                </Container>
-              </TooltipContext>
-            </PortalContext.Provider>
-          </ProvideTheme>
+          <ProvidePointerCapturing>
+            <ProvideTheme>
+              <PortalContext.Provider value={portalLayer}>
+                <TooltipContext>
+                  <Container
+                    className={
+                      visiblityState === 'everythingIsHidden' ? 'invisible' : ''
+                    }
+                  >
+                    <PortalLayer ref={portalLayerRef} />
+                    {<GlobalToolbar />}
+                    {<PanelsRoot />}
+                  </Container>
+                </TooltipContext>
+              </PortalContext.Provider>
+            </ProvideTheme>
+          </ProvidePointerCapturing>
         </>
       </StyleSheetManager>
     )

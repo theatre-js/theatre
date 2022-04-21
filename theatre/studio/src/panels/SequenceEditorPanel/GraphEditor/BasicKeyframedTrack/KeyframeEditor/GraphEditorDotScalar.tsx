@@ -114,6 +114,7 @@ function useDragKeyframe(
     let keepSpeeds = false
 
     return {
+      debugName: 'GraphEditorDotScalar/useDragKeyframe',
       lockCursorTo: 'move',
       onDragStart(event) {
         setIsDragging(true)

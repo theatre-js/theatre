@@ -142,6 +142,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
     let sequence: Sequence
 
     return {
+      debugName: 'Playhead',
       onDragStart() {
         sequence = val(layoutP.sheet).getSequence()
         posBeforeSeek = sequence.position
