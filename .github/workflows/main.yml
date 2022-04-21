@@ -41,7 +41,7 @@ jobs:
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            /home/runner/work/theatre/theare/build_test/*/.yarn/cache
+            /home/runner/work/theatre/theatre/build_tests/*/.yarn/cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
