@@ -25,10 +25,21 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
 
+      - name: Get yarn cache direcotry path for the build tests
+        id: yarn-cache-dir-path-build-tests
+        # Note that this command assumes the follings:
+        #   1. Every directory in `build_test` is a project managed with yarn
+        #   2. All these projects store their cache in `project/.yarn/cache`
+        # The command is not that robust thanks to these assumptions,
+        # but it should be sufficient for us for now.
+        run: echo "::set-output name=dirs::$(find build_tests -mindepth 1 -maxdepth 1 -type d -exec realpath {}/.yarn/cache \;)"
+
       - uses: actions/cache@v2
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            ${{ steps.yarn-cache-dir-path-build-tests.outputs.dirs }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
