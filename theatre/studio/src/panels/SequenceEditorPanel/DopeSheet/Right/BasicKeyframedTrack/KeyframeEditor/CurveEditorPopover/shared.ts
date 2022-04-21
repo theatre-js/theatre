@@ -1,6 +1,7 @@
 /*
  * Cubic bezier curves can be defined by two 2d points in a 4-tuple.
  * The 4-tuple defines the start control point x1,y1 and the end control point x2,y2.
+ * x1 should always be >= 0 and x2 must be <= 1.
  * It is assumed that the start of the curve is fixed at 0,0 and the end is fixed at 1,1.
  * to get a feel for it: https://cubic-bezier.com/
  */
