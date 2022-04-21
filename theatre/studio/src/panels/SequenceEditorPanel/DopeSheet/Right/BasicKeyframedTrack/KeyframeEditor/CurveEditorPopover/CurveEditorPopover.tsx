@@ -2,7 +2,7 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
-import fuzzySort from 'fuzzysort'
+import fuzzy from 'fuzzy'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
@@ -132,10 +132,12 @@ const CurveEditorPopover: React.FC<
 
   const presetSearchResults = useMemo(
     () =>
-      fuzzySort.go(filter, presets, {
-        key: 'label',
-        allowTypo: false,
+      fuzzy.filter(filter, presets, {
+        extract: (el) => el.label,
+        pre: '<b>',
+        post: '</b>',
       }),
+
     [filter],
   )
 
@@ -145,7 +147,7 @@ const CurveEditorPopover: React.FC<
 
   const displayedPresets = useMemo(
     () =>
-      useQuery ? presetSearchResults.map((result) => result.obj) : presets,
+      useQuery ? presetSearchResults.map((result) => result.original) : presets,
     [presetSearchResults, useQuery],
   )
 
@@ -199,7 +201,7 @@ const CurveEditorPopover: React.FC<
         }
         const args =
           cssCubicBezierArgsToHandles(newCurve) ??
-          cssCubicBezierArgsToHandles(presetSearchResults[0].obj.value)
+          cssCubicBezierArgsToHandles(presetSearchResults[0].original.value)
 
         if (!args) {
           return
@@ -409,9 +411,7 @@ const CurveEditorPopover: React.FC<
                     {useQuery ? (
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: fuzzySort.highlight(
-                            presetSearchResults[index] as any,
-                          )!,
+                          __html: presetSearchResults[index].string,
                         }}
                       />
                     ) : (
