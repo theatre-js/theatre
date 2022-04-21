@@ -15,8 +15,8 @@ import TooltipContext from '@theatre/studio/uiComponents/Popover/TooltipContext'
 
 const GlobalStyle = createGlobalStyle`
   :host {
-    contain: strict;
     all: initial;
+    contain: strict;
     color: white;
     font: 11px -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe Editor,
       HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;

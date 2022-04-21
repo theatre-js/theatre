@@ -21,6 +21,7 @@ const IconContainer = styled.div`
 `
 
 const Select = styled.select`
+  appearance: none;
   background-color: transparent;
   box-sizing: border-box;
   border: 1px solid transparent;
@@ -30,11 +31,17 @@ const Select = styled.select`
   outline: none;
   text-align: left;
   width: 100%;
-  height: calc(100% - 4px);
   border-radius: 2px;
+  /*
+  looks like putting percentages in the height of a select box doesn't work in Firefox. Not sure why.
+  So we're hard-coding the height to 26px, unlike all other inputs that use a relative height.
+  */
+  height: 26px /* calc(100% - 4px); */;
 
-  color-adjust: exact;
-  appearance: none;
+  @supports (-moz-appearance: none) {
+    /* Ugly hack to remove the extra left padding that shows up only in Firefox */
+    text-indent: -2px;
+  }
 
   &:hover,
   &:focus {
