@@ -312,6 +312,13 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
       <SearchBox
         value={filter}
         placeholder="Search presets..."
+        onPaste={(e) =>
+          // hack to wait for the paste to actually change the e.target.value
+          setTimeout(() => {
+            if (bezierPointsFromString((e.target as HTMLInputElement).value))
+              fns.permanentlySetValue((e.target as HTMLInputElement).value)
+          })
+        }
         onChange={(e) => {
           setFilter(e.target.value)
           if (bezierPointsFromString(filter)) fns.permanentlySetValue(filter)
