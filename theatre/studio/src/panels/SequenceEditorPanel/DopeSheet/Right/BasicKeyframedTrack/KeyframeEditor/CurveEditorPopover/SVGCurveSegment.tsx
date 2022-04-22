@@ -1,5 +1,5 @@
 import React from 'react'
-import type {CubicBezierPoints} from './shared'
+import type {CubicBezierHandles} from './shared'
 
 const VIEWBOX_PADDING = 1
 const SVG_CIRCLE_RADIUS = 0.1
@@ -14,7 +14,7 @@ const CONTROL_HITZONE_COLOR = 'rgba(255, 255, 255, 0.1)'
 const toVerticalSVGSpace = (y: number) => 1 - y
 
 type IProps = {
-  easing: CubicBezierPoints | null
+  easing: CubicBezierHandles | null
 }
 
 const SVGCurveSegment: React.FC<IProps> = (props) => {

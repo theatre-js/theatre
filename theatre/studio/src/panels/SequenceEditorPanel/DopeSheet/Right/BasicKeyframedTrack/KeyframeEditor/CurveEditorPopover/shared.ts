@@ -1,20 +1,25 @@
-/*
- * Cubic bezier curves can be defined by two 2d points in a 4-tuple.
- * The 4-tuple defines the start control point x1,y1 and the end control point x2,y2.
- * x1 should always be >= 0 and x2 must be <= 1.
- * It is assumed that the start of the curve is fixed at 0,0 and the end is fixed at 1,1.
+/**
+ * This 4-tuple defines the start control point x1,y1 and the end control point x2,y2
+ * of a cubic bezier curve. It is assumed that the start of the curve is fixed at 0,0
+ * and the end is fixed at 1,1. x1 must always be >= 0 and x2 must always be <= 1.
+ *
  * to get a feel for it: https://cubic-bezier.com/
- */
-export type CubicBezierPoints = [x1: number, y1: number, x2: number, y2: number]
+ **/
+export type CubicBezierHandles = [
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+]
 
-export function stringFromBezierPoints(points: CubicBezierPoints) {
+export function cssCubicBezierArgsFromHandles(points: CubicBezierHandles) {
   return points.map((p) => p.toFixed(2)).join(', ')
 }
 
 const MAX_REASONABLE_BEZIER_STRING = 128
-export function bezierPointsFromString(
+export function handlesFromCssCubicBezierArgs(
   str: string | undefined | null,
-): null | CubicBezierPoints {
+): null | CubicBezierHandles {
   if (!str || str?.length > MAX_REASONABLE_BEZIER_STRING) return null
   const args = str.split(',')
   if (args.length !== 4) return null
@@ -25,11 +30,13 @@ export function bezierPointsFromString(
   if (!nums.every((v) => isFinite(v))) return null
 
   if (nums[0] < 0 || nums[0] > 1 || nums[2] < 0 || nums[2] > 1) return null
-  return nums as CubicBezierPoints
+  return nums as CubicBezierHandles
 }
 
-// A collection of cubic-bezier approximations of common easing functions
-// ref: https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function
+/**
+ * A collection of cubic-bezier approximations of common easing functions
+ * ref: https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function
+ **/
 export const EASING_PRESETS = [
   {label: 'Linear', value: '0.5, 0.5, 0.5, 0.5'},
   {label: 'Sine In', value: '0.470, 0, 0.745, 0.715'},
@@ -70,8 +77,8 @@ export const EASING_PRESETS = [
 
 const SIMILARITY_CUTOFF = 0.02
 export function areEasingsSimilar(
-  easing1: CubicBezierPoints | null | undefined,
-  easing2: CubicBezierPoints | null | undefined,
+  easing1: CubicBezierHandles | null | undefined,
+  easing2: CubicBezierHandles | null | undefined,
 ) {
   if (!easing1 || !easing2) return false
   let totalDiff = 0

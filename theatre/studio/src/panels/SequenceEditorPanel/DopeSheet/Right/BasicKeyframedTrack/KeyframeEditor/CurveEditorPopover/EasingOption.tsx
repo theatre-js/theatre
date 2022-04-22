@@ -2,7 +2,7 @@ import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import React from 'react'
 import styled from 'styled-components'
-import {bezierPointsFromString} from './shared'
+import {handlesFromCssCubicBezierArgs} from './shared'
 import SVGCurveSegment from './SVGCurveSegment'
 import mergeRefs from 'react-merge-refs'
 import {COLOR_BASE, COLOR_FOCUS_OUTLINE} from './colors'
@@ -46,7 +46,9 @@ const EasingOption: React.FC<IProps> = React.forwardRef((props, ref) => {
   return (
     <Wrapper ref={mergeRefs([tooltipHostRef, ref])} {...props}>
       {tooltip}
-      <SVGCurveSegment easing={bezierPointsFromString(props.easing.value)} />
+      <SVGCurveSegment
+        easing={handlesFromCssCubicBezierArgs(props.easing.value)}
+      />
       {/* In the past we used `dangerouslySetInnerHTML={{ _html: fuzzySort.highlight(presetSearchResults[index])}}` 
           to display the name of the easing option, including an underline for the parts of it matching the search
           query. */}
