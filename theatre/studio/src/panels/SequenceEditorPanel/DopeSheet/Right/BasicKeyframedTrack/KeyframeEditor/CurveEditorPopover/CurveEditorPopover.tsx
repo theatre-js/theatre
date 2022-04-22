@@ -372,7 +372,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
 
 export default CurveEditorPopover
 
-/*
+/**
  * n mod m without negative results e.g. `mod(-1,5) = 4` contrasted with `-1 % 5 = -1`.
  *
  * ref: https://web.archive.org/web/20090717035140if_/javascript.about.com/od/problemsolving/a/modulobug.htm
