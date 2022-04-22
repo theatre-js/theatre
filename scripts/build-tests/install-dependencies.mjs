@@ -2,7 +2,11 @@
  * Install the dependencies of the build test projects
  */
 
-import {buildTestProjectAbsPaths, colorize} from './utils.mjs'
+import path from 'path'
+import {colorize, getTestBuildProjects} from './utils.mjs'
+
+const root = path.normalize(path.join(__dirname, '..', '..'))
+const buildTestProjectAbsPaths = getTestBuildProjects(root)
 
 const projectsWithErrors = []
 

@@ -4,19 +4,6 @@
 
 import fs from 'fs'
 import path from 'path'
-// Find the root of the theatre monorepo
-
-/**
- * Find the root directory of the theatre monorepo
- *
- * @returns The root of the theatre monorepo
- */
-function findRootDirectory() {
-  const root = path.normalize(path.join(__dirname, '..', '..'))
-  return root
-}
-
-export const root = findRootDirectory()
 
 /**
  * Colorize a message
@@ -33,7 +20,7 @@ export const colorize = {
  * @param root - Absolute path to the theatre monorepo
  * @returns An array containing the absolute paths to the build test projects
  */
-function getTestBuildProjects(root) {
+export function getTestBuildProjects(root) {
   const buildTestsDir = path.join(root, 'build_tests')
   let buildTestsDirEntries
   let buildTests
@@ -59,8 +46,3 @@ function getTestBuildProjects(root) {
 
   return projectAbsPaths
 }
-
-/**
- * The absolute paths of the build test projects in an array
- */
-export const buildTestProjectAbsPaths = getTestBuildProjects(root)

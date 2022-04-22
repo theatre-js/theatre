@@ -2,7 +2,11 @@
  * Link the theatre packages
  */
 
-import {buildTestProjectAbsPaths, colorize} from './utils.mjs'
+import path from 'path'
+import {colorize, getTestBuildProjects} from './utils.mjs'
+
+const root = path.normalize(path.join(__dirname, '..', '..'))
+const buildTestProjectAbsPaths = getTestBuildProjects(root)
 
 // The packages that should be linked with `yalc`
 const packagesToLink = ['@theatre/core', '@theatre/studio']
@@ -16,6 +20,8 @@ const packagesToLink = ['@theatre/core', '@theatre/studio']
 async function linkPackage(pkgToLink) {
   await $`npx yalc link ${pkgToLink}`
 }
+
+const projectsWithErrors = []
 
 // Add the @theatre packages to the build test project
 // with `yalc link`
