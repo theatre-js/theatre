@@ -11,7 +11,6 @@
     "playground": "yarn workspace playground run serve",
     "test:e2e": "yarn workspace playground run test",
     "test:e2e:ci": "yarn workspace playground run test:ci",
-    "test:build": "zx scripts/build-tests.mjs",
     "typecheck": "yarn run build:ts",
     "build": "zx scripts/build.mjs",
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
@@ -19,8 +18,7 @@
     "postinstall": "husky install",
     "release": "zx scripts/release.mjs",
     "build:api-docs": "zx scripts/build-api-docs.mjs",
-    "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules",
-    "yalc:publish": "zx scripts/publish-for-yalc.mjs"
+    "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {
     "(theatre|packages)/**/*.(t|j)s?(x)": [
