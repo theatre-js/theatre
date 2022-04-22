@@ -275,7 +275,7 @@ const mousePositionD = prism(() => {
     'setupListeners',
     () => {
       const handleMouseMove = (e: MouseEvent) => {
-        setPos([e.screenX, e.screenY])
+        setPos({x: e.screenX, y: e.screenY})
       }
       document.addEventListener('mousemove', handleMouseMove)
 
