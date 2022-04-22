@@ -12,8 +12,9 @@ export type CubicBezierHandles = [
   y2: number,
 ]
 
+const CSS_BEZIER_ARGS_DECIMAL_POINTS = 3 // Doesn't have to be 3, but it matches our preset data
 export function cssCubicBezierArgsFromHandles(points: CubicBezierHandles) {
-  return points.map((p) => p.toFixed(2)).join(', ')
+  return points.map((p) => p.toFixed(CSS_BEZIER_ARGS_DECIMAL_POINTS)).join(', ')
 }
 
 const MAX_REASONABLE_BEZIER_STRING = 128
