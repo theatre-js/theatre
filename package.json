@@ -54,10 +54,8 @@
     "node-gyp": "^8.1.0",
     "prettier": "^2.3.2",
     "typescript": "^4.4.2",
+    "yalc": "^1.0.0-pre.53",
     "zx": "^2.0.0"
   },
-  "packageManager": "yarn@3.2.0",
-  "dependencies": {
-    "yalc": "^1.0.0-pre.53"
-  }
+  "packageManager": "yarn@3.2.0"
 }
