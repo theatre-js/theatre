@@ -321,7 +321,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         }
         onChange={(e) => {
           setFilter(e.target.value)
-          if (bezierPointsFromString(filter)) fns.permanentlySetValue(filter)
+          if (bezierPointsFromString(e.target.value))
+            fns.permanentlySetValue(e.target.value)
         }}
         ref={inputRef}
         onKeyDown={onSearchKeyDown}
@@ -342,6 +343,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
             onKeyDown={onEasingOptionKeydown(preset)}
             ref={optionsRef.current[preset.label]}
             onClick={() => {
+              setHighlightedIndex(displayedPresets.indexOf(preset))
               fns.permanentlySetValue(preset.value)
               //props.onRequestClose()
             }}
