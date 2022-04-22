@@ -16,10 +16,10 @@ import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type KeyframeEditor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/KeyframeEditor'
 import CurveSegmentEditor from './CurveSegmentEditor'
 import EasingOption from './EasingOption'
-import type {CubicBezierPoints} from './shared'
+import type {CubicBezierHandles} from './shared'
 import {
-  stringFromBezierPoints,
-  bezierPointsFromString,
+  cssCubicBezierArgsFromHandles,
+  handlesFromCssCubicBezierArgs,
   EASING_PRESETS,
   areEasingsSimilar,
 } from './shared'
@@ -133,7 +133,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
           tempTransaction = undefined
         }
 
-        const args = bezierPointsFromString(newCurve)
+        const args = handlesFromCssCubicBezierArgs(newCurve)
         if (args === null) return
 
         tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
@@ -170,8 +170,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
           tempTransaction = undefined
         }
         const args =
-          bezierPointsFromString(newCurve) ??
-          bezierPointsFromString(presetSearchResults[0]?.original?.value)
+          handlesFromCssCubicBezierArgs(newCurve) ??
+          handlesFromCssCubicBezierArgs(presetSearchResults[0]?.obj?.value)
 
         if (!args) return
 
@@ -287,7 +287,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     }
   }, [highlightedIndex])
 
-  const easing: CubicBezierPoints = [
+  const easing: CubicBezierHandles = [
     trackData.keyframes[index].handles[2],
     trackData.keyframes[index].handles[3],
     trackData.keyframes[index + 1].handles[0],
@@ -297,7 +297,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   const isFilterSetBeingUsed = useRef(false)
   useEffect(() => {
     // When the user changes the easing using the UI, change the filter to match.
-    if (!isFilterSetBeingUsed.current) setFilter(stringFromBezierPoints(easing))
+    if (!isFilterSetBeingUsed.current)
+      setFilter(cssCubicBezierArgsFromHandles(easing))
     isFilterSetBeingUsed.current = false
   }, [trackData])
 
@@ -315,13 +316,17 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         onPaste={(e) =>
           // hack to wait for the paste to actually change the e.target.value
           setTimeout(() => {
-            if (bezierPointsFromString((e.target as HTMLInputElement).value))
+            if (
+              handlesFromCssCubicBezierArgs(
+                (e.target as HTMLInputElement).value,
+              )
+            )
               fns.permanentlySetValue((e.target as HTMLInputElement).value)
           })
         }
         onChange={(e) => {
           setFilter(e.target.value)
-          if (bezierPointsFromString(e.target.value))
+          if (handlesFromCssCubicBezierArgs(e.target.value))
             fns.permanentlySetValue(e.target.value)
         }}
         ref={inputRef}
@@ -330,7 +335,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
       <CurrentPresetName>
         {
           EASING_PRESETS.find(({value}) =>
-            areEasingsSimilar(easing, bezierPointsFromString(value)),
+            areEasingsSimilar(easing, handlesFromCssCubicBezierArgs(value)),
           )?.label
         }
       </CurrentPresetName>
