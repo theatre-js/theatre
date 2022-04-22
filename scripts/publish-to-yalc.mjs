@@ -8,25 +8,16 @@ const root = path.normalize(path.join(__dirname, '..'))
 // Make sure the script runs in the root of the monorepo
 cd(root)
 
-// Build the packages before publishing them
-;(async function () {
-  await $`yarn build`
-})()
+process.env.USING_YALC = 'true'
 
 const packagesToPublish = ['theatre/core', 'theatre/studio']
 
-process.env.USING_YALC = 'true'
+;(async function () {
+  // Build the theatre packages before publishing them
+  await $`yarn build`
 
-/**
- * Publish a packages to the local `yalc` registry
- *
- * @param pkg - The package that should be published
- */
-async function publishPkg(pkg) {
-  await $`npx yalc publish ${pkg}`
-}
-
-// Publish the packages to the local `yalc` registry
-for (const pkg of packagesToPublish) {
-  publishPkg(pkg)
-}
+  // Publish the packages to the local `yalc` registry
+  for (const pkg of packagesToPublish) {
+    await $`npx yalc publish ${pkg}`
+  }
+})()
