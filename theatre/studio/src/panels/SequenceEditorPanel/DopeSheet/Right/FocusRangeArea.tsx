@@ -19,15 +19,16 @@ const focusRangeAreaTheme = {
 
 const divWidth = 1000
 
-const Container = styled.div`
+const Container = styled.div<{enabled: boolean}>`
   position: absolute;
   opacity: ${focusRangeAreaTheme.enabled.opacity};
-  background: transparent;
   left: 0;
   top: 0;
   width: ${divWidth}px;
   transform-origin: top left;
+  background-color: ${(props) => (props.enabled ? '#646568' : '#646568')};
 `
+
 const FocusRangeArea: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
@@ -47,44 +48,34 @@ const FocusRangeArea: React.FC<{
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
 
+    if (!existingRange) return null
+
     const range = existingRange?.range || {start: 0, end: 0}
 
     const height = val(layoutP.rightDims.height) + topStripHeight
 
-    let startPosInClippedSpace: number,
-      endPosInClippedSpace: number,
-      conditionalStyleProps:
-        | {
-            transform: string
-            background?: string
-          }
-        | undefined
+    const startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
+      range.start,
+    )
 
-    if (existingRange !== undefined) {
-      startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
-        range.start,
-      )
+    const endPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
+      range.end,
+    )
 
-      endPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(range.end)
-
-      const desiredWidth = endPosInClippedSpace - startPosInClippedSpace
-
-      conditionalStyleProps = {
-        transform: `translateX(${
-          val(layoutP.scaledSpace.leftPadding) +
-          startPosInClippedSpace -
-          val(layoutP.clippedSpace.fromUnitSpace)(0)
-        }px) scaleX(${desiredWidth / divWidth})`,
-      }
-
-      if (existingRange.enabled === true) {
-        conditionalStyleProps.background =
-          focusRangeAreaTheme.enabled.backgroundColor
-      }
-    }
+    const desiredWidth = endPosInClippedSpace - startPosInClippedSpace
 
     return (
-      <Container style={{...conditionalStyleProps, height: `${height}px`}} />
+      <Container
+        enabled={!!existingRange?.enabled}
+        style={{
+          height: `${height}px`,
+          transform: `translateX(${
+            val(layoutP.scaledSpace.leftPadding) +
+            startPosInClippedSpace -
+            val(layoutP.clippedSpace.fromUnitSpace)(0)
+          }px) scaleX(${desiredWidth / divWidth})`,
+        }}
+      />
     )
   }, [layoutP, existingRangeD])
 }
