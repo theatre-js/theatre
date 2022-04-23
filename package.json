@@ -21,8 +21,10 @@
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {
-    "theatre/**/*.(t|j)s?(x)": [
-      "eslint --rulesdir ./devEnv/eslint/rules --fix",
+    "(theatre|packages)/**/*.(t|j)s?(x)": [
+      "eslint --rulesdir ./devEnv/eslint/rules --fix"
+    ],
+    "**/*.(t|j)s?(x)": [
       "prettier --write"
     ]
   },
