@@ -27,7 +27,7 @@ const Background = styled.div<{width: number}>`
   position: absolute;
   top: 0;
   right: 0;
-  width: ${(props) => props.width};
+  width: ${(props) => props.width}px;
   bottom: 0;
   z-index: ${() => zIndexes.rightBackground};
   overflow: hidden;
