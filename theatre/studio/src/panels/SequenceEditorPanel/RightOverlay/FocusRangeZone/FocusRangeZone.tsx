@@ -14,7 +14,7 @@ import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOv
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
-import useHover from '@theatre/studio/uiComponents/useHover'
+import useHoverWithoutDescendants from '@theatre/studio/uiComponents/useHoverWithoutDescendants'
 import useKeyDown from '@theatre/studio/uiComponents/useKeyDown'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
@@ -61,7 +61,7 @@ const FocusRangeZone: React.FC<{
   )
 
   const isShiftDown = useKeyDown('Shift')
-  const isPointerHovering = useHover(containerNode)
+  const isPointerHovering = useHoverWithoutDescendants(containerNode)
 
   useEffect(() => {
     if (!isShiftDown && isPointerHovering) {
