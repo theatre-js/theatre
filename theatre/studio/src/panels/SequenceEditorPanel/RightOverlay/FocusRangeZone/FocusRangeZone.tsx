@@ -12,11 +12,12 @@ import {
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useKeyDown from '@theatre/studio/uiComponents/useKeyDown'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
-import React, {useMemo, useRef} from 'react'
+import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import FocusRangeStrip, {focusRangeStripTheme} from './FocusRangeStrip'
 import FocusRangeThumb from './FocusRangeThumb'
@@ -107,6 +108,14 @@ function usePanelDragZoneGestureHandlers(
   layoutP: Pointer<SequenceEditorPanelLayout>,
   panelStuffRef: React.MutableRefObject<ReturnType<typeof usePanel>>,
 ) {
+  const [mode, setMode] = useState<'none' | 'creating' | 'moving-panel'>('none')
+
+  useCssCursorLock(
+    mode !== 'none',
+    'dragging',
+    mode === 'creating' ? 'ew-resize' : 'grabbing',
+  )
+
   return useMemo((): Parameters<typeof useDrag>[1] => {
     const focusRangeCreationGestureHandlers = (): Parameters<
       typeof useDrag
@@ -181,7 +190,7 @@ function usePanelDragZoneGestureHandlers(
           }
           tempTransaction = undefined
         },
-        lockCursorTo: 'grabbing',
+        lockCursorTo: 'ew-resize',
       }
     }
 
@@ -240,22 +249,21 @@ function usePanelDragZoneGestureHandlers(
     return {
       onDragStart(event) {
         if (event.shiftKey) {
+          setMode('creating')
           currentGestureHandlers = focusRangeCreationGestureHandlers()
         } else {
+          setMode('moving-panel')
           currentGestureHandlers = panelMoveGestureHandlers()
         }
         currentGestureHandlers.onDragStart!(event)
       },
       onDrag(dx, dy, event) {
-        if (!currentGestureHandlers) {
-          console.error('oh no')
-        }
         currentGestureHandlers!.onDrag(dx, dy, event)
       },
       onDragEnd(dragHappened) {
+        setMode('none')
         currentGestureHandlers!.onDragEnd!(dragHappened)
       },
-      lockCursorTo: 'grabbing',
     }
   }, [layoutP, panelStuffRef])
 }

@@ -12,6 +12,7 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
+import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {focusRangeStripTheme} from './FocusRangeStrip'
 
 const Handler = styled.div`
@@ -211,7 +212,13 @@ const FocusRangeThumb: React.FC<{
 
   useDrag(hitZoneNode, gestureHandlers)
 
-  useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
+  useCssCursorLock(
+    isDragging,
+    'draggingPositionInSequenceEditor',
+    thumbType === 'start' ? 'w-resize' : 'e-resize',
+  )
+
+  useLockFrameStampPosition(isDragging, -1)
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
@@ -233,8 +240,6 @@ const FocusRangeThumb: React.FC<{
       posInClippedSpace = -1000
     }
 
-    const pointerEvents = focusRangeEnabled ? 'auto' : 'none'
-
     const background = focusRangeEnabled
       ? focusRangeStripTheme.disabled.backgroundColor
       : focusRangeStripTheme.enabled.backgroundColor
@@ -251,7 +256,6 @@ const FocusRangeThumb: React.FC<{
           style={{
             transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
             cursor: thumbType === 'start' ? 'w-resize' : 'e-resize',
-            pointerEvents,
           }}
         >
           <Handler
@@ -261,7 +265,6 @@ const FocusRangeThumb: React.FC<{
               left: `${
                 thumbType === 'start' ? startHandlerOffset : endHandlerOffset
               }px`,
-              pointerEvents,
             }}
           >
             <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
