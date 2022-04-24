@@ -13,6 +13,7 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
+import useKeyDown from '@theatre/studio/uiComponents/useKeyDown'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
 import React, {useMemo, useRef} from 'react'
@@ -20,12 +21,14 @@ import styled from 'styled-components'
 import FocusRangeStrip, {focusRangeStripTheme} from './FocusRangeStrip'
 import FocusRangeThumb from './FocusRangeThumb'
 
-const Container = styled.div`
+const Container = styled.div<{isShiftDown: boolean}>`
   position: absolute;
   height: ${() => topStripHeight}px;
   left: 0;
   right: 0;
   box-sizing: border-box;
+  /* Use the "grab" cursor if the shift key is up, which is the one used on the top strip of the sequence editor */
+  cursor: ${(props) => (props.isShiftDown ? 'ew-resize' : 'grab')};
 `
 
 const FocusRangeZone: React.FC<{
@@ -80,19 +83,22 @@ const FocusRangeZone: React.FC<{
     ]
   }, [])
 
+  const isShiftDown = useKeyDown('Shift')
+
   return usePrism(() => {
     return (
       <Container
         ref={containerRef as $IntentionalAny}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        isShiftDown={isShiftDown}
       >
         <FocusRangeStrip layoutP={layoutP} />
         <FocusRangeThumb thumbType="start" layoutP={layoutP} />
         <FocusRangeThumb thumbType="end" layoutP={layoutP} />
       </Container>
     )
-  }, [layoutP, existingRangeD])
+  }, [layoutP, existingRangeD, isShiftDown])
 }
 
 export default FocusRangeZone
