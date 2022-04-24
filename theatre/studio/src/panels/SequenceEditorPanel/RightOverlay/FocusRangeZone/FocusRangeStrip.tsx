@@ -40,7 +40,7 @@ const stripWidth = 1000
 
 const RangeStrip = styled.div`
   position: absolute;
-  height: ${() => topStripHeight}px;
+  height: ${() => topStripHeight - 1}px;
   background-color: ${focusRangeStripTheme.enabled.backgroundColor};
   top: 0;
   left: 0;

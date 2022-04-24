@@ -18,7 +18,7 @@ import {focusRangeStripTheme} from './FocusRangeStrip'
 const Handler = styled.div`
   content: ' ';
   width: ${focusRangeStripTheme.thumbWidth}px;
-  height: ${() => topStripHeight}px;
+  height: ${() => topStripHeight - 1}px;
   position: absolute;
   ${pointerEventsAutoInNormalMode};
   stroke: ${focusRangeStripTheme.enabled.stroke};
