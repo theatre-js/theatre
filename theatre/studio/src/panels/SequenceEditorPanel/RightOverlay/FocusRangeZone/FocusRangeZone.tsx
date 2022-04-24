@@ -14,10 +14,11 @@ import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOv
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
+import useHover from '@theatre/studio/uiComponents/useHover'
 import useKeyDown from '@theatre/studio/uiComponents/useKeyDown'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import FocusRangeStrip, {focusRangeStripTheme} from './FocusRangeStrip'
 import FocusRangeThumb from './FocusRangeThumb'
@@ -59,39 +60,20 @@ const FocusRangeZone: React.FC<{
     usePanelDragZoneGestureHandlers(layoutP, panelStuffRef),
   )
 
-  const [onMouseEnter, onMouseLeave] = useMemo(() => {
-    let unlock: VoidFn | undefined
-    return [
-      function onMouseEnter(event: React.MouseEvent) {
-        if (event.shiftKey === false) {
-          if (unlock) {
-            const u = unlock
-            unlock = undefined
-            u()
-          }
-          unlock = panelStuffRef.current.addBoundsHighlightLock()
-        }
-      },
-      function onMouseLeave(event: React.MouseEvent) {
-        if (event.shiftKey === false) {
-          if (unlock) {
-            const u = unlock
-            unlock = undefined
-            u()
-          }
-        }
-      },
-    ]
-  }, [])
-
   const isShiftDown = useKeyDown('Shift')
+  const isPointerHovering = useHover(containerNode)
+
+  useEffect(() => {
+    if (!isShiftDown && isPointerHovering) {
+      const unlock = panelStuffRef.current.addBoundsHighlightLock()
+      return unlock
+    }
+  }, [!isShiftDown && isPointerHovering])
 
   return usePrism(() => {
     return (
       <Container
         ref={containerRef as $IntentionalAny}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
         isShiftDown={isShiftDown}
       >
         <FocusRangeStrip layoutP={layoutP} />
