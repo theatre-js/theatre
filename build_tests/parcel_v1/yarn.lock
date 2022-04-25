@@ -5091,7 +5091,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp@npm:latest":
+"node-gyp@npm:^9.0.0, node-gyp@npm:latest":
   version: 9.0.0
   resolution: "node-gyp@npm:9.0.0"
   dependencies:
@@ -7212,6 +7212,7 @@ __metadata:
   dependencies:
     "@babel/core": 7.2.0
     deasync: ^0.1.26
+    node-gyp: ^9.0.0
     parcel-bundler: ^1.6.1
     typescript: ^4.4.3
   languageName: unknown
