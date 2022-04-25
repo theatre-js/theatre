@@ -33,7 +33,7 @@ const Grid = styled.div`
   grid-template-areas:
     'search  tween'
     'presets tween';
-  grid-template-rows: 35px 1fr;
+  grid-template-rows: 40px 1fr;
   grid-template-columns: ${PRESET_COLUMNS * 50}px 150px;
   gap: 1px;
   padding: 1px;
@@ -55,8 +55,8 @@ const SearchBox = styled.input.attrs({type: 'text'})`
   border: none;
   border-radius: 2px;
   color: rgba(255, 255, 255, 0.8);
-  padding: 10px;
-  font-size: 14px;
+  padding: 10px 10px 10px 10px;
+  font-size: 13px;
   outline: none;
   cursor: text;
   text-align: left;
@@ -79,8 +79,8 @@ const CurveEditorContainer = styled.div`
 
 const CurrentPresetName = styled.div`
   position: absolute;
-  bottom: 117px;
-  right: 155px;
+  top: 3px;
+  left: 10px;
   opacity: 0.25;
   font-size: 11px;
 `
