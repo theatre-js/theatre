@@ -1,5 +1,5 @@
 import React, {useContext, useMemo} from 'react'
-import logger from '@theatre/shared/logger'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
 /** See {@link PointerCapturing} */
 export type CapturedPointer = {
@@ -23,79 +23,54 @@ export type PointerCapturing = {
   capturePointer(debugReason: string): CapturedPointer
 }
 
-type PointerCapturingFn = (
-  forDebugName: string,
-  changeNotify: () => void,
-) => PointerCapturing
+type PointerCapturingFn = (forDebugName: string) => PointerCapturing
 
-class Observable<T> {
-  private subs = new Set<(next: T) => void>()
-  constructor(private _value: T) {}
-  get value(): T {
-    return this._value
-  }
-  next(value: T) {
-    this._value = value
-    for (const listener of this.subs) {
-      listener(value)
-    }
-  }
-  subscribe(listener: (next: T) => void): {unsubscribe(): void} {
-    let unsubbed = false
-    this.subs.add(listener)
-    return {
-      unsubscribe: () => {
-        if (!unsubbed) {
-          this.subs.delete(listener)
-          unsubbed = true
-        }
-      },
-    }
-  }
-}
-
-function _createPointerCapturingContext(): PointerCapturingFn {
-  let currentCapture = new Observable<null | {
+function _usePointerCapturingContext(): PointerCapturingFn {
+  let [currentCapture, setCurrentCapture] = React.useState<null | {
     debugOwnerName: string
     debugReason: string
   }>(null)
 
-  return (forDebugName, changeNotify) => {
-    currentCapture.subscribe(changeNotify)
+  return (forDebugName) => {
     return {
       capturePointer(reason) {
-        logger.log('Capturing pointer', {forDebugName, reason})
-        if (currentCapture.value != null) {
+        // logger.log('Capturing pointer', {forDebugName, reason})
+        if (currentCapture != null) {
           throw new Error(
-            `"${forDebugName}" attempted capturing pointer for "${reason}" while already captured by "${currentCapture.value.debugOwnerName}" for "${currentCapture.value.debugReason}"`,
+            `"${forDebugName}" attempted capturing pointer for "${reason}" while already captured by "${currentCapture.debugOwnerName}" for "${currentCapture.debugReason}"`,
           )
         }
 
-        currentCapture.next({debugOwnerName: forDebugName, debugReason: reason})
+        setCurrentCapture({debugOwnerName: forDebugName, debugReason: reason})
 
-        const releaseCapture = currentCapture.value
+        const releaseCapture = currentCapture
         return {
           release() {
-            if (releaseCapture === currentCapture.value) {
-              logger.log('Releasing pointer', {
-                forDebugName,
-                reason,
-              })
-              currentCapture.next(null)
+            if (releaseCapture === currentCapture) {
+              // logger.log('Releasing pointer', {
+              //   forDebugName,
+              //   reason,
+              // })
+              setCurrentCapture(null)
             }
           },
         }
       },
       isPointerBeingCaptured() {
-        return currentCapture.value != null
+        return currentCapture != null
       },
     }
   }
 }
 
 const PointerCapturingContext = React.createContext<PointerCapturingFn>(
-  _createPointerCapturingContext(),
+  null as $IntentionalAny,
 )
+// const ProviderChildren: React.FC<{children?: React.ReactNode}> = function
+
+const ProviderChildrenMemo: React.FC<{}> = React.memo(({children}) => (
+  <>{children}</>
+))
 
 /**
  * See {@link PointerCapturing}.
@@ -107,29 +82,21 @@ const PointerCapturingContext = React.createContext<PointerCapturingFn>(
 export function ProvidePointerCapturing(props: {
   children?: React.ReactNode
 }): React.ReactElement {
+  const ctx = _usePointerCapturingContext()
   // Consider whether we want to manage multiple providers nested (e.g. embedding Theatre.js in Theatre.js or studio into whatever else)
   // This may not be necessary to consider due to the design of allowing a default value for contexts...
   // 1/10 importance to think about, now.
   // const parentCapturing = useContext(PointerCapturingContext)
   return (
-    <PointerCapturingContext.Provider
-      value={_createPointerCapturingContext()}
-      children={props.children}
-    />
+    <PointerCapturingContext.Provider value={ctx}>
+      <ProviderChildrenMemo children={props.children} />
+    </PointerCapturingContext.Provider>
   )
 }
 
 export function usePointerCapturing(forDebugName: string): PointerCapturing {
   const pointerCapturingFn = useContext(PointerCapturingContext)
-  const [_, setVersion] = React.useState(0)
-
-  console.log('usePointerCapturing', forDebugName)
-
   return useMemo(() => {
-    console.log('usePointerCapturing memo', forDebugName)
-    return pointerCapturingFn(forDebugName, () => {
-      console.log('usePointerCapturing changed', forDebugName)
-      setVersion((v) => v + 1) // force reconciliation
-    })
+    return pointerCapturingFn(forDebugName)
   }, [forDebugName, pointerCapturingFn])
 }
