@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "deasync": "^0.1.26",
-    "node-gyp": "^9.0.0",
     "parcel-bundler": "^1.6.1"
   },
   "devDependencies": {
