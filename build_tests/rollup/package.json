@@ -17,8 +17,5 @@
     "watch-prod": "rollup -c -w --environment NODE_ENV:'production'",
     "dev": "yarn watch-dev & serve public",
     "start": "serve public"
-  },
-  "dependencies": {
-    "yalc": "^1.0.0-pre.53"
   }
 }

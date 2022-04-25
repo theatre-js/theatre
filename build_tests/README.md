@@ -66,34 +66,30 @@ yarn start
    touch yarn.lock
    ```
 
-5. Add `yalc` to the new project's dependencies:
-   ```sh
-   yarn add yalc
-   ```
-6. Install the dependencies
+5. Install the dependencies
 
    ```sh
    yarn
    ```
 
-7. Install `@theatre/core` and `@theatre/studio` from the local registry:
+6. Install `@theatre/core` and `@theatre/studio` from the local registry:
 
    ```sh
    npx yalc link @theatre/core @theatre/studio
    ```
 
-8. Use the
+7. Use the
    [Hello world](https://docs.theatrejs.com/getting-started/install/#install-theatre)
    example from the docs for creating a `Theatre.js` project in it
 
-9. Make sure that you add a `yarn build` script to the repo, because the it will
+8. Make sure that you add a `yarn build` script to the repo, because the it will
    be used to build the project in the CI.
 
-10. Test your config by starting a dev server in the new project's root. In
-    `parcel_v2`' you can do it with the following command:
-    ```sh
-    yarn start
-    ```
+9. Test your config by starting a dev server in the new project's root. In
+   `parcel_v2`' you can do it with the following command:
+   ```sh
+   yarn start
+   ```
 
 Feel free to check out the existing workspaces in `build_tests` if you get
 stuck.

@@ -11,8 +11,7 @@
   "dependencies": {
     "deasync": "^0.1.26",
     "node-gyp": "^9.0.0",
-    "parcel-bundler": "^1.6.1",
-    "yalc": "^1.0.0-pre.53"
+    "parcel-bundler": "^1.6.1"
   },
   "devDependencies": {
     "@babel/core": "7.2.0",
