@@ -32,14 +32,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@build_tests/parcel_v2@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@build_tests/parcel_v2@workspace:."
-  dependencies:
-    parcel: ^2.4.1
-  languageName: unknown
-  linkType: soft
-
 "@gar/promisify@npm:^1.1.3":
   version: 1.1.3
   resolution: "@gar/promisify@npm:1.1.3"
@@ -2462,6 +2454,14 @@ __metadata:
   checksum: dd33af5d87a1159bcc38f354707505f1449a33d1491c512e9536f11fea7c3474cdc40e2e5fdf75f58658cfaab8ef47cb7454acd6406b2ce487675cb1978c6275
   languageName: node
   linkType: hard
+
+"theatre-build_test-parcel_v2@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "theatre-build_test-parcel_v2@workspace:."
+  dependencies:
+    parcel: ^2.4.1
+  languageName: unknown
+  linkType: soft
 
 "timsort@npm:^0.3.0":
   version: 0.3.0
