@@ -1,5 +1,6 @@
 {
-  "name": "rollup-starter-app",
+  "name": "theatre-build_test-rollup",
+  "description": "Theatre.js project using rollup",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.3",
     "@rollup/plugin-json": "^4.1.0",

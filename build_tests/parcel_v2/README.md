@@ -1,4 +1,4 @@
-# Theatre.js project with `parcel_v1`
+# Theatre.js project with `parcel_v2`
 
 ## Setup
 

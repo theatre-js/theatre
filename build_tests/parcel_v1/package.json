@@ -1,13 +1,12 @@
 {
-  "name": "theatrejs-hello-world",
+  "name": "theatre-build_test-parcel_v1",
   "version": "1.0.0",
-  "description": "",
+  "description": "Theatre.js project using parcel 1.x",
+  "private": true,
   "main": "index.html",
   "scripts": {
     "start": "parcel index.html --open",
-    "build": "parcel build index.html",
-    "yalc:add-theatre": "yalc link @theatre/core @theatre/studio",
-    "yalc:remove-theatre": "yalc remove @theatre/core @theatre/studio"
+    "build": "parcel build index.html"
   },
   "dependencies": {
     "deasync": "^0.1.26",
