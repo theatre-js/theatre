@@ -4,6 +4,7 @@
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,
+    "resolveJsonModule": true,
     "types": [
       "zx"
     ]

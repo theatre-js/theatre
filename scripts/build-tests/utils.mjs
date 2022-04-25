@@ -9,15 +9,18 @@ import path from 'path'
  * Colorize a message
  */
 export const colorize = {
+  /** @param {string} message */
   red: (message) => '\x1b[31m' + message + '\x1b[0m',
+  /** @param {string} message */
   green: (message) => '\x1b[32m' + message + '\x1b[0m',
+  /** @param {string} message */
   yellow: (message) => '\x1b[33m' + message + '\x1b[0m',
 }
 
 /**
  * Get all the projects from `./build_tests/`
  *
- * @param root - Absolute path to the theatre monorepo
+ * @param {string} root - Absolute path to the theatre monorepo
  * @returns An array containing the absolute paths to the build test projects
  */
 export function getTestBuildProjects(root) {

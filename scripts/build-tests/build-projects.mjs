@@ -5,7 +5,7 @@
 import path from 'path'
 import {colorize, getTestBuildProjects} from './utils.mjs'
 
-const root = path.normalize(path.join(__dirname, '..', '..'))
+const root = path.resolve(__dirname, '../..')
 const buildTestProjectAbsPaths = getTestBuildProjects(root)
 
 const projectsWithErrors = []

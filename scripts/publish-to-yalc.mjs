@@ -3,7 +3,7 @@
  */
 import path from 'path'
 
-const root = path.normalize(path.join(__dirname, '..'))
+const root = path.resolve(__dirname, '..')
 
 // Make sure the script runs in the root of the monorepo
 cd(root)
