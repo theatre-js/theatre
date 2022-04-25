@@ -23,11 +23,9 @@ export const colorize = {
 export function getTestBuildProjects(root) {
   const buildTestsDir = path.join(root, 'build_tests')
   let buildTestsDirEntries
-  let buildTests
 
   try {
     buildTestsDirEntries = fs.readdirSync(buildTestsDir)
-    buildTests = fs.opendirSync(buildTestsDir)
   } catch {
     throw new Error(
       `Could not list directory: "${buildTestsDir}" Is it an existing directory?`,
@@ -37,10 +35,10 @@ export function getTestBuildProjects(root) {
 
   // NOTE: We assume that every directory in `build_tests` is
   // a build test project!
-  for (let i = 0; i < buildTestsDirEntries.length; i++) {
-    const dirent = buildTests.readSync()
-    if (dirent.isDirectory()) {
-      projectAbsPaths.push(path.join(buildTestsDir, dirent.name))
+  for (const entry of buildTestsDirEntries) {
+    const entryAbsPath = path.join(buildTestsDir, entry)
+    if (fs.lstatSync(entryAbsPath).isDirectory()) {
+      projectAbsPaths.push(entryAbsPath)
     }
   }
 
