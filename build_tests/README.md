@@ -80,7 +80,7 @@ yarn start
 
 7. Use the
    [Hello world](https://docs.theatrejs.com/getting-started/install/#install-theatre)
-   example from the docs for creating a `Theatre.js` project in it
+   example from the docs for creating a `Theatre.js` project
 
 8. Make sure that you add a `yarn build` script to the repo, because the it will
    be used to build the project in the CI.
@@ -91,5 +91,5 @@ yarn start
    yarn start
    ```
 
-Feel free to check out the existing workspaces in `build_tests` if you get
-stuck.
+Feel free to check out [the existing projects](#the-currently-tested-setups) in
+`build_tests` if you get stuck.
