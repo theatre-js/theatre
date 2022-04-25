@@ -23,40 +23,74 @@ export type PointerCapturing = {
   capturePointer(debugReason: string): CapturedPointer
 }
 
-type PointerCapturingFn = (forDebugName: string) => PointerCapturing
+type PointerCapturingFn = (
+  forDebugName: string,
+  changeNotify: () => void,
+) => PointerCapturing
+
+class Observable<T> {
+  private subs = new Set<(next: T) => void>()
+  constructor(private _value: T) {}
+  get value(): T {
+    return this._value
+  }
+  next(value: T) {
+    this._value = value
+    for (const listener of this.subs) {
+      listener(value)
+    }
+  }
+  subscribe(listener: (next: T) => void): {unsubscribe(): void} {
+    let unsubbed = false
+    this.subs.add(listener)
+    return {
+      unsubscribe: () => {
+        if (!unsubbed) {
+          this.subs.delete(listener)
+          unsubbed = true
+        }
+      },
+    }
+  }
+}
 
 function _createPointerCapturingContext(): PointerCapturingFn {
-  let currentCapture: null | {debugOwnerName: string; debugReason: string} =
-    null
+  let currentCapture = new Observable<null | {
+    debugOwnerName: string
+    debugReason: string
+  }>(null)
 
-  return (forDebugName) => ({
-    capturePointer(reason) {
-      logger.log('Capturing pointer', {forDebugName, reason})
-      if (currentCapture != null) {
-        throw new Error(
-          `"${forDebugName}" attempted capturing pointer for "${reason}" while already captured by "${currentCapture.debugOwnerName}" for "${currentCapture.debugReason}"`,
-        )
-      }
+  return (forDebugName, changeNotify) => {
+    currentCapture.subscribe(changeNotify)
+    return {
+      capturePointer(reason) {
+        logger.log('Capturing pointer', {forDebugName, reason})
+        if (currentCapture.value != null) {
+          throw new Error(
+            `"${forDebugName}" attempted capturing pointer for "${reason}" while already captured by "${currentCapture.value.debugOwnerName}" for "${currentCapture.value.debugReason}"`,
+          )
+        }
 
-      currentCapture = {debugOwnerName: forDebugName, debugReason: reason}
+        currentCapture.next({debugOwnerName: forDebugName, debugReason: reason})
 
-      const releaseCapture = currentCapture
-      return {
-        release() {
-          if (releaseCapture === currentCapture) {
-            logger.log('Releasing pointer', {
-              forDebugName,
-              reason,
-            })
-            currentCapture = null
-          }
-        },
-      }
-    },
-    isPointerBeingCaptured() {
-      return currentCapture != null
-    },
-  })
+        const releaseCapture = currentCapture.value
+        return {
+          release() {
+            if (releaseCapture === currentCapture.value) {
+              logger.log('Releasing pointer', {
+                forDebugName,
+                reason,
+              })
+              currentCapture.next(null)
+            }
+          },
+        }
+      },
+      isPointerBeingCaptured() {
+        return currentCapture.value != null
+      },
+    }
+  }
 }
 
 const PointerCapturingContext = React.createContext<PointerCapturingFn>(
@@ -87,8 +121,15 @@ export function ProvidePointerCapturing(props: {
 
 export function usePointerCapturing(forDebugName: string): PointerCapturing {
   const pointerCapturingFn = useContext(PointerCapturingContext)
-  return useMemo(
-    () => pointerCapturingFn(forDebugName),
-    [forDebugName, pointerCapturingFn],
-  )
+  const [_, setVersion] = React.useState(0)
+
+  console.log('usePointerCapturing', forDebugName)
+
+  return useMemo(() => {
+    console.log('usePointerCapturing memo', forDebugName)
+    return pointerCapturingFn(forDebugName, () => {
+      console.log('usePointerCapturing changed', forDebugName)
+      setVersion((v) => v + 1) // force reconciliation
+    })
+  }, [forDebugName, pointerCapturingFn])
 }

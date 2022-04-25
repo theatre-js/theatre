@@ -1,15 +1,13 @@
 import React from 'react'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
-import type {Keyframe} from '@theatre/core/src/projects/store/types/SheetState_Historic'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import clamp from 'lodash-es/clamp'
 import type CurveEditorPopover from './CurveEditorPopover'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import getStudio from '@theatre/studio/getStudio'
-import {val} from '@theatre/dataverse'
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {useFreezableMemo} from './useFreezableMemo'
+import type {CubicBezierHandles} from './shared'
+import {cssCubicBezierArgsFromHandles} from './shared'
 
 const VIEWBOX_PADDING = 0.12
 const VIEWBOX_SIZE = 1 + VIEWBOX_PADDING * 2
@@ -47,7 +45,12 @@ const HitZone = styled.circle`
   }
 `
 
-type IProps = Parameters<typeof CurveEditorPopover>[0]
+type IProps = {
+  editorState: {
+    temporarilySetValue: (newCurve: string) => void
+    discardTemporaryValue: () => void
+  }
+} & Parameters<typeof CurveEditorPopover>[0]
 
 const CurveSegmentEditor: React.FC<IProps> = (props) => {
   const {index, trackData} = props
@@ -70,10 +73,7 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
     const handleX = clamp(cur.handles[2] + dx * VIEWBOX_WIDTH_RATIO, 0, 1)
     const handleY = cur.handles[3] - dy * VIEWBOX_HEIGHT_RATIO
 
-    return {
-      ...cur,
-      handles: [cur.handles[0], cur.handles[1], handleX, handleY],
-    }
+    return [handleX, handleY, next.handles[0], next.handles[1]]
   })
 
   const [refRight, nodeRight] = useRefAndState<SVGCircleElement | null>(null)
@@ -81,10 +81,7 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
     const handleX = clamp(next.handles[0] + dx * VIEWBOX_WIDTH_RATIO, 0, 1)
     const handleY = next.handles[1] - dy * VIEWBOX_HEIGHT_RATIO
 
-    return {
-      ...next,
-      handles: [handleX, handleY, next.handles[2], next.handles[3]],
-    }
+    return [cur.handles[2], cur.handles[3], handleX, handleY]
   })
 
   return (
@@ -242,45 +239,27 @@ function useKeyframeDrag(
   svgNode: SVGSVGElement | null,
   node: SVGCircleElement | null,
   props: IProps,
-  setKeyframe: (dx: number, dy: number) => Keyframe,
+  setHandles: (dx: number, dy: number) => CubicBezierHandles,
 ): void {
   const handlers = useFreezableMemo<Parameters<typeof useDrag>[1]>(
-    (setFrozen) => {
-      // Considered using "scrub" instead to manage a not-necessarilly commital change over time
-      // But it appears that scrub doesn't allow to change a "pointer" for the keyframes
-      let tempTransaction: CommitOrDiscard | undefined
+    (setFrozen) => ({
+      debugName: 'CurveSegmentEditor/useRightDrag',
+      lockCursorTo: 'move',
+      onDragStart() {
+        setFrozen(true)
+      },
+      onDrag(dx, dy) {
+        if (!svgNode) return
 
-      return {
-        debugName: 'CurveSegmentEditor/useRightDrag',
-        lockCursorTo: 'move',
-        onDragStart() {
-          setFrozen(true)
-        },
-        onDrag(dx, dy) {
-          if (!svgNode) return
-          tempTransaction?.discard()
-          tempTransaction = undefined
-
-          tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-            stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
-              {
-                ...props.leaf.sheetObject.address,
-                snappingFunction: val(props.layoutP.sheet).getSequence()
-                  .closestGridPosition,
-                trackId: props.leaf.trackId,
-                keyframes: [setKeyframe(dx, dy)],
-              },
-            )
-          })
-        },
-        onDragEnd(dragHappened) {
-          setFrozen(false)
-          if (dragHappened) tempTransaction?.commit()
-          else tempTransaction?.discard()
-          tempTransaction = undefined
-        },
-      }
-    },
+        props.editorState.temporarilySetValue(
+          cssCubicBezierArgsFromHandles(setHandles(dx, dy)),
+        )
+      },
+      onDragEnd(dragHappened) {
+        setFrozen(false)
+        if (!dragHappened) props.editorState.discardTemporaryValue()
+      },
+    }),
     [svgNode, props.trackData],
   )
 

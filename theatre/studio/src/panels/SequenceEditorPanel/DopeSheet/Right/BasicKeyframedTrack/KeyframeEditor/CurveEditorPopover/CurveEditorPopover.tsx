@@ -119,86 +119,67 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     [presetSearchResults, useQuery],
   )
 
-  // Functions for saving easing data to the actual keyframes
-  const fns = useMemo(() => {
-    let tempTransaction: CommitOrDiscard | undefined
+  // using an immeditely invoked function so we can properly isolate tempTransaction
+  // from other items in this section of the code.
+  const editorState = iif(() => {
+    const tempTransaction = useRef<CommitOrDiscard | undefined>()
+    useEffect(
+      () =>
+        // clean up function being used to tell when this React component unmounts.
+        // in which case we want to actually commit anything that we have outstanding
+        () => {
+          tempTransaction.current?.commit()
+        },
+      [tempTransaction],
+    )
 
-    return {
-      // Currently unused. Currently all user actions
-      // immediately affect the actual keyframe data.
-      // Actions can be undone but are not "temporary".
-      temporarilySetValue(newCurve: string): void {
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
-        }
+    // Functions for saving easing data to the actual keyframes
+    return useMemo(
+      () => ({
+        temporarilySetValue(newCurve: string): void {
+          tempTransaction.current?.discard()
+          tempTransaction.current = undefined
 
-        const args = handlesFromCssCubicBezierArgs(newCurve)
-        if (args === null) return
+          const args = handlesFromCssCubicBezierArgs(newCurve)
+          if (args === null) return
 
-        tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          const {replaceKeyframes} =
-            stateEditors.coreByProject.historic.sheetsById.sequence
+          tempTransaction.current = getStudio()!.tempTransaction(
+            ({stateEditors}) => {
+              const {replaceKeyframes} =
+                stateEditors.coreByProject.historic.sheetsById.sequence
 
-          replaceKeyframes({
-            ...props.leaf.sheetObject.address,
-            snappingFunction: val(props.layoutP.sheet).getSequence()
-              .closestGridPosition,
-            trackId: props.leaf.trackId,
-            keyframes: [
-              {
-                ...cur,
-                handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
-              },
-              {
-                ...next,
-                handles: [args[2], args[3], next.handles[2], next.handles[3]],
-              },
-            ],
-          })
-        })
-      },
-      discardTemporaryValue(): void {
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
-        }
-      },
-      permanentlySetValue(newCurve: string): void {
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
-        }
-        const args =
-          handlesFromCssCubicBezierArgs(newCurve) ??
-          handlesFromCssCubicBezierArgs(presetSearchResults[0]?.obj?.value)
-
-        if (!args) return
-
-        getStudio()!.transaction(({stateEditors}) => {
-          const {replaceKeyframes} =
-            stateEditors.coreByProject.historic.sheetsById.sequence
-
-          replaceKeyframes({
-            ...props.leaf.sheetObject.address,
-            snappingFunction: val(props.layoutP.sheet).getSequence()
-              .closestGridPosition,
-            trackId: props.leaf.trackId,
-            keyframes: [
-              {
-                ...cur,
-                handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
-              },
-              {
-                ...next,
-                handles: [args[2], args[3], next.handles[2], next.handles[3]],
-              },
-            ],
-          })
-        })
-      },
-    }
-  }, [props.layoutP, props.index, presetSearchResults])
+              replaceKeyframes({
+                ...props.leaf.sheetObject.address,
+                snappingFunction: val(props.layoutP.sheet).getSequence()
+                  .closestGridPosition,
+                trackId: props.leaf.trackId,
+                keyframes: [
+                  {
+                    ...cur,
+                    handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
+                  },
+                  {
+                    ...next,
+                    handles: [
+                      args[2],
+                      args[3],
+                      next.handles[2],
+                      next.handles[3],
+                    ],
+                  },
+                ],
+              })
+            },
+          )
+        },
+        discardTemporaryValue(): void {
+          tempTransaction.current?.discard()
+          tempTransaction.current = undefined
+        },
+      }),
+      [props.layoutP, props.index, presetSearchResults, tempTransaction],
+    )
+  })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -252,10 +233,11 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
 
     if (e.key === 'ArrowDown') moveHighlightVertical(1)
     else if (e.key === 'ArrowUp') moveHighlightVertical(-1)
-    else if (e.key === 'Escape') props.onRequestClose()
-    else if (e.key === 'Enter') {
+    else if (e.key === 'Escape') {
+      editorState.discardTemporaryValue()
       props.onRequestClose()
-      fns.permanentlySetValue(filter)
+    } else if (e.key === 'Enter') {
+      props.onRequestClose()
     }
   }
   const onEasingOptionKeydown =
@@ -266,10 +248,11 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
       else if (e.key === 'ArrowLeft') moveHighlightHorizontal(-1)
       else if (e.key === 'ArrowUp') moveHighlightVertical(-1)
       else if (e.key === 'ArrowDown') moveHighlightVertical(1)
-      else if (e.key === 'Escape') props.onRequestClose()
-      else if (e.key === 'Enter') {
+      else if (e.key === 'Escape') {
+        editorState.discardTemporaryValue()
         props.onRequestClose()
-        fns.permanentlySetValue(preset.value)
+      } else if (e.key === 'Enter') {
+        props.onRequestClose()
       }
     }
 
@@ -282,7 +265,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         const maybePresetEl =
           optionsRef.current?.[maybeHighlightedPreset.label]?.current
         maybePresetEl?.focus()
-        fns.permanentlySetValue(maybeHighlightedPreset.value)
+        editorState.temporarilySetValue(maybeHighlightedPreset.value)
       }
     }
   }, [highlightedIndex])
@@ -321,13 +304,15 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
                 (e.target as HTMLInputElement).value,
               )
             )
-              fns.permanentlySetValue((e.target as HTMLInputElement).value)
+              editorState.temporarilySetValue(
+                (e.target as HTMLInputElement).value,
+              )
           })
         }
         onChange={(e) => {
           setFilter(e.target.value)
           if (handlesFromCssCubicBezierArgs(e.target.value))
-            fns.permanentlySetValue(e.target.value)
+            editorState.temporarilySetValue(e.target.value)
         }}
         ref={inputRef}
         onKeyDown={onSearchKeyDown}
@@ -349,7 +334,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
             ref={optionsRef.current[preset.label]}
             onClick={() => {
               setHighlightedIndex(displayedPresets.indexOf(preset))
-              fns.permanentlySetValue(preset.value)
+              editorState.temporarilySetValue(preset.value)
               //props.onRequestClose()
             }}
             // Mousing over an option previously previewed it using `fns.temporarilySetValue`
@@ -364,7 +349,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         ))}
       </OptionsContainer>
       <CurveEditorContainer>
-        <CurveSegmentEditor {...props} />
+        <CurveSegmentEditor {...props} editorState={editorState} />
       </CurveEditorContainer>
     </Grid>
   )
@@ -379,4 +364,11 @@ export default CurveEditorPopover
  */
 function mod(n: number, m: number) {
   return ((n % m) + m) % m
+}
+
+/**
+ * Immediately invoked function. Used to limit the scope of the argument function.
+ */
+function iif<T>(fn: () => T): T {
+  return fn()
 }
