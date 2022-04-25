@@ -84,6 +84,8 @@ const Connector: React.FC<IProps> = (props) => {
     'KeyframeEditor Connector',
   )
 
+  console.log('reconcile', {isPointerBeingCaptured: isPointerBeingCaptured()})
+
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {
       closeWhenPointerIsDistant: !isPointerBeingCaptured(),
