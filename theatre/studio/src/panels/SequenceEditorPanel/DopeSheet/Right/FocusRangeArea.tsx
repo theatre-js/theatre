@@ -7,26 +7,18 @@ import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOv
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 
-const focusRangeAreaTheme = {
-  enabled: {
-    backgroundColor: '#646568',
-    opacity: 0.05,
-  },
-  disabled: {
-    backgroundColor: '#646568',
-  },
-}
-
 const divWidth = 1000
 
-const Container = styled.div<{enabled: boolean}>`
+const Curtain = styled.div<{enabled: boolean}>`
   position: absolute;
-  opacity: ${focusRangeAreaTheme.enabled.opacity};
   left: 0;
-  top: 0;
+  opacity: 0.15;
+  top: ${topStripHeight}px;
   width: ${divWidth}px;
   transform-origin: top left;
-  background-color: ${(props) => (props.enabled ? '#646568' : '#646568')};
+  z-index: 20;
+  /* pointer-events: none; */
+  background-color: ${(props) => (props.enabled ? '#000000' : 'transparent')};
 `
 
 const FocusRangeArea: React.FC<{
@@ -50,33 +42,38 @@ const FocusRangeArea: React.FC<{
 
     if (!existingRange) return null
 
-    const range = existingRange?.range || {start: 0, end: 0}
+    const {range} = existingRange
 
-    const height = val(layoutP.rightDims.height) + topStripHeight
+    const height = val(layoutP.rightDims.height)
 
-    const startPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
-      range.start,
-    )
+    const unitSpaceToClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)
 
-    const endPosInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
-      range.end,
-    )
+    const els = [
+      [-1000, range.start],
+      [range.end, val(layoutP.clippedSpace.range.end)],
+    ].map(([start, end], i) => {
+      const startPosInClippedSpace = unitSpaceToClippedSpace(start)
 
-    const desiredWidth = endPosInClippedSpace - startPosInClippedSpace
+      const endPosInClippedSpace = unitSpaceToClippedSpace(end)
+      const desiredWidth = endPosInClippedSpace - startPosInClippedSpace
 
-    return (
-      <Container
-        enabled={!!existingRange?.enabled}
-        style={{
-          height: `${height}px`,
-          transform: `translateX(${
-            val(layoutP.scaledSpace.leftPadding) +
-            startPosInClippedSpace -
-            val(layoutP.clippedSpace.fromUnitSpace)(0)
-          }px) scaleX(${desiredWidth / divWidth})`,
-        }}
-      />
-    )
+      return (
+        <Curtain
+          key={`curtain-${i}`}
+          enabled={true}
+          style={{
+            height: `${height}px`,
+            transform: `translateX(${
+              val(layoutP.scaledSpace.leftPadding) +
+              startPosInClippedSpace -
+              unitSpaceToClippedSpace(0)
+            }px) scaleX(${desiredWidth / divWidth})`,
+          }}
+        />
+      )
+    })
+
+    return <>{els}</>
   }, [layoutP, existingRangeD])
 }
 
