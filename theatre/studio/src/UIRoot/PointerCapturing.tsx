@@ -1,4 +1,5 @@
 import React, {useContext, useMemo} from 'react'
+import logger from '@theatre/shared/logger'
 
 /** See {@link PointerCapturing} */
 export type CapturedPointer = {
@@ -30,6 +31,7 @@ function _createPointerCapturingContext(): PointerCapturingFn {
 
   return (forDebugName) => ({
     capturePointer(reason) {
+      logger.log('Capturing pointer', {forDebugName, reason})
       if (currentCapture != null) {
         throw new Error(
           `"${forDebugName}" attempted capturing pointer for "${reason}" while already captured by "${currentCapture.debugOwnerName}" for "${currentCapture.debugReason}"`,
@@ -38,9 +40,16 @@ function _createPointerCapturingContext(): PointerCapturingFn {
 
       currentCapture = {debugOwnerName: forDebugName, debugReason: reason}
 
+      const releaseCapture = currentCapture
       return {
         release() {
-          currentCapture = null
+          if (releaseCapture === currentCapture) {
+            logger.log('Releasing pointer', {
+              forDebugName,
+              reason,
+            })
+            currentCapture = null
+          }
         },
       }
     },
@@ -77,6 +86,9 @@ export function ProvidePointerCapturing(props: {
 }
 
 export function usePointerCapturing(forDebugName: string): PointerCapturing {
-  const fn = useContext(PointerCapturingContext)
-  return useMemo(() => fn(forDebugName), [forDebugName, fn])
+  const pointerCapturingFn = useContext(PointerCapturingContext)
+  return useMemo(
+    () => pointerCapturingFn(forDebugName),
+    [forDebugName, pointerCapturingFn],
+  )
 }
