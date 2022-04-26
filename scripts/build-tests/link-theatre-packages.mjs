@@ -9,7 +9,13 @@ const root = path.resolve(__dirname, '../..')
 const buildTestProjectAbsPaths = getTestBuildProjects(root)
 
 // The packages that should be linked with `yalc`
-const packagesToLink = ['@theatre/core', '@theatre/studio']
+const packagesToLink = [
+  '@theatre/core',
+  '@theatre/studio',
+  '@theatre/dataverse',
+  '@theatre/react',
+  '@theatre/r3f',
+]
 
 const projectsWithErrors = []
 

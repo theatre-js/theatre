@@ -10,7 +10,13 @@ cd(root)
 
 process.env.USING_YALC = 'true'
 
-const packagesToPublish = ['theatre/core', 'theatre/studio']
+const packagesToPublish = [
+  'theatre/core',
+  'theatre/studio',
+  'packages/dataverse',
+  'packages/r3f',
+  'packages/react',
+]
 
 ;(async function () {
   // Build the theatre packages before publishing them
