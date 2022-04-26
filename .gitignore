@@ -24,3 +24,6 @@
 .parcel-cache
 
 yalc.lock
+
+/build_tests/*/.yalc
+/build_tests/*/.yarn

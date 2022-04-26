@@ -5,9 +5,3 @@ node_modules
 **/.DS_Store
 *.tsbuildinfo
 dist
-
-.yarn
-
-.yalc
-yalc.lock
-
