@@ -1,7 +1,7 @@
 /**
  * This 4-tuple defines the start control point x1,y1 and the end control point x2,y2
  * of a cubic bezier curve. It is assumed that the start of the curve is fixed at 0,0
- * and the end is fixed at 1,1. x1 must always be >= 0 and x2 must always be <= 1.
+ * and the end is fixed at 1,1. x1 must always be \>= 0 and x2 must always be \<= 1.
  *
  * to get a feel for it: https://cubic-bezier.com/
  **/
@@ -79,9 +79,9 @@ export const EASING_PRESETS = [
 /**
  * Compares two easings and returns true iff they are similar up to a threshold
  *
- * @param easing1 first easing to compare
- * @param easing2 second easing to compare
- * @param options optionally pass an object with a threshold that determines how similar the easings should be
+ * @param easing1 - first easing to compare
+ * @param easing2 - second easing to compare
+ * @param options - optionally pass an object with a threshold that determines how similar the easings should be
  * @returns boolean if the easings are similar
  */
 export function areEasingsSimilar(
