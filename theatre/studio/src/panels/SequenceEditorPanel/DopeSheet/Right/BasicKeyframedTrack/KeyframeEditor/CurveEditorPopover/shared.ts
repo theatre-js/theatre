@@ -76,15 +76,25 @@ export const EASING_PRESETS = [
   // {label: 'Ease Out In', value: '.42, 0, .58, 1'},
 ]
 
-const SIMILARITY_CUTOFF = 0.02
+/**
+ * Compares two easings and returns true iff they are similar up to a threshold
+ *
+ * @param easing1 first easing to compare
+ * @param easing2 second easing to compare
+ * @param options optionally pass an object with a threshold that determines how similar the easings should be
+ * @returns boolean if the easings are similar
+ */
 export function areEasingsSimilar(
   easing1: CubicBezierHandles | null | undefined,
   easing2: CubicBezierHandles | null | undefined,
+  options: {
+    threshold: number
+  } = {threshold: 0.02},
 ) {
   if (!easing1 || !easing2) return false
   let totalDiff = 0
   for (let i = 0; i < 4; i++) {
     totalDiff += Math.abs(easing1[i] - easing2[i])
   }
-  return totalDiff < SIMILARITY_CUTOFF
+  return totalDiff < options.threshold
 }

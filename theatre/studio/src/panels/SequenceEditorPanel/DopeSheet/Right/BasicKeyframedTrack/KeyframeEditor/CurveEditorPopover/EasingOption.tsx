@@ -1,13 +1,13 @@
-import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import React from 'react'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import {handlesFromCssCubicBezierArgs} from './shared'
 import SVGCurveSegment from './SVGCurveSegment'
 import mergeRefs from 'react-merge-refs'
 import {COLOR_BASE, COLOR_FOCUS_OUTLINE} from './colors'
+import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{isSelected: boolean}>`
   position: relative;
   display: flex;
   align-items: center;
@@ -15,20 +15,37 @@ const Wrapper = styled.div`
   overflow: hidden;
   aspect-ratio: 1;
 
-  background: ${COLOR_BASE};
+  transition: background-color 0.15s, border 0.15s;
+  background-color: ${COLOR_BASE};
   border-radius: 2px;
   cursor: pointer;
+  outline: none;
 
-  // The candidate preset is going to be applied when enter is pressed
-
-  &:focus {
-    outline: none;
-    border: 1px solid ${COLOR_FOCUS_OUTLINE};
-  }
+  ${({isSelected}) =>
+    isSelected &&
+    css`
+      background-color: #303030;
+      border: 1px solid ${COLOR_FOCUS_OUTLINE};
+    `}
 
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background-color: #303030;
   }
+
+  &:focus {
+    background-color: #444444;
+  }
+`
+
+const EasingTooltip = styled(BasicPopover)`
+  padding: 0.5em;
+  color: white;
+  max-width: 240px;
+  pointer-events: none !important;
+  --popover-bg: black;
+  --popover-outer-stroke: transparent;
+  --popover-inner-stroke: transparent;
+  box-shadow: none;
 `
 
 type IProps = {
@@ -36,18 +53,22 @@ type IProps = {
     label: string
     value: string
   }
+  tooltipPlacement: 'top' | 'bottom'
+  isSelected: boolean
 } & Parameters<typeof Wrapper>[0]
 
 const EasingOption: React.FC<IProps> = React.forwardRef((props, ref) => {
-  const [tooltip, tooltipHostRef] = useTooltip({enabled: true}, () => (
-    <BasicTooltip>{props.easing.label}</BasicTooltip>
-  ))
+  const [tooltip, tooltipHostRef] = useTooltip(
+    {enabled: true, verticalPlacement: props.tooltipPlacement},
+    () => <EasingTooltip>{props.easing.label}</EasingTooltip>,
+  )
 
   return (
     <Wrapper ref={mergeRefs([tooltipHostRef, ref])} {...props}>
       {tooltip}
       <SVGCurveSegment
         easing={handlesFromCssCubicBezierArgs(props.easing.value)}
+        isSelected={props.isSelected}
       />
       {/* In the past we used `dangerouslySetInnerHTML={{ _html: fuzzySort.highlight(presetSearchResults[index])}}` 
           to display the name of the easing option, including an underline for the parts of it matching the search
