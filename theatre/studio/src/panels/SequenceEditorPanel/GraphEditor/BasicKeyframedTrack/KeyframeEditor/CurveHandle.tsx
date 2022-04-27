@@ -243,7 +243,7 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
 
 function useOurContextMenu(node: SVGCircleElement | null, props: IProps) {
   return useContextMenu(node, {
-    items: () => {
+    menuItems: () => {
       return [
         {
           label: 'Delete',

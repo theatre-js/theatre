@@ -21,8 +21,8 @@ const Container = styled.div`
   width: 100%;
   left: 12px;
   /* bottom: 8px; */
-  ${pointerEventsAutoInNormalMode};
   z-index: ${() => zIndexes.horizontalScrollbar};
+  ${pointerEventsAutoInNormalMode}
 `
 
 const TimeThread = styled.div`

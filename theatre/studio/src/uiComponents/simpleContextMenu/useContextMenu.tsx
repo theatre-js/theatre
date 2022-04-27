@@ -1,28 +1,36 @@
 import type {VoidFn} from '@theatre/shared/utils/types'
 import React from 'react'
-import RightClickMenu from './RightClickMenu/RightClickMenu'
+import ContextMenu from './ContextMenu/ContextMenu'
+import type {
+  IContextMenuItemsValue,
+  IContextMenuItem,
+} from './ContextMenu/ContextMenu'
 import useRequestContextMenu from './useRequestContextMenu'
-export type {IContextMenuItem} from './RightClickMenu/RightClickMenu'
+import type {IRequestContextMenuOptions} from './useRequestContextMenu'
+
+// re-exports
+export type {
+  IContextMenuItemsValue,
+  IContextMenuItem,
+  IRequestContextMenuOptions,
+}
 
 const emptyNode = <></>
 
-type IProps = Omit<
-  Parameters<typeof RightClickMenu>[0],
-  'rightClickPoint' | 'onRequestClose'
->
-
 export default function useContextMenu(
   target: HTMLElement | SVGElement | null,
-  props: IProps,
+  opts: IRequestContextMenuOptions & {
+    menuItems: IContextMenuItemsValue
+  },
 ): [node: React.ReactNode, close: VoidFn, isOpen: boolean] {
-  const [status, close] = useRequestContextMenu(target)
+  const [status, close] = useRequestContextMenu(target, opts)
 
   const node = !status.isOpen ? (
     emptyNode
   ) : (
-    <RightClickMenu
-      items={props.items}
-      rightClickPoint={status.event}
+    <ContextMenu
+      items={opts.menuItems}
+      clickPoint={status.event}
       onRequestClose={close}
     />
   )

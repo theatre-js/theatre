@@ -12,7 +12,7 @@ import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
 import Connector from './Connector'
-import Dot from './Dot'
+import KeyframeDot from './KeyframeDot'
 
 const Container = styled.div`
   position: absolute;
@@ -20,14 +20,16 @@ const Container = styled.div`
 
 const noConnector = <></>
 
-const KeyframeEditor: React.FC<{
+export type IKeyframeEditorProps = {
   index: number
   keyframe: Keyframe
   trackData: TrackData
   layoutP: Pointer<SequenceEditorPanelLayout>
   leaf: SequenceEditorTree_PrimitiveProp
   selection: undefined | DopeSheetSelection
-}> = (props) => {
+}
+
+const KeyframeEditor: React.FC<IKeyframeEditorProps> = (props) => {
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
@@ -45,7 +47,7 @@ const KeyframeEditor: React.FC<{
         }px))`,
       }}
     >
-      <Dot {...props} />
+      <KeyframeDot {...props} />
       {connected ? <Connector {...props} /> : noConnector}
     </Container>
   )

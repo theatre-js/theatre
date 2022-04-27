@@ -8,6 +8,7 @@ import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
 import KeyframeEditor from './KeyframeEditor/KeyframeEditor'
+import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import getStudio from '@theatre/studio/getStudio'
@@ -85,7 +86,7 @@ function useBasicKeyframedTrackContextMenu(
   props: BasicKeyframedTracksProps,
 ) {
   return useContextMenu(node, {
-    items: () => {
+    menuItems: () => {
       const selectionKeyframes =
         val(getStudio()!.atomP.ahistoric.clipboard.keyframes) || []
 
@@ -101,7 +102,7 @@ function useBasicKeyframedTrackContextMenu(
 function pasteKeyframesContextMenuItem(
   props: BasicKeyframedTracksProps,
   keyframes: Keyframe[],
-) {
+): IContextMenuItem {
   return {
     label: 'Paste Keyframes',
     callback: () => {

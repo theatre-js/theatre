@@ -5,7 +5,7 @@ import styled from 'styled-components'
 
 export const height = 26
 
-const Container = styled.li<{enabled: boolean}>`
+const ItemContainer = styled.li<{enabled: boolean}>`
   height: ${height}px;
   padding: 0 12px;
   margin: 0;
@@ -32,7 +32,7 @@ const Container = styled.li<{enabled: boolean}>`
   }
 `
 
-const Label = styled.span``
+const ItemLabel = styled.span``
 
 const Item: React.FC<{
   label: string | ElementType
@@ -40,12 +40,12 @@ const Item: React.FC<{
   enabled: boolean
 }> = (props) => {
   return (
-    <Container
+    <ItemContainer
       onClick={props.enabled ? props.onClick : noop}
       enabled={props.enabled}
     >
-      <Label>{props.label}</Label>
-    </Container>
+      <ItemLabel>{props.label}</ItemLabel>
+    </ItemContainer>
   )
 }
 

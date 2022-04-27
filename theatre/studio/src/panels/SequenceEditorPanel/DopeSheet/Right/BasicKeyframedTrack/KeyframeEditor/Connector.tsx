@@ -12,7 +12,7 @@ import type {
   SequenceEditorPanelLayout,
   DopeSheetSelection,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import {DOT_SIZE_PX} from './Dot'
+import {DOT_SIZE_PX} from './KeyframeDot'
 import type KeyframeEditor from './KeyframeEditor'
 import type Sequence from '@theatre/core/sequences/Sequence'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
@@ -250,7 +250,7 @@ function useConnectorContextMenu(
 ) {
   const maybeKeyframeIds = selectedKeyframeIdsIfInSingleTrack(props.selection)
   return useContextMenu(node, {
-    items: () => {
+    menuItems: () => {
       return [
         {
           label: maybeKeyframeIds ? 'Copy Selection' : 'Copy both Keyframes',

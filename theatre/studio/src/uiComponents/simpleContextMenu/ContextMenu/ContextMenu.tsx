@@ -18,7 +18,7 @@ const minWidth = 190
  */
 const pointerDistanceThreshold = 20
 
-const Container = styled.ul`
+const MenuContainer = styled.ul`
   position: absolute;
   min-width: ${minWidth}px;
   z-index: 10000;
@@ -34,6 +34,10 @@ const Container = styled.ul`
   border-radius: 3px;
 `
 
+export type IContextMenuItemCustomNodeRenderFn = (controls: {
+  closeMenu(): void
+}) => React.ReactChild
+
 export type IContextMenuItem = {
   label: string | ElementType
   callback?: (e: React.MouseEvent) => void
@@ -41,9 +45,13 @@ export type IContextMenuItem = {
   // subs?: Item[]
 }
 
-const RightClickMenu: React.FC<{
-  items: IContextMenuItem[] | (() => IContextMenuItem[])
-  rightClickPoint: {clientX: number; clientY: number}
+export type IContextMenuItemsValue =
+  | IContextMenuItem[]
+  | (() => IContextMenuItem[])
+
+const ContextMenu: React.FC<{
+  items: IContextMenuItemsValue
+  clickPoint: {clientX: number; clientY: number}
   onRequestClose: () => void
 }> = (props) => {
   const [container, setContainer] = useState<HTMLElement | null>(null)
@@ -59,8 +67,8 @@ const RightClickMenu: React.FC<{
     }
 
     const pos = {
-      left: props.rightClickPoint.clientX - preferredAnchorPoint.left,
-      top: props.rightClickPoint.clientY - preferredAnchorPoint.top,
+      left: props.clickPoint.clientX - preferredAnchorPoint.left,
+      top: props.clickPoint.clientY - preferredAnchorPoint.top,
     }
 
     if (pos.left < 0) {
@@ -94,7 +102,7 @@ const RightClickMenu: React.FC<{
     return () => {
       window.removeEventListener('mousemove', onMouseMove)
     }
-  }, [rect, container, props.rightClickPoint, windowSize, props.onRequestClose])
+  }, [rect, container, props.clickPoint, windowSize, props.onRequestClose])
   const portalLayer = useContext(PortalContext)
 
   useOnKeyDown((ev) => {
@@ -104,7 +112,7 @@ const RightClickMenu: React.FC<{
   const items = Array.isArray(props.items) ? props.items : props.items()
 
   return createPortal(
-    <Container ref={setContainer}>
+    <MenuContainer ref={setContainer}>
       {items.map((item, i) => (
         <Item
           key={`item-${i}`}
@@ -118,9 +126,9 @@ const RightClickMenu: React.FC<{
           }}
         />
       ))}
-    </Container>,
+    </MenuContainer>,
     portalLayer!,
   )
 }
 
-export default RightClickMenu
+export default ContextMenu

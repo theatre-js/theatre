@@ -109,7 +109,7 @@ function useConnectorContextMenu(node: SVGElement | null, props: IProps) {
   const next = trackData.keyframes[index + 1]
 
   return useContextMenu(node, {
-    items: () => {
+    menuItems: () => {
       return [
         {
           label: 'Delete',

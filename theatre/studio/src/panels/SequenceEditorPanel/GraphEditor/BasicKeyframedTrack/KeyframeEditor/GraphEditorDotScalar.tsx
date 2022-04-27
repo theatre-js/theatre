@@ -235,7 +235,7 @@ function useDragKeyframe(
 
 function useKeyframeContextMenu(node: SVGCircleElement | null, props: IProps) {
   return useContextMenu(node, {
-    items: () => {
+    menuItems: () => {
       return [
         {
           label: 'Delete',

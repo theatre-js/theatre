@@ -119,7 +119,7 @@ export const SingleRowPropEditor: React.FC<{
     useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useContextMenu(propNameContainer, {
-    items: stuff.contextMenuItems,
+    menuItems: stuff.contextMenuItems,
   })
 
   const color = shadeToColor[stuff.shade]

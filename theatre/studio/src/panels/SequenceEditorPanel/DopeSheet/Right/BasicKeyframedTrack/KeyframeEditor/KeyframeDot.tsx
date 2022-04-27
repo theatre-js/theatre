@@ -5,13 +5,14 @@ import type {
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
+import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
+import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
 import {lighten} from 'polished'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
-import type KeyframeEditor from './KeyframeEditor'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {
@@ -20,6 +21,7 @@ import {
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
+import type {IKeyframeEditorProps} from './KeyframeEditor'
 
 export const DOT_SIZE_PX = 6
 const HIT_ZONE_SIZE_PX = 12
@@ -42,6 +44,8 @@ const dotTheme = {
 
 const Square = styled.div<{isSelected: boolean}>`
   position: absolute;
+  ${dims(DOT_SIZE_PX)}
+
   background: ${(props) =>
     props.isSelected ? dotTheme.selectedColor : dotTheme.normalColor};
   transform: rotateZ(45deg);
@@ -85,13 +89,14 @@ const HitZone = styled.div`
   }
 `
 
-type IProps = Parameters<typeof KeyframeEditor>[0]
+type IKeyframeDotProps = IKeyframeEditorProps
 
-const Dot: React.FC<IProps> = (props) => {
+/** The ◆ you can grab onto in "keyframe editor" (aka "dope sheet" in other programs) */
+const KeyframeDot: React.FC<IKeyframeDotProps> = (props) => {
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
-  const [contextMenu] = useKeyframeContextMenu(node, props)
   const [isDragging] = useDragKeyframe(node, props)
+  const [contextMenu] = useKeyframeContextMenu(node, props)
 
   return (
     <>
@@ -110,9 +115,12 @@ const Dot: React.FC<IProps> = (props) => {
   )
 }
 
-export default Dot
+export default KeyframeDot
 
-function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
+function useKeyframeContextMenu(
+  target: HTMLDivElement | null,
+  props: IKeyframeDotProps,
+) {
   const maybeSelectedKeyframeIds = selectedKeyframeIdsIfInSingleTrack(
     props.selection,
   )
@@ -123,8 +131,8 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
 
   const deleteItem = deleteSelectionOrKeyframeContextMenuItem(props)
 
-  return useContextMenu(node, {
-    items: () => {
+  return useContextMenu(target, {
+    menuItems: () => {
       return [keyframeSelectionItem, deleteItem]
     },
   })
@@ -132,7 +140,7 @@ function useKeyframeContextMenu(node: HTMLDivElement | null, props: IProps) {
 
 function useDragKeyframe(
   node: HTMLDivElement | null,
-  props: IProps,
+  props: IKeyframeDotProps,
 ): [isDragging: boolean] {
   const [isDragging, setIsDragging] = useState(false)
   useLockFrameStampPosition(isDragging, props.keyframe.position)
@@ -140,10 +148,10 @@ function useDragKeyframe(
   const propsRef = useRef(props)
   propsRef.current = props
 
-  const gestureHandlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
+  const useDragOpts = useMemo<UseDragOpts>(() => {
     let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
     let tempTransaction: CommitOrDiscard | undefined
-    let propsAtStartOfDrag: IProps
+    let propsAtStartOfDrag: IKeyframeDotProps
 
     let selectionDragHandlers:
       | ReturnType<DopeSheetSelection['getDragHandlers']>
@@ -151,6 +159,7 @@ function useDragKeyframe(
 
     return {
       debugName: 'Dot/useDragKeyframe',
+
       onDragStart(event) {
         setIsDragging(true)
         const props = propsRef.current
@@ -241,14 +250,16 @@ function useDragKeyframe(
     }
   }, [])
 
-  useDrag(node, gestureHandlers)
+  useDrag(node, useDragOpts)
 
   useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   return [isDragging]
 }
 
-function deleteSelectionOrKeyframeContextMenuItem(props: IProps) {
+function deleteSelectionOrKeyframeContextMenuItem(
+  props: IKeyframeDotProps,
+): IContextMenuItem {
   return {
     label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
     callback: () => {
@@ -269,7 +280,10 @@ function deleteSelectionOrKeyframeContextMenuItem(props: IProps) {
   }
 }
 
-function copyKeyFrameContextMenuItem(props: IProps, keyframeIds: string[]) {
+function copyKeyFrameContextMenuItem(
+  props: IKeyframeDotProps,
+  keyframeIds: string[],
+): IContextMenuItem {
   return {
     label: keyframeIds.length > 1 ? 'Copy selection' : 'Copy keyframe',
     callback: () => {
