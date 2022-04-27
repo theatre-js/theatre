@@ -1,17 +1,15 @@
 import type {PropTypeConfig_StringLiteral} from '@theatre/core/propTypes'
-import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import React, {useCallback} from 'react'
 import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import BasicSwitch from '@theatre/studio/uiComponents/form/BasicSwitch'
 import BasicSelect from '@theatre/studio/uiComponents/form/BasicSelect'
 import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
+import type {IPropEditorFC} from './utils/IPropEditorFC'
 
-const StringLiteralPropEditor: React.FC<{
-  propConfig: PropTypeConfig_StringLiteral<$IntentionalAny>
-  pointerToProp: SheetObject['propsP']
-  obj: SheetObject
-}> = ({propConfig, pointerToProp, obj}) => {
+const StringLiteralPropEditor: IPropEditorFC<
+  PropTypeConfig_StringLiteral<$IntentionalAny>
+> = ({propConfig, pointerToProp, obj}) => {
   const stuff = useEditingToolsForPrimitiveProp<string>(
     pointerToProp,
     obj,

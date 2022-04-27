@@ -1,6 +1,7 @@
 import type {PropTypeConfig} from '@theatre/core/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import {getPointerParts} from '@theatre/dataverse'
+import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
 import BooleanPropEditor from './BooleanPropEditor'
 import CompoundPropEditor from './CompoundPropEditor'
@@ -56,14 +57,21 @@ export const getPropTypeByPointer = (
   return conf
 }
 
-const propEditorByPropType: {
+type PropConfigByType<K extends PropTypeConfig['type']> = Extract<
+  PropTypeConfig,
+  {type: K}
+>
+
+type IPropEditorByPropType = {
   [K in PropTypeConfig['type']]: React.FC<{
     obj: SheetObject
-    pointerToProp: SheetObject['propsP']
-    propConfig: Extract<PropTypeConfig, {type: K}>
+    pointerToProp: Pointer<PropConfigByType<K>['valueType']>
+    propConfig: PropConfigByType<K>
     depth: number
   }>
-} = {
+}
+
+const propEditorByPropType: IPropEditorByPropType = {
   compound: CompoundPropEditor,
   number: NumberPropEditor,
   string: StringPropEditor,
@@ -88,6 +96,7 @@ const DeterminePropEditor: React.FC<{
     <PropEditor
       obj={p.obj}
       depth={p.depth}
+      // @ts-expect-error This is fine
       pointerToProp={p.pointerToProp}
       // @ts-expect-error This is fine
       propConfig={propConfig}

@@ -1,15 +1,15 @@
-import type {PropTypeConfig_String} from '@theatre/core/propTypes'
-import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import React from 'react'
+import type {PropTypeConfig_String} from '@theatre/core/propTypes'
 import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
 import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
+import type {IPropEditorFC} from './utils/IPropEditorFC'
 
-const StringPropEditor: React.FC<{
-  propConfig: PropTypeConfig_String
-  pointerToProp: SheetObject['propsP']
-  obj: SheetObject
-}> = ({propConfig, pointerToProp, obj}) => {
+const StringPropEditor: IPropEditorFC<PropTypeConfig_String> = ({
+  propConfig,
+  pointerToProp,
+  obj,
+}) => {
   const stuff = useEditingToolsForPrimitiveProp<string>(
     pointerToProp,
     obj,

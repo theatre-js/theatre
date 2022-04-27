@@ -1,6 +1,5 @@
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
-import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {getPointerParts} from '@theatre/dataverse'
 import last from 'lodash-es/last'
@@ -16,6 +15,7 @@ import {
 import DefaultOrStaticValueIndicator from './utils/DefaultValueIndicator'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import type {IPropEditorFC} from './utils/IPropEditorFC'
 
 const Container = styled.div`
   --step: 8px;
@@ -59,12 +59,9 @@ const SubProps = styled.div<{depth: number; lastSubIsComposite: boolean}>`
   /* padding: ${(props) => (props.lastSubIsComposite ? 0 : '4px')} 0; */
 `
 
-const CompoundPropEditor: React.FC<{
-  pointerToProp: SheetObject['propsP']
-  obj: SheetObject
-  propConfig: PropTypeConfig_Compound<$IntentionalAny>
-  depth: number
-}> = ({pointerToProp, obj, propConfig, depth}) => {
+const CompoundPropEditor: IPropEditorFC<
+  PropTypeConfig_Compound<$IntentionalAny>
+> = ({pointerToProp, obj, propConfig, depth}) => {
   const propName = propConfig.label ?? last(getPointerParts(pointerToProp).path)
 
   const allSubs = Object.entries(propConfig.props)

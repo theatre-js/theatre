@@ -1,20 +1,20 @@
 import type {PropTypeConfig_Boolean} from '@theatre/core/propTypes'
-import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import React, {useCallback} from 'react'
 import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
 import styled from 'styled-components'
 import BasicCheckbox from '@theatre/studio/uiComponents/form/BasicCheckbox'
+import type {IPropEditorFC} from './utils/IPropEditorFC'
 
 const Input = styled(BasicCheckbox)`
   margin-left: 6px;
 `
 
-const BooleanPropEditor: React.FC<{
-  propConfig: PropTypeConfig_Boolean
-  pointerToProp: SheetObject['propsP']
-  obj: SheetObject
-}> = ({propConfig, pointerToProp, obj}) => {
+const BooleanPropEditor: IPropEditorFC<PropTypeConfig_Boolean> = ({
+  propConfig,
+  pointerToProp,
+  obj,
+}) => {
   const stuff = useEditingToolsForPrimitiveProp<boolean>(
     pointerToProp,
     obj,

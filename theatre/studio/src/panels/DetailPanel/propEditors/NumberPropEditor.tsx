@@ -1,15 +1,15 @@
 import type {PropTypeConfig_Number} from '@theatre/core/propTypes'
-import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import React, {useCallback} from 'react'
 import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
+import type {IPropEditorFC} from './utils/IPropEditorFC'
 
-const NumberPropEditor: React.FC<{
-  propConfig: PropTypeConfig_Number
-  pointerToProp: SheetObject['propsP']
-  obj: SheetObject
-}> = ({propConfig, pointerToProp, obj}) => {
+const NumberPropEditor: IPropEditorFC<PropTypeConfig_Number> = ({
+  propConfig,
+  pointerToProp,
+  obj,
+}) => {
   const stuff = useEditingToolsForPrimitiveProp<number>(
     pointerToProp,
     obj,

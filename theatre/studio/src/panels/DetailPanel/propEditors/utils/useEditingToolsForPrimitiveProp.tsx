@@ -7,6 +7,7 @@ import getDeep from '@theatre/shared/utils/getDeep'
 import {usePrism} from '@theatre/react'
 import type {$FixMe, SerializablePrimitive} from '@theatre/shared/utils/types'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
+import type {Pointer} from '@theatre/dataverse'
 import get from 'lodash-es/get'
 import last from 'lodash-es/last'
 import React from 'react'
@@ -47,7 +48,7 @@ type Stuff<T> = Default<T> | Static<T> | Sequenced<T>
 export function useEditingToolsForPrimitiveProp<
   T extends SerializablePrimitive,
 >(
-  pointerToProp: SheetObject['propsP'],
+  pointerToProp: Pointer<T>,
   obj: SheetObject,
   propConfig: PropTypeConfig,
 ): Stuff<T> {

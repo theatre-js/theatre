@@ -1,6 +1,6 @@
 import type * as propTypes from '@theatre/core/propTypes'
-import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import {getPointerParts} from '@theatre/dataverse'
+import type {Pointer} from '@theatre/dataverse'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {last} from 'lodash-es'
@@ -108,11 +108,21 @@ const InputContainer = styled.div`
   flex-grow: 0;
 `
 
-export const SingleRowPropEditor: React.FC<{
+type ISingleRowPropEditorProps<T> = {
   propConfig: propTypes.PropTypeConfig
-  pointerToProp: SheetObject['propsP']
+  pointerToProp: Pointer<T>
   stuff: ReturnType<typeof useEditingToolsForPrimitiveProp>
-}> = ({propConfig, pointerToProp, stuff, children}) => {
+}
+
+export function SingleRowPropEditor<T>({
+  propConfig,
+  pointerToProp,
+  stuff,
+  children,
+}: React.PropsWithChildren<ISingleRowPropEditorProps<T>>): React.ReactElement<
+  any,
+  any
+> | null {
   const label = propConfig.label ?? last(getPointerParts(pointerToProp).path)
 
   const [propNameContainerRef, propNameContainer] =

@@ -108,11 +108,13 @@ export default class SheetObject implements IdentityDerivationProvider {
     )
   }
 
-  getValueByPointer(pointer: SheetObject['propsP']): SerializableValue {
+  getValueByPointer<T extends SerializableValue>(pointer: Pointer<T>): T {
     const allValuesP = val(this.getValues())
     const {path} = getPointerParts(pointer)
 
-    return val(pointerDeep(allValuesP as $FixMe, path)) as SerializableMap
+    return val(
+      pointerDeep(allValuesP as $FixMe, path),
+    ) as SerializableValue as T
   }
 
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {

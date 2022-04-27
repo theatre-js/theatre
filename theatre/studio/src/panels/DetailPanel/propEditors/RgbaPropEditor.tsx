@@ -5,7 +5,6 @@ import {
   rgba2hex,
   parseRgbaFromHex,
 } from '@theatre/shared/utils/color'
-import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import React, {useCallback, useRef} from 'react'
 import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
@@ -14,6 +13,7 @@ import styled from 'styled-components'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
 import {popoverBackgroundColor} from '@theatre/studio/uiComponents/Popover/BasicPopover'
+import type {IPropEditorFC} from './utils/IPropEditorFC'
 
 const RowContainer = styled.div`
   display: flex;
@@ -60,18 +60,14 @@ const Popover = styled.div`
   box-shadow: none;
 `
 
-const RgbaPropEditor: React.FC<{
-  propConfig: PropTypeConfig_Rgba
-  pointerToProp: SheetObject['propsP']
-  obj: SheetObject
-}> = ({propConfig, pointerToProp, obj}) => {
+const RgbaPropEditor: IPropEditorFC<PropTypeConfig_Rgba> = ({
+  propConfig,
+  pointerToProp,
+  obj,
+}) => {
   const containerRef = useRef<HTMLDivElement>(null!)
 
-  const stuff = useEditingToolsForPrimitiveProp<Rgba>(
-    pointerToProp,
-    obj,
-    propConfig,
-  )
+  const stuff = useEditingToolsForPrimitiveProp(pointerToProp, obj, propConfig)
 
   const onChange = useCallback(
     (color: string) => {
