@@ -18,6 +18,7 @@ const TooltipWrapper: React.FC<{
     threshold: number
     callback: (e: MouseEvent) => void
   }
+  verticalPlacement?: 'top' | 'bottom' | 'overlay'
 }> = (props) => {
   const originalElement = props.children()
   const [ref, container] = useRefAndState<HTMLElement | SVGElement | null>(null)
@@ -39,20 +40,39 @@ const TooltipWrapper: React.FC<{
     const gap = 8
     const arrowStyle: Record<string, string> = {}
 
-    let verticalPlacement: 'bottom' | 'top' | 'overlay' = 'bottom'
+    let verticalPlacement: 'bottom' | 'top' | 'overlay' =
+      props.verticalPlacement ?? 'bottom'
     let top = 0
     let left = 0
-    if (targetRect.bottom + containerRect.height + gap < windowSize.height) {
-      verticalPlacement = 'bottom'
-      top = targetRect.bottom + gap
-      arrowStyle.top = '0px'
-    } else if (targetRect.top > containerRect.height + gap) {
-      verticalPlacement = 'top'
-      top = targetRect.top - (containerRect.height + gap)
-      arrowStyle.bottom = '0px'
-      arrowStyle.transform = 'rotateZ(180deg)'
-    } else {
-      verticalPlacement = 'overlay'
+    if (verticalPlacement === 'bottom') {
+      if (targetRect.bottom + containerRect.height + gap < windowSize.height) {
+        verticalPlacement = 'bottom'
+        top = targetRect.bottom + gap
+        arrowStyle.top = '0px'
+      } else if (targetRect.top > containerRect.height + gap) {
+        verticalPlacement = 'top'
+        top = targetRect.top - (containerRect.height + gap)
+        arrowStyle.bottom = '0px'
+        arrowStyle.transform = 'rotateZ(180deg)'
+      } else {
+        verticalPlacement = 'overlay'
+      }
+    } else if (verticalPlacement === 'top') {
+      if (targetRect.top > containerRect.height + gap) {
+        verticalPlacement = 'top'
+        top = targetRect.top - (containerRect.height + gap)
+        arrowStyle.bottom = '0px'
+        arrowStyle.transform = 'rotateZ(180deg)'
+      } else if (
+        targetRect.bottom + containerRect.height + gap <
+        windowSize.height
+      ) {
+        verticalPlacement = 'bottom'
+        top = targetRect.bottom + gap
+        arrowStyle.top = '0px'
+      } else {
+        verticalPlacement = 'overlay'
+      }
     }
 
     let arrowLeft = 0

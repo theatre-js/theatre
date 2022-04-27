@@ -1,11 +1,12 @@
 import React from 'react'
 import type {CubicBezierHandles} from './shared'
 
-const VIEWBOX_PADDING = 1
+const VIEWBOX_PADDING = 0.75
 const SVG_CIRCLE_RADIUS = 0.1
 const VIEWBOX_SIZE = 1 + VIEWBOX_PADDING * 2
 
-const CURVE_COLOR = '#858585'
+const SELECTED_CURVE_COLOR = '#F5F5F5'
+const CURVE_COLOR = '#888888'
 const CONTROL_COLOR = '#4f4f4f'
 const CONTROL_HITZONE_COLOR = 'rgba(255, 255, 255, 0.1)'
 
@@ -15,12 +16,15 @@ const toVerticalSVGSpace = (y: number) => 1 - y
 
 type IProps = {
   easing: CubicBezierHandles | null
+  isSelected: boolean
 }
 
 const SVGCurveSegment: React.FC<IProps> = (props) => {
-  const {easing} = props
+  const {easing, isSelected} = props
 
   if (!easing) return <></>
+
+  const curveColor = isSelected ? SELECTED_CURVE_COLOR : CURVE_COLOR
 
   const LEFT_CONTROL_POINT = [easing[0], toVerticalSVGSpace(easing[1])]
   const RIGHT_CONTROL_POINT = [easing[2], toVerticalSVGSpace(easing[3])]
@@ -37,6 +41,7 @@ const SVGCurveSegment: React.FC<IProps> = (props) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      {/* Control lines */}
       <line
         x1="0"
         y1="1"
@@ -54,6 +59,7 @@ const SVGCurveSegment: React.FC<IProps> = (props) => {
         strokeWidth="0.1"
       />
 
+      {/* Control point hitzonecircles */}
       <circle
         cx={LEFT_CONTROL_POINT[0]}
         cy={LEFT_CONTROL_POINT[1]}
@@ -67,29 +73,29 @@ const SVGCurveSegment: React.FC<IProps> = (props) => {
         fill={CONTROL_HITZONE_COLOR}
       />
 
+      {/* Control point circles */}
+      <circle
+        cx={LEFT_CONTROL_POINT[0]}
+        cy={LEFT_CONTROL_POINT[1]}
+        r={SVG_CIRCLE_RADIUS}
+        fill={CONTROL_COLOR}
+      />
+      <circle
+        cx={RIGHT_CONTROL_POINT[0]}
+        cy={RIGHT_CONTROL_POINT[1]}
+        r={SVG_CIRCLE_RADIUS}
+        fill={CONTROL_COLOR}
+      />
+
+      {/* Bezier curve */}
       <path
         d={`M0 1 C${LEFT_CONTROL_POINT[0]} ${LEFT_CONTROL_POINT[1]} ${RIGHT_CONTROL_POINT[0]} 
       ${RIGHT_CONTROL_POINT[1]} 1 0`}
-        stroke={CURVE_COLOR}
+        stroke={curveColor}
         strokeWidth="0.08"
       />
-      <circle cx={0} cy={1} r={SVG_CIRCLE_RADIUS} fill={CURVE_COLOR} />
-
-      <circle
-        cx={LEFT_CONTROL_POINT[0]}
-        cy={LEFT_CONTROL_POINT[1]}
-        r={SVG_CIRCLE_RADIUS}
-        fill={CURVE_COLOR}
-      />
-
-      <circle cx={1} cy={0} r={SVG_CIRCLE_RADIUS} fill={CURVE_COLOR} />
-
-      <circle
-        cx={RIGHT_CONTROL_POINT[0]}
-        cy={RIGHT_CONTROL_POINT[1]}
-        r={SVG_CIRCLE_RADIUS}
-        fill={CURVE_COLOR}
-      />
+      <circle cx={0} cy={1} r={SVG_CIRCLE_RADIUS} fill={curveColor} />
+      <circle cx={1} cy={0} r={SVG_CIRCLE_RADIUS} fill={curveColor} />
     </svg>
   )
 }

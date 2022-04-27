@@ -14,7 +14,7 @@ export type CapturedPointer = {
  * Some other ideas we considered before going with the PointerCapturing provider and context
  * - provider: `onPointerCaptureChanged`
  * - `onDragging={isMouseActive = true}` / `onMouseActive={isMouseActive = true}`
- * - dragging tracked application wide (ahistoric state) in popover
+ * - dragging tracked application wide (ephemeral state) in popover
  *
  * Caveats: I wonder if there's a shared abstraction we should use for "releasing" e.g. unsubscribe / untap in rxjs / tapable patterns.
  */

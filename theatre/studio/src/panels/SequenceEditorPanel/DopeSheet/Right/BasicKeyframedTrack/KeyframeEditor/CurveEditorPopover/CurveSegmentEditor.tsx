@@ -5,9 +5,9 @@ import clamp from 'lodash-es/clamp'
 import type CurveEditorPopover from './CurveEditorPopover'
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import {useFreezableMemo} from './useFreezableMemo'
 import type {CubicBezierHandles} from './shared'
 import {cssCubicBezierArgsFromHandles} from './shared'
+import {useFreezableMemo} from './useFreezableMemo'
 
 const VIEWBOX_PADDING = 0.12
 const VIEWBOX_SIZE = 1 + VIEWBOX_PADDING * 2
@@ -16,12 +16,13 @@ const PATTERN_DOT_SIZE = 0.01
 const PATTERN_DOT_COUNT = 8
 const PATTERN_GRID_SIZE = (1 - PATTERN_DOT_SIZE) / (PATTERN_DOT_COUNT - 1)
 
-const CURVE_START_OVERSHOOT_COLOR = '#3e9bb8'
-const CURVE_START_COLOR = '#40AAA4'
-const CURVE_MID_START_COLOR = '#58C0BA'
-const CURVE_MID_END_COLOR = '#FCAB54'
-const CURVE_END_COLOR = '#F78104'
-const CURVE_END_OVERSHOOT_COLOR = '#f76904'
+const CURVE_START_OVERSHOOT_COLOR = 'rgb(64, 170, 164)'
+const CURVE_START_COLOR = 'rgb(64, 170, 164)'
+const CURVE_MID_START_COLOR = 'rgb(64, 170, 164)'
+const CURVE_MID_COLOR = 'rgb(64, 170, 164)'
+const CURVE_MID_END_COLOR = 'rgb(64, 170, 164)'
+const CURVE_END_COLOR = 'rgb(64, 170, 164)'
+const CURVE_END_OVERSHOOT_COLOR = 'rgb(64, 170, 164)'
 
 const CONTROL_COLOR = '#B3B3B3'
 
@@ -57,29 +58,29 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
 
-  const min = Math.min(0, 1 - next.handles[1], 1 - cur.handles[3])
-  const max = Math.max(1, 1 - next.handles[1], 1 - cur.handles[3])
-  const h = Math.max(1, max - min)
+  const minY = Math.min(0, 1 - next.handles[1], 1 - cur.handles[3])
+  const maxY = Math.max(1, 1 - next.handles[1], 1 - cur.handles[3])
+  const h = Math.max(1, maxY - minY)
 
-  const toExtremumSpace = (n: number) => (n - min) / h
+  const toExtremumSpace = (y: number) => (y - minY) / h
 
   const [refSVG, nodeSVG] = useRefAndState<SVGSVGElement | null>(null)
 
-  const VIEWBOX_WIDTH_RATIO = VIEWBOX_SIZE / (nodeSVG?.clientWidth || 1)
-  const VIEWBOX_HEIGHT_RATIO = VIEWBOX_SIZE / (nodeSVG?.clientHeight || 1)
+  const viewboxToElWidthRatio = VIEWBOX_SIZE / (nodeSVG?.clientWidth || 1)
+  const viewboxToElHeightRatio = VIEWBOX_SIZE / (nodeSVG?.clientHeight || 1)
 
   const [refLeft, nodeLeft] = useRefAndState<SVGCircleElement | null>(null)
   useKeyframeDrag(nodeSVG, nodeLeft, props, (dx, dy) => {
-    const handleX = clamp(cur.handles[2] + dx * VIEWBOX_WIDTH_RATIO, 0, 1)
-    const handleY = cur.handles[3] - dy * VIEWBOX_HEIGHT_RATIO
+    const handleX = clamp(cur.handles[2] + dx * viewboxToElWidthRatio, 0, 1)
+    const handleY = cur.handles[3] - dy * viewboxToElHeightRatio
 
     return [handleX, handleY, next.handles[0], next.handles[1]]
   })
 
   const [refRight, nodeRight] = useRefAndState<SVGCircleElement | null>(null)
   useKeyframeDrag(nodeSVG, nodeRight, props, (dx, dy) => {
-    const handleX = clamp(next.handles[0] + dx * VIEWBOX_WIDTH_RATIO, 0, 1)
-    const handleY = next.handles[1] - dy * VIEWBOX_HEIGHT_RATIO
+    const handleX = clamp(next.handles[0] + dx * viewboxToElWidthRatio, 0, 1)
+    const handleY = next.handles[1] - dy * viewboxToElHeightRatio
 
     return [cur.handles[2], cur.handles[3], handleX, handleY]
   })
@@ -101,6 +102,7 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
         />
         <stop offset={toExtremumSpace(0)} stopColor={CURVE_END_COLOR} />
         <stop offset={toExtremumSpace(0.3)} stopColor={CURVE_MID_END_COLOR} />
+        <stop offset={toExtremumSpace(0.5)} stopColor={CURVE_MID_COLOR} />
         <stop offset={toExtremumSpace(0.7)} stopColor={CURVE_MID_START_COLOR} />
         <stop offset={toExtremumSpace(1)} stopColor={CURVE_START_COLOR} />
         <stop
@@ -113,13 +115,13 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
         id="dot-background-pattern-1"
         width={PATTERN_GRID_SIZE}
         height={PATTERN_GRID_SIZE / h}
-        y={-min / h}
+        y={-minY / h}
       >
         <rect
           width={PATTERN_DOT_SIZE}
           height={PATTERN_DOT_SIZE}
           fill={CONTROL_COLOR}
-          opacity={0.5}
+          opacity={0.3}
         ></rect>
       </pattern>
       <rect

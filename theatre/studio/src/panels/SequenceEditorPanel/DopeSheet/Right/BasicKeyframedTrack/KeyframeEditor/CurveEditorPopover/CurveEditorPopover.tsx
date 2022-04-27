@@ -24,8 +24,12 @@ import {
   areEasingsSimilar,
 } from './shared'
 import {COLOR_BASE, COLOR_FOCUS_OUTLINE, COLOR_POPOVER_BACK} from './colors'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
 
 const PRESET_COLUMNS = 4
+const PRESET_SIZE = 50
+
+const APPROX_TOOLTIP_HEIGHT = 25
 
 const Grid = styled.div`
   background: ${COLOR_POPOVER_BACK};
@@ -34,7 +38,7 @@ const Grid = styled.div`
     'search  tween'
     'presets tween';
   grid-template-rows: 40px 1fr;
-  grid-template-columns: ${PRESET_COLUMNS * 50}px 150px;
+  grid-template-columns: ${PRESET_COLUMNS * PRESET_SIZE}px 150px;
   gap: 1px;
   padding: 1px;
   height: 150px;
@@ -55,7 +59,7 @@ const SearchBox = styled.input.attrs({type: 'text'})`
   border: none;
   border-radius: 2px;
   color: rgba(255, 255, 255, 0.8);
-  padding: 10px 10px 10px 10px;
+  padding: 14px 10px 6px 10px;
   font-size: 13px;
   outline: none;
   cursor: text;
@@ -66,9 +70,15 @@ const SearchBox = styled.input.attrs({type: 'text'})`
 
   grid-area: search;
 
+  transition: background-color 0.15s, outline 0.15s;
+
+  &:hover {
+    background-color: #303030;
+  }
+
   &:focus {
-    outline: none;
-    border: 1px solid ${COLOR_FOCUS_OUTLINE};
+    outline: 1px solid ${COLOR_FOCUS_OUTLINE};
+    background-color: #444444;
   }
 `
 
@@ -79,7 +89,7 @@ const CurveEditorContainer = styled.div`
 
 const CurrentPresetName = styled.div`
   position: absolute;
-  top: 3px;
+  top: 5px;
   left: 10px;
   opacity: 0.25;
   font-size: 11px;
@@ -231,8 +241,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     // Prevent scrolling on arrow key press
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') e.preventDefault()
 
-    if (e.key === 'ArrowDown') moveHighlightVertical(1)
-    else if (e.key === 'ArrowUp') moveHighlightVertical(-1)
+    if (e.key === 'ArrowDown') setHighlightedIndex(0)
+    else if (e.key === 'ArrowUp') setHighlightedIndex(0)
     else if (e.key === 'Escape') {
       editorState.discardTemporaryValue()
       props.onRequestClose()
@@ -291,6 +301,18 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     inputRef.current?.focus()
   }, [inputRef.current])
 
+  const [optionsContainerRef, optionsContainer] =
+    useRefAndState<HTMLDivElement | null>(null)
+  const [optionsScrollPosition, setOptionsScrollPosition] = useState(0)
+
+  useEffect(() => {
+    const listener = () => {
+      setOptionsScrollPosition(optionsContainer?.scrollTop ?? 0)
+    }
+    optionsContainer?.addEventListener('scroll', listener)
+    return () => optionsContainer?.removeEventListener('scroll', listener)
+  }, [optionsContainer])
+
   return (
     <Grid>
       <SearchBox
@@ -318,13 +340,11 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         onKeyDown={onSearchKeyDown}
       />
       <CurrentPresetName>
-        {
-          EASING_PRESETS.find(({value}) =>
-            areEasingsSimilar(easing, handlesFromCssCubicBezierArgs(value)),
-          )?.label
-        }
+        {EASING_PRESETS.find(({value}) =>
+          areEasingsSimilar(easing, handlesFromCssCubicBezierArgs(value)),
+        )?.label ?? 'Custom'}
       </CurrentPresetName>
-      <OptionsContainer>
+      <OptionsContainer ref={optionsContainerRef}>
         {displayedPresets.map((preset, index) => (
           <EasingOption
             key={preset.label}
@@ -337,14 +357,17 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
               editorState.temporarilySetValue(preset.value)
               //props.onRequestClose()
             }}
-            // Mousing over an option previously previewed it using `fns.temporarilySetValue`
-            // but this was removed for simplicity of implementation's sake. In the future
-            // it may be good to use `fns.temporarilySetValue` instead of
-            // `fns.permanentlySetValue` to avoid all the small changes in the popover being added
-            // to the studio history. A solution would have to be made so that when the popover
-            // is closed via the user mousing out, a "clean up" function would be called that
-            // discards any temporary values. Popover does not currently support "clean up"
-            // functions.
+            tooltipPlacement={
+              (optionsRef.current[preset.label].current?.offsetTop ?? 0) -
+                (optionsScrollPosition ?? 0) <
+              PRESET_SIZE + APPROX_TOOLTIP_HEIGHT
+                ? 'bottom'
+                : 'top'
+            }
+            isSelected={areEasingsSimilar(
+              easing,
+              handlesFromCssCubicBezierArgs(preset.value),
+            )}
           />
         ))}
       </OptionsContainer>
