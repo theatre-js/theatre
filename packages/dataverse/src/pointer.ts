@@ -7,6 +7,9 @@ type PointerMeta = {
   path: (string | number)[]
 }
 
+/** We are using an empty object as a WeakMap key for storing pointer meta data */
+type WeakPointerKey = {}
+
 export type UnindexableTypesForPointer =
   | number
   | string
@@ -20,7 +23,11 @@ export type UnindexablePointer = {
   [K in $IntentionalAny]: Pointer<undefined>
 }
 
-const pointerMetaWeakMap = new WeakMap<{}, PointerMeta>()
+const pointerMetaWeakMap = new WeakMap<WeakPointerKey, PointerMeta>()
+const cachedSubPathPointersWeakMap = new WeakMap<
+  WeakPointerKey,
+  Map<string | number, Pointer<unknown>>
+>()
 
 /**
  * A wrapper type for the type a `Pointer` points to.
@@ -64,27 +71,26 @@ export type Pointer<O> = PointerType<O> &
 
 const pointerMetaSymbol = Symbol('pointerMeta')
 
-const cachedSubPointersWeakMap = new WeakMap<
-  {},
-  Record<string | number, Pointer<unknown>>
->()
+const proxyHandler = {
+  get(
+    pointerKey: WeakPointerKey,
+    prop: string | typeof pointerMetaSymbol,
+  ): $IntentionalAny {
+    if (prop === pointerMetaSymbol) return pointerMetaWeakMap.get(pointerKey)!
 
-const handler = {
-  get(obj: {}, prop: string | typeof pointerMetaSymbol): $IntentionalAny {
-    if (prop === pointerMetaSymbol) return pointerMetaWeakMap.get(obj)!
-
-    let subs = cachedSubPointersWeakMap.get(obj)
-    if (!subs) {
-      subs = {}
-      cachedSubPointersWeakMap.set(obj, subs)
+    let subPathPointers = cachedSubPathPointersWeakMap.get(pointerKey)
+    if (!subPathPointers) {
+      subPathPointers = new Map()
+      cachedSubPathPointersWeakMap.set(pointerKey, subPathPointers)
     }
 
-    if (subs[prop]) return subs[prop]
+    const existing = subPathPointers.get(prop)
+    if (existing !== undefined) return existing
 
-    const meta = pointerMetaWeakMap.get(obj)!
+    const meta = pointerMetaWeakMap.get(pointerKey)!
 
     const subPointer = pointer({root: meta.root, path: [...meta.path, prop]})
-    subs[prop] = subPointer
+    subPathPointers.set(prop, subPointer)
     return subPointer
   },
 }
@@ -158,9 +164,9 @@ function pointer<O>(args: {root: {}; path?: Array<string | number>}) {
     root: args.root as $IntentionalAny,
     path: args.path ?? [],
   }
-  const hiddenObj = {}
-  pointerMetaWeakMap.set(hiddenObj, meta)
-  return new Proxy(hiddenObj, handler) as Pointer<O>
+  const pointerKey: WeakPointerKey = {}
+  pointerMetaWeakMap.set(pointerKey, meta)
+  return new Proxy(pointerKey, proxyHandler) as Pointer<O>
 }
 
 export default pointer
