@@ -54,6 +54,21 @@ const RangeStrip = styled.div`
     cursor: grabbing !important;
   }
   ${pointerEventsAutoInNormalMode};
+
+  /* covers the one pixel space between the focus range strip and the top strip
+  of the sequence editor panel, which would have caused that one pixel to act
+  like a panel drag zone */
+  &:after {
+    display: block;
+    content: ' ';
+    position: absolute;
+    bottom: -1px;
+    height: 1px;
+    left: 0;
+    right: 0;
+    background: transparent;
+    pointer-events: normal;
+  }
 `
 
 /**
