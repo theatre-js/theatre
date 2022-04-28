@@ -68,7 +68,7 @@ console.log(variableB.get()) // prints 'some value' in the console
 ```
 
 > As you can see there's a naming convention here for boxes (`variableB`),
-> pointers (`variableP`), derivations (`variableP`), etc...
+> pointers (`variableP`), derivations (`variableD`), etc...
 
 Now we can change the value:
 
