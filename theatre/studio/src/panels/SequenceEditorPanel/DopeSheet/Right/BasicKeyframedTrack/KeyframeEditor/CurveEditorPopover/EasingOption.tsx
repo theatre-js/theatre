@@ -15,7 +15,7 @@ const Wrapper = styled.div<{isSelected: boolean}>`
   overflow: hidden;
   aspect-ratio: 1;
 
-  transition: background-color 0.15s, border 0.15s;
+  transition: background-color 0.15s;
   background-color: ${COLOR_BASE};
   border-radius: 2px;
   cursor: pointer;
@@ -24,16 +24,16 @@ const Wrapper = styled.div<{isSelected: boolean}>`
   ${({isSelected}) =>
     isSelected &&
     css`
-      background-color: #303030;
+      background-color: #383d42;
       border: 1px solid ${COLOR_FOCUS_OUTLINE};
     `}
 
   &:hover {
-    background-color: #303030;
+    background-color: #383f45;
   }
 
   &:focus {
-    background-color: #444444;
+    background-color: #383d42;
   }
 `
 

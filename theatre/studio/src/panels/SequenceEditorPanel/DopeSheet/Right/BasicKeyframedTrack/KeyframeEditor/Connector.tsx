@@ -71,6 +71,12 @@ const Container = styled.div<{isSelected: boolean}>`
         : CONNECTOR_THEME.hoverColor};
   }
 `
+
+const EasingPopover = styled(BasicPopover)`
+  --popover-outer-stroke: transparent;
+  --popover-inner-stroke: transparent;
+`
+
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
 const Connector: React.FC<IProps> = (props) => {
@@ -90,9 +96,9 @@ const Connector: React.FC<IProps> = (props) => {
     },
     () => {
       return (
-        <BasicPopover>
+        <EasingPopover>
           <CurveEditorPopover {...props} onRequestClose={closePopover} />
-        </BasicPopover>
+        </EasingPopover>
       )
     },
   )

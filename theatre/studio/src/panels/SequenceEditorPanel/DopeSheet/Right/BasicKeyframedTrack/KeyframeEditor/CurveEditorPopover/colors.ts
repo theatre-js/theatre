@@ -1,5 +1,5 @@
-export const COLOR_POPOVER_BACK = 'black'
+export const COLOR_POPOVER_BACK = '#212120'
 
-export const COLOR_BASE = '#292929'
+export const COLOR_BASE = '#272B2F'
 
-export const COLOR_FOCUS_OUTLINE = '#f78104'
+export const COLOR_FOCUS_OUTLINE = '#0A4540'

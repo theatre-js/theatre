@@ -16,13 +16,15 @@ const PATTERN_DOT_SIZE = 0.01
 const PATTERN_DOT_COUNT = 8
 const PATTERN_GRID_SIZE = (1 - PATTERN_DOT_SIZE) / (PATTERN_DOT_COUNT - 1)
 
-const CURVE_START_OVERSHOOT_COLOR = 'rgb(64, 170, 164)'
-const CURVE_START_COLOR = 'rgb(64, 170, 164)'
-const CURVE_MID_START_COLOR = 'rgb(64, 170, 164)'
-const CURVE_MID_COLOR = 'rgb(64, 170, 164)'
-const CURVE_MID_END_COLOR = 'rgb(64, 170, 164)'
-const CURVE_END_COLOR = 'rgb(64, 170, 164)'
-const CURVE_END_OVERSHOOT_COLOR = 'rgb(64, 170, 164)'
+const CURVE_START_OVERSHOOT_COLOR = '#3EAAA4'
+const CURVE_START_COLOR = '#3EAAA4'
+const CURVE_MID_START_COLOR = '#3EAAA4'
+const CURVE_MID_COLOR = '#3EAAA4'
+const CURVE_MID_END_COLOR = '#3EAAA4'
+const CURVE_END_COLOR = '#3EAAA4'
+const CURVE_END_OVERSHOOT_COLOR = '#3EAAA4'
+
+const CURVE_HANDLE_COLOR = '#67DFD8'
 
 const CONTROL_COLOR = '#B3B3B3'
 
@@ -31,6 +33,8 @@ const Circle = styled.circle`
   vector-effect: non-scaling-stroke;
   r: 0.05px;
   pointer-events: none;
+  transition: r 0.15s;
+  fill: #3eaaa4;
 `
 
 const HitZone = styled.circle`
@@ -42,7 +46,8 @@ const HitZone = styled.circle`
   &:hover {
   }
   &:hover + ${Circle} {
-    r: 0.1px;
+    r: 0.075px;
+    fill: #67dfd8;
   }
 `
 
@@ -214,11 +219,7 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
         fill={CURVE_START_COLOR}
         opacity={0.2}
       />
-      <Circle
-        cx={cur.handles[2]}
-        cy={toExtremumSpace(1 - cur.handles[3])}
-        fill={CURVE_START_COLOR}
-      />
+      <Circle cx={cur.handles[2]} cy={toExtremumSpace(1 - cur.handles[3])} />
 
       <HitZone
         ref={refRight}
@@ -227,11 +228,7 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
         fill={CURVE_END_COLOR}
         opacity={0.2}
       />
-      <Circle
-        cx={next.handles[0]}
-        cy={toExtremumSpace(1 - next.handles[1])}
-        fill={CURVE_END_COLOR}
-      />
+      <Circle cx={next.handles[0]} cy={toExtremumSpace(1 - next.handles[1])} />
     </svg>
   )
 }
