@@ -40,40 +40,40 @@ export function handlesFromCssCubicBezierArgs(
  * ref: https://github.com/theatre-js/theatre/issues/28#issuecomment-938752916
  **/
 export const EASING_PRESETS = [
-  {label: 'easeOutCubic', value: '0.215, 0.610, 0.355, 1.000'},
-  {label: 'easeInOutCubic', value: '0.645, 0.045, 0.355, 1.000'},
-  {label: 'easeInCubic', value: '0.550, 0.055, 0.675, 0.190'},
+  {label: 'Quad Out', value: '0.250, 0.460, 0.450, 0.940'},
+  {label: 'Quad In Out', value: '0.455, 0.030, 0.515, 0.955'},
+  {label: 'Quad In', value: '0.550, 0.085, 0.680, 0.530'},
 
-  {label: 'easeOutQuad', value: '0.250, 0.460, 0.450, 0.940'},
-  {label: 'easeInOutQuad', value: '0.455, 0.030, 0.515, 0.955'},
-  {label: 'easeInQuad', value: '0.550, 0.085, 0.680, 0.530'},
+  {label: 'Cubic Out', value: '0.215, 0.610, 0.355, 1.000'},
+  {label: 'Cubic In Out', value: '0.645, 0.045, 0.355, 1.000'},
+  {label: 'Cubic In', value: '0.550, 0.055, 0.675, 0.190'},
 
-  {label: 'easeInQuart', value: '0.895, 0.030, 0.685, 0.220'},
-  {label: 'easeInOutQuart', value: '0.770, 0.000, 0.175, 1.000'},
-  {label: 'easeOutQuart', value: '0.165, 0.840, 0.440, 1.000'},
+  {label: 'Quart Out', value: '0.165, 0.840, 0.440, 1.000'},
+  {label: 'Quart In Out', value: '0.770, 0.000, 0.175, 1.000'},
+  {label: 'Quart In', value: '0.895, 0.030, 0.685, 0.220'},
 
-  {label: 'easeOutQuint', value: '0.230, 1.000, 0.320, 1.000'},
-  {label: 'easeInOutQuint', value: '0.860, 0.000, 0.070, 1.000'},
-  {label: 'easeInQuint', value: '0.755, 0.050, 0.855, 0.060'},
+  {label: 'Quint Out', value: '0.230, 1.000, 0.320, 1.000'},
+  {label: 'Quint In Out', value: '0.860, 0.000, 0.070, 1.000'},
+  {label: 'Quint In', value: '0.755, 0.050, 0.855, 0.060'},
 
-  {label: 'easeOutSine', value: '0.390, 0.575, 0.565, 1.000'},
-  {label: 'easeInOutSine', value: '0.445, 0.050, 0.550, 0.950'},
-  {label: 'easeInSine', value: '0.470, 0.000, 0.745, 0.715'},
+  {label: 'Sine Out', value: '0.390, 0.575, 0.565, 1.000'},
+  {label: 'Sine In Out', value: '0.445, 0.050, 0.550, 0.950'},
+  {label: 'Sine In', value: '0.470, 0.000, 0.745, 0.715'},
 
-  {label: 'easeOutExpo', value: '0.190, 1.000, 0.220, 1.000'},
-  {label: 'easeInOutExpo', value: '1.000, 0.000, 0.000, 1.000'},
-  {label: 'easeInExpo', value: '0.780, 0.000, 0.810, 0.00'},
+  {label: 'Expo Out', value: '0.190, 1.000, 0.220, 1.000'},
+  {label: 'Expo In Out', value: '1.000, 0.000, 0.000, 1.000'},
+  {label: 'Expo In', value: '0.780, 0.000, 0.810, 0.00'},
 
-  {label: 'easeOutCirc', value: '0.075, 0.820, 0.165, 1.000'},
-  {label: 'easeInOutCirc', value: '0.785, 0.135, 0.150, 0.860'},
-  {label: 'easeInCirc', value: '0.600, 0.040, 0.980, 0.335'},
+  {label: 'Circ Out', value: '0.075, 0.820, 0.165, 1.000'},
+  {label: 'Circ In Out', value: '0.785, 0.135, 0.150, 0.860'},
+  {label: 'Circ In', value: '0.600, 0.040, 0.980, 0.335'},
 
-  {label: 'easeOutBack', value: '0.175, 0.885, 0.320, 1.275'},
-  {label: 'easeInBack', value: '0.600, -0.280, 0.735, 0.045'},
-  {label: 'easeInOutBack', value: '0.680, -0.550, 0.265, 1.550'},
+  {label: 'Back Out', value: '0.175, 0.885, 0.320, 1.275'},
+  {label: 'Back In Out', value: '0.680, -0.550, 0.265, 1.550'},
+  {label: 'Back In', value: '0.600, -0.280, 0.735, 0.045'},
 
-  {label: 'easeInOut', value: '0.42,0,0.58,1'},
   {label: 'linear', value: '0.5, 0.5, 0.5, 0.5'},
+  {label: 'In Out', value: '0.42,0,0.58,1'},
 
   /* These easings are not being included initially in order to
      simplify the choices */

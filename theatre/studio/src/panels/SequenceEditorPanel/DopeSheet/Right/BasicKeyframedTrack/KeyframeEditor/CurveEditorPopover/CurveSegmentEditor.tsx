@@ -30,7 +30,7 @@ const CONTROL_COLOR = '#B3B3B3'
 const Circle = styled.circle`
   stroke-width: 0.1px;
   vector-effect: non-scaling-stroke;
-  r: 0.05px;
+  r: 0.04px;
   pointer-events: none;
   transition: r 0.15s;
   fill: #3eaaa4;
@@ -39,7 +39,7 @@ const Circle = styled.circle`
 const HitZone = styled.circle`
   stroke-width: 0.1px;
   vector-effect: non-scaling-stroke;
-  r: 0.1px;
+  r: 0.09px;
   cursor: move;
   ${pointerEventsAutoInNormalMode};
   &:hover {
@@ -196,7 +196,7 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
       <circle
         cx={0}
         cy={toExtremumSpace(1)}
-        r="0.04"
+        r="0.025"
         stroke={CURVE_START_COLOR}
         strokeWidth="0.02"
         fill={COLOR_BASE}
@@ -205,7 +205,7 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
       <circle
         cx={1}
         cy={toExtremumSpace(0)}
-        r="0.04"
+        r="0.025"
         stroke={CURVE_END_COLOR}
         strokeWidth="0.02"
         fill={COLOR_BASE}

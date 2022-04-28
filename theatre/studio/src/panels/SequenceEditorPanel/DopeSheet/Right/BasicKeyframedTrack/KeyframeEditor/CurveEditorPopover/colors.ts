@@ -1,4 +1,4 @@
-export const COLOR_POPOVER_BACK = '#212120'
+export const COLOR_POPOVER_BACK = 'rgba(26, 28, 30, 0.97);'
 
 export const COLOR_BASE = '#272B2F'
 

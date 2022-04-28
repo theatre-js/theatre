@@ -22,6 +22,7 @@ import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceE
 import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
+import {COLOR_POPOVER_BACK} from './CurveEditorPopover/colors'
 
 const CONNECTOR_HEIGHT = DOT_SIZE_PX / 2 + 1
 const CONNECTOR_WIDTH_UNSCALED = 1000
@@ -74,7 +75,7 @@ const Container = styled.div<{isSelected: boolean}>`
 
 const EasingPopover = styled(BasicPopover)`
   --popover-outer-stroke: transparent;
-  --popover-inner-stroke: transparent;
+  --popover-inner-stroke: ${COLOR_POPOVER_BACK};
 `
 
 type IProps = Parameters<typeof KeyframeEditor>[0]
