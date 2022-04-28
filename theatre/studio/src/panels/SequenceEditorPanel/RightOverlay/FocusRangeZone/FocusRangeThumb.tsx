@@ -15,7 +15,10 @@ import styled from 'styled-components'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {focusRangeStripTheme} from './FocusRangeStrip'
 
-const Handler = styled.div`
+const startHandlerOffset = focusRangeStripTheme.hitZoneWidth / 2
+const endHandlerOffset = startHandlerOffset - focusRangeStripTheme.thumbWidth
+
+const Handle = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   content: ' ';
   width: ${focusRangeStripTheme.thumbWidth}px;
   height: ${() => topStripHeight - 1}px;
@@ -24,8 +27,13 @@ const Handler = styled.div`
   stroke: ${focusRangeStripTheme.enabled.stroke};
   user-select: none;
   &:hover {
-    background: ${focusRangeStripTheme.highlight.backgroundColor} !important;
+    background: ${focusRangeStripTheme.highlight.backgroundColor};
   }
+
+  background-color: transparent;
+
+  left: ${(props) =>
+    props.type === 'start' ? startHandlerOffset : endHandlerOffset}px;
 `
 
 const dims = (size: number) => `
@@ -54,7 +62,7 @@ const Tooltip = styled.div`
   position: absolute;
   top: -${() => topStripHeight + 2};
   transform: translateX(-50%);
-  ${HitZone}:hover &, ${Handler}.dragging & {
+  ${HitZone}:hover &, ${Handle}.dragging & {
     display: block;
     color: white;
     background-color: '#000000';
@@ -240,14 +248,6 @@ const FocusRangeThumb: React.FC<{
       posInClippedSpace = -1000
     }
 
-    const background = focusRangeEnabled
-      ? focusRangeStripTheme.disabled.backgroundColor
-      : focusRangeStripTheme.enabled.backgroundColor
-
-    const startHandlerOffset = focusRangeStripTheme.hitZoneWidth / 2
-    const endHandlerOffset =
-      startHandlerOffset - focusRangeStripTheme.thumbWidth
-
     return existingRange !== undefined ? (
       <>
         <HitZone
@@ -258,14 +258,10 @@ const FocusRangeThumb: React.FC<{
             cursor: thumbType === 'start' ? 'w-resize' : 'e-resize',
           }}
         >
-          <Handler
+          <Handle
+            enabled={focusRangeEnabled}
+            type={thumbType}
             ref={handlerRef as $IntentionalAny}
-            style={{
-              background,
-              left: `${
-                thumbType === 'start' ? startHandlerOffset : endHandlerOffset
-              }px`,
-            }}
           >
             <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
               <line x1="4" y1="6" x2="4" y2="12" />
@@ -274,7 +270,7 @@ const FocusRangeThumb: React.FC<{
             <Tooltip>
               {sequence.positionFormatter.formatBasic(sequence.length)}
             </Tooltip>
-          </Handler>
+          </Handle>
         </HitZone>
       </>
     ) : (
