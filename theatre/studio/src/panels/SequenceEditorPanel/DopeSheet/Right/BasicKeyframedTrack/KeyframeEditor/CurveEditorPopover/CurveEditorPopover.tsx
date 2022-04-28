@@ -357,6 +357,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
             onKeyDown={onEasingOptionKeydown(preset)}
             ref={optionsRef.current[preset.label]}
             onMouseOver={() => {
+              isFilterSetBeingUsed.current = true
               editorState.temporarilySetValue(preset.value)
             }}
             onClick={() => {
