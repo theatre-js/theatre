@@ -31,15 +31,14 @@ const Container = styled.div`
   }
 `
 
-const BasicPopover: React.FC<{className?: string}> = React.forwardRef(
-  ({children, className}, ref) => {
+const BasicPopover: React.FC<{className?: string; showArrow?: boolean}> =
+  React.forwardRef(({children, className, showArrow = true}, ref) => {
     return (
       <Container className={className} ref={ref as $IntentionalAny}>
-        <PopoverArrow />
+        {showArrow ? <PopoverArrow /> : undefined}
         {children}
       </Container>
     )
-  },
-)
+  })
 
 export default BasicPopover
