@@ -118,7 +118,7 @@ A few notes about the example above:
 
 ## Hotness
 As we saw above, derivations may or may not be "hot" 
-(the same concept as "hot" Observables). A derivation
+(the same concept as "hot" Observables<sup>[ref](https://medium.com/codingthesmartway-com-blog/getting-started-with-rxjs-part-3-hot-and-cold-observables-4713757c9a88)</sup>). A derivation
 is hot if and only if it is being tapped.
 
 If you want to keep a derivation hot manually even if there's no tappable
