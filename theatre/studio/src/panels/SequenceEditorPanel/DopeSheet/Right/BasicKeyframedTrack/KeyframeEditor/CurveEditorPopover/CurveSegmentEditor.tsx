@@ -8,6 +8,7 @@ import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import type {CubicBezierHandles} from './shared'
 import {cssCubicBezierArgsFromHandles} from './shared'
 import {useFreezableMemo} from './useFreezableMemo'
+import {COLOR_BASE} from './colors'
 
 const VIEWBOX_PADDING = 0.12
 const VIEWBOX_SIZE = 1 + VIEWBOX_PADDING * 2
@@ -23,8 +24,6 @@ const CURVE_MID_COLOR = '#3EAAA4'
 const CURVE_MID_END_COLOR = '#3EAAA4'
 const CURVE_END_COLOR = '#3EAAA4'
 const CURVE_END_OVERSHOOT_COLOR = '#3EAAA4'
-
-const CURVE_HANDLE_COLOR = '#67DFD8'
 
 const CONTROL_COLOR = '#B3B3B3'
 
@@ -44,9 +43,9 @@ const HitZone = styled.circle`
   cursor: move;
   ${pointerEventsAutoInNormalMode};
   &:hover {
+    opacity: 0.4;
   }
   &:hover + ${Circle} {
-    r: 0.075px;
     fill: #67dfd8;
   }
 `
@@ -200,7 +199,7 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
         r="0.04"
         stroke={CURVE_START_COLOR}
         strokeWidth="0.02"
-        fill="black"
+        fill={COLOR_BASE}
       />
 
       <circle
@@ -209,7 +208,7 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
         r="0.04"
         stroke={CURVE_END_COLOR}
         strokeWidth="0.02"
-        fill="black"
+        fill={COLOR_BASE}
       />
 
       <HitZone

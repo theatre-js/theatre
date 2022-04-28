@@ -23,11 +23,11 @@ import {
   EASING_PRESETS,
   areEasingsSimilar,
 } from './shared'
-import {COLOR_BASE, COLOR_FOCUS_OUTLINE, COLOR_POPOVER_BACK} from './colors'
+import {COLOR_BASE, COLOR_POPOVER_BACK} from './colors'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 
-const PRESET_COLUMNS = 4
-const PRESET_SIZE = 50
+const PRESET_COLUMNS = 3
+const PRESET_SIZE = 53
 
 const APPROX_TOOLTIP_HEIGHT = 25
 
@@ -39,6 +39,7 @@ const Grid = styled.div`
     'presets tween';
   grid-template-rows: 32px 1fr;
   grid-template-columns: ${PRESET_COLUMNS * PRESET_SIZE}px 120px;
+  padding: 1px;
   gap: 1px;
   height: 120px;
 `
@@ -54,19 +55,18 @@ const OptionsContainer = styled.div`
 `
 
 const SearchBox = styled.input.attrs({type: 'text'})`
-  background-color: #1c1c1c;
+  background-color: ${COLOR_BASE};
   border: none;
   border-radius: 2px;
   color: rgba(255, 255, 255, 0.8);
   padding: 6px;
-  font-size: 14px;
+  font-size: 12px;
   outline: none;
   cursor: text;
   text-align: left;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  outline: 1px solid black;
 
   grid-area: search;
 
@@ -75,8 +75,8 @@ const SearchBox = styled.input.attrs({type: 'text'})`
   }
 
   &:focus {
-    outline: 1px solid ${COLOR_FOCUS_OUTLINE};
-    background-color: #212121;
+    background-color: rgba(16, 16, 16, 0.26);
+    outline: 1px solid rgba(0, 0, 0, 0.35);
   }
 `
 

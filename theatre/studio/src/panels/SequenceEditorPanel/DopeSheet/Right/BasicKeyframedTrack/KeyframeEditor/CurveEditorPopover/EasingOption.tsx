@@ -4,7 +4,7 @@ import styled, {css} from 'styled-components'
 import {handlesFromCssCubicBezierArgs} from './shared'
 import SVGCurveSegment from './SVGCurveSegment'
 import mergeRefs from 'react-merge-refs'
-import {COLOR_BASE, COLOR_FOCUS_OUTLINE} from './colors'
+import {COLOR_BASE} from './colors'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 
 const Wrapper = styled.div<{isSelected: boolean}>`
@@ -25,11 +25,10 @@ const Wrapper = styled.div<{isSelected: boolean}>`
     isSelected &&
     css`
       background-color: #383d42;
-      border: 1px solid ${COLOR_FOCUS_OUTLINE};
     `}
 
   &:hover {
-    background-color: #383f45;
+    background-color: #31353a;
   }
 
   &:focus {

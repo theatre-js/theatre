@@ -63,13 +63,13 @@ const SVGCurveSegment: React.FC<IProps> = (props) => {
       <circle
         cx={LEFT_CONTROL_POINT[0]}
         cy={LEFT_CONTROL_POINT[1]}
-        r={0.2}
+        r={0.1}
         fill={CONTROL_HITZONE_COLOR}
       />
       <circle
         cx={RIGHT_CONTROL_POINT[0]}
         cy={RIGHT_CONTROL_POINT[1]}
-        r={0.2}
+        r={0.1}
         fill={CONTROL_HITZONE_COLOR}
       />
 
