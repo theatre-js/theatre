@@ -19,6 +19,7 @@ const TooltipWrapper: React.FC<{
     callback: (e: MouseEvent) => void
   }
   verticalPlacement?: 'top' | 'bottom' | 'overlay'
+  verticalGap?: number
 }> = (props) => {
   const originalElement = props.children()
   const [ref, container] = useRefAndState<HTMLElement | SVGElement | null>(null)
@@ -37,7 +38,7 @@ const TooltipWrapper: React.FC<{
   useLayoutEffect(() => {
     if (!containerRect || !container || !targetRect) return
 
-    const gap = 8
+    const gap = props.verticalGap ?? 8
     const arrowStyle: Record<string, string> = {}
 
     let verticalPlacement: 'bottom' | 'top' | 'overlay' =

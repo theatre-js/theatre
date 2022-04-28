@@ -39,7 +39,6 @@ const Grid = styled.div`
     'presets tween';
   grid-template-rows: 32px 1fr;
   grid-template-columns: ${PRESET_COLUMNS * PRESET_SIZE}px 120px;
-  padding: 1px;
   gap: 1px;
   height: 120px;
 `
@@ -52,6 +51,15 @@ const OptionsContainer = styled.div`
   grid-template-columns: repeat(${PRESET_COLUMNS}, 1fr);
   grid-auto-rows: min-content;
   gap: 1px;
+
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  &::-webkit-scrollbar {
+    /* WebKit */
+    width: 0;
+    height: 0;
+  }
 `
 
 const SearchBox = styled.input.attrs({type: 'text'})`
@@ -83,6 +91,12 @@ const SearchBox = styled.input.attrs({type: 'text'})`
 const CurveEditorContainer = styled.div`
   grid-area: tween;
   background: ${COLOR_BASE};
+`
+
+const NoResultsFoundContainer = styled.div`
+  grid-column: 1 / 4;
+  padding: 6px;
+  color: #888888;
 `
 
 type IProps = {
@@ -232,7 +246,6 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') e.preventDefault()
 
     if (e.key === 'ArrowDown') setHighlightedIndex(0)
-    else if (e.key === 'ArrowUp') setHighlightedIndex(0)
     else if (e.key === 'Escape') {
       editorState.discardTemporaryValue()
       props.onRequestClose()
@@ -303,6 +316,11 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     return () => optionsContainer?.removeEventListener('scroll', listener)
   }, [optionsContainer])
 
+  useEffect(() => {
+    if (displayedPresets[0] && isFilterSetBeingUsed.current)
+      editorState.temporarilySetValue(displayedPresets[0].value)
+  }, [displayedPresets])
+
   return (
     <Grid>
       <SearchBox
@@ -323,8 +341,9 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         }
         onChange={(e) => {
           setFilter(e.target.value)
-          if (handlesFromCssCubicBezierArgs(e.target.value))
+          if (handlesFromCssCubicBezierArgs(e.target.value)) {
             editorState.temporarilySetValue(e.target.value)
+          }
         }}
         ref={inputRef}
         onKeyDown={onSearchKeyDown}
@@ -355,6 +374,9 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
             )}
           />
         ))}
+        {displayedPresets.length === 0 ? (
+          <NoResultsFoundContainer>No results found</NoResultsFoundContainer>
+        ) : undefined}
       </OptionsContainer>
       <CurveEditorContainer>
         <CurveSegmentEditor {...props} editorState={editorState} />

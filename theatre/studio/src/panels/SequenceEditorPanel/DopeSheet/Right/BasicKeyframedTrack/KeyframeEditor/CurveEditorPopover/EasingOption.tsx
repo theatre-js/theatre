@@ -58,7 +58,7 @@ type IProps = {
 
 const EasingOption: React.FC<IProps> = React.forwardRef((props, ref) => {
   const [tooltip, tooltipHostRef] = useTooltip(
-    {enabled: true, verticalPlacement: props.tooltipPlacement},
+    {enabled: true, verticalPlacement: props.tooltipPlacement, verticalGap: 0},
     () => <EasingTooltip>{props.easing.label}</EasingTooltip>,
   )
 

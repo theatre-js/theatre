@@ -15,6 +15,7 @@ export default function useTooltip(
     enterDelay?: number
     exitDelay?: number
     verticalPlacement?: 'top' | 'bottom' | 'overlay'
+    verticalGap?: number
   },
   render: () => React.ReactElement,
 ): [
@@ -59,6 +60,7 @@ export default function useTooltip(
           target={targetNode}
           onClickOutside={noop}
           verticalPlacement={opts.verticalPlacement}
+          verticalGap={opts.verticalGap}
         />,
         portalLayer!,
       )
