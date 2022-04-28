@@ -30,7 +30,7 @@ const Container = styled.div<{isShiftDown: boolean}>`
   right: 0;
   box-sizing: border-box;
   /* Use the "grab" cursor if the shift key is up, which is the one used on the top strip of the sequence editor */
-  cursor: ${(props) => (props.isShiftDown ? 'ew-resize' : 'grab')};
+  cursor: ${(props) => (props.isShiftDown ? 'ew-resize' : 'move')};
 `
 
 const FocusRangeZone: React.FC<{
@@ -95,7 +95,7 @@ function usePanelDragZoneGestureHandlers(
   useCssCursorLock(
     mode !== 'none',
     'dragging',
-    mode === 'creating' ? 'ew-resize' : 'grabbing',
+    mode === 'creating' ? 'ew-resize' : 'move',
   )
 
   return useMemo((): Parameters<typeof useDrag>[1] => {
