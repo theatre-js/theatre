@@ -29,23 +29,29 @@ const CONNECTOR_WIDTH_UNSCALED = 1000
 
 export const CONNECTOR_THEME = {
   normalColor: `#365b59`,
-  get hoverColor() {
-    return lighten(0.1, CONNECTOR_THEME.normalColor)
+  popoverOpenColor: `#817720`,
+  baseColor(isPopoverOpen: boolean) {
+    return isPopoverOpen
+      ? CONNECTOR_THEME.popoverOpenColor
+      : CONNECTOR_THEME.normalColor
   },
-  get selectedColor() {
-    return lighten(0.2, CONNECTOR_THEME.normalColor)
+  hoverColor(isPopoverOpen: boolean) {
+    return lighten(0.1, CONNECTOR_THEME.baseColor(isPopoverOpen))
   },
-  get selectedHoverColor() {
-    return lighten(0.4, CONNECTOR_THEME.normalColor)
+  selectedColor(isPopoverOpen: boolean) {
+    return lighten(0.2, CONNECTOR_THEME.baseColor(isPopoverOpen))
+  },
+  selectedHoverColor(isPopoverOpen: boolean) {
+    return lighten(0.4, CONNECTOR_THEME.baseColor(isPopoverOpen))
   },
 }
 
-const Container = styled.div<{isSelected: boolean}>`
+const Container = styled.div<{isSelected: boolean; isPopoverOpen: boolean}>`
   position: absolute;
-  background: ${(props) =>
-    props.isSelected
-      ? CONNECTOR_THEME.selectedColor
-      : CONNECTOR_THEME.normalColor};
+  background: ${({isSelected, isPopoverOpen}) =>
+    isSelected
+      ? CONNECTOR_THEME.selectedColor(isPopoverOpen)
+      : CONNECTOR_THEME.baseColor(isPopoverOpen)};
   height: ${CONNECTOR_HEIGHT}px;
   width: ${CONNECTOR_WIDTH_UNSCALED}px;
 
@@ -66,10 +72,10 @@ const Container = styled.div<{isSelected: boolean}>`
   }
 
   &:hover {
-    background: ${(props) =>
-      props.isSelected
-        ? CONNECTOR_THEME.selectedHoverColor
-        : CONNECTOR_THEME.hoverColor};
+    background: ${({isSelected, isPopoverOpen}) =>
+      isSelected
+        ? CONNECTOR_THEME.selectedColor(isPopoverOpen)
+        : CONNECTOR_THEME.hoverColor(isPopoverOpen)};
   }
 `
 
@@ -91,7 +97,7 @@ const Connector: React.FC<IProps> = (props) => {
     'KeyframeEditor Connector',
   )
 
-  const [popoverNode, openPopover, closePopover, _isPopoverOpen] = usePopover(
+  const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {
       closeWhenPointerIsDistant: !isPointerBeingCaptured(),
     },
@@ -117,6 +123,7 @@ const Connector: React.FC<IProps> = (props) => {
 
   return (
     <Container
+      isPopoverOpen={isPopoverOpen}
       isSelected={!!props.selection}
       ref={nodeRef}
       style={{
