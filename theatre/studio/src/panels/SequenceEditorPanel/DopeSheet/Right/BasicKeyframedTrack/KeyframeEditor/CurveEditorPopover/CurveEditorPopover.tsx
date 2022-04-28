@@ -37,11 +37,10 @@ const Grid = styled.div`
   grid-template-areas:
     'search  tween'
     'presets tween';
-  grid-template-rows: 40px 1fr;
-  grid-template-columns: ${PRESET_COLUMNS * PRESET_SIZE}px 150px;
+  grid-template-rows: 32px 1fr;
+  grid-template-columns: ${PRESET_COLUMNS * PRESET_SIZE}px 120px;
   gap: 1px;
-  padding: 1px;
-  height: 150px;
+  height: 120px;
 `
 
 const OptionsContainer = styled.div`
@@ -55,44 +54,35 @@ const OptionsContainer = styled.div`
 `
 
 const SearchBox = styled.input.attrs({type: 'text'})`
-  background-color: ${COLOR_BASE};
+  background-color: #1c1c1c;
   border: none;
   border-radius: 2px;
   color: rgba(255, 255, 255, 0.8);
-  padding: 14px 10px 6px 10px;
-  font-size: 13px;
+  padding: 6px;
+  font-size: 14px;
   outline: none;
   cursor: text;
   text-align: left;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  outline: 1px solid black;
 
   grid-area: search;
 
-  transition: background-color 0.15s, outline 0.15s;
-
   &:hover {
-    background-color: #303030;
+    background-color: #212121;
   }
 
   &:focus {
     outline: 1px solid ${COLOR_FOCUS_OUTLINE};
-    background-color: #444444;
+    background-color: #212121;
   }
 `
 
 const CurveEditorContainer = styled.div`
   grid-area: tween;
   background: ${COLOR_BASE};
-`
-
-const CurrentPresetName = styled.div`
-  position: absolute;
-  top: 5px;
-  left: 10px;
-  opacity: 0.25;
-  font-size: 11px;
 `
 
 type IProps = {
@@ -339,11 +329,6 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         ref={inputRef}
         onKeyDown={onSearchKeyDown}
       />
-      <CurrentPresetName>
-        {EASING_PRESETS.find(({value}) =>
-          areEasingsSimilar(easing, handlesFromCssCubicBezierArgs(value)),
-        )?.label ?? 'Custom'}
-      </CurrentPresetName>
       <OptionsContainer ref={optionsContainerRef}>
         {displayedPresets.map((preset, index) => (
           <EasingOption
