@@ -356,6 +356,9 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
             tabIndex={0}
             onKeyDown={onEasingOptionKeydown(preset)}
             ref={optionsRef.current[preset.label]}
+            onMouseOver={() => {
+              editorState.temporarilySetValue(preset.value)
+            }}
             onClick={() => {
               setHighlightedIndex(displayedPresets.indexOf(preset))
               editorState.temporarilySetValue(preset.value)
