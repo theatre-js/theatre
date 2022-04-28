@@ -97,7 +97,7 @@ const Connector: React.FC<IProps> = (props) => {
     },
     () => {
       return (
-        <EasingPopover>
+        <EasingPopover showArrow={false}>
           <CurveEditorPopover {...props} onRequestClose={closePopover} />
         </EasingPopover>
       )
