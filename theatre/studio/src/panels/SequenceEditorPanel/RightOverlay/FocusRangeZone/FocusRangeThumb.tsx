@@ -2,7 +2,6 @@ import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {usePrism} from '@theatre/react'
 import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
-import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
@@ -12,8 +11,14 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
-import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {
+  attributeNameThatLocksFramestamp,
+  useLockFrameStampPosition,
+} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {focusRangeStripTheme, RangeStrip} from './FocusRangeStrip'
+import SnapCursor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/SnapCursor.svg'
+
+const snapCursorSize = 42
 
 const dims = (size: number) => `
   left: ${-size / 2}px;
@@ -35,6 +40,28 @@ const HitZone = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   }
   #pointer-root.normal & {
     pointer-events: ${(props) => (props.enabled ? 'auto' : 'none')};
+  }
+
+  #pointer-root.draggingPositionInSequenceEditor & {
+    pointer-events: auto;
+    cursor: none;
+
+    &:hover:after {
+      position: absolute;
+      top: calc(50% - ${snapCursorSize / 2}px);
+      left: calc(50% - ${snapCursorSize / 2}px);
+      width: ${snapCursorSize}px;
+      height: ${snapCursorSize}px;
+      display: block;
+      content: ' ';
+      background: url(${SnapCursor}) no-repeat;
+      background-size: cover;
+      z-index: 30;
+    }
+  }
+
+  &.dragging {
+    pointer-events: none !important;
   }
 
   ${dims(focusRangeStripTheme.hitZoneWidth)}
@@ -64,27 +91,14 @@ const Handle = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
     stroke: ${focusRangeStripTheme.dragging.stroke};
   }
 
+  #pointer-root.draggingPositionInSequenceEditor ${HitZone}:hover > & {
+    background: ${focusRangeStripTheme.dragging.backgroundColor};
+    stroke: #40aaa4;
+  }
+
   ${() => RangeStrip}:hover ~ ${HitZone} > &, ${HitZone}:hover > & {
     background: ${focusRangeStripTheme.hover.backgroundColor};
     stroke: ${focusRangeStripTheme.hover.stroke};
-  }
-`
-
-const Tooltip = styled.div`
-  font-size: 10px;
-  white-space: nowrap;
-  padding: 2px 8px;
-  border-radius: 2px;
-  ${pointerEventsAutoInNormalMode};
-  background-color: #0000004d;
-  display: none;
-  position: absolute;
-  top: -${() => topStripHeight + 2};
-  transform: translateX(-50%);
-  ${HitZone}:hover &, ${Handle}.dragging & {
-    display: block;
-    color: white;
-    background-color: '#000000';
   }
 `
 
@@ -254,6 +268,9 @@ const FocusRangeThumb: React.FC<{
         <HitZone
           ref={hitZoneRef as $IntentionalAny}
           data-pos={position.toFixed(3)}
+          {...{
+            [attributeNameThatLocksFramestamp]: position.toFixed(3),
+          }}
           className={`${isDragging && 'dragging'}`}
           enabled={enabled}
           type={thumbType}
@@ -270,9 +287,6 @@ const FocusRangeThumb: React.FC<{
               <line x1="4" y1="6" x2="4" y2="12" />
               <line x1="6" y1="6" x2="6" y2="12" />
             </svg>
-            <Tooltip>
-              {sequence.positionFormatter.formatBasic(sequence.length)}
-            </Tooltip>
           </Handle>
         </HitZone>
       </>
