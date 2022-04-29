@@ -1,6 +1,6 @@
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
-import {usePrism} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
@@ -268,7 +268,6 @@ const FocusRangeThumb: React.FC<{
           tempTransaction.discard()
         }
       },
-      lockCursorTo: thumbType === 'start' ? 'w-resize' : 'e-resize',
     }
   }, [layoutP])
 
@@ -280,7 +279,9 @@ const FocusRangeThumb: React.FC<{
     thumbType === 'start' ? 'w-resize' : 'e-resize',
   )
 
-  useLockFrameStampPosition(isDragging, -1)
+  const existingRange = useVal(existingRangeD)
+
+  useLockFrameStampPosition(isDragging, existingRange!.range[thumbType])
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
