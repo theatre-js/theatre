@@ -20,7 +20,10 @@ import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import PlayheadPositionPopover from './PlayheadPositionPopover'
 import {getIsPlayheadAttachedToFocusRange} from '@theatre/studio/UIRoot/useKeyboardShortcuts'
-import {lockedCursorCssPropName} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {
+  lockedCursorCssPropName,
+  useCssCursorLock,
+} from '@theatre/studio/uiComponents/PointerEventsHandler'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -42,10 +45,11 @@ const Rod = styled.div`
   height: calc(100% - 8px);
   border-left: 1px solid #27e0fd;
   z-index: 10;
+  pointer-events: none;
 
   #pointer-root.draggingPositionInSequenceEditor &:not(.seeking) {
-    pointer-events: auto;
-    cursor: var(${lockedCursorCssPropName});
+    /* pointer-events: auto; */
+    /* cursor: var(${lockedCursorCssPropName}); */
 
     &:after {
       position: absolute;
@@ -68,6 +72,10 @@ const Thumb = styled.div`
   --sunblock-color: #1f2b2b;
 
   ${pointerEventsAutoInNormalMode};
+
+  &.seeking {
+    pointer-events: none !important;
+  }
 
   #pointer-root.draggingPositionInSequenceEditor &:not(.seeking) {
     pointer-events: auto;
@@ -231,14 +239,15 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       onDragEnd() {
         setIsSeeking(false)
       },
-      lockCursorTo: 'ew-resize',
     }
   }, [])
 
-  useDrag(thumbNode, gestureHandlers)
+  const [isDragging] = useDrag(thumbNode, gestureHandlers)
+
+  useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   // hide the frame stamp when seeking
-  useLockFrameStampPosition(useVal(layoutP.seeker.isSeeking), -1)
+  useLockFrameStampPosition(useVal(layoutP.seeker.isSeeking) || isDragging, -1)
 
   return usePrism(() => {
     const isSeeking = val(layoutP.seeker.isSeeking)
