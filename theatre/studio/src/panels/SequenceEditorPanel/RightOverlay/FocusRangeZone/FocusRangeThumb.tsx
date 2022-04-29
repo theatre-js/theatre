@@ -4,7 +4,10 @@ import {usePrism} from '@theatre/react'
 import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
+import {
+  topStripHeight,
+  topStripTheme,
+} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
@@ -138,6 +141,27 @@ const ColoredMargin = styled.div<{type: 'start' | 'end'; enabled: boolean}>`
       : // pushing the right-side thumb's margin 1px to the right to make sure there is no space
         // between it and the thumb
         -focusRangeStripTheme.thumbWidth + 1}px;
+`
+
+const OuterColoredMargin = styled.div<{
+  type: 'start' | 'end'
+}>`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+
+  --bg: ${() => topStripTheme.backgroundColor};
+
+  background: linear-gradient(
+    ${(props) => (props.type === 'start' ? -90 : 90)}deg,
+    var(--bg) 0%,
+    #ffffff00 100%
+  );
+
+  width: 12px;
+  left: ${(props) =>
+    props.type === 'start' ? -12 : focusRangeStripTheme.thumbWidth}px;
 `
 
 const FocusRangeThumb: React.FC<{
@@ -304,6 +328,7 @@ const FocusRangeThumb: React.FC<{
         }}
       >
         <ColoredMargin type={thumbType} enabled={enabled} />
+        <OuterColoredMargin type={thumbType} />
         <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
           <line x1="4" y1="6" x2="4" y2="12" />
           <line x1="6" y1="6" x2="6" y2="12" />
