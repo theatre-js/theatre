@@ -17,7 +17,7 @@ const Curtain = styled.div<{enabled: boolean}>`
   width: ${divWidth}px;
   transform-origin: top left;
   z-index: 20;
-  /* pointer-events: none; */
+  pointer-events: none;
   background-color: ${(props) => (props.enabled ? '#000000' : 'transparent')};
 `
 
@@ -40,7 +40,7 @@ const FocusRangeArea: React.FC<{
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
 
-    if (!existingRange) return null
+    if (!existingRange || !existingRange.enabled) return null
 
     const {range} = existingRange
 
