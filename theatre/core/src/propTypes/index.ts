@@ -10,8 +10,8 @@ import {
 } from '@theatre/shared/utils/color'
 import {clamp, mapValues} from 'lodash-es'
 import type {
-  IShorthandCompoundProps,
-  IValidCompoundProps,
+  UnknownShorthandCompoundProps,
+  UnknownValidCompoundProps,
   ShorthandCompoundPropsToLonghandCompoundProps,
 } from './internals'
 import {propTypeSymbol, sanitizeCompoundProps} from './internals'
@@ -88,7 +88,7 @@ const validateCommonOpts = (fnCallSignature: string, opts?: CommonOpts) => {
  * ```
  *
  */
-export const compound = <Props extends IShorthandCompoundProps>(
+export const compound = <Props extends UnknownShorthandCompoundProps>(
   props: Props,
   opts: CommonOpts = {},
 ): PropTypeConfig_Compound<
@@ -101,7 +101,7 @@ export const compound = <Props extends IShorthandCompoundProps>(
     ShorthandCompoundPropsToLonghandCompoundProps<Props>
   > = {
     type: 'compound',
-    props: sanitizedProps,
+    props: sanitizedProps as $IntentionalAny,
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts.label,
@@ -690,7 +690,7 @@ export interface PropTypeConfig_StringLiteral<T extends string>
 
 export interface PropTypeConfig_Rgba extends ISimplePropType<'rgba', Rgba> {}
 
-type DeepPartialCompound<Props extends IValidCompoundProps> = {
+type DeepPartialCompound<Props extends UnknownValidCompoundProps> = {
   [K in keyof Props]?: DeepPartial<Props[K]>
 }
 
@@ -701,13 +701,14 @@ type DeepPartial<Conf extends PropTypeConfig> =
     ? DeepPartialCompound<T>
     : never
 
-export interface PropTypeConfig_Compound<Props extends IValidCompoundProps>
-  extends IBasePropType<
+export interface PropTypeConfig_Compound<
+  Props extends UnknownValidCompoundProps,
+> extends IBasePropType<
     'compound',
     {[K in keyof Props]: Props[K]['valueType']},
     DeepPartialCompound<Props>
   > {
-  props: Record<string, PropTypeConfig>
+  props: Record<keyof Props, PropTypeConfig>
 }
 
 export interface PropTypeConfig_Enum extends IBasePropType<'enum', {}> {

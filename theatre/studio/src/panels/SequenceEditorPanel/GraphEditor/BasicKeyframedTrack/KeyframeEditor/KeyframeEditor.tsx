@@ -23,7 +23,7 @@ const Container = styled.g`
 
 const noConnector = <></>
 
-const KeyframeEditor: React.FC<{
+type IKeyframeEditorProps = {
   index: number
   keyframe: Keyframe
   trackData: TrackData
@@ -34,7 +34,9 @@ const KeyframeEditor: React.FC<{
   isScalar: boolean
   color: keyof typeof graphEditorColors
   propConfig: PropTypeConfig_AllSimples
-}> = (props) => {
+}
+
+const KeyframeEditor: React.VFC<IKeyframeEditorProps> = (props) => {
   const {index, trackData, isScalar} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]

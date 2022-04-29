@@ -5,7 +5,7 @@ import type Scrub from '@theatre/studio/Scrub'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getDeep from '@theatre/shared/utils/getDeep'
 import {usePrism} from '@theatre/react'
-import type {$FixMe, SerializablePrimitive} from '@theatre/shared/utils/types'
+import type {SerializablePrimitive} from '@theatre/shared/utils/types'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import get from 'lodash-es/get'
@@ -15,6 +15,7 @@ import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
 import {isPropConfSequencable} from '@theatre/shared/propTypes/utils'
+import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 
 interface CommonStuff<T> {
   value: T
@@ -147,7 +148,7 @@ export function useEditingToolsForPrimitiveProp<
           },
         })
 
-        const sequenceTrcackId = possibleSequenceTrackId as $FixMe as string
+        const sequenceTrackId = possibleSequenceTrackId as SequenceTrackId
         const nearbyKeyframes = prism.sub(
           'lcr',
           (): NearbyKeyframes => {
@@ -155,7 +156,7 @@ export function useEditingToolsForPrimitiveProp<
               obj.template.project.pointers.historic.sheetsById[
                 obj.address.sheetId
               ].sequence.tracksByObject[obj.address.objectKey].trackData[
-                sequenceTrcackId
+                sequenceTrackId
               ],
             )
             if (!track || track.keyframes.length === 0) return {}
@@ -186,7 +187,7 @@ export function useEditingToolsForPrimitiveProp<
               }
             }
           },
-          [sequenceTrcackId],
+          [sequenceTrackId],
         )
 
         let shade: Shade

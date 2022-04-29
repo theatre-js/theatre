@@ -25,6 +25,7 @@ import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import {generateDiskStateRevision} from './generateDiskStateRevision'
 
 import createTransactionPrivateApi from './createTransactionPrivateApi'
+import type {ProjectId} from '@theatre/shared/utils/ids'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -173,7 +174,7 @@ export default class StudioStore {
     this._reduxStore.dispatch(studioActions.historic.redo())
   }
 
-  createContentOfSaveFile(projectId: string): OnDiskState {
+  createContentOfSaveFile(projectId: ProjectId): OnDiskState {
     const projectState =
       this._reduxStore.getState().$persistent.historic.innerState.coreByProject[
         projectId

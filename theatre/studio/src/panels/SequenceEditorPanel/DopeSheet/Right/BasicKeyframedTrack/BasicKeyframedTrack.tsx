@@ -44,7 +44,10 @@ const BasicKeyframedTrack: React.FC<BasicKeyframedTracksProps> = React.memo(
           selection: val(selectionAtom.pointer.current),
         }
       } else {
-        return {selectedKeyframeIds: {}, selection: undefined}
+        return {
+          selectedKeyframeIds: {},
+          selection: undefined,
+        }
       }
     }, [layoutP, leaf.trackId])
 

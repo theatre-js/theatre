@@ -87,8 +87,10 @@ export const calculateSequenceEditorTree = (
   topSoFar += tree.nodeHeight
   nSoFar += 1
 
-  for (const [_, sheetObject] of Object.entries(val(sheet.objectsP))) {
-    addObject(sheetObject, tree.children, tree.depth + 1)
+  for (const sheetObject of Object.values(val(sheet.objectsP))) {
+    if (sheetObject) {
+      addObject(sheetObject, tree.children, tree.depth + 1)
+    }
   }
   tree.heightIncludingChildren = topSoFar - tree.top
 

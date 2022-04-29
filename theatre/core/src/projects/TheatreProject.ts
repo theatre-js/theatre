@@ -2,6 +2,11 @@ import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import Project from '@theatre/core/projects/Project'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 import type {ProjectAddress} from '@theatre/shared/utils/addresses'
+import type {
+  ProjectId,
+  SheetId,
+  SheetInstanceId,
+} from '@theatre/shared/utils/ids'
 import {validateInstanceId} from '@theatre/shared/utils/sanitizers'
 import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/shared/utils/slashedPaths'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
@@ -58,7 +63,7 @@ export default class TheatreProject implements IProject {
    * @internal
    */
   constructor(id: string, config: IProjectConfig = {}) {
-    setPrivateAPI(this, new Project(id, config, this))
+    setPrivateAPI(this, new Project(id as ProjectId, config, this))
   }
 
   get ready(): Promise<void> {
@@ -87,7 +92,9 @@ export default class TheatreProject implements IProject {
       )
     }
 
-    return privateAPI(this).getOrCreateSheet(sanitizedPath, instanceId)
-      .publicApi
+    return privateAPI(this).getOrCreateSheet(
+      sanitizedPath as SheetId,
+      instanceId as SheetInstanceId,
+    ).publicApi
   }
 }

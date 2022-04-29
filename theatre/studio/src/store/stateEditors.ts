@@ -1,4 +1,5 @@
 import type {
+  HistoricPositionalSequence,
   Keyframe,
   SheetState_Historic,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
@@ -11,7 +12,11 @@ import type {
   WithoutSheetInstance,
 } from '@theatre/shared/utils/addresses'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
-import type {KeyframeId} from '@theatre/shared/utils/ids'
+import type {
+  KeyframeId,
+  SequenceTrackId,
+  UIPanelId,
+} from '@theatre/shared/utils/ids'
 import {
   generateKeyframeId,
   generateSequenceTrackId,
@@ -72,7 +77,7 @@ namespace stateEditors {
     export namespace historic {
       export namespace panelPositions {
         export function setPanelPosition(p: {
-          panelId: string
+          panelId: UIPanelId
           position: PanelPosition
         }) {
           const h = drafts().historic
@@ -429,7 +434,9 @@ namespace stateEditors {
         }
 
         export namespace sequence {
-          export function _ensure(p: WithoutSheetInstance<SheetAddress>) {
+          export function _ensure(
+            p: WithoutSheetInstance<SheetAddress>,
+          ): HistoricPositionalSequence {
             const s = stateEditors.coreByProject.historic.sheetsById._ensure(p)
             s.sequence ??= {
               subUnitsPerUnit: 30,
@@ -529,7 +536,9 @@ namespace stateEditors {
           }
 
           function _getTrack(
-            p: WithoutSheetInstance<SheetObjectAddress> & {trackId: string},
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+            },
           ) {
             return _ensureTracksOfObject(p).trackData[p.trackId]
           }
@@ -540,7 +549,7 @@ namespace stateEditors {
            */
           export function setKeyframeAtPosition<T>(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               position: number
               handles?: [number, number, number, number]
               value: T
@@ -585,7 +594,7 @@ namespace stateEditors {
 
           export function unsetKeyframeAtPosition(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               position: number
             },
           ) {
@@ -604,7 +613,7 @@ namespace stateEditors {
 
           export function transformKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               keyframeIds: KeyframeId[]
               translate: number
               scale: number
@@ -633,7 +642,7 @@ namespace stateEditors {
 
           export function deleteKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               keyframeIds: KeyframeId[]
             },
           ) {
@@ -645,9 +654,9 @@ namespace stateEditors {
             )
           }
 
-          export function replaceKeyframes<T>(
+          export function replaceKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               keyframes: Array<Keyframe>
               snappingFunction: SnappingFunction
             },

@@ -8,5 +8,5 @@ export type IPropEditorFC<TPropTypeConfig extends IBasePropType<string, any>> =
     propConfig: TPropTypeConfig
     pointerToProp: Pointer<TPropTypeConfig['valueType']>
     obj: SheetObject
-    depth: number
+    visualIndentation: number
   }>

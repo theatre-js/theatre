@@ -16,6 +16,7 @@ import {isPointer} from '@theatre/dataverse'
 import {isDerivation, valueDerivation} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import coreTicker from './coreTicker'
+import type {ProjectId} from '@theatre/shared/utils/ids'
 export {types}
 
 /**
@@ -45,7 +46,7 @@ export {types}
  */
 export function getProject(id: string, config: IProjectConfig = {}): IProject {
   const {...restOfConfig} = config
-  const existingProject = projectsSingleton.get(id)
+  const existingProject = projectsSingleton.get(id as ProjectId)
   if (existingProject) {
     if (process.env.NODE_ENV !== 'production') {
       if (!deepEqual(config, existingProject.config)) {
@@ -67,9 +68,9 @@ export function getProject(id: string, config: IProjectConfig = {}): IProject {
 
   if (config.state) {
     if (process.env.NODE_ENV !== 'production') {
-      shallowValidateOnDiskState(id, config.state)
+      shallowValidateOnDiskState(id as ProjectId, config.state)
     } else {
-      deepValidateOnDiskState(id, config.state)
+      deepValidateOnDiskState(id as ProjectId, config.state)
     }
   }
 
@@ -80,7 +81,7 @@ export function getProject(id: string, config: IProjectConfig = {}): IProject {
  * Lightweight validator that only makes sure the state's definitionVersion is correct.
  * Does not do a thorough validation of the state.
  */
-const shallowValidateOnDiskState = (projectId: string, s: OnDiskState) => {
+const shallowValidateOnDiskState = (projectId: ProjectId, s: OnDiskState) => {
   if (
     Array.isArray(s) ||
     s == null ||
@@ -94,7 +95,7 @@ const shallowValidateOnDiskState = (projectId: string, s: OnDiskState) => {
   }
 }
 
-const deepValidateOnDiskState = (projectId: string, s: OnDiskState) => {
+const deepValidateOnDiskState = (projectId: ProjectId, s: OnDiskState) => {
   shallowValidateOnDiskState(projectId, s)
   // @TODO do a deep validation here
 }

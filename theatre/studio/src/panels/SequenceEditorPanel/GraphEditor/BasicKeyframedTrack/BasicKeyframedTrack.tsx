@@ -25,7 +25,7 @@ export type ExtremumSpace = {
   lock(): VoidFn
 }
 
-const BasicKeyframedTrack: React.FC<{
+const BasicKeyframedTrack: React.VFC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
   sheetObject: SheetObject
   pathToProp: PathToProp
@@ -102,7 +102,7 @@ const BasicKeyframedTrack: React.FC<{
         sheetObject={sheetObject}
         trackId={trackId}
         isScalar={propConfig.type === 'number'}
-        key={'keyframe-' + kf.id}
+        key={kf.id}
         extremumSpace={cachedExtremumSpace.current}
         color={color}
       />

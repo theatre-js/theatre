@@ -13,7 +13,7 @@ import * as t from './index'
 
 export const propTypeSymbol = Symbol('TheatrePropType_Basic')
 
-export type IValidCompoundProps = {
+export type UnknownValidCompoundProps = {
   [K in string]: PropTypeConfig
 }
 
@@ -27,18 +27,19 @@ export type IValidCompoundProps = {
  * which would allow us to differentiate between values at runtime
  * (e.g. `val.type = "Rgba"` vs `val.type = "Compound"` etc)
  */
-type IShorthandProp =
+type UnknownShorthandProp =
   | string
   | number
   | boolean
   | PropTypeConfig
-  | IShorthandCompoundProps
+  | UnknownShorthandCompoundProps
 
-export type IShorthandCompoundProps = {
-  [K in string]: IShorthandProp
+/** Given an object like this, we have enough info to predict the compound prop */
+export type UnknownShorthandCompoundProps = {
+  [K in string]: UnknownShorthandProp
 }
 
-export type ShorthandPropToLonghandProp<P extends IShorthandProp> =
+export type ShorthandPropToLonghandProp<P extends UnknownShorthandProp> =
   P extends string
     ? PropTypeConfig_String
     : P extends number
@@ -47,12 +48,31 @@ export type ShorthandPropToLonghandProp<P extends IShorthandProp> =
     ? PropTypeConfig_Boolean
     : P extends PropTypeConfig
     ? P
-    : P extends IShorthandCompoundProps
+    : P extends UnknownShorthandCompoundProps
     ? PropTypeConfig_Compound<ShorthandCompoundPropsToLonghandCompoundProps<P>>
     : never
 
+export type ShorthandCompoundPropsToInitialValue<
+  P extends UnknownShorthandCompoundProps,
+> = LonghandCompoundPropsToInitialValue<
+  ShorthandCompoundPropsToLonghandCompoundProps<P>
+>
+
+type LonghandCompoundPropsToInitialValue<P extends UnknownValidCompoundProps> =
+  {
+    [K in keyof P]: P[K]['valueType']
+  }
+
+export type PropsValue<P> = P extends UnknownValidCompoundProps
+  ? LonghandCompoundPropsToInitialValue<P>
+  : P extends UnknownShorthandCompoundProps
+  ? LonghandCompoundPropsToInitialValue<
+      ShorthandCompoundPropsToLonghandCompoundProps<P>
+    >
+  : never
+
 export type ShorthandCompoundPropsToLonghandCompoundProps<
-  P extends IShorthandCompoundProps,
+  P extends UnknownShorthandCompoundProps,
 > = {
   [K in keyof P]: ShorthandPropToLonghandProp<P[K]>
 }
@@ -89,9 +109,9 @@ export function toLonghandProp(p: unknown): PropTypeConfig {
 }
 
 export function sanitizeCompoundProps(
-  props: IShorthandCompoundProps,
-): IValidCompoundProps {
-  const sanitizedProps: IValidCompoundProps = {}
+  props: UnknownShorthandCompoundProps,
+): UnknownValidCompoundProps {
+  const sanitizedProps: UnknownValidCompoundProps = {}
   if (process.env.NODE_ENV !== 'production') {
     if (typeof props !== 'object' || !props) {
       throw new InvalidArgumentError(

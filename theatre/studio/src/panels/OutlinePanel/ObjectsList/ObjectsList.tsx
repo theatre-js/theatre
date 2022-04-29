@@ -26,7 +26,7 @@ const ObjectsList: React.FC<{
               <ObjectItem
                 depth={depth}
                 key={'objectPath(' + objectPath + ')'}
-                sheetObject={object}
+                sheetObject={object!}
               />
             )
           })}

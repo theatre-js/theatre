@@ -1,17 +1,28 @@
 import type Project from '@theatre/core/projects/Project'
 import Sequence from '@theatre/core/sequences/Sequence'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import type {SheetObjectConfig} from '@theatre/core/sheets/TheatreSheet'
+import type {SheetObjectPropTypeConfig} from '@theatre/core/sheets/TheatreSheet'
 import TheatreSheet from '@theatre/core/sheets/TheatreSheet'
 import type {SheetAddress} from '@theatre/shared/utils/addresses'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {Atom, valueDerivation} from '@theatre/dataverse'
 import type SheetTemplate from './SheetTemplate'
+import type {ObjectAddressKey, SheetInstanceId} from '@theatre/shared/utils/ids'
+import type {StrictRecord} from '@theatre/shared/utils/types'
 
-type IObjects = {[key: string]: SheetObject}
+type SheetObjectMap = StrictRecord<ObjectAddressKey, SheetObject>
+
+/**
+ * Future: `nativeObject` Idea is to potentially allow the user to provide their own
+ * object in to the object call as a way to keep a handle to an underlying object via
+ * the {@link ISheetObject}.
+ *
+ * For example, a THREEjs object or an HTMLElement is passed in.
+ */
+export type ObjectNativeObject = unknown
 
 export default class Sheet {
-  private readonly _objects: Atom<IObjects> = new Atom<IObjects>({})
+  private readonly _objects: Atom<SheetObjectMap> =
+    new Atom<SheetObjectMap>({})
   private _sequence: undefined | Sequence
   readonly address: SheetAddress
   readonly publicApi: TheatreSheet
@@ -21,7 +32,7 @@ export default class Sheet {
 
   constructor(
     readonly template: SheetTemplate,
-    public readonly instanceId: string,
+    public readonly instanceId: SheetInstanceId,
   ) {
     this.project = template.project
     this.address = {
@@ -37,24 +48,24 @@ export default class Sheet {
    * with that of "an element."
    */
   createObject(
-    key: string,
-    nativeObject: unknown,
-    config: SheetObjectConfig<$IntentionalAny>,
+    objectKey: ObjectAddressKey,
+    nativeObject: ObjectNativeObject,
+    config: SheetObjectPropTypeConfig,
   ): SheetObject {
     const objTemplate = this.template.getObjectTemplate(
-      key,
+      objectKey,
       nativeObject,
       config,
     )
 
     const object = objTemplate.createInstance(this, nativeObject, config)
 
-    this._objects.setIn([key], object)
+    this._objects.setIn([objectKey], object)
 
     return object
   }
 
-  getObject(key: string): SheetObject | undefined {
+  getObject(key: ObjectAddressKey): SheetObject | undefined {
     return this._objects.getState()[key]
   }
 

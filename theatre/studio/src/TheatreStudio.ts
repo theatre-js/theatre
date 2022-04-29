@@ -16,6 +16,7 @@ import getStudio from './getStudio'
 import type React from 'react'
 import {debounce} from 'lodash-es'
 import type Sheet from '@theatre/core/sheets/Sheet'
+import type {PaneInstanceId, ProjectId} from '@theatre/shared/utils/ids'
 
 export interface ITransactionAPI {
   /**
@@ -116,7 +117,7 @@ export interface IExtension {
 
 export type PaneInstance<ClassName extends string> = {
   extensionId: string
-  instanceId: string
+  instanceId: PaneInstanceId
   definition: PaneClassDefinition
 }
 
@@ -471,10 +472,12 @@ export default class TheatreStudio implements IStudio {
   }
 
   destroyPane(paneId: string): void {
-    return getStudio().paneManager.destroyPane(paneId)
+    return getStudio().paneManager.destroyPane(paneId as PaneInstanceId)
   }
 
   createContentOfSaveFile(projectId: string): Record<string, unknown> {
-    return getStudio().createContentOfSaveFile(projectId) as $IntentionalAny
+    return getStudio().createContentOfSaveFile(
+      projectId as ProjectId,
+    ) as $IntentionalAny
   }
 }

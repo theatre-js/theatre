@@ -79,8 +79,8 @@ function useCaptureSelection(
 
           val(layoutP.selectionAtom).setState({current: undefined})
         },
-        onDrag(dx, dy, event) {
-          const state = ref.current!
+        onDrag(_dx, _dy, event) {
+          // const state = ref.current!
           const rect = containerNode!.getBoundingClientRect()
 
           const posInScaledSpace = event.clientX - rect.left
@@ -97,24 +97,12 @@ function useCaptureSelection(
           const selection = utils.boundsToSelection(layoutP, ref.current)
           val(layoutP.selectionAtom).setState({current: selection})
         },
-        onDragEnd(dragHappened) {
+        onDragEnd(_dragHappened) {
           ref.current = null
         },
       }
     }, [layoutP, containerNode, ref]),
   )
-
-  // useEffect(() => {
-  //   if (!containerNode) return
-  //   const onClick = () => {
-
-  //   }
-  //   containerNode.addEventListener('click', onClick)
-
-  //   return () => {
-  //     containerNode.removeEventListener('click', onClick)
-  //   }
-  // }, [containerNode])
 
   return state
 }
@@ -131,16 +119,11 @@ namespace utils {
     primitiveProp(layoutP, leaf, bounds, selection) {
       const {sheetObject, trackId} = leaf
       const trackData = val(
-        getStudio()!.atomP.historic.coreByProject[sheetObject.address.projectId]
+        getStudio().atomP.historic.coreByProject[sheetObject.address.projectId]
           .sheetsById[sheetObject.address.sheetId].sequence.tracksByObject[
           sheetObject.address.objectKey
         ].trackData[trackId],
       )!
-      const toCollect = trackData!.keyframes.filter(
-        (kf) =>
-          kf.position >= bounds.positions[0] &&
-          kf.position <= bounds.positions[1],
-      )
 
       for (const kf of trackData.keyframes) {
         if (kf.position <= bounds.positions[0]) continue

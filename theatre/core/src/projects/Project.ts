@@ -13,6 +13,11 @@ import type {ProjectState} from './store/storeTypes'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import globals from '@theatre/shared/globals'
+import type {
+  ProjectId,
+  SheetId,
+  SheetInstanceId,
+} from '@theatre/shared/utils/ids'
 
 export type Conf = Partial<{
   state: OnDiskState
@@ -44,7 +49,7 @@ export default class Project {
   type: 'Theatre_Project' = 'Theatre_Project'
 
   constructor(
-    id: string,
+    id: ProjectId,
     readonly config: Conf = {},
     readonly publicApi: TheatreProject,
   ) {
@@ -150,7 +155,10 @@ export default class Project {
     return this._readyDeferred.status === 'resolved'
   }
 
-  getOrCreateSheet(sheetId: string, instanceId: string = 'default'): Sheet {
+  getOrCreateSheet(
+    sheetId: SheetId,
+    instanceId: SheetInstanceId = 'default' as SheetInstanceId,
+  ): Sheet {
     let template = this._sheetTemplates.getState()[sheetId]
 
     if (!template) {

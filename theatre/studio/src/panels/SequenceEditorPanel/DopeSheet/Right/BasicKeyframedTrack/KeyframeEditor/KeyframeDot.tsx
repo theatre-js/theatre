@@ -92,7 +92,7 @@ const HitZone = styled.div`
 type IKeyframeDotProps = IKeyframeEditorProps
 
 /** The ◆ you can grab onto in "keyframe editor" (aka "dope sheet" in other programs) */
-const KeyframeDot: React.FC<IKeyframeDotProps> = (props) => {
+const KeyframeDot: React.VFC<IKeyframeDotProps> = (props) => {
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [isDragging] = useDragKeyframe(node, props)

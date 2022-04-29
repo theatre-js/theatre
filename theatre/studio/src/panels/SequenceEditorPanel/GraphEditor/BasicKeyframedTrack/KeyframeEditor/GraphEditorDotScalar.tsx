@@ -55,7 +55,7 @@ const HitZone = styled.circle`
 
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
-const GraphEditorDotScalar: React.FC<IProps> = (props) => {
+const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
   const [ref, node] = useRefAndState<SVGCircleElement | null>(null)
 
   const {index, trackData} = props

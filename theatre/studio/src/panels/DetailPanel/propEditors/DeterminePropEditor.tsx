@@ -9,15 +9,15 @@ import NumberPropEditor from './NumberPropEditor'
 import StringLiteralPropEditor from './StringLiteralPropEditor'
 import StringPropEditor from './StringPropEditor'
 import RgbaPropEditor from './RgbaPropEditor'
+import type {UnknownShorthandCompoundProps} from '@theatre/core/propTypes/internals'
 
 /**
  * Returns the PropTypeConfig by path. Assumes `path` is a valid prop path and that
  * it exists in obj.
  */
-export const getPropTypeByPointer = (
-  pointerToProp: SheetObject['propsP'],
-  obj: SheetObject,
-): PropTypeConfig => {
+export function getPropTypeByPointer<
+  Props extends UnknownShorthandCompoundProps,
+>(pointerToProp: SheetObject['propsP'], obj: SheetObject): PropTypeConfig {
   const rootConf = obj.template.config
 
   const p = getPointerParts(pointerToProp).path
@@ -67,7 +67,7 @@ type IPropEditorByPropType = {
     obj: SheetObject
     pointerToProp: Pointer<PropConfigByType<K>['valueType']>
     propConfig: PropConfigByType<K>
-    depth: number
+    visualIndentation: number
   }>
 }
 
@@ -81,12 +81,20 @@ const propEditorByPropType: IPropEditorByPropType = {
   rgba: RgbaPropEditor,
 }
 
-const DeterminePropEditor: React.FC<{
+export type IEditablePropertyProps<K extends PropTypeConfig['type']> = {
   obj: SheetObject
-  pointerToProp: SheetObject['propsP']
-  propConfig?: PropTypeConfig
-  depth: number
-}> = (p) => {
+  pointerToProp: Pointer<PropConfigByType<K>['valueType']>
+  propConfig: PropConfigByType<K>
+}
+
+type IDeterminePropEditorProps<K extends PropTypeConfig['type']> =
+  IEditablePropertyProps<K> & {
+    visualIndentation: number
+  }
+
+const DeterminePropEditor: React.FC<
+  IDeterminePropEditorProps<PropTypeConfig['type']>
+> = (p) => {
   const propConfig =
     p.propConfig ?? getPropTypeByPointer(p.pointerToProp, p.obj)
 
@@ -95,7 +103,7 @@ const DeterminePropEditor: React.FC<{
   return (
     <PropEditor
       obj={p.obj}
-      depth={p.depth}
+      visualIndentation={p.visualIndentation}
       // @ts-expect-error This is fine
       pointerToProp={p.pointerToProp}
       // @ts-expect-error This is fine

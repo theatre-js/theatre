@@ -33,6 +33,11 @@ const cachedSubPathPointersWeakMap = new WeakMap<
  * A wrapper type for the type a `Pointer` points to.
  */
 export type PointerType<O> = {
+  /**
+   * Only accessible via the type system.
+   * This is a helper for getting the underlying pointer type
+   * via the type space.
+   */
   $$__pointer_type: O
 }
 
@@ -53,21 +58,28 @@ export type PointerType<O> = {
  *
  * The current solution is to just avoid using `any` with pointer-related code (or type-test it well).
  * But if you enjoy solving typescript puzzles, consider fixing this :)
- *
+ * Potentially, [TypeScript variance annotations in 4.7+](https://devblogs.microsoft.com/typescript/announcing-typescript-4-7-beta/#optional-variance-annotations-for-type-parameters)
+ * might be able to help us.
  */
 export type Pointer<O> = PointerType<O> &
-  (O extends UnindexableTypesForPointer
-    ? UnindexablePointer
-    : unknown extends O
-    ? UnindexablePointer
-    : O extends (infer T)[]
-    ? Pointer<T>[]
-    : O extends {}
-    ? {
-        [K in keyof O]-?: Pointer<O[K]>
-      } /*&
-        {[K in string | number]: Pointer<K extends keyof O ? O[K] : undefined>}*/
-    : UnindexablePointer)
+  // `Exclude<O, undefined>` will remove `undefined` from the first type
+  // `undefined extends O ? undefined : never` will give us `undefined` if `O` is `... | undefined`
+  PointerInner<Exclude<O, undefined>, undefined extends O ? undefined : never>
+
+// By separating the `O` (non-undefined) from the `undefined` or `never`, we
+// can properly use `O extends ...` to determine the kind of potential value
+// without actually discarding optionality information.
+type PointerInner<O, Optional> = O extends UnindexableTypesForPointer
+  ? UnindexablePointer
+  : unknown extends O
+  ? UnindexablePointer
+  : O extends (infer T)[]
+  ? Pointer<T>[]
+  : O extends {}
+  ? {
+      [K in keyof O]-?: Pointer<O[K] | Optional>
+    }
+  : UnindexablePointer
 
 const pointerMetaSymbol = Symbol('pointerMeta')
 

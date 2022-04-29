@@ -20,6 +20,7 @@ import type * as _coreExports from '@theatre/core/coreExports'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
+import type {ProjectId} from '@theatre/shared/utils/ids'
 
 export type CoreExports = typeof _coreExports
 
@@ -27,10 +28,10 @@ export class Studio {
   readonly ui!: UI
   readonly publicApi: IStudio
   readonly address: {studioId: string}
-  readonly _projectsProxy: PointerProxy<Record<string, Project>> =
+  readonly _projectsProxy: PointerProxy<Record<ProjectId, Project>> =
     new PointerProxy(new Atom({}).pointer)
 
-  readonly projectsP: Pointer<Record<string, Project>> =
+  readonly projectsP: Pointer<Record<ProjectId, Project>> =
     this._projectsProxy.pointer
 
   private readonly _store = new StudioStore()
@@ -124,7 +125,7 @@ export class Studio {
     this._setProjectsP(coreBits.projectsP)
   }
 
-  private _setProjectsP(projectsP: Pointer<Record<string, Project>>) {
+  private _setProjectsP(projectsP: Pointer<Record<ProjectId, Project>>) {
     this._projectsProxy.setPointer(projectsP)
   }
 
@@ -218,6 +219,6 @@ export class Studio {
   }
 
   createContentOfSaveFile(projectId: string): OnDiskState {
-    return this._store.createContentOfSaveFile(projectId)
+    return this._store.createContentOfSaveFile(projectId as ProjectId)
   }
 }

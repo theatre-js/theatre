@@ -25,6 +25,8 @@ enum ValueTypes {
 export interface IdentityDerivationProvider {
   /**
    * @internal
+   * Future: We could consider using a `Symbol.for("dataverse/IdentityDerivationProvider")` as a key here, similar to
+   * how {@link Iterable} works for `of`.
    */
   readonly $$isIdentityDerivationProvider: true
   /**

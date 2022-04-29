@@ -4,18 +4,19 @@
 import {setupTestSheet} from '@theatre/shared/testUtils'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
 import {asKeyframeId, asSequenceTrackId} from '@theatre/shared/utils/ids'
+import type {ObjectAddressKey, SequenceTrackId} from '@theatre/shared/utils/ids'
 import {iterateOver, prism} from '@theatre/dataverse'
 import type {SheetState_Historic} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 describe(`SheetObject`, () => {
   describe('static overrides', () => {
     const setup = async (
-      staticOverrides: SheetState_Historic['staticOverrides']['byObject'][string] = {},
+      staticOverrides: SheetState_Historic['staticOverrides']['byObject'][ObjectAddressKey] = {},
     ) => {
       const {studio, objPublicAPI} = await setupTestSheet({
         staticOverrides: {
           byObject: {
-            obj: staticOverrides,
+            ['obj' as ObjectAddressKey]: staticOverrides,
           },
         },
       })
@@ -260,12 +261,12 @@ describe(`SheetObject`, () => {
           length: 20,
           subUnitsPerUnit: 30,
           tracksByObject: {
-            obj: {
+            ['obj' as ObjectAddressKey]: {
               trackIdByPropPath: {
                 [encodePathToProp(['position', 'y'])]: asSequenceTrackId('1'),
               },
               trackData: {
-                '1': {
+                ['1' as SequenceTrackId]: {
                   type: 'BasicKeyframedTrack',
                   keyframes: [
                     {

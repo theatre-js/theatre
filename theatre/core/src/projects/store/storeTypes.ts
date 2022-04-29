@@ -1,3 +1,4 @@
+import type {SheetId} from '@theatre/shared/utils/ids'
 import type {StrictRecord} from '@theatre/shared/utils/types'
 import type {SheetState_Historic} from './types/SheetState_Historic'
 
@@ -31,7 +32,7 @@ export interface ProjectEphemeralState {
  * at {@link StudioHistoricState.coreByProject}
  */
 export interface ProjectState_Historic {
-  sheetsById: StrictRecord<string, SheetState_Historic>
+  sheetsById: StrictRecord<SheetId, SheetState_Historic>
   /**
    * The last 50 revision IDs this state is based on, starting with the most recent one.
    * The most recent one is the revision ID of this state

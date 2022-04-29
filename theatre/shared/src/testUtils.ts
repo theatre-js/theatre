@@ -8,6 +8,7 @@ import * as t from '@theatre/core/propTypes'
 import getStudio from '@theatre/studio/getStudio'
 import coreTicker from '@theatre/core/coreTicker'
 import globals from './globals'
+import type {SheetId} from './utils/ids'
 /* eslint-enable no-restricted-syntax */
 
 const defaultProps = {
@@ -32,7 +33,7 @@ export async function setupTestSheet(sheetState: SheetState_Historic) {
   const projectState: ProjectState_Historic = {
     definitionVersion: globals.currentProjectStateDefinitionVersion,
     sheetsById: {
-      Sheet: sheetState,
+      ['Sheet' as SheetId]: sheetState,
     },
     revisionHistory: [],
   }

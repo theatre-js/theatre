@@ -6,11 +6,15 @@ import type {
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {ConstantDerivation, prism, val} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
+import type {SerializableValue} from '@theatre/shared/utils/types'
 import UnitBezier from 'timing-function/lib/UnitBezier'
 
+/** `left` and `right` are not necessarily the same type.  */
 export type InterpolationTriple = {
-  left: unknown
-  right?: unknown
+  /** `left` and `right` are not necessarily the same type.  */
+  left: SerializableValue
+  /** `left` and `right` are not necessarily the same type.  */
+  right?: SerializableValue
   progression: number
 }
 
@@ -75,10 +79,10 @@ function _forKeyframedTrack(
 
 const undefinedConstD = new ConstantDerivation(undefined)
 
-const updateState = (
+function updateState(
   progressionD: IDerivation<number>,
   track: BasicKeyframedTrack,
-): IStartedState => {
+): IStartedState {
   const progression = progressionD.getValue()
   if (track.keyframes.length === 0) {
     return {

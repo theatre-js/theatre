@@ -11,6 +11,14 @@ import type {StrictRecord} from '@theatre/shared/utils/types'
 import type Project from '@theatre/core/projects/Project'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import type {
+  ObjectAddressKey,
+  PaneInstanceId,
+  ProjectId,
+  SheetId,
+  SheetInstanceId,
+  UIPanelId,
+} from '@theatre/shared/utils/ids'
 
 export type PanelPosition = {
   edges: {
@@ -56,37 +64,55 @@ export type OutlineSelectionState =
 export type OutlineSelectable = Project | Sheet | SheetObject
 export type OutlineSelection = OutlineSelectable[]
 
-export type PanelInstanceDescriptor = {
-  instanceId: string
+export type PaneInstanceDescriptor = {
+  instanceId: PaneInstanceId
   paneClass: string
 }
 
-export type StudioHistoricState = {
-  projects: {
-    stateByProjectId: StrictRecord<
-      string,
-      {
-        stateBySheetId: StrictRecord<
-          string,
-          {
-            selectedInstanceId: undefined | string
-            sequenceEditor: {
-              selectedPropsByObject: StrictRecord<
-                string,
-                StrictRecord<PathToProp_Encoded, keyof typeof graphEditorColors>
-              >
-            }
-          }
-        >
-      }
+/**
+ * See parent {@link StudioHistoricStateProject}.
+ * See root {@link StudioHistoricState}
+ */
+export type StudioHistoricStateProjectSheet = {
+  selectedInstanceId: undefined | SheetInstanceId
+  sequenceEditor: {
+    selectedPropsByObject: StrictRecord<
+      ObjectAddressKey,
+      StrictRecord<PathToProp_Encoded, keyof typeof graphEditorColors>
     >
   }
+}
 
-  panels?: Panels
-  panelPositions?: {[panelIdOrPaneId in string]?: PanelPosition}
-  panelInstanceDesceriptors: {
-    [instanceId in string]?: PanelInstanceDescriptor
+/** See {@link StudioHistoricState} */
+export type StudioHistoricStateProject = {
+  stateBySheetId: StrictRecord<SheetId, StudioHistoricStateProjectSheet>
+}
+
+/**
+ * {@link StudioHistoricState} includes both studio and project data, and
+ * contains data changed for an undo/redo history.
+ *
+ * ## Internally
+ *
+ * We use immer `Draft`s to encapsulate this whole state to then be operated
+ * on by each transaction. The derived values from the store will also include
+ * the application of the "temp transactions" stack.
+ */
+export type StudioHistoricState = {
+  projects: {
+    stateByProjectId: StrictRecord<ProjectId, StudioHistoricStateProject>
   }
+
+  /** Panels can contain panes */
+  panels?: Panels
+  /** Panels can contain panes */
+  panelPositions?: {[panelId in UIPanelId]?: PanelPosition}
+  // This is misspelled, but I think some users are dependent on the exact shape of this stored JSON
+  // So, we cannot easily change it without providing backwards compatibility.
+  panelInstanceDesceriptors: StrictRecord<
+    PaneInstanceId,
+    PaneInstanceDescriptor
+  >
   autoKey: boolean
-  coreByProject: {[projectId in string]: ProjectState_Historic}
+  coreByProject: Record<ProjectId, ProjectState_Historic>
 }
