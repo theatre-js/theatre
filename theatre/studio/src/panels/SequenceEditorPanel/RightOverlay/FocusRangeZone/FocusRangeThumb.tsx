@@ -52,7 +52,7 @@ const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   }
 
   #pointer-root.normal & {
-    pointer-events: ${(props) => (props.enabled ? 'auto' : 'none')};
+    pointer-events: auto;
   }
 
   #pointer-root.draggingPositionInSequenceEditor & {

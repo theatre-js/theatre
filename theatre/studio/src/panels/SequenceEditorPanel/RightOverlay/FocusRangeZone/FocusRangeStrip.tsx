@@ -19,8 +19,8 @@ export const focusRangeStripTheme = {
     stroke: '#646568',
   },
   disabled: {
-    backgroundColor: '#282A2C',
-    stroke: '#646568',
+    backgroundColor: '#282a2cc5',
+    stroke: '#595a5d',
   },
   hover: {
     backgroundColor: '#34373D',
@@ -37,10 +37,14 @@ export const focusRangeStripTheme = {
 
 const stripWidth = 1000
 
-export const RangeStrip = styled.div`
+export const RangeStrip = styled.div<{enabled: boolean}>`
   position: absolute;
   height: ${() => topStripHeight - 1}px;
-  background-color: ${focusRangeStripTheme.enabled.backgroundColor};
+  background-color: ${(props) =>
+    props.enabled
+      ? focusRangeStripTheme.enabled.backgroundColor
+      : focusRangeStripTheme.disabled.backgroundColor};
+  cursor: grab;
   top: 0;
   left: 0;
   width: ${stripWidth}px;
@@ -123,14 +127,14 @@ const FocusRangeStrip: React.FC<{
     [layoutP],
   )
 
-  const sheet = val(layoutP.sheet)
-
   const [rangeStripRef, rangeStripNode] = useRefAndState<HTMLElement | null>(
     null,
   )
 
   const [contextMenu] = useContextMenu(rangeStripNode, {
     items: () => {
+      const sheet = val(layoutP.sheet)
+
       const existingRange = existingRangeD.getValue()
       return [
         {
@@ -173,6 +177,7 @@ const FocusRangeStrip: React.FC<{
 
   const scaledSpaceToUnitSpace = useVal(layoutP.scaledSpace.toUnitSpace)
   const [isDraggingRef, isDragging] = useRefAndState(false)
+  const sheet = useVal(layoutP.sheet)
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     let sequence = sheet.getSequence()
@@ -188,7 +193,7 @@ const FocusRangeStrip: React.FC<{
       onDragStart(event) {
         existingRange = existingRangeD.getValue()
 
-        if (existingRange?.enabled === true) {
+        if (existingRange) {
           startPosBeforeDrag = existingRange.range.start
           endPosBeforeDrag = existingRange.range.end
           dragHappened = false
@@ -201,7 +206,7 @@ const FocusRangeStrip: React.FC<{
       },
       onDrag(dx) {
         existingRange = existingRangeD.getValue()
-        if (existingRange?.enabled) {
+        if (existingRange) {
           dragHappened = true
           const deltaPos = scaledSpaceToUnitSpace(dx)
 
@@ -229,7 +234,7 @@ const FocusRangeStrip: React.FC<{
                   start: newStartPosition,
                   end: newEndPosition,
                 },
-                enabled: existingRange?.enabled || true,
+                enabled: existingRange?.enabled ?? true,
               },
             )
           })
@@ -237,7 +242,7 @@ const FocusRangeStrip: React.FC<{
       },
       onDragEnd() {
         isDraggingRef.current = false
-        if (existingRange?.enabled) {
+        if (existingRange) {
           if (dragHappened && tempTransaction !== undefined) {
             tempTransaction.commit()
           } else if (tempTransaction) {
@@ -279,33 +284,20 @@ const FocusRangeStrip: React.FC<{
       scaleX = (endX - startX) / stripWidth
     }
 
-    let conditionalStyleProps: {
-      background?: string
-      cursor?: string
-    } = {}
-
     if (!existingRange) return <></>
-
-    if (existingRange.enabled === false) {
-      conditionalStyleProps.background =
-        focusRangeStripTheme.disabled.backgroundColor
-      conditionalStyleProps.cursor = 'default'
-    } else {
-      conditionalStyleProps.cursor = 'grab'
-    }
 
     return (
       <>
         {contextMenu}
         <RangeStrip
           id="range-strip"
+          enabled={existingRange.enabled}
           className={`${isDragging ? 'dragging' : ''} ${
             existingRange.enabled ? 'enabled' : ''
           }`}
           ref={rangeStripRef as $IntentionalAny}
           style={{
             transform: `translateX(${translateX}px) scale(${scaleX}, 1)`,
-            ...conditionalStyleProps,
           }}
         />
       </>
