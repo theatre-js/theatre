@@ -9,7 +9,10 @@ import {
   topStripTheme,
 } from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {
+  lockedCursorCssPropName,
+  useCssCursorLock,
+} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo} from 'react'
@@ -19,10 +22,7 @@ import {
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {focusRangeStripTheme, RangeStrip} from './FocusRangeStrip'
-import SnapCursor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/SnapCursor.svg'
 import type Sheet from '@theatre/core/sheets/Sheet'
-
-const snapCursorSize = 42
 
 const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   position: absolute;
@@ -57,20 +57,7 @@ const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
 
   #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
-    cursor: none;
-
-    &:hover:after {
-      position: absolute;
-      top: calc(50% - ${snapCursorSize / 2}px);
-      left: calc(50% - ${snapCursorSize / 2}px);
-      width: ${snapCursorSize}px;
-      height: ${snapCursorSize}px;
-      display: block;
-      content: ' ';
-      background: url(${SnapCursor}) no-repeat;
-      background-size: cover;
-      z-index: 30;
-    }
+    cursor: var(${lockedCursorCssPropName});
   }
 
   &.dragging {
