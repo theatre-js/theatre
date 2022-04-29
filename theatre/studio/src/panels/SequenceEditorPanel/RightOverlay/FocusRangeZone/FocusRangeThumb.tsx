@@ -101,6 +101,38 @@ const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   }
 `
 
+/**
+ * This acts as a bit of a horizontal shadow that covers the frame numbers that show up
+ * right next to the thumb, making the appearance of the focus range more tidy.
+ */
+const ColoredMargin = styled.div<{type: 'start' | 'end'; enabled: boolean}>`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+
+  ${() => RangeStrip}.dragging ~ ${TheDiv} > & {
+    background: ${focusRangeStripTheme.dragging.backgroundColor};
+  }
+
+  background-color: ${({enabled}) =>
+    enabled
+      ? focusRangeStripTheme.enabled.backgroundColor
+      : focusRangeStripTheme.disabled.backgroundColor};
+
+  // highlight the handle if it's hovered, or the whole strip is hovverd
+  ${() => RangeStrip}:hover ~ ${TheDiv} > & {
+    background: ${focusRangeStripTheme.hover.backgroundColor};
+    stroke: ${focusRangeStripTheme.hover.stroke};
+  }
+
+  width: 8px;
+  left: ${(props) =>
+    props.type === 'start'
+      ? focusRangeStripTheme.thumbWidth
+      : -focusRangeStripTheme.thumbWidth}px;
+`
+
 const FocusRangeThumb: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
   thumbType: keyof IRange
@@ -264,6 +296,7 @@ const FocusRangeThumb: React.FC<{
           transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
         }}
       >
+        <ColoredMargin type={thumbType} enabled={enabled} />
         <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
           <line x1="4" y1="6" x2="4" y2="12" />
           <line x1="6" y1="6" x2="6" y2="12" />
