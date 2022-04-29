@@ -15,6 +15,22 @@ import styled from 'styled-components'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {focusRangeStripTheme} from './FocusRangeStrip'
 
+const dims = (size: number) => `
+  left: ${-size / 2}px;
+  width: ${size}px;
+  height: ${size}px;
+`
+
+const HitZone = styled.div<{type: 'start' | 'end'}>`
+  top: 0;
+  left: 0;
+  transform-origin: left top;
+  position: absolute;
+  z-index: 3;
+  cursor: ${(props) => (props.type === 'start' ? 'w-resize' : 'e-resize')};
+  ${dims(focusRangeStripTheme.hitZoneWidth)}
+`
+
 const startHandlerOffset = focusRangeStripTheme.hitZoneWidth / 2
 const endHandlerOffset = startHandlerOffset - focusRangeStripTheme.thumbWidth
 
@@ -26,29 +42,18 @@ const Handle = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   ${pointerEventsAutoInNormalMode};
   stroke: ${focusRangeStripTheme.enabled.stroke};
   user-select: none;
-  &:hover {
-    background: ${focusRangeStripTheme.highlight.backgroundColor};
-  }
 
-  background-color: transparent;
+  background-color: ${focusRangeStripTheme.enabled.backgroundColor};
 
   left: ${(props) =>
     props.type === 'start' ? startHandlerOffset : endHandlerOffset}px;
-`
 
-const dims = (size: number) => `
-  left: ${-size / 2}px;
-  width: ${size}px;
-  height: ${size}px;
-`
-
-const HitZone = styled.div`
-  top: 0;
-  left: 0;
-  transform-origin: left top;
-  position: absolute;
-  z-index: 3;
-  ${dims(focusRangeStripTheme.hitZoneWidth)}
+  &:hover,
+  ${HitZone}.dragging > &,
+  ${HitZone}:hover > & {
+    background: ${focusRangeStripTheme.highlight.backgroundColor};
+    stroke: ${focusRangeStripTheme.highlight.stroke};
+  }
 `
 
 const Tooltip = styled.div`
@@ -121,17 +126,7 @@ const FocusRangeThumb: React.FC<{
           focusRangeStripTheme.rangeStripMinWidth,
         )
 
-        if (handlerRef.current) {
-          originalBackground = handlerRef.current.style.background
-          originalStroke = handlerRef.current.style.stroke
-          handlerRef.current.style.background =
-            focusRangeStripTheme.highlight.backgroundColor
-          handlerRef.current.style.stroke =
-            focusRangeStripTheme.highlight.stroke
-          handlerRef.current.style
-          handlerRef.current.classList.add('dragging')
-          setIsDragging(true)
-        }
+        setIsDragging(true)
       },
       onDrag(dx, _, event) {
         dragHappened = true
@@ -198,15 +193,7 @@ const FocusRangeThumb: React.FC<{
       },
       onDragEnd() {
         if (handlerRef.current) {
-          handlerRef.current.classList.remove('dragging')
           setIsDragging(false)
-
-          if (originalBackground) {
-            handlerRef.current.style.background = originalBackground
-          }
-          if (originalBackground) {
-            handlerRef.current.style.stroke = originalStroke
-          }
         }
         if (dragHappened && tempTransaction !== undefined) {
           tempTransaction.commit()
@@ -253,9 +240,10 @@ const FocusRangeThumb: React.FC<{
         <HitZone
           ref={hitZoneRef as $IntentionalAny}
           data-pos={position.toFixed(3)}
+          className={`${isDragging && 'dragging'}`}
+          type={thumbType}
           style={{
             transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
-            cursor: thumbType === 'start' ? 'w-resize' : 'e-resize',
           }}
         >
           <Handle
@@ -276,7 +264,7 @@ const FocusRangeThumb: React.FC<{
     ) : (
       <></>
     )
-  }, [layoutP, hitZoneRef, existingRangeD, focusRangeEnabled])
+  }, [layoutP, hitZoneRef, existingRangeD, focusRangeEnabled, isDragging])
 }
 
 export default FocusRangeThumb
