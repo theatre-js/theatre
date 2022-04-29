@@ -112,25 +112,32 @@ const ColoredMargin = styled.div<{type: 'start' | 'end'; enabled: boolean}>`
   pointer-events: none;
 
   ${() => RangeStrip}.dragging ~ ${TheDiv} > & {
-    background: ${focusRangeStripTheme.dragging.backgroundColor};
+    --bg: ${focusRangeStripTheme.dragging.backgroundColor};
   }
 
-  background-color: ${({enabled}) =>
+  --bg: ${({enabled}) =>
     enabled
       ? focusRangeStripTheme.enabled.backgroundColor
       : focusRangeStripTheme.disabled.backgroundColor};
 
   // highlight the handle if it's hovered, or the whole strip is hovverd
   ${() => RangeStrip}:hover ~ ${TheDiv} > & {
-    background: ${focusRangeStripTheme.hover.backgroundColor};
-    stroke: ${focusRangeStripTheme.hover.stroke};
+    --bg: ${focusRangeStripTheme.hover.backgroundColor};
   }
 
-  width: 8px;
+  background: linear-gradient(
+    ${(props) => (props.type === 'start' ? 90 : -90)}deg,
+    var(--bg) 0%,
+    #ffffff00 100%
+  );
+
+  width: 12px;
   left: ${(props) =>
     props.type === 'start'
       ? focusRangeStripTheme.thumbWidth
-      : -focusRangeStripTheme.thumbWidth}px;
+      : // pushing the right-side thumb's margin 1px to the right to make sure there is no space
+        // between it and the thumb
+        -focusRangeStripTheme.thumbWidth + 1}px;
 `
 
 const FocusRangeThumb: React.FC<{
