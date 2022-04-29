@@ -57,6 +57,7 @@ const HitZone = styled.div`
 
   #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
+    cursor: none;
     &:hover:after {
       position: absolute;
       top: calc(50% - ${snapCursorSize / 2}px);
