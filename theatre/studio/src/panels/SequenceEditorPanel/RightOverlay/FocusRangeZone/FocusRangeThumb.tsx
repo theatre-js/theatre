@@ -9,7 +9,7 @@ import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {
   attributeNameThatLocksFramestamp,
@@ -20,24 +20,27 @@ import SnapCursor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Rig
 
 const snapCursorSize = 42
 
-const dims = (size: number) => `
-  left: ${-size / 2}px;
-  width: ${size}px;
-  height: ${size}px;
-`
-
-const HitZone = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
+const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   top: 0;
   left: 0;
   transform-origin: left top;
   position: absolute;
   z-index: 3;
   cursor: ${(props) => (props.type === 'start' ? 'w-resize' : 'e-resize')};
+
+  &:before {
+    display: block;
+    content: ' ';
+    position: absolute;
+    inset: -8px;
+  }
+
   // no pointer events unless pointer-root is in normal mode _and_ the
   // focus range is enabled
   #pointer-root & {
     pointer-events: none;
   }
+
   #pointer-root.normal & {
     pointer-events: ${(props) => (props.enabled ? 'auto' : 'none')};
   }
@@ -64,14 +67,6 @@ const HitZone = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
     pointer-events: none !important;
   }
 
-  ${dims(focusRangeStripTheme.hitZoneWidth)}
-`
-
-const startHandlerOffset = focusRangeStripTheme.hitZoneWidth / 2
-const endHandlerOffset = startHandlerOffset - focusRangeStripTheme.thumbWidth
-
-const Handle = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
-  content: ' ';
   width: ${focusRangeStripTheme.thumbWidth}px;
   height: ${() => topStripHeight - 1}px;
   position: absolute;
@@ -83,20 +78,24 @@ const Handle = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
       ? focusRangeStripTheme.enabled.backgroundColor
       : focusRangeStripTheme.disabled.backgroundColor};
 
+  // the right handle has to be pulled back by its width since its right side indicates its position, not its left side
   left: ${(props) =>
-    props.type === 'start' ? startHandlerOffset : endHandlerOffset}px;
+    props.type === 'start' ? 0 : -focusRangeStripTheme.thumbWidth}px;
 
-  ${HitZone}.dragging > &, ${() => RangeStrip}.dragging ~ ${HitZone} > & {
+  // highlight the handle when it's being dragged or the whole strip is being dragged
+  &.dragging,
+  ${() => RangeStrip}.dragging ~ & {
     background: ${focusRangeStripTheme.dragging.backgroundColor};
     stroke: ${focusRangeStripTheme.dragging.stroke};
   }
 
-  #pointer-root.draggingPositionInSequenceEditor ${HitZone}:hover > & {
+  #pointer-root.draggingPositionInSequenceEditor &:hover {
     background: ${focusRangeStripTheme.dragging.backgroundColor};
     stroke: #40aaa4;
   }
 
-  ${() => RangeStrip}:hover ~ ${HitZone} > &, ${HitZone}:hover > & {
+  // highlight the handle if it's hovered, or the whole strip is hovverd
+  ${() => RangeStrip}:hover ~ &, &:hover {
     background: ${focusRangeStripTheme.hover.backgroundColor};
     stroke: ${focusRangeStripTheme.hover.stroke};
   }
@@ -107,8 +106,6 @@ const FocusRangeThumb: React.FC<{
   thumbType: keyof IRange
 }> = ({layoutP, thumbType}) => {
   const [hitZoneRef, hitZoneNode] = useRefAndState<HTMLElement | null>(null)
-  const handlerRef = useRef<HTMLElement | null>(null)
-  const [isDragging, setIsDragging] = useState<boolean>(false)
 
   const existingRangeD = useMemo(
     () =>
@@ -135,9 +132,6 @@ const FocusRangeThumb: React.FC<{
     let focusRangeEnabled: boolean
     let posBeforeDrag = range[thumbType]
     let tempTransaction: CommitOrDiscard | undefined
-    let dragHappened = false
-    let originalBackground: string
-    let originalStroke: string
     let minFocusRangeStripWidth: number
 
     return {
@@ -147,17 +141,13 @@ const FocusRangeThumb: React.FC<{
           enabled: false,
         }
         focusRangeEnabled = existingRange.enabled
-        dragHappened = false
         sequence = val(layoutP.sheet).getSequence()
         posBeforeDrag = existingRange.range[thumbType]
         minFocusRangeStripWidth = scaledSpaceToUnitSpace(
           focusRangeStripTheme.rangeStripMinWidth,
         )
-
-        setIsDragging(true)
       },
       onDrag(dx, _, event) {
-        dragHappened = true
         range = existingRangeD.getValue()?.range || defaultRange
 
         const deltaPos = scaledSpaceToUnitSpace(dx)
@@ -219,10 +209,7 @@ const FocusRangeThumb: React.FC<{
           )
         })
       },
-      onDragEnd() {
-        if (handlerRef.current) {
-          setIsDragging(false)
-        }
+      onDragEnd(dragHappened) {
         if (dragHappened && tempTransaction !== undefined) {
           tempTransaction.commit()
         } else if (tempTransaction) {
@@ -233,7 +220,7 @@ const FocusRangeThumb: React.FC<{
     }
   }, [sheet, scaledSpaceToUnitSpace])
 
-  useDrag(hitZoneNode, gestureHandlers)
+  const [isDragging] = useDrag(hitZoneNode, gestureHandlers)
 
   useCssCursorLock(
     isDragging,
@@ -245,12 +232,9 @@ const FocusRangeThumb: React.FC<{
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
-    const defaultRange = {
-      range: {start: 0, end: sequence.length},
-      enabled: false,
-    }
-    const position =
-      existingRange?.range[thumbType] || defaultRange.range[thumbType]
+    if (!existingRange) return null
+
+    const position = existingRange.range[thumbType]
 
     let posInClippedSpace: number = val(layoutP.clippedSpace.fromUnitSpace)(
       position,
@@ -260,38 +244,28 @@ const FocusRangeThumb: React.FC<{
       posInClippedSpace < 0 ||
       val(layoutP.clippedSpace.width) < posInClippedSpace
     ) {
-      posInClippedSpace = -1000
+      posInClippedSpace = -10000
     }
 
-    return existingRange !== undefined ? (
-      <>
-        <HitZone
-          ref={hitZoneRef as $IntentionalAny}
-          data-pos={position.toFixed(3)}
-          {...{
-            [attributeNameThatLocksFramestamp]: position.toFixed(3),
-          }}
-          className={`${isDragging && 'dragging'}`}
-          enabled={enabled}
-          type={thumbType}
-          style={{
-            transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
-          }}
-        >
-          <Handle
-            enabled={enabled}
-            type={thumbType}
-            ref={handlerRef as $IntentionalAny}
-          >
-            <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
-              <line x1="4" y1="6" x2="4" y2="12" />
-              <line x1="6" y1="6" x2="6" y2="12" />
-            </svg>
-          </Handle>
-        </HitZone>
-      </>
-    ) : (
-      <></>
+    return (
+      <TheDiv
+        ref={hitZoneRef as $IntentionalAny}
+        data-pos={position.toFixed(3)}
+        {...{
+          [attributeNameThatLocksFramestamp]: position.toFixed(3),
+        }}
+        className={`${isDragging && 'dragging'} ${enabled && 'enabled'}`}
+        enabled={enabled}
+        type={thumbType}
+        style={{
+          transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
+        }}
+      >
+        <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
+          <line x1="4" y1="6" x2="4" y2="12" />
+          <line x1="6" y1="6" x2="6" y2="12" />
+        </svg>
+      </TheDiv>
     )
   }, [layoutP, hitZoneRef, existingRangeD, enabled, isDragging])
 }
