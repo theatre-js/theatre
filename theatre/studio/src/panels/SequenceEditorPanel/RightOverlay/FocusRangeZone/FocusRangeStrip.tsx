@@ -37,7 +37,7 @@ export const focusRangeStripTheme = {
 
 const stripWidth = 1000
 
-const RangeStrip = styled.div`
+export const RangeStrip = styled.div`
   position: absolute;
   height: ${() => topStripHeight - 1}px;
   background-color: ${focusRangeStripTheme.enabled.backgroundColor};

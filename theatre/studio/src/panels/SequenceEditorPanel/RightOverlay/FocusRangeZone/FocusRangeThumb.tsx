@@ -13,7 +13,7 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {focusRangeStripTheme} from './FocusRangeStrip'
+import {focusRangeStripTheme, RangeStrip} from './FocusRangeStrip'
 
 const dims = (size: number) => `
   left: ${-size / 2}px;
@@ -59,12 +59,12 @@ const Handle = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   left: ${(props) =>
     props.type === 'start' ? startHandlerOffset : endHandlerOffset}px;
 
-  ${HitZone}.dragging > & {
+  ${HitZone}.dragging > &, ${() => RangeStrip}.dragging ~ ${HitZone} > & {
     background: ${focusRangeStripTheme.dragging.backgroundColor};
     stroke: ${focusRangeStripTheme.dragging.stroke};
   }
 
-  ${HitZone}:hover > & {
+  ${() => RangeStrip}:hover ~ ${HitZone} > &, ${HitZone}:hover > & {
     background: ${focusRangeStripTheme.hover.backgroundColor};
     stroke: ${focusRangeStripTheme.hover.stroke};
   }
