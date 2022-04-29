@@ -17,23 +17,30 @@ import {
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {focusRangeStripTheme, RangeStrip} from './FocusRangeStrip'
 import SnapCursor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/SnapCursor.svg'
+import type Sheet from '@theatre/core/sheets/Sheet'
 
 const snapCursorSize = 42
 
 const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
-  top: 0;
-  left: 0;
-  transform-origin: left top;
   position: absolute;
+  top: 0;
+  // the right handle has to be pulled back by its width since its right side indicates its position, not its left side
+  left: ${(props) =>
+    props.type === 'start' ? 0 : -focusRangeStripTheme.thumbWidth}px;
+  transform-origin: left top;
+  width: ${focusRangeStripTheme.thumbWidth}px;
+  height: ${() => topStripHeight - 1}px;
   z-index: 3;
-  cursor: ${(props) => (props.type === 'start' ? 'w-resize' : 'e-resize')};
 
-  &:before {
-    display: block;
-    content: ' ';
-    position: absolute;
-    inset: -8px;
-  }
+  background-color: ${({enabled}) =>
+    enabled
+      ? focusRangeStripTheme.enabled.backgroundColor
+      : focusRangeStripTheme.disabled.backgroundColor};
+
+  stroke: ${focusRangeStripTheme.enabled.stroke};
+  user-select: none;
+
+  cursor: ${(props) => (props.type === 'start' ? 'w-resize' : 'e-resize')};
 
   // no pointer events unless pointer-root is in normal mode _and_ the
   // focus range is enabled
@@ -67,21 +74,6 @@ const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
     pointer-events: none !important;
   }
 
-  width: ${focusRangeStripTheme.thumbWidth}px;
-  height: ${() => topStripHeight - 1}px;
-  position: absolute;
-  stroke: ${focusRangeStripTheme.enabled.stroke};
-  user-select: none;
-
-  background-color: ${({enabled}) =>
-    enabled
-      ? focusRangeStripTheme.enabled.backgroundColor
-      : focusRangeStripTheme.disabled.backgroundColor};
-
-  // the right handle has to be pulled back by its width since its right side indicates its position, not its left side
-  left: ${(props) =>
-    props.type === 'start' ? 0 : -focusRangeStripTheme.thumbWidth}px;
-
   // highlight the handle when it's being dragged or the whole strip is being dragged
   &.dragging,
   ${() => RangeStrip}.dragging ~ & {
@@ -98,6 +90,14 @@ const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   ${() => RangeStrip}:hover ~ &, &:hover {
     background: ${focusRangeStripTheme.hover.backgroundColor};
     stroke: ${focusRangeStripTheme.hover.stroke};
+  }
+
+  // a larger hit zone
+  &:before {
+    display: block;
+    content: ' ';
+    position: absolute;
+    inset: -8px;
   }
 `
 
@@ -120,29 +120,29 @@ const FocusRangeThumb: React.FC<{
     [layoutP],
   )
 
-  const sheet = val(layoutP.sheet)
-  const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-  let sequence = sheet.getSequence()
-
-  const enabled = existingRangeD.getValue()?.enabled || false
-
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    const defaultRange = {start: 0, end: sequence.length}
-    let range = existingRangeD.getValue()?.range || defaultRange
+    let defaultRange: IRange
+    let range: IRange
     let focusRangeEnabled: boolean
-    let posBeforeDrag = range[thumbType]
+    let posBeforeDrag: number
     let tempTransaction: CommitOrDiscard | undefined
     let minFocusRangeStripWidth: number
+    let sheet: Sheet
+    let scaledSpaceToUnitSpace: (s: number) => number
 
     return {
       onDragStart() {
+        sheet = val(layoutP.sheet)
+        const sequence = sheet.getSequence()
+        defaultRange = {start: 0, end: sequence.length}
         let existingRange = existingRangeD.getValue() || {
           range: defaultRange,
           enabled: false,
         }
         focusRangeEnabled = existingRange.enabled
-        sequence = val(layoutP.sheet).getSequence()
+
         posBeforeDrag = existingRange.range[thumbType]
+        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
         minFocusRangeStripWidth = scaledSpaceToUnitSpace(
           focusRangeStripTheme.rangeStripMinWidth,
         )
@@ -171,7 +171,7 @@ const FocusRangeThumb: React.FC<{
               oldPosPlusDeltaPos,
               range['start'] + minFocusRangeStripWidth,
             ),
-            sequence.length,
+            sheet.getSequence().length,
           )
         }
 
@@ -193,7 +193,9 @@ const FocusRangeThumb: React.FC<{
           }
         }
 
-        const newPositionInFrame = sequence.closestGridPosition(newPosition)
+        const newPositionInFrame = sheet
+          .getSequence()
+          .closestGridPosition(newPosition)
 
         if (tempTransaction !== undefined) {
           tempTransaction.discard()
@@ -218,7 +220,7 @@ const FocusRangeThumb: React.FC<{
       },
       lockCursorTo: thumbType === 'start' ? 'w-resize' : 'e-resize',
     }
-  }, [sheet, scaledSpaceToUnitSpace])
+  }, [layoutP])
 
   const [isDragging] = useDrag(hitZoneNode, gestureHandlers)
 
@@ -233,6 +235,7 @@ const FocusRangeThumb: React.FC<{
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
     if (!existingRange) return null
+    const {enabled} = existingRange
 
     const position = existingRange.range[thumbType]
 
@@ -267,7 +270,7 @@ const FocusRangeThumb: React.FC<{
         </svg>
       </TheDiv>
     )
-  }, [layoutP, hitZoneRef, existingRangeD, enabled, isDragging])
+  }, [layoutP, hitZoneRef, existingRangeD, isDragging])
 }
 
 export default FocusRangeThumb
