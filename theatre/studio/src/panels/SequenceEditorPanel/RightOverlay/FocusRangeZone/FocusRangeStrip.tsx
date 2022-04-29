@@ -20,16 +20,15 @@ export const focusRangeStripTheme = {
   },
   disabled: {
     backgroundColor: '#282A2C',
+    stroke: '#646568',
   },
-  playing: {
-    backgroundColor: 'red',
-  },
-  highlight: {
+  hover: {
     backgroundColor: '#34373D',
     stroke: '#C8CAC0',
   },
   dragging: {
     backgroundColor: '#3F444A',
+    stroke: '#C8CAC0',
   },
   thumbWidth: 9,
   hitZoneWidth: 26,
@@ -47,7 +46,7 @@ const RangeStrip = styled.div`
   width: ${stripWidth}px;
   transform-origin: left top;
   &:hover {
-    background-color: ${focusRangeStripTheme.highlight.backgroundColor};
+    background-color: ${focusRangeStripTheme.hover.backgroundColor};
   }
   &.dragging {
     background-color: ${focusRangeStripTheme.dragging.backgroundColor};
@@ -68,6 +67,7 @@ const RangeStrip = styled.div`
     right: 0;
     background: transparent;
     pointer-events: normal;
+    z-index: -1;
   }
 `
 

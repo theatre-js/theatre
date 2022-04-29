@@ -21,13 +21,22 @@ const dims = (size: number) => `
   height: ${size}px;
 `
 
-const HitZone = styled.div<{type: 'start' | 'end'}>`
+const HitZone = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   top: 0;
   left: 0;
   transform-origin: left top;
   position: absolute;
   z-index: 3;
   cursor: ${(props) => (props.type === 'start' ? 'w-resize' : 'e-resize')};
+  // no pointer events unless pointer-root is in normal mode _and_ the
+  // focus range is enabled
+  #pointer-root & {
+    pointer-events: none;
+  }
+  #pointer-root.normal & {
+    pointer-events: ${(props) => (props.enabled ? 'auto' : 'none')};
+  }
+
   ${dims(focusRangeStripTheme.hitZoneWidth)}
 `
 
@@ -39,20 +48,25 @@ const Handle = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   width: ${focusRangeStripTheme.thumbWidth}px;
   height: ${() => topStripHeight - 1}px;
   position: absolute;
-  ${pointerEventsAutoInNormalMode};
   stroke: ${focusRangeStripTheme.enabled.stroke};
   user-select: none;
 
-  background-color: ${focusRangeStripTheme.enabled.backgroundColor};
+  background-color: ${({enabled}) =>
+    enabled
+      ? focusRangeStripTheme.enabled.backgroundColor
+      : focusRangeStripTheme.disabled.backgroundColor};
 
   left: ${(props) =>
     props.type === 'start' ? startHandlerOffset : endHandlerOffset}px;
 
-  &:hover,
-  ${HitZone}.dragging > &,
+  ${HitZone}.dragging > & {
+    background: ${focusRangeStripTheme.dragging.backgroundColor};
+    stroke: ${focusRangeStripTheme.dragging.stroke};
+  }
+
   ${HitZone}:hover > & {
-    background: ${focusRangeStripTheme.highlight.backgroundColor};
-    stroke: ${focusRangeStripTheme.highlight.stroke};
+    background: ${focusRangeStripTheme.hover.backgroundColor};
+    stroke: ${focusRangeStripTheme.hover.stroke};
   }
 `
 
@@ -99,7 +113,7 @@ const FocusRangeThumb: React.FC<{
   const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
   let sequence = sheet.getSequence()
 
-  const focusRangeEnabled = existingRangeD.getValue()?.enabled || false
+  const enabled = existingRangeD.getValue()?.enabled || false
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     const defaultRange = {start: 0, end: sequence.length}
@@ -241,13 +255,14 @@ const FocusRangeThumb: React.FC<{
           ref={hitZoneRef as $IntentionalAny}
           data-pos={position.toFixed(3)}
           className={`${isDragging && 'dragging'}`}
+          enabled={enabled}
           type={thumbType}
           style={{
             transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
           }}
         >
           <Handle
-            enabled={focusRangeEnabled}
+            enabled={enabled}
             type={thumbType}
             ref={handlerRef as $IntentionalAny}
           >
@@ -264,7 +279,7 @@ const FocusRangeThumb: React.FC<{
     ) : (
       <></>
     )
-  }, [layoutP, hitZoneRef, existingRangeD, focusRangeEnabled, isDragging])
+  }, [layoutP, hitZoneRef, existingRangeD, enabled, isDragging])
 }
 
 export default FocusRangeThumb
