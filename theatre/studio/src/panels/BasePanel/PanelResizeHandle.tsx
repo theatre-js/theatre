@@ -14,10 +14,7 @@ const Base = styled.div`
   ${pointerEventsAutoInNormalMode};
   &:after {
     position: absolute;
-    top: -2px;
-    right: -2px;
-    bottom: -2px;
-    left: -2px;
+    inset: -5px;
     display: block;
     content: ' ';
   }
