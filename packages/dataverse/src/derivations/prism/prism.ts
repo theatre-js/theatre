@@ -121,7 +121,7 @@ class PrismScope {
 }
 
 function cleanupScopeStack(scope: PrismScope) {
-  for (const [_, sub] of Object.entries(scope.subs)) {
+  for (const sub of Object.values(scope.subs)) {
     cleanupScopeStack(sub)
   }
   cleanupEffects(scope)
@@ -130,8 +130,7 @@ function cleanupScopeStack(scope: PrismScope) {
 function cleanupEffects(scope: PrismScope) {
   const effects = effectsWeakMap.get(scope)
   if (effects) {
-    for (const k of Object.keys(effects)) {
-      const effect = effects[k]
+    for (const effect of effects.values()) {
       safelyRun(effect.cleanup, undefined)
     }
   }
@@ -141,35 +140,34 @@ function cleanupEffects(scope: PrismScope) {
 function safelyRun<T, U>(
   fn: () => T,
   returnValueInCaseOfError: U,
-): {success: boolean; returnValue: T | U} {
-  let returnValue: T | U = returnValueInCaseOfError
-  let success = false
+): {ok: true; value: T} | {ok: false; value: U} {
   try {
-    returnValue = fn()
-    success = true
+    return {value: fn(), ok: true}
   } catch (error) {
-    setTimeout(() => {
+    // Naming this function can allow the error reporter additional context to the user on where this error came from
+    setTimeout(function PrismReportThrow() {
+      // ensure that the error gets reported, but does not crash the current execution scope
       throw error
     })
+    return {value: returnValueInCaseOfError, ok: false}
   }
-  return {success, returnValue}
 }
 
 const hookScopeStack = new Stack<PrismScope>()
 
-const refsWeakMap = new WeakMap<PrismScope, Record<string, IRef<unknown>>>()
+const refsWeakMap = new WeakMap<PrismScope, Map<string, IRef<unknown>>>()
 
 type IRef<T> = {
   current: T
 }
-const effectsWeakMap = new WeakMap<PrismScope, Record<string, IEffect>>()
+const effectsWeakMap = new WeakMap<PrismScope, Map<string, IEffect>>()
 
 type IEffect = {
   deps: undefined | unknown[]
   cleanup: VoidFn
 }
 
-const memosWeakMap = new WeakMap<PrismScope, Record<string, IMemo>>()
+const memosWeakMap = new WeakMap<PrismScope, Map<string, IMemo>>()
 
 type IMemo = {
   deps: undefined | unknown[] | ReadonlyArray<unknown>
@@ -182,29 +180,29 @@ function ref<T>(key: string, initialValue: T): IRef<T> {
     throw new Error(`prism.ref() is called outside of a prism() call.`)
   }
   let refs = refsWeakMap.get(scope)
-  if (!refs) {
-    refs = {}
+  if (refs === undefined) {
+    refs = new Map()
     refsWeakMap.set(scope, refs)
   }
 
-  if (refs[key]) {
-    return refs[key] as $IntentionalAny as IRef<T>
+  let ref = refs.get(key)
+  if (ref !== undefined) {
+    return ref as $IntentionalAny as IRef<T>
   } else {
-    const ref: IRef<T> = {
+    const ref = {
       current: initialValue,
     }
-    refs[key] = ref
+    refs.set(key, ref)
     return ref
   }
 }
 
 /**
- * An effect hook, similar to react's `useEffect()`.
+ * An effect hook, similar to React's `useEffect()`, but is not sensitive to call order by using `key`.
  *
  * @param key - the key for the effect. Should be uniqe inside of the prism.
- * @param cb - the callback  function. Optionally returns a cleanup function.
+ * @param cb - the callback function. Requires returning a cleanup function.
  * @param deps - the dependency array
- *
  */
 function effect(key: string, cb: () => () => void, deps?: unknown[]): void {
   const scope = hookScopeStack.peek()
@@ -213,24 +211,25 @@ function effect(key: string, cb: () => () => void, deps?: unknown[]): void {
   }
   let effects = effectsWeakMap.get(scope)
 
-  if (!effects) {
-    effects = {}
+  if (effects === undefined) {
+    effects = new Map()
     effectsWeakMap.set(scope, effects)
   }
 
-  if (!effects[key]) {
-    effects[key] = {
+  let effect = effects.get(key)
+  if (effect === undefined) {
+    effect = {
       cleanup: voidFn,
-      deps: [{}],
+      deps: undefined,
     }
+    effects.set(key, effect)
   }
 
-  const effect = effects[key]
   if (depsHaveChanged(effect.deps, deps)) {
     effect.cleanup()
 
     startIgnoringDependencies()
-    effect.cleanup = safelyRun(cb, voidFn).returnValue
+    effect.cleanup = safelyRun(cb, voidFn).value
     stopIgnoringDependencies()
     effect.deps = deps
   }
@@ -242,13 +241,26 @@ function depsHaveChanged(
 ): boolean {
   if (oldDeps === undefined || newDeps === undefined) {
     return true
-  } else if (oldDeps.length !== newDeps.length) {
-    return true
-  } else {
-    return oldDeps.some((el, i) => el !== newDeps[i])
   }
+
+  const len = oldDeps.length
+  if (len !== newDeps.length) return true
+
+  for (let i = 0; i < len; i++) {
+    if (oldDeps[i] !== newDeps[i]) return true
+  }
+
+  return false
 }
 
+/**
+ * Store a value to this {@link prism} stack.
+ *
+ * Unlike hooks seen in popular frameworks like React, you provide an exact `key` so
+ * we can call `prism.memo` in any order, and conditionally.
+ *
+ * @param deps - Passing in `undefined` will always cause a recompute
+ */
 function memo<T>(
   key: string,
   fn: () => T,
@@ -262,22 +274,24 @@ function memo<T>(
   let memos = memosWeakMap.get(scope)
 
   if (!memos) {
-    memos = {}
+    memos = new Map()
     memosWeakMap.set(scope, memos)
   }
 
-  if (!memos[key]) {
-    memos[key] = {
+  let memo = memos.get(key)
+  if (memo === undefined) {
+    memo = {
       cachedValue: null,
-      deps: [{}],
+      // undefined will always indicate "deps have changed", so we set it's initial value as such
+      deps: undefined,
     }
+    memos.set(key, memo)
   }
 
-  const memo = memos[key]
   if (depsHaveChanged(memo.deps, deps)) {
     startIgnoringDependencies()
 
-    memo.cachedValue = safelyRun(fn, undefined).returnValue
+    memo.cachedValue = safelyRun(fn, undefined).value
     stopIgnoringDependencies()
     memo.deps = deps
   }
@@ -368,7 +382,7 @@ function scope<T>(key: string, fn: () => T): T {
   }
   const subScope = parentScope.sub(key)
   hookScopeStack.push(subScope)
-  const ret = safelyRun(fn, undefined).returnValue
+  const ret = safelyRun(fn, undefined).value
   hookScopeStack.pop()
   return ret as $IntentionalAny as T
 }
