@@ -7,6 +7,7 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
 import onPointerOutside from '@theatre/studio/uiComponents/onPointerOutside'
 import noop from '@theatre/shared/utils/noop'
+import {clamp} from 'lodash-es'
 
 const minimumDistanceOfArrowToEdgeOfPopover = 8
 
@@ -20,6 +21,10 @@ const TooltipWrapper: React.FC<{
   }
   verticalPlacement?: 'top' | 'bottom' | 'overlay'
   verticalGap?: number
+  minX?: number
+  maxX?: number
+  minY?: number
+  maxY?: number
 }> = (props) => {
   const originalElement = props.children()
   const [ref, container] = useRefAndState<HTMLElement | SVGElement | null>(null)
@@ -98,7 +103,16 @@ const TooltipWrapper: React.FC<{
       arrowStyle.left = arrowLeft + 'px'
     }
 
-    const pos = {left, top}
+    const {
+      minX = -Infinity,
+      maxX = Infinity,
+      minY = -Infinity,
+      maxY = Infinity,
+    } = props
+    const pos = {
+      left: clamp(left, minX, maxX - containerRect.width),
+      top: clamp(top, minY, maxY - -containerRect.height),
+    }
 
     container.style.left = pos.left + 'px'
     container.style.top = pos.top + 'px'

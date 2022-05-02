@@ -21,6 +21,10 @@ export default function usePopover(
     closeWhenPointerIsDistant?: boolean
     pointerDistanceThreshold?: number
     closeOnClickOutside?: boolean
+    minX?: number
+    maxX?: number
+    minY?: number
+    maxY?: number
   },
   render: () => React.ReactElement,
 ): [node: React.ReactNode, open: OpenFn, close: CloseFn, isOpen: boolean] {
@@ -62,6 +66,10 @@ export default function usePopover(
         target={state.target}
         onClickOutside={onClickOutside}
         onPointerOutside={onPointerOutside}
+        minX={opts.minX}
+        maxX={opts.maxX}
+        minY={opts.minY}
+        maxY={opts.maxY}
       />,
       portalLayer!,
     )
