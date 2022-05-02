@@ -52,8 +52,8 @@ const HitZone = styled.circle`
 
 type IProps = {
   editorState: {
-    temporarilySetValue: (newCurve: string) => void
-    discardTemporaryValue: () => void
+    setValue: (newCurve: string) => void
+    discardValue: () => void
   }
 } & Parameters<typeof CurveEditorPopover>[0]
 
@@ -249,13 +249,13 @@ function useKeyframeDrag(
       onDrag(dx, dy) {
         if (!svgNode) return
 
-        props.editorState.temporarilySetValue(
+        props.editorState.setValue(
           cssCubicBezierArgsFromHandles(setHandles(dx, dy)),
         )
       },
       onDragEnd(dragHappened) {
         setFrozen(false)
-        if (!dragHappened) props.editorState.discardTemporaryValue()
+        if (!dragHappened) props.editorState.discardValue()
       },
     }),
     [svgNode, props.trackData],

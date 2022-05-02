@@ -27,6 +27,8 @@ import {COLOR_POPOVER_BACK} from './CurveEditorPopover/colors'
 const CONNECTOR_HEIGHT = DOT_SIZE_PX / 2 + 1
 const CONNECTOR_WIDTH_UNSCALED = 1000
 
+const POPOVER_MARGIN = 5
+
 export const CONNECTOR_THEME = {
   normalColor: `#365b59`,
   popoverOpenColor: `#817720`,
@@ -97,9 +99,12 @@ const Connector: React.FC<IProps> = (props) => {
     'KeyframeEditor Connector',
   )
 
+  const rightDims = val(props.layoutP.rightDims)
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {
       closeWhenPointerIsDistant: !isPointerBeingCaptured(),
+      minX: rightDims.screenX + POPOVER_MARGIN,
+      maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN,
     },
     () => {
       return (

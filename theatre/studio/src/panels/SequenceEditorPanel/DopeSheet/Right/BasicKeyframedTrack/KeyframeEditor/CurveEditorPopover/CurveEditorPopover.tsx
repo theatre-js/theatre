@@ -25,6 +25,7 @@ import {
 } from './shared'
 import {COLOR_BASE, COLOR_POPOVER_BACK} from './colors'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 const PRESET_COLUMNS = 3
 const PRESET_SIZE = 53
@@ -136,62 +137,66 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   // using an immeditely invoked function so we can properly isolate tempTransaction
   // from other items in this section of the code.
   const editorState = iif(() => {
-    const tempTransaction = useRef<CommitOrDiscard | undefined>()
+    const hoverTransaction = useRef<CommitOrDiscard | undefined>()
+    const editTransaction = useRef<CommitOrDiscard | undefined>()
     useEffect(
       () =>
         // clean up function being used to tell when this React component unmounts.
         // in which case we want to actually commit anything that we have outstanding
         () => {
-          tempTransaction.current?.commit()
+          editTransaction.current?.commit()
+          hoverTransaction.current?.discard()
         },
-      [tempTransaction],
+      [editTransaction],
     )
 
     // Functions for saving easing data to the actual keyframes
     return useMemo(
       () => ({
-        temporarilySetValue(newCurve: string): void {
-          tempTransaction.current?.discard()
-          tempTransaction.current = undefined
+        setValue(newCurve: string): void {
+          editTransaction.current?.discard()
+          editTransaction.current = undefined
 
           const args = handlesFromCssCubicBezierArgs(newCurve)
           if (args === null) return
 
-          tempTransaction.current = getStudio()!.tempTransaction(
-            ({stateEditors}) => {
-              const {replaceKeyframes} =
-                stateEditors.coreByProject.historic.sheetsById.sequence
-
-              replaceKeyframes({
-                ...props.leaf.sheetObject.address,
-                snappingFunction: val(props.layoutP.sheet).getSequence()
-                  .closestGridPosition,
-                trackId: props.leaf.trackId,
-                keyframes: [
-                  {
-                    ...cur,
-                    handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
-                  },
-                  {
-                    ...next,
-                    handles: [
-                      args[2],
-                      args[3],
-                      next.handles[2],
-                      next.handles[3],
-                    ],
-                  },
-                ],
-              })
-            },
+          editTransaction.current = transactionSetCubicBezier(
+            props,
+            cur,
+            next,
+            args,
           )
         },
-        discardTemporaryValue(): void {
-          tempTransaction.current?.discard()
-          tempTransaction.current = undefined
+        discardValue(): void {
+          editTransaction.current?.discard()
+          editTransaction.current = undefined
+        },
+        hoverValue(newCurve: string): void {
+          hoverTransaction.current?.discard()
+          hoverTransaction.current = undefined
+
+          const args = handlesFromCssCubicBezierArgs(newCurve)
+          if (args === null) return
+
+          hoverTransaction.current = transactionSetCubicBezier(
+            props,
+            cur,
+            next,
+            args,
+          )
+        },
+        discardHoverValue(): void {
+          hoverTransaction.current?.discard()
+          hoverTransaction.current = undefined
         },
       }),
-      [props.layoutP, props.index, presetSearchResults, tempTransaction],
+      [
+        props.layoutP,
+        props.index,
+        presetSearchResults,
+        editTransaction,
+        hoverTransaction,
+      ],
     )
   })
 
@@ -241,13 +246,13 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   }
 
   const onSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    isFilterSetBeingUsed.current = true
+    isFilterUpdatePrevented.current = true
     // Prevent scrolling on arrow key press
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') e.preventDefault()
 
     if (e.key === 'ArrowDown') setHighlightedIndex(0)
     else if (e.key === 'Escape') {
-      editorState.discardTemporaryValue()
+      editorState.discardValue()
       props.onRequestClose()
     } else if (e.key === 'Enter') {
       props.onRequestClose()
@@ -256,13 +261,13 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   const onEasingOptionKeydown =
     (preset: {label: string; value: string}) =>
     (e: KeyboardEvent<HTMLInputElement>) => {
-      isFilterSetBeingUsed.current = true
+      isFilterUpdatePrevented.current = true
       if (e.key === 'ArrowRight') moveHighlightHorizontal(1)
       else if (e.key === 'ArrowLeft') moveHighlightHorizontal(-1)
       else if (e.key === 'ArrowUp') moveHighlightVertical(-1)
       else if (e.key === 'ArrowDown') moveHighlightVertical(1)
       else if (e.key === 'Escape') {
-        editorState.discardTemporaryValue()
+        editorState.discardValue()
         props.onRequestClose()
       } else if (e.key === 'Enter') {
         props.onRequestClose()
@@ -278,7 +283,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         const maybePresetEl =
           optionsRef.current?.[maybeHighlightedPreset.label]?.current
         maybePresetEl?.focus()
-        editorState.temporarilySetValue(maybeHighlightedPreset.value)
+        editorState.setValue(maybeHighlightedPreset.value)
       }
     }
   }, [highlightedIndex])
@@ -290,12 +295,12 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     trackData.keyframes[index + 1].handles[1],
   ]
 
-  const isFilterSetBeingUsed = useRef(false)
+  const isFilterUpdatePrevented = useRef(false)
   useEffect(() => {
     // When the user changes the easing using the UI, change the filter to match.
-    if (!isFilterSetBeingUsed.current)
+    if (!isFilterUpdatePrevented.current)
       setFilter(cssCubicBezierArgsFromHandles(easing))
-    isFilterSetBeingUsed.current = false
+    isFilterUpdatePrevented.current = false
   }, [trackData])
 
   // Select the easing string on popover open for quick copy&paste
@@ -317,8 +322,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   }, [optionsContainer])
 
   useEffect(() => {
-    if (displayedPresets[0] && isFilterSetBeingUsed.current)
-      editorState.temporarilySetValue(displayedPresets[0].value)
+    if (displayedPresets[0] && isFilterUpdatePrevented.current)
+      editorState.setValue(displayedPresets[0].value)
   }, [displayedPresets])
 
   return (
@@ -334,15 +339,13 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
                 (e.target as HTMLInputElement).value,
               )
             )
-              editorState.temporarilySetValue(
-                (e.target as HTMLInputElement).value,
-              )
+              editorState.setValue((e.target as HTMLInputElement).value)
           })
         }
         onChange={(e) => {
           setFilter(e.target.value)
           if (handlesFromCssCubicBezierArgs(e.target.value)) {
-            editorState.temporarilySetValue(e.target.value)
+            editorState.setValue(e.target.value)
           }
         }}
         ref={inputRef}
@@ -357,12 +360,13 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
             onKeyDown={onEasingOptionKeydown(preset)}
             ref={optionsRef.current[preset.label]}
             onMouseOver={() => {
-              isFilterSetBeingUsed.current = true
-              editorState.temporarilySetValue(preset.value)
+              isFilterUpdatePrevented.current = true
+              editorState.hoverValue(preset.value)
             }}
+            onMouseOut={() => editorState.discardHoverValue()}
             onClick={() => {
               setHighlightedIndex(displayedPresets.indexOf(preset))
-              editorState.temporarilySetValue(preset.value)
+              editorState.setValue(preset.value)
               //props.onRequestClose()
             }}
             tooltipPlacement={
@@ -390,6 +394,35 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
 }
 
 export default CurveEditorPopover
+
+function transactionSetCubicBezier(
+  props: IProps,
+  cur: Keyframe,
+  next: Keyframe,
+  args: CubicBezierHandles,
+) {
+  return getStudio()!.tempTransaction(({stateEditors}) => {
+    const {replaceKeyframes} =
+      stateEditors.coreByProject.historic.sheetsById.sequence
+
+    replaceKeyframes({
+      ...props.leaf.sheetObject.address,
+      snappingFunction: val(props.layoutP.sheet).getSequence()
+        .closestGridPosition,
+      trackId: props.leaf.trackId,
+      keyframes: [
+        {
+          ...cur,
+          handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
+        },
+        {
+          ...next,
+          handles: [args[2], args[3], next.handles[2], next.handles[3]],
+        },
+      ],
+    })
+  })
+}
 
 /**
  * n mod m without negative results e.g. `mod(-1,5) = 4` contrasted with `-1 % 5 = -1`.
