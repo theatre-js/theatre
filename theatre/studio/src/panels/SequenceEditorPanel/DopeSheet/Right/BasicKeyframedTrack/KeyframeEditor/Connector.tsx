@@ -29,31 +29,31 @@ const CONNECTOR_WIDTH_UNSCALED = 1000
 
 const POPOVER_MARGIN = 5
 
+type IConnectorThemeValues = {
+  isPopoverOpen: boolean
+  isSelected: boolean
+}
+
 export const CONNECTOR_THEME = {
-  normalColor: `#365b59`,
-  popoverOpenColor: `#817720`,
-  baseColor(isPopoverOpen: boolean) {
-    return isPopoverOpen
+  normalColor: `#365b59`, // (greenish-blueish)ish
+  popoverOpenColor: `#817720`, // orangey yellowish
+  barColor: (values: IConnectorThemeValues) => {
+    const base = values.isPopoverOpen
       ? CONNECTOR_THEME.popoverOpenColor
       : CONNECTOR_THEME.normalColor
+    return values.isSelected ? lighten(0.2, base) : base
   },
-  hoverColor(isPopoverOpen: boolean) {
-    return lighten(0.1, CONNECTOR_THEME.baseColor(isPopoverOpen))
-  },
-  selectedColor(isPopoverOpen: boolean) {
-    return lighten(0.2, CONNECTOR_THEME.baseColor(isPopoverOpen))
-  },
-  selectedHoverColor(isPopoverOpen: boolean) {
-    return lighten(0.4, CONNECTOR_THEME.baseColor(isPopoverOpen))
+  hoverColor: (values: IConnectorThemeValues) => {
+    const base = values.isPopoverOpen
+      ? CONNECTOR_THEME.popoverOpenColor
+      : CONNECTOR_THEME.normalColor
+    return values.isSelected ? lighten(0.4, base) : lighten(0.1, base)
   },
 }
 
-const Container = styled.div<{isSelected: boolean; isPopoverOpen: boolean}>`
+const Container = styled.div<IConnectorThemeValues>`
   position: absolute;
-  background: ${({isSelected, isPopoverOpen}) =>
-    isSelected
-      ? CONNECTOR_THEME.selectedColor(isPopoverOpen)
-      : CONNECTOR_THEME.baseColor(isPopoverOpen)};
+  background: ${CONNECTOR_THEME.barColor};
   height: ${CONNECTOR_HEIGHT}px;
   width: ${CONNECTOR_WIDTH_UNSCALED}px;
 
@@ -74,10 +74,7 @@ const Container = styled.div<{isSelected: boolean; isPopoverOpen: boolean}>`
   }
 
   &:hover {
-    background: ${({isSelected, isPopoverOpen}) =>
-      isSelected
-        ? CONNECTOR_THEME.selectedColor(isPopoverOpen)
-        : CONNECTOR_THEME.hoverColor(isPopoverOpen)};
+    background: ${CONNECTOR_THEME.hoverColor};
   }
 `
 
@@ -108,7 +105,7 @@ const Connector: React.FC<IProps> = (props) => {
     },
     () => {
       return (
-        <EasingPopover showArrow={false}>
+        <EasingPopover showPopoverEdgeTriangle={false}>
           <CurveEditorPopover {...props} onRequestClose={closePopover} />
         </EasingPopover>
       )
@@ -126,10 +123,14 @@ const Connector: React.FC<IProps> = (props) => {
 
   const connectorLengthInUnitSpace = next.position - cur.position
 
+  const themeValues: IConnectorThemeValues = {
+    isPopoverOpen,
+    isSelected: !!props.selection,
+  }
+
   return (
     <Container
-      isPopoverOpen={isPopoverOpen}
-      isSelected={!!props.selection}
+      {...themeValues}
       ref={nodeRef}
       style={{
         transform: `scale3d(calc(var(--unitSpaceToScaledSpaceMultiplier) * ${

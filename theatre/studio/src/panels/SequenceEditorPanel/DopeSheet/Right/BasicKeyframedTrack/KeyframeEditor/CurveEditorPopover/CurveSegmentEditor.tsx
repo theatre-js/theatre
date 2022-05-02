@@ -26,6 +26,8 @@ const CURVE_END_COLOR = '#3EAAA4'
 const CURVE_END_OVERSHOOT_COLOR = '#3EAAA4'
 
 const CONTROL_COLOR = '#B3B3B3'
+const HANDLE_COLOR = '#3eaaa4'
+const HANDLE_HOVER_COLOR = '#67dfd8'
 
 const Circle = styled.circle`
   stroke-width: 0.1px;
@@ -33,7 +35,7 @@ const Circle = styled.circle`
   r: 0.04px;
   pointer-events: none;
   transition: r 0.15s;
-  fill: #3eaaa4;
+  fill: ${HANDLE_COLOR};
 `
 
 const HitZone = styled.circle`
@@ -46,14 +48,14 @@ const HitZone = styled.circle`
     opacity: 0.4;
   }
   &:hover + ${Circle} {
-    fill: #67dfd8;
+    fill: ${HANDLE_HOVER_COLOR};
   }
 `
 
 type IProps = {
   editorState: {
-    setValue: (newCurve: string) => void
-    discardValue: () => void
+    setEditValue: (newCurve: string) => void
+    discardEditValue: () => void
   }
 } & Parameters<typeof CurveEditorPopover>[0]
 
@@ -246,13 +248,13 @@ function useKeyframeDrag(
       onDrag(dx, dy) {
         if (!svgNode) return
 
-        props.editorState.setValue(
+        props.editorState.setEditValue(
           cssCubicBezierArgsFromHandles(setHandles(dx, dy)),
         )
       },
       onDragEnd(dragHappened) {
         setFrozen(false)
-        if (!dragHappened) props.editorState.discardValue()
+        if (!dragHappened) props.editorState.discardEditValue()
       },
     }),
     [svgNode, props.trackData],

@@ -66,10 +66,12 @@ export default function usePopover(
         target={state.target}
         onClickOutside={onClickOutside}
         onPointerOutside={onPointerOutside}
-        minX={opts.minX}
-        maxX={opts.maxX}
-        minY={opts.minY}
-        maxY={opts.maxY}
+        constraints={{
+          minX: opts.minX,
+          maxX: opts.maxX,
+          minY: opts.minY,
+          maxY: opts.maxY,
+        }}
       />,
       portalLayer!,
     )
