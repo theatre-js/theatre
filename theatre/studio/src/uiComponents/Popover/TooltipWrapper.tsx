@@ -11,6 +11,13 @@ import {clamp} from 'lodash-es'
 
 const minimumDistanceOfArrowToEdgeOfPopover = 8
 
+type AbsolutePlacementBoxConstraints = {
+  minX?: number
+  maxX?: number
+  minY?: number
+  maxY?: number
+}
+
 const TooltipWrapper: React.FC<{
   target: HTMLElement | SVGElement
   onClickOutside?: (e: MouseEvent) => void
@@ -20,11 +27,8 @@ const TooltipWrapper: React.FC<{
     callback: (e: MouseEvent) => void
   }
   verticalPlacement?: 'top' | 'bottom' | 'overlay'
-  verticalGap?: number
-  minX?: number
-  maxX?: number
-  minY?: number
-  maxY?: number
+  verticalGap?: number // Has no effect if verticalPlacement === 'overlay'
+  constraints?: AbsolutePlacementBoxConstraints
 }> = (props) => {
   const originalElement = props.children()
   const [ref, container] = useRefAndState<HTMLElement | SVGElement | null>(null)
@@ -108,10 +112,10 @@ const TooltipWrapper: React.FC<{
       maxX = Infinity,
       minY = -Infinity,
       maxY = Infinity,
-    } = props
+    } = props.constraints ?? {}
     const pos = {
       left: clamp(left, minX, maxX - containerRect.width),
-      top: clamp(top, minY, maxY - -containerRect.height),
+      top: clamp(top, minY, maxY + containerRect.height),
     }
 
     container.style.left = pos.left + 'px'

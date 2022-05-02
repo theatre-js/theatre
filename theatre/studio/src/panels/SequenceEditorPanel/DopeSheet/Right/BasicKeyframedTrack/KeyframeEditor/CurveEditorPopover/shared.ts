@@ -1,7 +1,7 @@
 /**
  * This 4-tuple defines the start control point x1,y1 and the end control point x2,y2
  * of a cubic bezier curve. It is assumed that the start of the curve is fixed at 0,0
- * and the end is fixed at 1,1. x1 must always be \>= 0 and x2 must always be \<= 1.
+ * and the end is fixed at 1,1. X values must be constrained to `0 <= x1 <= 1 and 0 <= x2 <= 1`.
  *
  * to get a feel for it: https://cubic-bezier.com/
  **/
@@ -12,14 +12,23 @@ export type CubicBezierHandles = [
   y2: number,
 ]
 
+/**
+ * A full CSS cubic bezier string looks like `cubic-bezier(0, 0, 1, 1)`.
+ * the "args" part of the name refers specifically to the comma separated substring
+ * inside the parentheses of the CSS cubic bezier string i.e. `0, 0, 1, 1`.
+ */
+type CSSCubicBezierArgsString = string
+
 const CSS_BEZIER_ARGS_DECIMAL_POINTS = 3 // Doesn't have to be 3, but it matches our preset data
-export function cssCubicBezierArgsFromHandles(points: CubicBezierHandles) {
+export function cssCubicBezierArgsFromHandles(
+  points: CubicBezierHandles,
+): CSSCubicBezierArgsString {
   return points.map((p) => p.toFixed(CSS_BEZIER_ARGS_DECIMAL_POINTS)).join(', ')
 }
 
 const MAX_REASONABLE_BEZIER_STRING = 128
 export function handlesFromCssCubicBezierArgs(
-  str: string | undefined | null,
+  str: CSSCubicBezierArgsString | undefined | null,
 ): null | CubicBezierHandles {
   if (!str || str?.length > MAX_REASONABLE_BEZIER_STRING) return null
   const args = str.split(',')
@@ -36,8 +45,8 @@ export function handlesFromCssCubicBezierArgs(
 
 /**
  * A collection of cubic-bezier approximations of common easing functions
- * ref: https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function
- * ref: https://github.com/theatre-js/theatre/issues/28#issuecomment-938752916
+ * - ref: https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function
+ * - ref: [GitHub issue 28 comment "michaeltheory's suggested default easing presets"](https://github.com/theatre-js/theatre/issues/28#issuecomment-938752916)
  **/
 export const EASING_PRESETS = [
   {label: 'Quad Out', value: '0.250, 0.460, 0.450, 0.940'},
