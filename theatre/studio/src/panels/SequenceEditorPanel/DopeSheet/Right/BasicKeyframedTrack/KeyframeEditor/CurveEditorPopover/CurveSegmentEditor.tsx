@@ -89,6 +89,13 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
     return [cur.handles[2], cur.handles[3], handleX, handleY]
   })
 
+  const curvePathDAttrValue = `M0 ${toExtremumSpace(1)} C${
+    cur.handles[2]
+  } ${toExtremumSpace(1 - cur.handles[3])} 
+${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
+    0,
+  )}`
+
   return (
     <svg
       height="100%"
@@ -172,23 +179,13 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
       />
 
       <path
-        d={`M0 ${toExtremumSpace(1)} C${cur.handles[2]} ${toExtremumSpace(
-          1 - cur.handles[3],
-        )} 
-    ${next.handles[0]} ${toExtremumSpace(
-          1 - next.handles[1],
-        )} 1 ${toExtremumSpace(0)}`}
+        d={curvePathDAttrValue}
         stroke="none"
         fill="url('#myGradient')"
         opacity="0.1"
       />
       <path
-        d={`M0 ${toExtremumSpace(1)} C${cur.handles[2]} ${toExtremumSpace(
-          1 - cur.handles[3],
-        )} 
-    ${next.handles[0]} ${toExtremumSpace(
-          1 - next.handles[1],
-        )} 1 ${toExtremumSpace(0)}`}
+        d={curvePathDAttrValue}
         stroke="url('#myGradient')"
         strokeWidth="0.02"
       />
