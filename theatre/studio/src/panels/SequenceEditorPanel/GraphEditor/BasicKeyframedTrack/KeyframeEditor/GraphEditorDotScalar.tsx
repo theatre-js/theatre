@@ -14,7 +14,7 @@ import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPa
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {
-  lockedCursorCssPropName,
+  lockedCursorCssVarName,
   useCssCursorLock,
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 
@@ -45,7 +45,7 @@ const HitZone = styled.circle`
 
   #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
-    cursor: var(${lockedCursorCssPropName});
+    cursor: var(${lockedCursorCssVarName});
   }
 
   &.beingDragged {

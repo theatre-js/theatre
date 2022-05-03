@@ -53,6 +53,7 @@ export const zIndexes = (() => {
     lengthIndicatorStrip: 0,
     playhead: 0,
     currentFrameStamp: 0,
+    marker: 0,
     horizontalScrollbar: 0,
   }
 

@@ -1,6 +1,13 @@
 import {lighten} from 'polished'
 import {css} from 'styled-components'
 
+/**
+ * This CSS string is used to correctly set pointer-events on an element
+ * when the pointer is dragging something.
+ * Naming explanation: "NormalMode" as opposed to dragging mode.
+ *
+ * @see PointerEventsHandler - the place that sets `.normal` on #pointer-root
+ */
 export const pointerEventsAutoInNormalMode = css`
   #pointer-root & {
     pointer-events: none;

@@ -10,7 +10,7 @@ import {
 } from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import {
-  lockedCursorCssPropName,
+  lockedCursorCssVarName,
   useCssCursorLock,
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
@@ -57,7 +57,7 @@ const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
 
   #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
-    cursor: var(${lockedCursorCssPropName});
+    cursor: var(${lockedCursorCssVarName});
   }
 
   &.dragging {

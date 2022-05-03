@@ -11,12 +11,12 @@ import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
 import {lighten} from 'polished'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {
-  lockedCursorCssPropName,
+  lockedCursorCssVarName,
   useCssCursorLock,
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
@@ -42,7 +42,8 @@ const dotTheme = {
   },
 }
 
-const Square = styled.div<{isSelected: boolean}>`
+/** The keyframe diamond ◆ */
+const Diamond = styled.div<{isSelected: boolean}>`
   position: absolute;
   ${dims(DOT_SIZE_PX)}
 
@@ -65,8 +66,11 @@ const HitZone = styled.div`
 
   #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
-    cursor: var(${lockedCursorCssPropName});
+    cursor: var(${lockedCursorCssVarName});
 
+    // ⸢⸤⸣⸥ thing
+    // This box extends the hitzone so the user does not
+    // accidentally leave the hitzone
     &:hover:after {
       position: absolute;
       top: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
@@ -84,7 +88,7 @@ const HitZone = styled.div`
     pointer-events: none !important;
   }
 
-  &:hover + ${Square}, &.beingDragged + ${Square} {
+  &:hover + ${Diamond}, &.beingDragged + ${Diamond} {
     ${dims(DOT_HOVER_SIZE_PX)}
   }
 `
@@ -109,7 +113,7 @@ const KeyframeDot: React.VFC<IKeyframeDotProps> = (props) => {
         }}
         className={isDragging ? 'beingDragged' : ''}
       />
-      <Square isSelected={!!props.selection} />
+      <Diamond isSelected={!!props.selection} />
       {contextMenu}
     </>
   )
@@ -142,9 +146,6 @@ function useDragKeyframe(
   node: HTMLDivElement | null,
   props: IKeyframeDotProps,
 ): [isDragging: boolean] {
-  const [isDragging, setIsDragging] = useState(false)
-  useLockFrameStampPosition(isDragging, props.keyframe.position)
-
   const propsRef = useRef(props)
   propsRef.current = props
 
@@ -158,10 +159,9 @@ function useDragKeyframe(
       | undefined
 
     return {
-      debugName: 'Dot/useDragKeyframe',
+      debugName: 'KeyframeDot/useDragKeyframe',
 
       onDragStart(event) {
-        setIsDragging(true)
         const props = propsRef.current
         if (props.selection) {
           const {selection, leaf} = props
@@ -229,29 +229,21 @@ function useDragKeyframe(
         })
       },
       onDragEnd(dragHappened) {
-        setIsDragging(false)
-
         if (selectionDragHandlers) {
           selectionDragHandlers.onDragEnd?.(dragHappened)
 
           selectionDragHandlers = undefined
         }
-        if (dragHappened) {
-          if (tempTransaction) {
-            tempTransaction.commit()
-          }
-        } else {
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
-        }
+        if (dragHappened) tempTransaction?.commit()
+        else tempTransaction?.discard()
         tempTransaction = undefined
       },
     }
   }, [])
 
-  useDrag(node, useDragOpts)
+  const [isDragging] = useDrag(node, useDragOpts)
 
+  useLockFrameStampPosition(isDragging, props.keyframe.position)
   useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   return [isDragging]
