@@ -24,6 +24,8 @@ import {
   lockedCursorCssPropName,
   useCssCursorLock,
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
+import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
+import getStudio from '@theatre/studio/getStudio'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -250,6 +252,11 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   // hide the frame stamp when seeking
   useLockFrameStampPosition(useVal(layoutP.seeker.isSeeking) || isDragging, -1)
 
+  const [contextMenu] = usePlayheadContextMenu(thumbNode, {
+    // pass in a pointer to ensure we aren't spending retrieval on every render
+    layoutP,
+  })
+
   return usePrism(() => {
     const isSeeking = val(layoutP.seeker.isSeeking)
 
@@ -270,6 +277,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 
     return (
       <>
+        {contextMenu}
         {popoverNode}
         <Container
           isVisible={isVisible}
@@ -306,3 +314,32 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 }
 
 export default Playhead
+
+function usePlayheadContextMenu(
+  node: HTMLElement | null,
+  options: {layoutP: Pointer<SequenceEditorPanelLayout>},
+) {
+  return useContextMenu(node, {
+    menuItems() {
+      return [
+        {
+          label: 'Place marker',
+          callback: () => {
+            getStudio().transaction(({stateEditors}) => {
+              // only retrieve val on callback to reduce unnecessary work on every use
+              const sheet = val(options.layoutP.sheet)
+              stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.replaceMarker(
+                {
+                  sheetAddress: sheet.address,
+                  markerAt: {
+                    position: sheet.getSequence().position,
+                  },
+                },
+              )
+            })
+          },
+        },
+      ]
+    },
+  })
+}

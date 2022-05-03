@@ -40,6 +40,12 @@ type LockItem = {
 
 let lastLockId = 0
 
+/**
+ * Provides snapping positions to "stamps".
+ *
+ * One example of a stamp includes the "Keyframe Dot" which show a `⌜⌞⌝⌟` kinda UI
+ * around the dot when dragged over.
+ */
 const FrameStampPositionProvider: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({children, layoutP}) => {
@@ -144,6 +150,13 @@ export const useLockFrameStampPosition = (shouldLock: boolean, val: number) => {
  * Elements that need this behavior must set a data attribute like so:
  * <div data-theatre-lock-framestamp-to="120.55" />
  * Setting this attribute to "hide" hides the stamp.
+ *
+ * @see lockedCursorCssVarName - CSS variable used to set the cursor on an element that
+ * should lock the framestamp. Look for usages.
+ * @see pointerEventsAutoInNormalMode - CSS snippet used to correctly set
+ * `pointer-events` on an element that should lock the framestamp.
+ *
+ * See {@link FrameStampPositionProvider}
  */
 export const attributeNameThatLocksFramestamp =
   'data-theatre-lock-framestamp-to'

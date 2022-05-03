@@ -250,6 +250,46 @@ namespace stateEditors {
                   ])
                 }
               }
+
+              export function replaceMarker(options: {
+                sheetAddress: SheetAddress
+                markerAt: {position: number}
+              }) {
+                const sequenceEditor =
+                  stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId._ensure(
+                    options.sheetAddress,
+                  ).sequenceEditor
+
+                if (!sequenceEditor.markers) {
+                  sequenceEditor.markers = [options.markerAt]
+                } else {
+                  sequenceEditor.markers = [
+                    ...sequenceEditor.markers.filter(
+                      (otherMarker) =>
+                        otherMarker.position !== options.markerAt.position,
+                    ),
+                    options.markerAt,
+                  ]
+                }
+              }
+
+              export function removeMarker(options: {
+                sheetAddress: SheetAddress
+                markerAt: {position: number}
+              }) {
+                const sequenceEditor =
+                  stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId._ensure(
+                    options.sheetAddress,
+                  ).sequenceEditor
+
+                if (!sequenceEditor.markers) {
+                  sequenceEditor.markers = []
+                } else {
+                  sequenceEditor.markers = sequenceEditor.markers.filter(
+                    (marker) => marker.position !== options.markerAt.position,
+                  )
+                }
+              }
             }
           }
         }
