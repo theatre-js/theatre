@@ -204,6 +204,24 @@ const FocusRangeThumb: React.FC<{
         let newPosition: number
         const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
 
+        // Enable snapping
+        const snapTarget = event
+          .composedPath()
+          .find(
+            (el): el is Element =>
+              el instanceof Element &&
+              el !== hitZoneNode &&
+              el.hasAttribute('data-pos'),
+          )
+
+        if (snapTarget) {
+          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
+
+          if (isFinite(snapPos)) {
+            newPosition = snapPos
+          }
+        }
+
         // Make sure that the focus range has a minimal width
         if (thumbType === 'start') {
           // Prevent the start thumb from going below 0
@@ -223,24 +241,6 @@ const FocusRangeThumb: React.FC<{
             ),
             sheet.getSequence().length,
           )
-        }
-
-        // Enable snapping
-        const snapTarget = event
-          .composedPath()
-          .find(
-            (el): el is Element =>
-              el instanceof Element &&
-              el !== hitZoneNode &&
-              el.hasAttribute('data-pos'),
-          )
-
-        if (snapTarget) {
-          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
-
-          if (isFinite(snapPos)) {
-            newPosition = snapPos
-          }
         }
 
         const newPositionInFrame = sheet
