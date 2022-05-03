@@ -43,8 +43,8 @@ const baseLightConfig = {
 
 const baseCameraConfig = {
   ...extendObjectProps(baseObjectConfig, {
-    near: createNumberPropConfig('near', 0.1),
-    far: createNumberPropConfig('far', 2000),
+    near: createNumberPropConfig('near', 0.1, {nudgeMultiplier: 0.1}),
+    far: createNumberPropConfig('far', 2000, {nudgeMultiplier: 0.1}),
   }),
   updateObject: (camera: PerspectiveCamera | OrthographicCamera) => {
     camera.updateProjectionMatrix()
@@ -69,8 +69,8 @@ const defaultEditableFactoryConfig = {
   },
   spotLight: {
     ...extendObjectProps(baseLightConfig, {
-      angle: createNumberPropConfig('angle'),
-      penumbra: createNumberPropConfig('penumbra'),
+      angle: createNumberPropConfig('angle', 0, {nudgeMultiplier: 0.001}),
+      penumbra: createNumberPropConfig('penumbra', 0, {nudgeMultiplier: 0.001}),
     }),
     icon: 'spotLight' as const,
     createHelper: (light: SpotLight) =>
@@ -92,7 +92,7 @@ const defaultEditableFactoryConfig = {
       new PointLightHelper(light, 1, selectionColor),
   },
   perspectiveCamera: extendObjectProps(baseCameraConfig, {
-    fov: createNumberPropConfig('fov', 50),
+    fov: createNumberPropConfig('fov', 50, {nudgeMultiplier: 0.1}),
     zoom: createNumberPropConfig('zoom', 1),
   }),
   orthographicCamera: baseCameraConfig,

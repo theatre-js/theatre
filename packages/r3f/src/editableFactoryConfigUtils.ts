@@ -28,6 +28,7 @@ type PropConfig<T> = {
 export const createVectorPropConfig = (
   key: string,
   defaultValue = createVector(),
+  {nudgeMultiplier = 0.01} = {},
 ): PropConfig<Vector3> => ({
   parse: (props) => {
     const vector = props[key]
@@ -50,9 +51,9 @@ export const createVectorPropConfig = (
   },
   type: {
     [key]: {
-      x: types.number(defaultValue.x, {nudgeMultiplier: 0.1}),
-      y: types.number(defaultValue.y, {nudgeMultiplier: 0.1}),
-      z: types.number(defaultValue.z, {nudgeMultiplier: 0.1}),
+      x: types.number(defaultValue.x, {nudgeMultiplier}),
+      y: types.number(defaultValue.y, {nudgeMultiplier}),
+      z: types.number(defaultValue.z, {nudgeMultiplier}),
     },
   },
 })
@@ -60,6 +61,7 @@ export const createVectorPropConfig = (
 export const createNumberPropConfig = (
   key: string,
   defaultValue: number = 0,
+  {nudgeMultiplier = 0.01} = {},
 ): PropConfig<number> => ({
   parse: (props) => {
     return props[key] ?? defaultValue ?? 0
@@ -68,7 +70,7 @@ export const createNumberPropConfig = (
     object[key] = value
   },
   type: {
-    [key]: types.number(defaultValue, {nudgeMultiplier: 0.01}),
+    [key]: types.number(defaultValue, {nudgeMultiplier}),
   },
 })
 
