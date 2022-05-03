@@ -1,5 +1,5 @@
 import type {KeyboardEvent} from 'react'
-import type React from 'react';
+import type React from 'react'
 import {useState} from 'react'
 import {mod} from './CurveEditorPopover'
 
@@ -100,6 +100,7 @@ export function useUIOptionGrid<T>(
         item,
         select() {
           setSelectionIndex(idx)
+          options.onSelectItem(item)
         },
       }),
     ),

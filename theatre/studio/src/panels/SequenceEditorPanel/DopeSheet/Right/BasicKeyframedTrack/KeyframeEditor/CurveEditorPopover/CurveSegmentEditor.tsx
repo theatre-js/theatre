@@ -6,7 +6,6 @@ import type CurveEditorPopover from './CurveEditorPopover'
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import type {CubicBezierHandles} from './shared'
-import {cssCubicBezierArgsFromHandles} from './shared'
 import {useFreezableMemo} from './useFreezableMemo'
 import {COLOR_BASE} from './colors'
 
@@ -53,10 +52,8 @@ const HitZone = styled.circle`
 `
 
 type IProps = {
-  editorState: {
-    setEditValue: (newCurve: string) => void
-    discardEditValue: () => void
-  }
+  onCurveChange: (newHandles: CubicBezierHandles) => void
+  onCancelCurveChange: () => void
 } & Parameters<typeof CurveEditorPopover>[0]
 
 const CurveSegmentEditor: React.FC<IProps> = (props) => {
@@ -248,13 +245,11 @@ function useKeyframeDrag(
       onDrag(dx, dy) {
         if (!svgNode) return
 
-        props.editorState.setEditValue(
-          cssCubicBezierArgsFromHandles(setHandles(dx, dy)),
-        )
+        props.onCurveChange(setHandles(dx, dy))
       },
       onDragEnd(dragHappened) {
         setFrozen(false)
-        if (!dragHappened) props.editorState.discardEditValue()
+        props.onCancelCurveChange()
       },
     }),
     [svgNode, props.trackData],

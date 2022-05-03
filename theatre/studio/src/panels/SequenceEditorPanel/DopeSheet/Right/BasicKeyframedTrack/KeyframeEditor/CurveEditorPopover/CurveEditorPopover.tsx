@@ -1,6 +1,6 @@
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import type {KeyboardEvent} from 'react'
+import type {KeyboardEvent} from 'react';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -101,6 +101,11 @@ const NoResultsFoundContainer = styled.div`
   color: #888888;
 `
 
+enum TextInputMode {
+  user,
+  auto,
+}
+
 type IProps = {
   layoutP: Pointer<SequenceEditorPanelLayout>
 
@@ -111,110 +116,133 @@ type IProps = {
 } & Parameters<typeof KeyframeEditor>[0]
 
 const CurveEditorPopover: React.FC<IProps> = (props) => {
-  const [filter, setFilter] = useState<string>('')
-
-  const presetSearchResults = useMemo(
+  /********
+   * `tempTransaction`
+   *
+   * used for all edits in this popover. The transaction
+   * is discared if the user presses escape, otherwise it is committed when the
+   * popover closes.
+   ********/
+  const tempTransaction = useRef<CommitOrDiscard | null>(null)
+  useEffect(
     () =>
-      fuzzy.filter(filter, EASING_PRESETS, {
-        extract: (el) => el.label,
-        pre: '<b>',
-        post: '</b>',
-      }),
-
-    [filter],
+      // Clean-up function, called when this React component unmounts.
+      // When it unmounts, we want to commit edits that are outstanding
+      () => {
+        tempTransaction.current?.commit()
+      },
+    [tempTransaction],
   )
 
-  // Whether to interpret the search box input as a search query
-  const useQuery = /^[A-Za-z]/.test(filter)
-
-  const displayedPresets = useMemo(
-    () =>
-      useQuery
-        ? presetSearchResults.map((result) => result.original)
-        : EASING_PRESETS,
-    [presetSearchResults, useQuery],
-  )
-
-  // using an immeditely invoked function so we can properly isolate tempTransaction
-  // from other items in this section of the code.
-  const editorState = iif(() => {
-    /**
-     * `tempTransactionPreview` is used when hovering over a curve to preview it. Once
-     * the hover ends, `tempTransactionPreview` is discarded.
-     */
-    const tempTransactionPreview = useRef<CommitOrDiscard | undefined>()
-    /**
-     * `tempTransactionEdit` is used for all edits in this popover. The transaction
-     * is discared if the user presses escape, otherwise it is committed when the
-     * popover closes.
-     */
-    const tempTransactionEdit = useRef<CommitOrDiscard | undefined>()
-    useEffect(
-      () =>
-        // Clean-up function, called when this React component unmounts.
-        // When it unmounts, we want to commit edits that are outstanding
-        () => {
-          tempTransactionEdit.current?.commit()
-          tempTransactionPreview.current?.discard()
-        },
-      [tempTransactionEdit],
-    )
-
-    // Functions for saving easing data to the actual keyframes
-    return useMemo(
-      () => ({
-        setEditValue(newCurve: string): void {
-          tempTransactionEdit.current?.discard()
-          tempTransactionEdit.current = undefined
-
-          const handles = handlesFromCssCubicBezierArgs(newCurve)
-          if (handles === null) return
-
-          tempTransactionEdit.current = transactionSetCubicBezier(
-            props,
-            cur,
-            next,
-            handles,
-          )
-        },
-        discardEditValue(): void {
-          tempTransactionEdit.current?.discard()
-          tempTransactionEdit.current = undefined
-        },
-        setPreviewValue(newCurve: string): void {
-          tempTransactionPreview.current?.discard()
-          tempTransactionPreview.current = undefined
-
-          const handles = handlesFromCssCubicBezierArgs(newCurve)
-          if (handles === null) return
-
-          tempTransactionPreview.current = transactionSetCubicBezier(
-            props,
-            cur,
-            next,
-            handles,
-          )
-        },
-        discardPreviewValue(): void {
-          tempTransactionPreview.current?.discard()
-          tempTransactionPreview.current = undefined
-        },
-      }),
-      [
-        props.layoutP,
-        props.index,
-        presetSearchResults,
-        tempTransactionEdit,
-        tempTransactionPreview,
-      ],
-    )
-  })
-
-  const inputRef = useRef<HTMLInputElement>(null)
-
+  /**********
+   * Keyframe and trackdata
+   **********/
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
+  const easing: CubicBezierHandles = [
+    trackData.keyframes[index].handles[2],
+    trackData.keyframes[index].handles[3],
+    trackData.keyframes[index + 1].handles[0],
+    trackData.keyframes[index + 1].handles[1],
+  ]
+
+  /*********
+   * Text input data and reactivity
+   *********/
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Select the easing string on popover open for quick copy&paste
+  useLayoutEffect(() => {
+    inputRef.current?.select()
+    inputRef.current?.focus()
+  }, [inputRef.current])
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTextInputMode(TextInputMode.user)
+    setInputValue(e.target.value)
+
+    const maybeHandles = handlesFromCssCubicBezierArgs(inputValue)
+    if (maybeHandles) setEdit(inputValue)
+  }
+  const onSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    setTextInputMode(TextInputMode.user)
+    // Prevent scrolling on arrow key press
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') e.preventDefault()
+
+    if (e.key === 'ArrowDown') grid.focusFirstItem()
+    else if (e.key === 'Escape') {
+      discardTempValue(tempTransaction)
+      props.onRequestClose()
+    } else if (e.key === 'Enter') {
+      props.onRequestClose()
+    }
+  }
+  const [inputValue, setInputValue] = useState<string>('')
+
+  // In auto mode, set the input value when the data changes
+  useEffect(() => {
+    if (textInputMode === TextInputMode.auto)
+      setInputValue(cssCubicBezierArgsFromHandles(easing))
+  }, [trackData])
+
+  const [textInputMode, setTextInputMode] = useState<TextInputMode>(
+    TextInputMode.auto,
+  )
+  const [edit, setEdit] = useState<string | null>(null)
+  // `preview` is used when hovering over a curve to preview it.
+  const [preview, setPreview] = useState<string | null>(null)
+
+  setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? '')
+  /*********
+   * Curve editing reactivity
+   *********/
+  const onCurveChange = (newHandles: CubicBezierHandles) => {
+    setTextInputMode(TextInputMode.auto)
+    const value = cssCubicBezierArgsFromHandles(newHandles)
+    setInputValue(value)
+    setEdit(value)
+  }
+  const onCancelCurveChange = () => {}
+
+  /*********
+   * Preset reactivity
+   *********/
+  const displayedPresets = useMemo(() => {
+    const presetSearchResults = fuzzy.filter(inputValue, EASING_PRESETS, {
+      extract: (el) => el.label,
+    })
+
+    const isInputValueAQuery = /^[A-Za-z]/.test(inputValue)
+    return isInputValueAQuery
+      ? presetSearchResults.map((result) => result.original)
+      : EASING_PRESETS
+  }, [inputValue])
+  // Preview the first search term when the search items change
+  useEffect(() => {
+    if (displayedPresets[0]) setEdit(displayedPresets[0].value)
+  }, [displayedPresets])
+
+  /*********
+   * Option grid specification and reactivity
+   *********/
+  const onEasingOptionKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
+      discardTempValue(tempTransaction)
+      props.onRequestClose()
+      e.stopPropagation()
+    } else if (e.key === 'Enter') {
+      props.onRequestClose()
+      e.stopPropagation()
+    }
+  }
+  const onEasingOptionMouseOver = (item: {label: string; value: string}) =>
+    setPreview(item.value)
+  const onEasingOptionMouseOut = () => setPreview(null)
+  const onSelectEasingOption = (item: {label: string; value: string}) => {
+    setTextInputMode(TextInputMode.auto)
+    setEdit(item.value)
+  }
 
   // A map to store all html elements corresponding to easing options
   const optionsRef = useRef(
@@ -225,54 +253,10 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     }, {} as {[key: string]: {current: HTMLDivElement | null}}),
   )
 
-  const onSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    isFilterUpdatePrevented.current = true
-    // Prevent scrolling on arrow key press
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') e.preventDefault()
-
-    if (e.key === 'ArrowDown') grid.focusFirstItem()
-    else if (e.key === 'Escape') {
-      editorState.discardEditValue()
-      props.onRequestClose()
-    } else if (e.key === 'Enter') {
-      props.onRequestClose()
-    }
-  }
-
-  const easing: CubicBezierHandles = [
-    trackData.keyframes[index].handles[2],
-    trackData.keyframes[index].handles[3],
-    trackData.keyframes[index + 1].handles[0],
-    trackData.keyframes[index + 1].handles[1],
-  ]
-
-  /**
-   * `isFilterUpdatePrevented` is only read in the `useEffect` immediately below.
-   * Normally when `trackData` changes for any reason (the Keyframes/easings
-   * change via any part of the UI or API), this `useEffect` will change the
-   * `filter` to match the easing. `isFilterUpdatePrevented` is set to `true` in
-   * a few places to prevent this behaviour. For exmaple, when the user uses
-   * the keyboard to preview curves after filtering, the filter should not
-   * be replaced with the curve's CSS cubic bezier args.
-   */
-  const isFilterUpdatePrevented = useRef(false)
-  useEffect(() => {
-    // When the user changes the easing using the UI, change the filter to match.
-    if (!isFilterUpdatePrevented.current)
-      setFilter(cssCubicBezierArgsFromHandles(easing))
-    isFilterUpdatePrevented.current = false
-  }, [trackData])
-
-  // Select the easing string on popover open for quick copy&paste
-  useLayoutEffect(() => {
-    inputRef.current?.select()
-    inputRef.current?.focus()
-  }, [inputRef.current])
-
   const [optionsContainerRef, optionsContainer] =
     useRefAndState<HTMLDivElement | null>(null)
+  // Keep track of option container scroll position
   const [optionsScrollPosition, setOptionsScrollPosition] = useState(0)
-
   useEffect(() => {
     const listener = () => {
       setOptionsScrollPosition(optionsContainer?.scrollTop ?? 0)
@@ -281,29 +265,10 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     return () => optionsContainer?.removeEventListener('scroll', listener)
   }, [optionsContainer])
 
-  useEffect(() => {
-    if (displayedPresets[0] && isFilterUpdatePrevented.current)
-      editorState.setEditValue(displayedPresets[0].value)
-  }, [displayedPresets])
-
-  const onEasingOptionKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
-    isFilterUpdatePrevented.current = true
-    if (e.key === 'Escape') {
-      editorState.discardEditValue()
-      props.onRequestClose()
-      e.stopPropagation()
-    } else if (e.key === 'Enter') {
-      props.onRequestClose()
-      e.stopPropagation()
-    }
-  }
-
   const grid = useUIOptionGrid({
     items: displayedPresets,
     uiColumns: 3,
-    onSelectItem(item) {
-      editorState.setEditValue(item.value)
-    },
+    onSelectItem: onSelectEasingOption,
     canVerticleExit(exitSide) {
       if (exitSide === 'top') {
         inputRef.current?.select()
@@ -319,11 +284,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         tabIndex={0}
         onKeyDown={onEasingOptionKeydown}
         ref={optionsRef.current[preset.label]}
-        onMouseOver={() => {
-          isFilterUpdatePrevented.current = true
-          editorState.setPreviewValue(preset.value)
-        }}
-        onMouseOut={() => editorState.discardPreviewValue()}
+        onMouseOver={() => onEasingOptionMouseOver(preset)}
+        onMouseOut={onEasingOptionMouseOut}
         onClick={select}
         tooltipPlacement={
           (optionsRef.current[preset.label].current?.offsetTop ?? 0) -
@@ -343,36 +305,24 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   // When the user navigates highlight between presets, focus the preset el and set the
   // easing data to match the highlighted preset
   useLayoutEffect(() => {
-    if (grid.currentSelection !== null) {
+    if (
+      grid.currentSelection !== null &&
+      document.activeElement !== inputRef.current // prevents taking focus away from input
+    ) {
       const maybePresetEl =
         optionsRef.current?.[grid.currentSelection.label]?.current
       maybePresetEl?.focus()
-      editorState.setEditValue(grid.currentSelection.value)
+      setEdit(grid.currentSelection.value)
     }
   }, [grid.currentSelection])
 
   return (
     <Grid>
       <SearchBox
-        value={filter}
+        value={inputValue}
         placeholder="Search presets..."
-        onPaste={(e) =>
-          // hack to wait for the paste to actually change the e.target.value
-          setTimeout(() => {
-            if (
-              handlesFromCssCubicBezierArgs(
-                (e.target as HTMLInputElement).value,
-              )
-            )
-              editorState.setEditValue((e.target as HTMLInputElement).value)
-          })
-        }
-        onChange={(e) => {
-          setFilter(e.target.value)
-          if (handlesFromCssCubicBezierArgs(e.target.value)) {
-            editorState.setEditValue(e.target.value)
-          }
-        }}
+        onPaste={setTimeoutFunction(onInputChange)}
+        onChange={onInputChange}
         ref={inputRef}
         onKeyDown={onSearchKeyDown}
       />
@@ -386,7 +336,11 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         ) : undefined}
       </OptionsContainer>
       <CurveEditorContainer>
-        <CurveSegmentEditor {...props} editorState={editorState} />
+        <CurveSegmentEditor
+          {...props}
+          onCurveChange={onCurveChange}
+          onCancelCurveChange={onCancelCurveChange}
+        />
       </CurveEditorContainer>
     </Grid>
   )
@@ -394,13 +348,28 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
 
 export default CurveEditorPopover
 
-// type CurveController = {
-//   setHoverPreviewCurve(cssBezierCurve: string): void
-//   clearHoverPreviewCurve(cssBezierCurve: string): void
-//   setFilter(filterString: string): void
-//   searchResults: CurvePresetItem[]
-//   showCurve: string
-// }
+function setTempValue(
+  tempTransaction: React.MutableRefObject<CommitOrDiscard | null>,
+  props: IProps,
+  cur: Keyframe,
+  next: Keyframe,
+  newCurve: string,
+): void {
+  tempTransaction.current?.discard()
+  tempTransaction.current = null
+
+  const handles = handlesFromCssCubicBezierArgs(newCurve)
+  if (handles === null) return
+
+  tempTransaction.current = transactionSetCubicBezier(props, cur, next, handles)
+}
+
+function discardTempValue(
+  tempTransaction: React.MutableRefObject<CommitOrDiscard | null>,
+): void {
+  tempTransaction.current?.discard()
+  tempTransaction.current = null
+}
 
 function transactionSetCubicBezier(
   props: IProps,
@@ -450,9 +419,6 @@ export function mod(n: number, m: number) {
   return ((n % m) + m) % m
 }
 
-/**
- * Immediately invoked function. Used to limit the scope of the argument function.
- */
-function iif<T>(fn: () => T): T {
-  return fn()
+function setTimeoutFunction(f: Function, timeout?: number) {
+  return () => setTimeout(f, timeout)
 }
