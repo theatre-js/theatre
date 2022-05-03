@@ -20,7 +20,10 @@ import type {Atom, Pointer} from '@theatre/dataverse'
 import type {Draft} from 'immer'
 import {createDraft, finishDraft} from 'immer'
 import type {Store} from 'redux'
-import {persistStateOfStudio} from './persistStateOfStudio'
+import {
+  clearPersistentStorage,
+  persistStateOfStudio,
+} from './persistStateOfStudio'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import {generateDiskStateRevision} from './generateDiskStateRevision'
 
@@ -87,6 +90,11 @@ export default class StudioStore {
 
   getState(): FullStudioState {
     return this._reduxStore.getState()
+  }
+
+  clearPersistentStorage(persistenceKey: string): FullStudioState {
+    clearPersistentStorage(this._reduxStore, persistenceKey)
+    return this.getState()
   }
 
   /**

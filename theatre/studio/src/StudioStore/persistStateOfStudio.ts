@@ -5,6 +5,11 @@ import type {FullStudioState} from '@theatre/studio/store/index'
 import debounce from 'lodash-es/debounce'
 import type {Store} from 'redux'
 
+const lastStateByStore = new WeakMap<
+  Store<FullStudioState>,
+  StudioPersistentState
+>()
+
 export const persistStateOfStudio = (
   reduxStore: Store<FullStudioState>,
   onInitialize: () => void,
@@ -19,11 +24,11 @@ export const persistStateOfStudio = (
 
   loadFromPersistentStorage()
 
-  let lastState = getState()
   const persist = () => {
     const newState = getState()
+    const lastState = lastStateByStore.get(reduxStore)
     if (newState === lastState) return
-    lastState = newState
+    lastStateByStore.set(reduxStore, newState)
     localStorage.setItem(storageKey, JSON.stringify(newState))
   }
   reduxStore.subscribe(debounce(persist, 1000))
@@ -53,4 +58,16 @@ export const persistStateOfStudio = (
       onInitialize()
     }
   }
+}
+
+export const clearPersistentStorage = (
+  reduxStore: Store<FullStudioState>,
+  localStoragePrefix: string,
+) => {
+  const storageKey = localStoragePrefix + '.persistent'
+  const currentState = reduxStore.getState().$persistent
+  localStorage.removeItem(storageKey)
+  // prevent the current state from being persistent on window unload,
+  // unless further state changes are made.
+  lastStateByStore.set(reduxStore, currentState)
 }
