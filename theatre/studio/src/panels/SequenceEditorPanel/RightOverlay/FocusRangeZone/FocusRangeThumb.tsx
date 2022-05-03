@@ -281,7 +281,7 @@ const FocusRangeThumb: React.FC<{
 
   const existingRange = useVal(existingRangeD)
 
-  useLockFrameStampPosition(isDragging, existingRange!.range[thumbType])
+  useLockFrameStampPosition(isDragging, existingRange?.range[thumbType] ?? 0)
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
