@@ -1,9 +1,11 @@
-import React, {useContext, useMemo} from 'react'
+import React, {useContext, useEffect, useMemo} from 'react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
 /** See {@link PointerCapturing} */
 export type CapturedPointer = {
   release(): void
+  /** Double check that you still have the current capture and weren't forcibly released */
+  isCapturing(): boolean
 }
 
 /**
@@ -23,41 +25,73 @@ export type PointerCapturing = {
   capturePointer(debugReason: string): CapturedPointer
 }
 
-type PointerCapturingFn = (forDebugName: string) => PointerCapturing
+type InternalPointerCapturing = {
+  capturing: PointerCapturing
+  forceRelease(): void
+}
+
+type PointerCapturingFn = (forDebugName: string) => InternalPointerCapturing
+
+// const logger = console
 
 function _usePointerCapturingContext(): PointerCapturingFn {
-  let [currentCapture, setCurrentCapture] = React.useState<null | {
+  type CaptureInfo = {
     debugOwnerName: string
     debugReason: string
-  }>(null)
+  }
+  let currentCaptureRef = React.useRef<null | CaptureInfo>(null)
 
   return (forDebugName) => {
-    return {
+    /** keep track of the captures being made by this user of {@link usePointerCapturing} */
+    let localCapture: CaptureInfo | null
+    const updateCapture = (to: CaptureInfo | null): CaptureInfo | null => {
+      localCapture = to
+      currentCaptureRef.current = to
+      return to
+    }
+    const capturing: PointerCapturing = {
       capturePointer(reason) {
         // logger.log('Capturing pointer', {forDebugName, reason})
-        if (currentCapture != null) {
+        if (currentCaptureRef.current != null) {
           throw new Error(
-            `"${forDebugName}" attempted capturing pointer for "${reason}" while already captured by "${currentCapture.debugOwnerName}" for "${currentCapture.debugReason}"`,
+            `"${forDebugName}" attempted capturing pointer for "${reason}" while already captured by "${currentCaptureRef.current.debugOwnerName}" for "${currentCaptureRef.current.debugReason}"`,
           )
         }
 
-        setCurrentCapture({debugOwnerName: forDebugName, debugReason: reason})
+        const releaseCapture = updateCapture({
+          debugOwnerName: forDebugName,
+          debugReason: reason,
+        })
 
-        const releaseCapture = currentCapture
         return {
+          isCapturing() {
+            return releaseCapture === currentCaptureRef.current
+          },
           release() {
-            if (releaseCapture === currentCapture) {
+            if (releaseCapture === currentCaptureRef.current) {
               // logger.log('Releasing pointer', {
               //   forDebugName,
               //   reason,
               // })
-              setCurrentCapture(null)
+              updateCapture(null)
+              return true
             }
+            return false
           },
         }
       },
       isPointerBeingCaptured() {
-        return currentCapture != null
+        return currentCaptureRef.current != null
+      },
+    }
+
+    return {
+      capturing,
+      forceRelease() {
+        if (currentCaptureRef.current === localCapture) {
+          // logger.log('Force releasing pointer', currentCaptureRef.current)
+          updateCapture(null)
+        }
       },
     }
   }
@@ -96,7 +130,16 @@ export function ProvidePointerCapturing(props: {
 
 export function usePointerCapturing(forDebugName: string): PointerCapturing {
   const pointerCapturingFn = useContext(PointerCapturingContext)
-  return useMemo(() => {
+  const control = useMemo(() => {
     return pointerCapturingFn(forDebugName)
   }, [forDebugName, pointerCapturingFn])
+
+  useEffect(() => {
+    return () => {
+      // force release on unmount
+      control.forceRelease()
+    }
+  }, [forDebugName, pointerCapturingFn])
+
+  return control.capturing
 }

@@ -8,6 +8,7 @@ import type {
   WithoutSheetInstance,
 } from '@theatre/shared/utils/addresses'
 import type {StrictRecord} from '@theatre/shared/utils/types'
+import type {PointableSet} from '@theatre/shared/utils/PointableSet'
 import type Project from '@theatre/core/projects/Project'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
@@ -15,6 +16,7 @@ import type {
   ObjectAddressKey,
   PaneInstanceId,
   ProjectId,
+  SequenceMarkerId,
   SheetId,
   SheetInstanceId,
   UIPanelId,
@@ -70,12 +72,32 @@ export type PaneInstanceDescriptor = {
 }
 
 /**
+ * Marker allows you to mark notable positions in your sequence.
+ *
+ * See root {@link StudioHistoricState}
+ */
+export type StudioHistoricStateSequenceEditorMarker = {
+  id: SequenceMarkerId
+  /**
+   * The position this marker takes in the sequence.
+   *
+   * Usually, this value is measured in seconds, but the unit could be varied based on the kind of
+   * unit you're using for mapping to the position (e.g. Position=1 = 10px of scrolling)
+   */
+  position: number
+}
+
+/**
  * See parent {@link StudioHistoricStateProject}.
  * See root {@link StudioHistoricState}
  */
 export type StudioHistoricStateProjectSheet = {
   selectedInstanceId: undefined | SheetInstanceId
   sequenceEditor: {
+    markerSet?: PointableSet<
+      SequenceMarkerId,
+      StudioHistoricStateSequenceEditorMarker
+    >
     selectedPropsByObject: StrictRecord<
       ObjectAddressKey,
       StrictRecord<PathToProp_Encoded, keyof typeof graphEditorColors>
@@ -88,16 +110,6 @@ export type StudioHistoricStateProject = {
   stateBySheetId: StrictRecord<SheetId, StudioHistoricStateProjectSheet>
 }
 
-/**
- * {@link StudioHistoricState} includes both studio and project data, and
- * contains data changed for an undo/redo history.
- *
- * ## Internally
- *
- * We use immer `Draft`s to encapsulate this whole state to then be operated
- * on by each transaction. The derived values from the store will also include
- * the application of the "temp transactions" stack.
- */
 export type StudioHistoricState = {
   projects: {
     stateByProjectId: StrictRecord<ProjectId, StudioHistoricStateProject>

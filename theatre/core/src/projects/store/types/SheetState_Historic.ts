@@ -28,6 +28,7 @@ export type HistoricPositionalSequence = {
   type: 'PositionalSequence'
   length: number
   /**
+   * Given the most common case of tracking a sequence against time (where 1 second = position 1),
    * If set to, say, 30, then the keyframe editor will try to snap all keyframes
    * to a 30fps grid
    */
