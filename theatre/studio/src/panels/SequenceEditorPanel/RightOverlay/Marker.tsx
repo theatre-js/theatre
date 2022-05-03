@@ -2,7 +2,7 @@ import type {Pointer} from '@theatre/dataverse'
 import {useVal} from '@theatre/react'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
-import {lockedCursorCssPropName} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {lockedCursorCssVarName} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React from 'react'
@@ -27,7 +27,7 @@ const MarkerDot = styled.div`
   // ref: https://styled-components.com/docs/basics#pseudoelements-pseudoselectors-and-nesting
   #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
-    cursor: var(${lockedCursorCssPropName});
+    cursor: var(${lockedCursorCssVarName});
   }
 
   &:hover {

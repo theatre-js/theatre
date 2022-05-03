@@ -16,7 +16,7 @@ import styled from 'styled-components'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {
-  lockedCursorCssPropName,
+  lockedCursorCssVarName,
   useCssCursorLock,
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
@@ -65,7 +65,7 @@ const HitZone = styled.div`
 
   #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
-    cursor: var(${lockedCursorCssPropName});
+    cursor: var(${lockedCursorCssVarName});
 
     &:hover:after {
       position: absolute;

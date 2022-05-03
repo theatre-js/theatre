@@ -21,7 +21,7 @@ import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import PlayheadPositionPopover from './PlayheadPositionPopover'
 import {getIsPlayheadAttachedToFocusRange} from '@theatre/studio/UIRoot/useKeyboardShortcuts'
 import {
-  lockedCursorCssPropName,
+  lockedCursorCssVarName,
   useCssCursorLock,
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -51,7 +51,7 @@ const Rod = styled.div`
 
   #pointer-root.draggingPositionInSequenceEditor &:not(.seeking) {
     /* pointer-events: auto; */
-    /* cursor: var(${lockedCursorCssPropName}); */
+    /* cursor: var(${lockedCursorCssVarName}); */
 
     &:after {
       position: absolute;
@@ -81,7 +81,7 @@ const Thumb = styled.div`
 
   #pointer-root.draggingPositionInSequenceEditor &:not(.seeking) {
     pointer-events: auto;
-    cursor: var(${lockedCursorCssPropName});
+    cursor: var(${lockedCursorCssVarName});
   }
 
   ${Container}.playheadattachedtofocusrange > & {
