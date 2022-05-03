@@ -74,7 +74,7 @@ const PlayheadPositionPopover: React.FC<{
 
     return (
       <Container>
-        <Label>Playhead position</Label>
+        <Label>Sequence position</Label>
         <BasicNumberInput
           value={Number(sequence.position.toFixed(3))}
           {...fns}
