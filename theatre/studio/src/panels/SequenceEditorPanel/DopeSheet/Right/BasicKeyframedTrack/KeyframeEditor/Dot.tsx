@@ -14,7 +14,10 @@ import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {
+  lockedCursorCssPropName,
+  useCssCursorLock,
+} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import SnapCursor from './SnapCursor.svg'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 
@@ -57,6 +60,8 @@ const HitZone = styled.div`
 
   #pointer-root.draggingPositionInSequenceEditor & {
     pointer-events: auto;
+    cursor: var(${lockedCursorCssPropName});
+
     &:hover:after {
       position: absolute;
       top: calc(50% - ${snapCursorSize / 2}px);

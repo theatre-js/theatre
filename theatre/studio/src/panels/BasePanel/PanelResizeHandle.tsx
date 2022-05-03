@@ -11,14 +11,10 @@ import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const Base = styled.div`
   position: absolute;
-  z-index: 10;
   ${pointerEventsAutoInNormalMode};
   &:after {
     position: absolute;
-    top: -2px;
-    right: -2px;
-    bottom: -2px;
-    left: -2px;
+    inset: -5px;
     display: block;
     content: ' ';
   }
@@ -40,55 +36,70 @@ const Base = styled.div`
   }
 `
 
-const Horizontal = styled(Base)`
-  left: 0;
-  right: 0;
+const Side = styled(Base)`
+  /**
+  The horizintal/vertical resize handles have z-index:-1 and are offset 1px outside of the panel
+  to make sure they don't occlude any element that pops out of the panel (like the Playhead in SequenceEditorPanel).
+
+  This means that panels will always need an extra 1px margin for their resize handles to be visible, but that's not a problem
+  that we have to deal with right now (if it is at all a problem).
+  
+   */
+  z-index: -1;
+`
+
+const Horizontal = styled(Side)`
+  left: 0px;
+  right: 0px;
   height: 1px;
 `
 
 const Top = styled(Horizontal)`
-  top: 0;
+  top: -1px;
 `
 
 const Bottom = styled(Horizontal)`
-  bottom: 0;
+  bottom: -1px;
 `
 
-const Vertical = styled(Base)`
-  top: 0;
-  bottom: 0;
+const Vertical = styled(Side)`
+  z-index: -1;
+  top: -1px;
+  bottom: -1px;
   width: 1px;
 `
 
 const Left = styled(Vertical)`
-  left: 0;
+  left: -1px;
 `
 
 const Right = styled(Vertical)`
-  right: 0;
+  right: -1px;
 `
 
-const Square = styled(Base)`
+const Angle = styled(Base)`
+  // The angles have z-index: 10 to make sure they _do_ occlude other elements in the panel.
+  z-index: 10;
   width: 8px;
   height: 8px;
 `
 
-const TopLeft = styled(Square)`
+const TopLeft = styled(Angle)`
   top: 0;
   left: 0;
 `
 
-const TopRight = styled(Square)`
+const TopRight = styled(Angle)`
   top: 0;
   right: 0;
 `
 
-const BottomLeft = styled(Square)`
+const BottomLeft = styled(Angle)`
   bottom: 0;
   left: 0;
 `
 
-const BottomRight = styled(Square)`
+const BottomRight = styled(Angle)`
   bottom: 0;
   right: 0;
 `

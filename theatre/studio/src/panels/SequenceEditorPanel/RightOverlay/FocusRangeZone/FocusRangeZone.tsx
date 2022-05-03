@@ -12,20 +12,25 @@ import {
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
+import useHoverWithoutDescendants from '@theatre/studio/uiComponents/useHoverWithoutDescendants'
+import useKeyDown from '@theatre/studio/uiComponents/useKeyDown'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {clamp} from 'lodash-es'
-import React, {useMemo, useRef} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import FocusRangeStrip, {focusRangeStripTheme} from './FocusRangeStrip'
 import FocusRangeThumb from './FocusRangeThumb'
 
-const Container = styled.div`
+const Container = styled.div<{isShiftDown: boolean}>`
   position: absolute;
   height: ${() => topStripHeight}px;
   left: 0;
   right: 0;
   box-sizing: border-box;
+  /* Use the "grab" cursor if the shift key is up, which is the one used on the top strip of the sequence editor */
+  cursor: ${(props) => (props.isShiftDown ? 'ew-resize' : 'move')};
 `
 
 const FocusRangeZone: React.FC<{
@@ -55,44 +60,28 @@ const FocusRangeZone: React.FC<{
     usePanelDragZoneGestureHandlers(layoutP, panelStuffRef),
   )
 
-  const [onMouseEnter, onMouseLeave] = useMemo(() => {
-    let unlock: VoidFn | undefined
-    return [
-      function onMouseEnter(event: React.MouseEvent) {
-        if (event.shiftKey === false) {
-          if (unlock) {
-            const u = unlock
-            unlock = undefined
-            u()
-          }
-          unlock = panelStuffRef.current.addBoundsHighlightLock()
-        }
-      },
-      function onMouseLeave(event: React.MouseEvent) {
-        if (event.shiftKey === false) {
-          if (unlock) {
-            const u = unlock
-            unlock = undefined
-            u()
-          }
-        }
-      },
-    ]
-  }, [])
+  const isShiftDown = useKeyDown('Shift')
+  const isPointerHovering = useHoverWithoutDescendants(containerNode)
+
+  useEffect(() => {
+    if (!isShiftDown && isPointerHovering) {
+      const unlock = panelStuffRef.current.addBoundsHighlightLock()
+      return unlock
+    }
+  }, [!isShiftDown && isPointerHovering])
 
   return usePrism(() => {
     return (
       <Container
         ref={containerRef as $IntentionalAny}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
+        isShiftDown={isShiftDown}
       >
         <FocusRangeStrip layoutP={layoutP} />
         <FocusRangeThumb thumbType="start" layoutP={layoutP} />
         <FocusRangeThumb thumbType="end" layoutP={layoutP} />
       </Container>
     )
-  }, [layoutP, existingRangeD])
+  }, [layoutP, existingRangeD, isShiftDown])
 }
 
 export default FocusRangeZone
@@ -101,6 +90,14 @@ function usePanelDragZoneGestureHandlers(
   layoutP: Pointer<SequenceEditorPanelLayout>,
   panelStuffRef: React.MutableRefObject<ReturnType<typeof usePanel>>,
 ) {
+  const [mode, setMode] = useState<'none' | 'creating' | 'moving-panel'>('none')
+
+  useCssCursorLock(
+    mode !== 'none',
+    'dragging',
+    mode === 'creating' ? 'ew-resize' : 'move',
+  )
+
   return useMemo((): Parameters<typeof useDrag>[1] => {
     const focusRangeCreationGestureHandlers = (): Parameters<
       typeof useDrag
@@ -175,7 +172,7 @@ function usePanelDragZoneGestureHandlers(
           }
           tempTransaction = undefined
         },
-        lockCursorTo: 'grabbing',
+        lockCursorTo: 'ew-resize',
       }
     }
 
@@ -234,22 +231,21 @@ function usePanelDragZoneGestureHandlers(
     return {
       onDragStart(event) {
         if (event.shiftKey) {
+          setMode('creating')
           currentGestureHandlers = focusRangeCreationGestureHandlers()
         } else {
+          setMode('moving-panel')
           currentGestureHandlers = panelMoveGestureHandlers()
         }
         currentGestureHandlers.onDragStart!(event)
       },
       onDrag(dx, dy, event) {
-        if (!currentGestureHandlers) {
-          console.error('oh no')
-        }
         currentGestureHandlers!.onDrag(dx, dy, event)
       },
       onDragEnd(dragHappened) {
+        setMode('none')
         currentGestureHandlers!.onDragEnd!(dragHappened)
       },
-      lockCursorTo: 'grabbing',
     }
   }, [layoutP, panelStuffRef])
 }

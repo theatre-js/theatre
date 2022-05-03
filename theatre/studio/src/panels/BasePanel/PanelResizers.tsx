@@ -1,8 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
 import PanelResizeHandle from './PanelResizeHandle'
-
-const Container = styled.div``
 
 const PanelResizers: React.FC<{}> = (props) => {
   return (

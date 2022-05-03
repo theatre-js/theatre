@@ -179,7 +179,11 @@ const pointerPositionInUnitSpace = (
 
     if (
       inRange(clientX, x, x + rightWidth) &&
-      inRange(clientY, y, y + height)
+      inRange(
+        clientY,
+        y + 16 /* leaving a bit of space for the top stip here */,
+        y + height,
+      )
     ) {
       const posInRightDims = clientX - x
       const posInUnitSpace = clippedSpaceToUnitSpace(posInRightDims)
