@@ -1,5 +1,4 @@
-import type {
-  EditableFactoryConfig} from './editableFactoryConfigUtils';
+import type {EditableFactoryConfig} from './editableFactoryConfigUtils'
 import {
   createNumberPropConfig,
   createVector,
@@ -12,7 +11,8 @@ import type {
   OrthographicCamera,
   PerspectiveCamera,
   PointLight,
-  SpotLight} from 'three';
+  SpotLight,
+} from 'three'
 import {
   BoxHelper,
   CameraHelper,
@@ -28,6 +28,8 @@ const baseObjectConfig = {
     scale: createVectorPropConfig('scale', createVector([1, 1, 1])),
   },
   useTransformControls: true,
+  icon: 'cube' as const,
+  createHelper: (object: Object3D) => new BoxHelper(object, selectionColor),
 }
 
 const baseLightConfig = {
@@ -94,6 +96,10 @@ const defaultEditableFactoryConfig = {
     zoom: createNumberPropConfig('zoom', 1),
   }),
   orthographicCamera: baseCameraConfig,
+  points: baseObjectConfig,
+  line: baseObjectConfig,
+  lineLoop: baseObjectConfig,
+  lineSegments: baseObjectConfig,
 }
 
 // Assert that the config is indeed of EditableFactoryConfig without actually
