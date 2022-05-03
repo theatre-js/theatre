@@ -3,6 +3,27 @@ import {types} from '@theatre/core'
 import type {Object3D} from 'three'
 import type {IconID} from './icons'
 
+export type Helper = Object3D & {
+  update?: () => void
+}
+type PropConfig<T> = {
+  parse: (props: Record<string, any>) => T
+  apply: (value: T, object: any) => void
+  type: IShorthandCompoundProps
+}
+type Props = Record<string, PropConfig<any>>
+type Meta<T> = {
+  useTransformControls: boolean
+  updateObject?: (object: T) => void
+  icon: IconID
+  dimensionless?: boolean
+  createHelper: (object: T) => Helper
+}
+export type ObjectConfig<T> = {props: Props} & Meta<T>
+export type EditableFactoryConfig = Partial<
+  Record<keyof JSX.IntrinsicElements, ObjectConfig<any>>
+>
+
 type Vector3 = {
   x: number
   y: number
@@ -17,12 +38,6 @@ export const createVector = (components?: [number, number, number]) => {
         y: 0,
         z: 0,
       }
-}
-
-type PropConfig<T> = {
-  parse: (props: Record<string, any>) => T
-  apply: (value: T, object: any) => void
-  type: IShorthandCompoundProps
 }
 
 export const createVectorPropConfig = (
@@ -73,25 +88,6 @@ export const createNumberPropConfig = (
     [key]: types.number(defaultValue, {nudgeMultiplier}),
   },
 })
-
-export type Helper = Object3D & {
-  update?: () => void
-}
-
-type Props = Record<string, any>
-type Meta<T> = {
-  useTransformControls: boolean
-  updateObject?: (object: T) => void
-  icon: IconID
-  dimensionless?: boolean
-  createHelper: (object: T) => Helper
-}
-
-export type ObjectConfig<T> = {props: Props} & Meta<T>
-
-export type EditableFactoryConfig = Partial<
-  Record<keyof JSX.IntrinsicElements, ObjectConfig<any>>
->
 
 export const extendObjectProps = <T extends {props: {}}>(
   objectConfig: T,
