@@ -1,6 +1,7 @@
-import type {IShorthandCompoundProps} from '@theatre/core';
-import { types} from '@theatre/core'
+import type {IShorthandCompoundProps} from '@theatre/core'
+import {types} from '@theatre/core'
 import type {Object3D} from 'three'
+import type {IconID} from './icons'
 
 type Vector3 = {
   x: number
@@ -70,14 +71,6 @@ export const createNumberPropConfig = (
     [key]: types.number(defaultValue, {nudgeMultiplier: 0.01}),
   },
 })
-
-export type IconID =
-  | 'collection'
-  | 'cube'
-  | 'lightBulb'
-  | 'spotLight'
-  | 'sun'
-  | 'camera'
 
 export type Helper = Object3D & {
   update?: () => void

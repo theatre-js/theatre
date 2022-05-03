@@ -8,8 +8,9 @@ import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
 import {getEditorSheetObject} from './editorStuff'
+import type {IconID} from '../icons';
 import icons from '../icons'
-import type {Helper, IconID} from '../editableFactoryConfigUtils'
+import type {Helper} from '../editableFactoryConfigUtils'
 import {useFrame, useThree} from '@react-three/fiber'
 
 export interface EditableProxyProps {
