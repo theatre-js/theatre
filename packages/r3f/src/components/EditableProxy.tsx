@@ -8,10 +8,10 @@ import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
 import {getEditorSheetObject} from './editorStuff'
-import type {IconID} from '../icons';
+import type {IconID} from '../icons'
 import icons from '../icons'
 import type {Helper} from '../editableFactoryConfigUtils'
-import {useFrame, useThree} from '@react-three/fiber'
+import {invalidate, useFrame, useThree} from '@react-three/fiber'
 
 export interface EditableProxyProps {
   editableName: string
@@ -63,10 +63,12 @@ const EditableProxy: VFC<EditableProxyProps> = ({
   useEffect(() => {
     if (selected === uniqueName || hovered) {
       scene.add(helper)
+      invalidate()
     }
 
     return () => {
       scene.remove(helper)
+      invalidate()
     }
   }, [selected, hovered, helper, scene])
   useFrame(() => {
