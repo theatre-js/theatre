@@ -68,7 +68,7 @@ console.log(variableB.get()) // prints 'some value' in the console
 ```
 
 > As you can see there's a naming convention here for boxes (`variableB`),
-> pointers (`variableP`), derivations (`variableP`), etc...
+> pointers (`variableP`), derivations (`variableD`), etc...
 
 Now we can change the value:
 
@@ -110,15 +110,65 @@ setTimeout(() => {
 
 A few notes about the example above:
 
-- `variableB.derivation.changesWithoutValues()` returns a tappable that we can
+- `variableB.derivation.changesWithoutValues()` returns a derivation / tappable that we can
   tap into (observe).
 - The `tap()` method returns the `untap()` function which unsubscribes the observer function
 - As long as `variableB` is tapped (observed) `variableB.derivation.isHot` will
   bet set to `true` automatically
 
-What if you want to keep a derivation hot manually even if there's no tappable
-attached to it anymore? In this case you can use the `keepHot()` method as seen
-below: out this modified version of the previous example:
+## Hotness
+As we saw above, derivations may or may not be "hot" 
+(the same concept as "hot" Observables<sup>[ref](https://medium.com/codingthesmartway-com-blog/getting-started-with-rxjs-part-3-hot-and-cold-observables-4713757c9a88)</sup>). A derivation
+is hot if and only if it is being tapped.
+
+If you want to keep a derivation hot manually even if there's no tappable
+attached to it anymore, you can use the `keepHot()` method.  Why would you
+want to keep a derivation hot? Check out this example:
+
+<table>
+<tr>
+  <td> 
+   
+without `keepHot()` 🥶 
+   
+  </td>
+  <td> 
+      
+with `keepHot()` 🥵 
+      
+  </td>
+</tr>
+<tr>
+  <td>
+
+```typescript
+const variableD = prism(() => {
+  return performance.now()
+})
+console.log(variableD.getValue()) // e.g. 113.5
+console.log(variableD.getValue()) // e.g. 114
+// Notice they give different values 
+```
+   
+  </td>
+  <td>
+
+```typescript
+const variableD = prism(() => {
+  return performance.now()
+})
+variableD.keepHot()
+console.log(variableD.getValue()) // e.g. 113
+console.log(variableD.getValue()) // e.g. 113
+// Notice they give the same value! 
+```
+
+  </td>
+</tr>
+</table>
+
+To see a full example of `keepHot`, check out this modified version 
+of the example from the section above:
 
 ```typescript
 variableB.set('some new value')
@@ -150,6 +200,8 @@ setTimeout(() => {
   console.log('Interval cleared.')
 }, 7000)
 ```
+
+How does `keepHot` work? It's super simple, it just adds a tap to the derivation ([source](https://github.com/theatre-js/theatre/blob/aec6b2a25135e6264e7529e7d3800c4bc3badee6/packages/dataverse/src/derivations/AbstractDerivation.ts#L103-L105)).
 
 ### `map()`
 

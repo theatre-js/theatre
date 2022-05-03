@@ -10,7 +10,7 @@ import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEdito
 import DopeSheetSelectionView from './DopeSheetSelectionView'
 import HorizontallyScrollableArea from './HorizontallyScrollableArea'
 import SheetRow from './SheetRow'
-import FocusRangeArea from './FocusRangeArea'
+import FocusRangeCurtains from './FocusRangeCurtains'
 
 export const contentWidth = 1000000
 
@@ -27,7 +27,7 @@ const Background = styled.div<{width: number}>`
   position: absolute;
   top: 0;
   right: 0;
-  width: ${(props) => props.width};
+  width: ${(props) => props.width}px;
   bottom: 0;
   z-index: ${() => zIndexes.rightBackground};
   overflow: hidden;
@@ -49,7 +49,7 @@ const Right: React.FC<{
     return (
       <>
         <HorizontallyScrollableArea layoutP={layoutP} height={height}>
-          <FocusRangeArea layoutP={layoutP} />
+          <FocusRangeCurtains layoutP={layoutP} />
           <DopeSheetSelectionView layoutP={layoutP}>
             <ListContainer style={{top: tree.top + 'px'}}>
               <SheetRow leaf={tree} layoutP={layoutP} />
