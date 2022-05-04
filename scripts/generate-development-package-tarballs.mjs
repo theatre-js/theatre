@@ -6,12 +6,12 @@ import os from 'os'
 import path from 'path'
 
 const packagesToPack = [
-  // '@theatre/core',
+  '@theatre/core',
   '@theatre/studio',
-  // '@theatre/dataverse',
-  // '@theatre/react',
-  // '@theatre/browser-bundles',
-  // '@theatre/r3f',
+  '@theatre/dataverse',
+  '@theatre/react',
+  '@theatre/browser-bundles',
+  '@theatre/r3f',
 ]
 
 /**
@@ -68,9 +68,7 @@ async function assignVersions(
     for (const deps of [dependencies, peerDependencies, devDependencies]) {
       if (!deps) continue
       for (let wpObject of workspacesListObjects) {
-        console.log(wpObject.name, deps[wpObject.name])
         if (deps[wpObject.name]) {
-          // console.log(wpObject.name, deps)
           // TODO: create a function for generating the tarball's name
           // and use it everywhere to avoid duplicating these lines
           const tarballName = `${wpObject.name
@@ -96,7 +94,6 @@ async function assignVersions(
     )
     await $`prettier --write ${packagePathRelativeFromRoot + '/package.json'}`
   }
-  throw new Error('stop')
 }
 
 ;(async function () {
