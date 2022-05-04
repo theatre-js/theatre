@@ -1,7 +1,7 @@
 import type {IProject, ISheet, ISheetObject} from '@theatre/core'
 import studioTicker from '@theatre/studio/studioTicker'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
-import {prism} from '@theatre/dataverse'
+import {prism, val} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {IScrub} from '@theatre/studio/Scrub'
@@ -16,6 +16,8 @@ import getStudio from './getStudio'
 import type React from 'react'
 import {debounce} from 'lodash-es'
 import type Sheet from '@theatre/core/sheets/Sheet'
+import type {ProjectState_Historic} from '@theatre/core/projects/store/storeTypes'
+import type Project from '@theatre/core/projects/Project'
 
 export interface ITransactionAPI {
   /**
@@ -343,6 +345,41 @@ export interface IStudio {
    * ```
    */
   createContentOfSaveFile(projectId: string): Record<string, unknown>
+
+  /**
+   * A Pointer to the project’s state. Points to the root of the same object
+   * serialized by `createContentOfSaveFile()`. Useful for subscribing to
+   * timeline changes in any scope, from changes affecting a single property
+   * of an object of interest, to all changes anywhere in the timeline.
+   *
+   * @param projectId - same projectId as in `core.getProject(projectId)`
+   *
+   * @example
+   * To auto-save on change:
+   * ```ts
+   * const projectId = "project"
+   * const pointer = studio.getProjectState(projectId)
+   * const unsubscribe = onChange(
+   *   pointer.sheetsById,
+   *   debounce(() => {
+   *     const json = studio.createContentOfSaveFile(projectId)
+   *     // ... save `json` somewhere
+   *   })
+   * );
+   * ```
+   *
+   * @example
+   * To be notified of sequencing changes affecting any property of a single
+   * object, including static property changes and easing curve changes:
+   * ```ts
+   * const sheetP = studio.getProjectState(projectId).sheetsById[sheetId]
+   * const unsubcribes = [
+   *   onChange(sheetP.sequence.tracksByObject[objectKey], handleChange),
+   *   onChange(sheetP.staticOverrides.byObject[objectKey], handleChange)
+   * ]
+   * ```
+   */
+  getProjectState(projectId: string): Pointer<ProjectState_Historic>
 }
 
 export default class TheatreStudio implements IStudio {
@@ -476,5 +513,13 @@ export default class TheatreStudio implements IStudio {
 
   createContentOfSaveFile(projectId: string): Record<string, unknown> {
     return getStudio().createContentOfSaveFile(projectId) as $IntentionalAny
+  }
+
+  getProjectState(projectId: string): Pointer<ProjectState_Historic> {
+    let project: Project = val(getStudio().projectsP[projectId])
+    if (!project) {
+      throw new Error(`Project ${projectId} has not been initialized.`)
+    }
+    return project.pointers.historic
   }
 }
