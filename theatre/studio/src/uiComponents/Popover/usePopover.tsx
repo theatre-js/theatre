@@ -1,6 +1,7 @@
 import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {PortalContext} from 'reakit'
+import type {AbsolutePlacementBoxConstraints} from './TooltipWrapper';
 import TooltipWrapper from './TooltipWrapper'
 
 export type OpenFn = (e: React.MouseEvent, target: HTMLElement) => void
@@ -21,10 +22,7 @@ export default function usePopover(
     closeWhenPointerIsDistant?: boolean
     pointerDistanceThreshold?: number
     closeOnClickOutside?: boolean
-    minX?: number
-    maxX?: number
-    minY?: number
-    maxY?: number
+    constraints?: AbsolutePlacementBoxConstraints
   },
   render: () => React.ReactElement,
 ): [node: React.ReactNode, open: OpenFn, close: CloseFn, isOpen: boolean] {
@@ -66,12 +64,7 @@ export default function usePopover(
         target={state.target}
         onClickOutside={onClickOutside}
         onPointerOutside={onPointerOutside}
-        constraints={{
-          minX: opts.minX,
-          maxX: opts.maxX,
-          minY: opts.minY,
-          maxY: opts.maxY,
-        }}
+        constraints={opts.constraints}
       />,
       portalLayer!,
     )

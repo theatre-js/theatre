@@ -100,8 +100,10 @@ const Connector: React.FC<IProps> = (props) => {
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {
       closeWhenPointerIsDistant: !isPointerBeingCaptured(),
-      minX: rightDims.screenX + POPOVER_MARGIN,
-      maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN,
+      constraints: {
+        minX: rightDims.screenX + POPOVER_MARGIN,
+        maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN,
+      },
     },
     () => {
       return (

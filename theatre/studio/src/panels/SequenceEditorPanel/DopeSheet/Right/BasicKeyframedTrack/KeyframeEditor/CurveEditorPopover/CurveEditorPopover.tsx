@@ -349,7 +349,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
           <NoResultsFoundContainer>No results found</NoResultsFoundContainer>
         ) : undefined}
       </OptionsContainer>
-      <CurveEditorContainer>
+      <CurveEditorContainer onClick={() => inputRef.current?.focus()}>
         <CurveSegmentEditor
           {...props}
           onCurveChange={onCurveChange}

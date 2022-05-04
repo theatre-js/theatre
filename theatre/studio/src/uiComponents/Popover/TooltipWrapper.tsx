@@ -11,7 +11,7 @@ import {clamp} from 'lodash-es'
 
 const minimumDistanceOfArrowToEdgeOfPopover = 8
 
-type AbsolutePlacementBoxConstraints = {
+export type AbsolutePlacementBoxConstraints = {
   minX?: number
   maxX?: number
   minY?: number

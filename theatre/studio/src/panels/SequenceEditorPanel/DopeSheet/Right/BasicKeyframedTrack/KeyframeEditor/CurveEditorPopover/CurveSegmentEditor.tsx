@@ -9,6 +9,7 @@ import type {CubicBezierHandles} from './shared'
 import {useFreezableMemo} from './useFreezableMemo'
 import {COLOR_BASE} from './colors'
 
+// Defines the dimensions of the SVG viewbox space
 const VIEWBOX_PADDING = 0.12
 const VIEWBOX_SIZE = 1 + VIEWBOX_PADDING * 2
 
@@ -16,6 +17,7 @@ const PATTERN_DOT_SIZE = 0.01
 const PATTERN_DOT_COUNT = 8
 const PATTERN_GRID_SIZE = (1 - PATTERN_DOT_SIZE) / (PATTERN_DOT_COUNT - 1)
 
+// The curve supports a gradient but currently is solid cyan
 const CURVE_START_OVERSHOOT_COLOR = '#3EAAA4'
 const CURVE_START_COLOR = '#3EAAA4'
 const CURVE_MID_START_COLOR = '#3EAAA4'
@@ -61,6 +63,11 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
 
+  // Calculations towards keeping the handles in the viewbox. The extremum space
+  // of this editor vertically scales to keep the handles in the viewbox of the
+  // SVG. This produces a nice "stretching space" effect while you are dragging
+  // the handles.
+  // Demo: https://user-images.githubusercontent.com/11082236/164542544-f1f66de2-f62e-44dd-b4cb-05b5f6e73a52.mp4
   const minY = Math.min(0, 1 - next.handles[1], 1 - cur.handles[3])
   const maxY = Math.max(1, 1 - next.handles[1], 1 - cur.handles[3])
   const h = Math.max(1, maxY - minY)
