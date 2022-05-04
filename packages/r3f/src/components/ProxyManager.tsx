@@ -6,7 +6,8 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {useEditorStore} from '../store'
+import type {Editable} from '../store';
+import { useEditorStore} from '../store'
 import {createPortal} from '@react-three/fiber'
 import EditableProxy from './EditableProxy'
 import type {OrbitControls} from 'three-stdlib'
@@ -15,8 +16,6 @@ import shallow from 'zustand/shallow'
 import type {Material, Mesh, Object3D} from 'three'
 import {MeshBasicMaterial, MeshPhongMaterial} from 'three'
 import studio from '@theatre/studio'
-import type {ISheetObject} from '@theatre/core'
-import type {$FixMe} from '../types'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
 import useInvalidate from './useInvalidate'
@@ -26,17 +25,17 @@ export interface ProxyManagerProps {
   orbitControlsRef: React.MutableRefObject<OrbitControls | null>
 }
 
-type IEditableProxy = {
+type IEditableProxy<T> = {
   portal: ReturnType<typeof createPortal>
   object: Object3D
-  sheetObject: ISheetObject<$FixMe>
+  editable: Editable<T>
 }
 
 const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
   const isBeingEdited = useRef(false)
   const editorObject = getEditorSheetObject()
-  const [sceneSnapshot, sheetObjects] = useEditorStore(
-    (state) => [state.sceneSnapshot, state.sheetObjects],
+  const [sceneSnapshot, editables] = useEditorStore(
+    (state) => [state.sceneSnapshot, state.editables],
     shallow,
   )
   const transformControlsMode =
@@ -51,7 +50,7 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
   const sceneProxy = useMemo(() => sceneSnapshot?.clone(), [sceneSnapshot])
   const [editableProxies, setEditableProxies] = useState<
     {
-      [name in string]?: IEditableProxy
+      [name in string]?: IEditableProxy<any>
     }
   >({})
 
@@ -63,7 +62,7 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
       return
     }
 
-    const editableProxies: {[name: string]: IEditableProxy} = {}
+    const editableProxies: {[name: string]: IEditableProxy<any>} = {}
 
     sceneProxy.traverse((object) => {
       if (object.userData.__editable) {
@@ -77,13 +76,12 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
             portal: createPortal(
               <EditableProxy
                 editableName={object.userData.__editableName}
-                editableType={object.userData.__editableType}
                 object={object}
               />,
               object.parent!,
             ),
             object: object,
-            sheetObject: sheetObjects[uniqueName]!,
+            editable: editables[uniqueName]!,
           }
         }
       }
@@ -94,25 +92,22 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
 
   const selected = useSelected()
   const editableProxyOfSelected = selected && editableProxies[selected]
+  const editable = selected ? editables[selected] : undefined
 
   // subscribe to external changes
   useEffect(() => {
-    if (!editableProxyOfSelected) return
+    if (!editableProxyOfSelected || !editable) return
     const object = editableProxyOfSelected.object
-    const sheetObject = editableProxyOfSelected.sheetObject
+    const sheetObject = editableProxyOfSelected.editable.sheetObject
+    const objectConfig = editable.objectConfig
 
     const setFromTheatre = (newValues: any) => {
-      object.position.set(
-        newValues.position.x,
-        newValues.position.y,
-        newValues.position.z,
-      )
-      object.rotation.set(
-        newValues.rotation.x,
-        newValues.rotation.y,
-        newValues.rotation.z,
-      )
-      object.scale.set(newValues.scale.x, newValues.scale.y, newValues.scale.z)
+      // @ts-ignore
+      Object.entries(objectConfig.props).forEach(([key, value]) => {
+        // @ts-ignore
+        return value.apply(newValues[key], object)
+      })
+      objectConfig.updateObject?.(object)
       invalidate()
     }
 
@@ -229,39 +224,43 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
   return (
     <>
       <primitive object={sceneProxy} />
-      {selected && editableProxyOfSelected && (
-        <TransformControls
-          mode={transformControlsMode}
-          space={transformControlsSpace}
-          orbitControlsRef={orbitControlsRef}
-          object={editableProxyOfSelected.object}
-          onObjectChange={() => {
-            const sheetObject = editableProxyOfSelected.sheetObject
-            const obj = editableProxyOfSelected.object
+      {selected &&
+        editableProxyOfSelected &&
+        editable &&
+        editable.objectConfig.useTransformControls && (
+          <TransformControls
+            mode={transformControlsMode}
+            space={transformControlsSpace}
+            orbitControlsRef={orbitControlsRef}
+            object={editableProxyOfSelected.object}
+            onObjectChange={() => {
+              const sheetObject = editableProxyOfSelected.editable.sheetObject
+              const obj = editableProxyOfSelected.object
 
-            scrub.capture(({set}) => {
-              set(sheetObject.props, {
-                position: {
-                  x: obj.position.x,
-                  y: obj.position.y,
-                  z: obj.position.z,
-                },
-                rotation: {
-                  x: obj.rotation.x,
-                  y: obj.rotation.y,
-                  z: obj.rotation.z,
-                },
-                scale: {
-                  x: obj.scale.x,
-                  y: obj.scale.y,
-                  z: obj.scale.z,
-                },
+              scrub.capture(({set}) => {
+                set(sheetObject.props, {
+                  ...sheetObject.value,
+                  position: {
+                    x: obj.position.x,
+                    y: obj.position.y,
+                    z: obj.position.z,
+                  },
+                  rotation: {
+                    x: obj.rotation.x,
+                    y: obj.rotation.y,
+                    z: obj.rotation.z,
+                  },
+                  scale: {
+                    x: obj.scale.x,
+                    y: obj.scale.y,
+                    z: obj.scale.z,
+                  },
+                })
               })
-            })
-          }}
-          onDraggingChange={(event) => (isBeingEdited.current = event.value)}
-        />
-      )}
+            }}
+            onDraggingChange={(event) => (isBeingEdited.current = event.value)}
+          />
+        )}
       {Object.values(editableProxies).map(
         (editableProxy) => editableProxy!.portal,
       )}
