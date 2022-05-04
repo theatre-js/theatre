@@ -726,3 +726,5 @@ export type PropTypeConfig =
   | PropTypeConfig_AllSimples
   | PropTypeConfig_Compound<$IntentionalAny>
   | PropTypeConfig_Enum
+
+export type {IShorthandCompoundProps}

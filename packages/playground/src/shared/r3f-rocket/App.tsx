@@ -1,5 +1,5 @@
 import {editable as e, RefreshSnapshot, SheetProvider} from '@theatre/r3f'
-import {OrbitControls, Stars} from '@react-three/drei'
+import { Stars} from '@react-three/drei'
 import {getProject} from '@theatre/core'
 import React, {Suspense, useState} from 'react'
 import {Canvas} from '@react-three/fiber'
@@ -85,12 +85,6 @@ function App() {
             <RefreshSnapshot />
             <Model url={sceneGLB} />
           </Suspense>
-          <OrbitControls
-            enablePan={false}
-            enableZoom={true}
-            maxPolarAngle={Math.PI / 2}
-            minPolarAngle={Math.PI / 2}
-          />
           <Stars radius={500} depth={50} count={1000} factor={10} />
         </SheetProvider>
       </Canvas>
