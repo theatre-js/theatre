@@ -32,6 +32,15 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+      - uses: actions/cache@v2
+        id: dev-package-uploader-cache
+        with:
+          path: '${{ github.workspace }}/dev-package-uploader/node_modules'
+          key:
+            ${{ runner.os }}-dev-package-uploader-cache-${{
+            hashFiles('scripts/dev-package-uploader/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dev-package-uploader-cache-
 
       - run: yarn install
       - run: yarn typecheck
@@ -45,3 +54,12 @@ jobs:
           custom-command: 'yarn test:e2e:ci'
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      - name: Install dependencies of the dev-package-uploader
+        working-directory: ${{ github.workspace }}/scripts/dev-package-uploader
+        run: npm install
+      - name: Publish the packages
+        env:
+          BUCKET: my-npm-packages
+          SECRET: ${{ secrets.DO_SPACES_SECRET }}
+          KEY: ${{ secrets.DO_SPACES_KEY }}
+        run: npx zx scripts/generate-development-package-tarballs.mjs
