@@ -6,12 +6,12 @@ import os from 'os'
 import path from 'path'
 
 const packagesToPack = [
-  '@theatre/core',
+  // '@theatre/core',
   '@theatre/studio',
-  '@theatre/dataverse',
-  '@theatre/react',
-  '@theatre/browser-bundles',
-  '@theatre/r3f',
+  // '@theatre/dataverse',
+  // '@theatre/react',
+  // '@theatre/browser-bundles',
+  // '@theatre/r3f',
 ]
 
 /**
@@ -44,7 +44,14 @@ async function generateAndPublishTarball(
 }
 
 //TODO: add jsDoc/reuse the function from `./release.mjs` (that script must be refactored for this)
-async function assignVersions(monorepoVersion, packagesWhoseVersionShouldBump) {
+async function assignVersions(
+  monorepoVersion,
+  workspacesListObjects,
+  latestCommitHash,
+) {
+  const packagesWhoseVersionShouldBump = workspacesListObjects.map(
+    (wpData) => wpData.location,
+  )
   for (const packagePathRelativeFromRoot of packagesWhoseVersionShouldBump) {
     const pathToPackage = path.resolve(
       __dirname,
@@ -57,7 +64,31 @@ async function assignVersions(monorepoVersion, packagesWhoseVersionShouldBump) {
       fs.readFileSync(pathToPackage, {encoding: 'utf-8'}),
     )
 
-    const newJson = {...original, version: monorepoVersion}
+    const {version, dependencies, peerDependencies, devDependencies} = original
+    for (const deps of [dependencies, peerDependencies, devDependencies]) {
+      if (!deps) continue
+      for (let wpObject of workspacesListObjects) {
+        console.log(wpObject.name, deps[wpObject.name])
+        if (deps[wpObject.name]) {
+          // console.log(wpObject.name, deps)
+          // TODO: create a function for generating the tarball's name
+          // and use it everywhere to avoid duplicating these lines
+          const tarballName = `${wpObject.name
+            // Get rid of the "@"
+            .slice(1)
+            // Replace the "/" with "-"
+            .replace('/', '-')}-${latestCommitHash}.tgz`
+          deps[wpObject.name] = `https://packages.fulop.dev/${tarballName}`
+        }
+      }
+    }
+    const newJson = {
+      ...original,
+      version,
+      dependencies,
+      peerDependencies,
+      devDependencies,
+    }
     fs.writeFileSync(
       path.join(pathToPackage),
       JSON.stringify(newJson, undefined, 2),
@@ -65,6 +96,7 @@ async function assignVersions(monorepoVersion, packagesWhoseVersionShouldBump) {
     )
     await $`prettier --write ${packagePathRelativeFromRoot + '/package.json'}`
   }
+  throw new Error('stop')
 }
 
 ;(async function () {
@@ -81,8 +113,10 @@ async function assignVersions(monorepoVersion, packagesWhoseVersionShouldBump) {
 
   // TODO: replace the dependency versions with the commit hash in the packages
   await assignVersions(
+    // TODO: don't use `0.4.8` for the package versions
+    `0.4.8-${latestCommitHash.stdout}`,
+    workspacesListObjects,
     latestCommitHash.stdout,
-    workspacesListObjects.map((wpData) => wpData.location),
   )
 
   await Promise.all(
