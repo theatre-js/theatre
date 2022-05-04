@@ -43,6 +43,30 @@ async function generateAndPublishTarball(
   await $`TARBALL_PATH=${pathToTarball} node scripts/dev-package-uploader/publish-package.js`
 }
 
+//TODO: add jsDoc/reuse the function from `./release.mjs` (that script must be refactored for this)
+async function assignVersions(monorepoVersion, packagesWhoseVersionShouldBump) {
+  for (const packagePathRelativeFromRoot of packagesWhoseVersionShouldBump) {
+    const pathToPackage = path.resolve(
+      __dirname,
+      '../',
+      packagePathRelativeFromRoot,
+      './package.json',
+    )
+
+    const original = JSON.parse(
+      fs.readFileSync(pathToPackage, {encoding: 'utf-8'}),
+    )
+
+    const newJson = {...original, version: monorepoVersion}
+    fs.writeFileSync(
+      path.join(pathToPackage),
+      JSON.stringify(newJson, undefined, 2),
+      {encoding: 'utf-8'},
+    )
+    await $`prettier --write ${packagePathRelativeFromRoot + '/package.json'}`
+  }
+}
+
 ;(async function () {
   process.env.THEATRE_IS_PUBLISHING = true
   // TODO: Bump up the version `zx` to be able to use the `quiet()` function
@@ -54,6 +78,12 @@ async function generateAndPublishTarball(
     .split(os.EOL)
     .filter(Boolean)
     .map((x) => JSON.parse(x))
+
+  // TODO: replace the dependency versions with the commit hash in the packages
+  await assignVersions(
+    latestCommitHash.stdout,
+    workspacesListObjects.map((wpData) => wpData.location),
+  )
 
   await Promise.all(
     packagesToPack.map((workspace) => {
