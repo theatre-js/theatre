@@ -39,10 +39,6 @@ const SVGCurveSegment: React.FC<IProps> = (props) => {
     <svg
       height="100%"
       width="100%"
-      // With a padding of 0, this results in a "unit viewbox" i.e. `0 0 1 1`.
-      // With padding e.g. VIEWBOX_PADDING=0.1, this results in a viewbox of `-0.1 -0,1 1.2 1.2`,
-      // i.e. a viewbox with a top left coordinate of -0.1,-0.1 and a width and height of 1.2,
-      // resulting in bottom right coordinate of 1.1,1.1
       viewBox={SVG_VIEWBOX_ATTR}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
