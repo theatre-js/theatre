@@ -26,8 +26,14 @@ const SVGCurveSegment: React.FC<IProps> = (props) => {
 
   const curveColor = isSelected ? SELECTED_CURVE_COLOR : CURVE_COLOR
 
-  const LEFT_CONTROL_POINT = [easing[0], toVerticalSVGSpace(easing[1])]
-  const RIGHT_CONTROL_POINT = [easing[2], toVerticalSVGSpace(easing[3])]
+  const leftControlPoint = [easing[0], toVerticalSVGSpace(easing[1])]
+  const rightControlPoint = [easing[2], toVerticalSVGSpace(easing[3])]
+
+  // With a padding of 0, this results in a "unit viewbox" i.e. `0 0 1 1`.
+  // With padding e.g. VIEWBOX_PADDING=0.1, this results in a viewbox of `-0.1 -0,1 1.2 1.2`,
+  // i.e. a viewbox with a top left coordinate of -0.1,-0.1 and a width and height of 1.2,
+  // resulting in bottom right coordinate of 1.1,1.1
+  const SVG_VIEWBOX_ATTR = `${-VIEWBOX_PADDING} ${-VIEWBOX_PADDING} ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`
 
   return (
     <svg
@@ -37,7 +43,7 @@ const SVGCurveSegment: React.FC<IProps> = (props) => {
       // With padding e.g. VIEWBOX_PADDING=0.1, this results in a viewbox of `-0.1 -0,1 1.2 1.2`,
       // i.e. a viewbox with a top left coordinate of -0.1,-0.1 and a width and height of 1.2,
       // resulting in bottom right coordinate of 1.1,1.1
-      viewBox={`${-VIEWBOX_PADDING} ${-VIEWBOX_PADDING} ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`}
+      viewBox={SVG_VIEWBOX_ATTR}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -45,52 +51,52 @@ const SVGCurveSegment: React.FC<IProps> = (props) => {
       <line
         x1="0"
         y1="1"
-        x2={LEFT_CONTROL_POINT[0]}
-        y2={LEFT_CONTROL_POINT[1]}
+        x2={leftControlPoint[0]}
+        y2={leftControlPoint[1]}
         stroke={CONTROL_COLOR}
         strokeWidth="0.1"
       />
       <line
         x1="1"
         y1="0"
-        x2={RIGHT_CONTROL_POINT[0]}
-        y2={RIGHT_CONTROL_POINT[1]}
+        x2={rightControlPoint[0]}
+        y2={rightControlPoint[1]}
         stroke={CONTROL_COLOR}
         strokeWidth="0.1"
       />
 
       {/* Control point hitzonecircles */}
       <circle
-        cx={LEFT_CONTROL_POINT[0]}
-        cy={LEFT_CONTROL_POINT[1]}
+        cx={leftControlPoint[0]}
+        cy={leftControlPoint[1]}
         r={0.1}
         fill={CONTROL_HITZONE_COLOR}
       />
       <circle
-        cx={RIGHT_CONTROL_POINT[0]}
-        cy={RIGHT_CONTROL_POINT[1]}
+        cx={rightControlPoint[0]}
+        cy={rightControlPoint[1]}
         r={0.1}
         fill={CONTROL_HITZONE_COLOR}
       />
 
       {/* Control point circles */}
       <circle
-        cx={LEFT_CONTROL_POINT[0]}
-        cy={LEFT_CONTROL_POINT[1]}
+        cx={leftControlPoint[0]}
+        cy={leftControlPoint[1]}
         r={SVG_CIRCLE_RADIUS}
         fill={CONTROL_COLOR}
       />
       <circle
-        cx={RIGHT_CONTROL_POINT[0]}
-        cy={RIGHT_CONTROL_POINT[1]}
+        cx={rightControlPoint[0]}
+        cy={rightControlPoint[1]}
         r={SVG_CIRCLE_RADIUS}
         fill={CONTROL_COLOR}
       />
 
       {/* Bezier curve */}
       <path
-        d={`M0 1 C${LEFT_CONTROL_POINT[0]} ${LEFT_CONTROL_POINT[1]} ${RIGHT_CONTROL_POINT[0]} 
-      ${RIGHT_CONTROL_POINT[1]} 1 0`}
+        d={`M0 1 C${leftControlPoint[0]} ${leftControlPoint[1]} ${rightControlPoint[0]} 
+      ${rightControlPoint[1]} 1 0`}
         stroke={curveColor}
         strokeWidth="0.08"
       />

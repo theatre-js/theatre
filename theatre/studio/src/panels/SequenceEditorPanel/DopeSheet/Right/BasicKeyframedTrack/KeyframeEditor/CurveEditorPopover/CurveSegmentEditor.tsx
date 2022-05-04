@@ -128,6 +128,7 @@ ${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
         />
       </linearGradient>
 
+      {/* Unit space, opaque white dot pattern */}
       <pattern
         id="dot-background-pattern-1"
         width={PATTERN_GRID_SIZE}
@@ -148,6 +149,7 @@ ${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
         height={1}
         fill="url(#dot-background-pattern-1)"
       />
+      {/* Fills the whole vertical extremum space, gray dot pattern */}
       <pattern
         id="dot-background-pattern-2"
         width={PATTERN_GRID_SIZE}
@@ -167,14 +169,7 @@ ${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
         fill="url(#dot-background-pattern-2)"
       />
 
-      <line
-        x1={1}
-        y1={toExtremumSpace(0)}
-        x2={next.handles[0]}
-        y2={toExtremumSpace(1 - next.handles[1])}
-        stroke={CONTROL_COLOR}
-        strokeWidth="0.01"
-      />
+      {/* Line from right end of curve to right handle */}
       <line
         x1={0}
         y1={toExtremumSpace(1)}
@@ -183,19 +178,31 @@ ${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
         stroke={CONTROL_COLOR}
         strokeWidth="0.01"
       />
+      {/* Line from left end of curve to left handle */}
+      <line
+        x1={1}
+        y1={toExtremumSpace(0)}
+        x2={next.handles[0]}
+        y2={toExtremumSpace(1 - next.handles[1])}
+        stroke={CONTROL_COLOR}
+        strokeWidth="0.01"
+      />
 
+      {/* Curve "shadow": the low-opacity filled area between the curve and the diagonal */}
       <path
         d={curvePathDAttrValue}
         stroke="none"
         fill="url('#myGradient')"
         opacity="0.1"
       />
+      {/* The curve */}
       <path
         d={curvePathDAttrValue}
         stroke="url('#myGradient')"
         strokeWidth="0.02"
       />
 
+      {/* Right end of curve */}
       <circle
         cx={0}
         cy={toExtremumSpace(1)}
@@ -204,7 +211,7 @@ ${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
         strokeWidth="0.02"
         fill={COLOR_BASE}
       />
-
+      {/* Left end of curve */}
       <circle
         cx={1}
         cy={toExtremumSpace(0)}
@@ -214,6 +221,7 @@ ${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
         fill={COLOR_BASE}
       />
 
+      {/* Right handle and hit zone */}
       <HitZone
         ref={refLeft}
         cx={cur.handles[2]}
@@ -222,7 +230,7 @@ ${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
         opacity={0.2}
       />
       <Circle cx={cur.handles[2]} cy={toExtremumSpace(1 - cur.handles[3])} />
-
+      {/* Left handle and hit zone */}
       <HitZone
         ref={refRight}
         cx={next.handles[0]}
@@ -244,7 +252,7 @@ function useKeyframeDrag(
 ): void {
   const handlers = useFreezableMemo<Parameters<typeof useDrag>[1]>(
     (setFrozen) => ({
-      debugName: 'CurveSegmentEditor/useRightDrag',
+      debugName: 'CurveSegmentEditor/useKeyframeDrag',
       lockCursorTo: 'move',
       onDragStart() {
         setFrozen(true)
