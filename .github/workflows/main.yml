@@ -41,7 +41,8 @@ jobs:
       - uses: actions/cache@v2
         id: dev-package-uploader-cache
         with:
-          path: '${{ github.workspace }}/dev-package-uploader/node_modules'
+          path:
+            '${{ github.workspace }}/scripts/dev-package-uploader/node_modules'
           key:
             ${{ runner.os }}-dev-package-uploader-cache-${{
             hashFiles('scripts/dev-package-uploader/package-lock.json') }}
