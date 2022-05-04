@@ -131,6 +131,7 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
     let tempTransaction: CommitOrDiscard | undefined
     let unlockExtremums: VoidFn | undefined
     return {
+      debugName: 'CurveHandler/useOurDrags',
       lockCursorTo: 'move',
       onDragStart() {
         propsAtStartOfDrag = propsRef.current

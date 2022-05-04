@@ -181,6 +181,7 @@ const FocusRangeThumb: React.FC<{
     let scaledSpaceToUnitSpace: (s: number) => number
 
     return {
+      debugName: 'FocusRangeThumb',
       onDragStart() {
         sheet = val(layoutP.sheet)
         const sequence = sheet.getSequence()

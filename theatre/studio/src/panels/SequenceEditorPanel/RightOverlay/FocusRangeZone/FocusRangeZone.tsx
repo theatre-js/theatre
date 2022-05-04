@@ -112,6 +112,7 @@ function usePanelDragZoneGestureHandlers(
       let minFocusRangeStripWidth: number
 
       return {
+        debugName: 'FocusRangeZone/focusRangeCreationGestureHandlers',
         onDragStart(event) {
           clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)
           scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
@@ -181,6 +182,7 @@ function usePanelDragZoneGestureHandlers(
       let tempTransaction: CommitOrDiscard | undefined
       let unlock: VoidFn | undefined
       return {
+        debugName: 'FocusRangeZone/panelMoveGestureHandlers',
         onDragStart() {
           stuffBeforeDrag = panelStuffRef.current
           if (unlock) {
@@ -229,6 +231,7 @@ function usePanelDragZoneGestureHandlers(
     let currentGestureHandlers: undefined | Parameters<typeof useDrag>[1]
 
     return {
+      debugName: 'FocusRangeZone',
       onDragStart(event) {
         if (event.shiftKey) {
           setMode('creating')

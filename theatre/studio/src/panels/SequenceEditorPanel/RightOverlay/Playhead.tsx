@@ -206,6 +206,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
     let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
 
     return {
+      debugName: 'Playhead',
       onDragStart() {
         sequence = val(layoutP.sheet).getSequence()
         posBeforeSeek = sequence.position

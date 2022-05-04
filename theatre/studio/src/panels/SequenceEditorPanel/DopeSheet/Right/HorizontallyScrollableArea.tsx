@@ -80,7 +80,8 @@ function useDragHandlers(
     const setIsSeeking = val(layoutP.seeker.setIsSeeking)
 
     return {
-      onDrag(dx, _, event) {
+      debugName: 'HorizontallyScrollableArea',
+      onDrag(dx: number, _, event) {
         const deltaPos = scaledSpaceToUnitSpace(dx)
         const unsnappedPos = clamp(posBeforeSeek + deltaPos, 0, sequence.length)
 

@@ -25,6 +25,7 @@ const PanelDragZone: React.FC<
     let tempTransaction: CommitOrDiscard | undefined
     let unlock: VoidFn | undefined
     return {
+      debugName: 'PanelDragZone',
       lockCursorTo: 'move',
       onDragStart() {
         stuffBeforeDrag = panelStuffRef.current
