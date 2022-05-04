@@ -61,5 +61,5 @@ jobs:
         env:
           BUCKET: my-npm-packages
           SECRET: ${{ secrets.DO_SPACES_SECRET }}
-          KEY: ${{ secrets.DO_SPACES_KEY }}
+          API_KEY: ${{ secrets.DO_SPACES_KEY }}
         run: npx zx scripts/generate-development-package-tarballs.mjs
