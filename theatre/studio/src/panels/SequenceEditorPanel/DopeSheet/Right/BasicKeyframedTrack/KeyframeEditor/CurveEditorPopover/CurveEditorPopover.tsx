@@ -116,13 +116,12 @@ type IProps = {
 } & Parameters<typeof KeyframeEditor>[0]
 
 const CurveEditorPopover: React.FC<IProps> = (props) => {
-  /********
-   * `tempTransaction`
-   *
-   * used for all edits in this popover. The transaction
+  ////// `tempTransaction` //////
+  /*
+   * `tempTransaction` is used for all edits in this popover. The transaction
    * is discared if the user presses escape, otherwise it is committed when the
    * popover closes.
-   ********/
+   */
   const tempTransaction = useRef<CommitOrDiscard | null>(null)
   useEffect(
     () =>
@@ -134,9 +133,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     [tempTransaction],
   )
 
-  /**********
-   * Keyframe and trackdata
-   **********/
+  ////// Keyframe and trackdata //////
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
@@ -147,9 +144,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     trackData.keyframes[index + 1].handles[1],
   ]
 
-  /*********
-   * Text input data and reactivity
-   *********/
+  ////// Text input data and reactivity //////
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Select the easing string on popover open for quick copy&paste
@@ -208,9 +203,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     [preview, edit],
   )
 
-  /*********
-   * Curve editing reactivity
-   *********/
+  //////  Curve editing reactivity //////
   const onCurveChange = (newHandles: CubicBezierHandles) => {
     setTextInputMode(TextInputMode.auto)
     const value = cssCubicBezierArgsFromHandles(newHandles)
@@ -219,9 +212,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   }
   const onCancelCurveChange = () => {}
 
-  /*********
-   * Preset reactivity
-   *********/
+  ////// Preset reactivity //////
   const displayedPresets = useMemo(() => {
     const presetSearchResults = fuzzy.filter(inputValue, EASING_PRESETS, {
       extract: (el) => el.label,
@@ -237,9 +228,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     if (displayedPresets[0]) setEdit(displayedPresets[0].value)
   }, [displayedPresets])
 
-  /*********
-   * Option grid specification and reactivity
-   *********/
+  ////// Option grid specification and reactivity //////
   const onEasingOptionKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape') {
       discardTempValue(tempTransaction)
