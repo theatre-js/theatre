@@ -17,7 +17,7 @@ export type CubicBezierHandles = [
  * the "args" part of the name refers specifically to the comma separated substring
  * inside the parentheses of the CSS cubic bezier string i.e. `0, 0, 1, 1`.
  */
-type CSSCubicBezierArgsString = string
+export type CSSCubicBezierArgsString = string
 
 const CSS_BEZIER_ARGS_DECIMAL_POINTS = 3 // Doesn't have to be 3, but it matches our preset data
 export function cssCubicBezierArgsFromHandles(

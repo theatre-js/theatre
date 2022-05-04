@@ -1,6 +1,6 @@
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import type {KeyboardEvent} from 'react';
+import type {KeyboardEvent} from 'react'
 import React, {
   useEffect,
   useLayoutEffect,
@@ -16,7 +16,7 @@ import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type KeyframeEditor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/KeyframeEditor'
 import CurveSegmentEditor from './CurveSegmentEditor'
 import EasingOption from './EasingOption'
-import type {CubicBezierHandles} from './shared'
+import type {CSSCubicBezierArgsString, CubicBezierHandles} from './shared'
 import {
   cssCubicBezierArgsFromHandles,
   handlesFromCssCubicBezierArgs,
@@ -158,6 +158,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     inputRef.current?.focus()
   }, [inputRef.current])
 
+  const [inputValue, setInputValue] = useState<string>('')
+
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextInputMode(TextInputMode.user)
     setInputValue(e.target.value)
@@ -170,30 +172,42 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     // Prevent scrolling on arrow key press
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') e.preventDefault()
 
-    if (e.key === 'ArrowDown') grid.focusFirstItem()
-    else if (e.key === 'Escape') {
+    if (e.key === 'ArrowDown') {
+      grid.focusFirstItem()
+      optionsRef.current[displayedPresets[0].label]?.current?.focus()
+    } else if (e.key === 'Escape') {
       discardTempValue(tempTransaction)
       props.onRequestClose()
     } else if (e.key === 'Enter') {
       props.onRequestClose()
     }
   }
-  const [inputValue, setInputValue] = useState<string>('')
 
-  // In auto mode, set the input value when the data changes
+  // In auto mode, the text input field is continually updated to
+  // a CSS cubic bezier args string to reflect the state of the curve;
+  // in user mode, the text input field does not update when the curve
+  // changes so that the user's search is preserved.
+  const [textInputMode, setTextInputMode] = useState<TextInputMode>(
+    TextInputMode.auto,
+  )
   useEffect(() => {
     if (textInputMode === TextInputMode.auto)
       setInputValue(cssCubicBezierArgsFromHandles(easing))
   }, [trackData])
 
-  const [textInputMode, setTextInputMode] = useState<TextInputMode>(
-    TextInputMode.auto,
-  )
-  const [edit, setEdit] = useState<string | null>(null)
+  // `edit` keeps track of the current edited state of the curve.
+  const [edit, setEdit] = useState<CSSCubicBezierArgsString | null>(null)
   // `preview` is used when hovering over a curve to preview it.
-  const [preview, setPreview] = useState<string | null>(null)
+  const [preview, setPreview] = useState<CSSCubicBezierArgsString | null>(null)
 
-  setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? '')
+  // When `preview` or `edit` change, use the `tempTransaction` to change the
+  // curve in Theate's data.
+  useMemo(
+    () =>
+      setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? ''),
+    [preview, edit],
+  )
+
   /*********
    * Curve editing reactivity
    *********/
@@ -212,13 +226,13 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     const presetSearchResults = fuzzy.filter(inputValue, EASING_PRESETS, {
       extract: (el) => el.label,
     })
-
     const isInputValueAQuery = /^[A-Za-z]/.test(inputValue)
+
     return isInputValueAQuery
       ? presetSearchResults.map((result) => result.original)
       : EASING_PRESETS
   }, [inputValue])
-  // Preview the first search term when the search items change
+  // Use the first preset in the search when the displayed presets change
   useEffect(() => {
     if (displayedPresets[0]) setEdit(displayedPresets[0].value)
   }, [displayedPresets])
