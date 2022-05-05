@@ -11,12 +11,11 @@ const divWidth = 1000
 
 const Curtain = styled.div<{enabled: boolean}>`
   position: absolute;
+  top: ${topStripHeight}px;
   left: 0;
   opacity: 0.15;
-  top: ${topStripHeight}px;
   width: ${divWidth}px;
   transform-origin: top left;
-  z-index: 20;
   pointer-events: none;
   background-color: ${(props) => (props.enabled ? '#000000' : 'transparent')};
 `
@@ -44,36 +43,78 @@ const FocusRangeCurtains: React.FC<{
 
     const {range} = existingRange
 
-    const height = val(layoutP.rightDims.height)
+    const height = val(layoutP.rightDims.height) - topStripHeight
 
     const unitSpaceToClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)
+    const clippedSpaceWidth = val(layoutP.clippedSpace.width)
 
-    const els = [
-      [-1000, range.start],
-      [range.end, val(layoutP.clippedSpace.range.end)],
-    ].map(([start, end], i) => {
-      const startPosInClippedSpace = unitSpaceToClippedSpace(start)
+    const els: Array<{translateX: number; scaleX: number}> = []
 
-      const endPosInClippedSpace = unitSpaceToClippedSpace(end)
-      const desiredWidth = endPosInClippedSpace - startPosInClippedSpace
+    {
+      // the left (start) curtain
+      // starts from 0px
+      let startX = 0
+      // ends in the start of the range
+      let endX = unitSpaceToClippedSpace(existingRange.range.start)
+      let scaleX: number, translateX: number
+      // hide the curtain if:
+      if (
+        // endX would be larger than startX, which means the curtain is to the left of the RightOverlay
+        startX > endX
+      ) {
+        // fully hide it then with scaleX = 0
+        translateX = 0
+        scaleX = 0
+      } else {
+        // clip the end of the curtain if it's going over the right side of RightOverlay
+        if (endX > clippedSpaceWidth) {
+          //
+          endX = clippedSpaceWidth
+        }
+        translateX = startX
+        scaleX = (endX - startX) / divWidth
+      }
 
-      return (
-        <Curtain
-          key={`curtain-${i}`}
-          enabled={true}
-          style={{
-            height: `${height}px`,
-            transform: `translateX(${
-              val(layoutP.scaledSpace.leftPadding) +
-              startPosInClippedSpace -
-              unitSpaceToClippedSpace(0)
-            }px) scaleX(${desiredWidth / divWidth})`,
-          }}
-        />
-      )
-    })
+      els.push({translateX, scaleX})
+    }
 
-    return <>{els}</>
+    {
+      // the right (end) curtain
+      // starts at the end of the range
+      let startX = unitSpaceToClippedSpace(existingRange.range.end)
+      // and ends at the right edge of RightOverlay (which is clippedSpaceWidth)
+      let endX = clippedSpaceWidth
+      let scaleX: number, translateX: number
+      // if the whole curtain falls to the right of RightOverlay, hide it
+      if (startX > endX) {
+        translateX = 0
+        scaleX = 0
+      } else {
+        // if the left of the curtain falls on the left of RightOverlay, clip it
+        if (startX < 0) {
+          startX = 0
+        }
+        translateX = startX
+        scaleX = (endX - startX) / divWidth
+      }
+
+      els.push({translateX, scaleX})
+    }
+
+    return (
+      <>
+        {els.map(({translateX, scaleX}, i) => (
+          <Curtain
+            key={`curtain-${i}`}
+            enabled={true}
+            style={{
+              height: `${height}px`,
+              transform: `translateX(${translateX}px) scaleX(${scaleX})`,
+            }}
+          />
+        ))}
+      </>
+    )
   }, [layoutP, existingRangeD])
 }
 
