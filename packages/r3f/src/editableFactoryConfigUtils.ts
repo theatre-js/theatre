@@ -1,4 +1,4 @@
-import type {IShorthandCompoundProps} from '@theatre/core'
+import type {UnknownShorthandCompoundProps} from '@theatre/core'
 import {types} from '@theatre/core'
 import type {Object3D} from 'three'
 import type {IconID} from './icons'
@@ -9,7 +9,7 @@ export type Helper = Object3D & {
 type PropConfig<T> = {
   parse: (props: Record<string, any>) => T
   apply: (value: T, object: any) => void
-  type: IShorthandCompoundProps
+  type: UnknownShorthandCompoundProps
 }
 type Props = Record<string, PropConfig<any>>
 type Meta<T> = {
