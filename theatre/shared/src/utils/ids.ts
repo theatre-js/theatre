@@ -16,6 +16,7 @@ export type SheetId = Nominal<'SheetId'>
 export type SheetInstanceId = Nominal<'SheetInstanceId'>
 export type PaneInstanceId = Nominal<'PaneInstanceId'>
 export type SequenceTrackId = Nominal<'SequenceTrackId'>
+export type SequenceMarkerId = Nominal<'SequenceMarkerId'>
 export type ObjectAddressKey = Nominal<'ObjectAddressKey'>
 /** UI panels can contain a {@link PaneInstanceId} or something else. */
 export type UIPanelId = Nominal<'UIPanelId'>
@@ -26,4 +27,8 @@ export function generateSequenceTrackId(): SequenceTrackId {
 
 export function asSequenceTrackId(s: string): SequenceTrackId {
   return s as SequenceTrackId
+}
+
+export function generateSequenceMarkerId(): SequenceMarkerId {
+  return generateNonSecure(10) as SequenceMarkerId
 }

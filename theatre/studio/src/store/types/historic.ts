@@ -8,6 +8,7 @@ import type {
   WithoutSheetInstance,
 } from '@theatre/shared/utils/addresses'
 import type {StrictRecord} from '@theatre/shared/utils/types'
+import type {PointableSet} from '@theatre/shared/utils/PointableSet'
 import type Project from '@theatre/core/projects/Project'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
@@ -15,6 +16,7 @@ import type {
   ObjectAddressKey,
   PaneInstanceId,
   ProjectId,
+  SequenceMarkerId,
   SheetId,
   SheetInstanceId,
   UIPanelId,
@@ -69,20 +71,13 @@ export type PaneInstanceDescriptor = {
   paneClass: string
 }
 
-// export type MarkerId = Nominal<'SequenceMarkerId'>
-
-// TODO: Consider optimizing via, which provides greater stability of data location.
-// `{byID: StrictRecord<MarkerId, StudioHistoricSequenceEditorMarker>, list: MarkerId[]}`
-export type StudioHistoricStateSequenceEditorMarkers =
-  StudioHistoricStateSequenceEditorMarker[]
-
 /**
  * Marker allows you to mark notable positions in your sequence.
  *
  * See root {@link StudioHistoricState}
  */
 export type StudioHistoricStateSequenceEditorMarker = {
-  // id: MarkerId
+  id: SequenceMarkerId
   /**
    * The position this marker takes in the sequence.
    *
@@ -99,7 +94,10 @@ export type StudioHistoricStateSequenceEditorMarker = {
 export type StudioHistoricStateProjectSheet = {
   selectedInstanceId: undefined | SheetInstanceId
   sequenceEditor: {
-    markers?: StudioHistoricStateSequenceEditorMarkers
+    markerSet?: PointableSet<
+      SequenceMarkerId,
+      StudioHistoricStateSequenceEditorMarker
+    >
     selectedPropsByObject: StrictRecord<
       ObjectAddressKey,
       StrictRecord<PathToProp_Encoded, keyof typeof graphEditorColors>

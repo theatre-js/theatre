@@ -19,21 +19,17 @@ const Markers: React.VFC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   layoutP,
 }) => {
   const sheetAddress = useVal(layoutP.sheet.address)
-  const markers = useVal(
+  const markerSetP =
     getStudio().atomP.historic.projects.stateByProjectId[sheetAddress.projectId]
-      .stateBySheetId[sheetAddress.sheetId].sequenceEditor.markers,
-  )
+      .stateBySheetId[sheetAddress.sheetId].sequenceEditor.markerSet
+  const markerAllIds = useVal(markerSetP.allIds)
 
   return (
     <Container>
-      {markers?.map((marker) => (
-        // TODO: use marker.id
-        <Marker
-          key={marker.position}
-          layoutP={layoutP}
-          marker={marker}
-        ></Marker>
-      ))}
+      {markerAllIds &&
+        Object.keys(markerAllIds).map((markerId) => (
+          <Marker key={markerId} layoutP={layoutP} markerId={markerId} />
+        ))}
     </Container>
   )
 }

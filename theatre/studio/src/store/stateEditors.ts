@@ -14,6 +14,7 @@ import type {
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
 import type {
   KeyframeId,
+  SequenceMarkerId,
   SequenceTrackId,
   UIPanelId,
 } from '@theatre/shared/utils/ids'
@@ -40,6 +41,7 @@ import type {
   OutlineSelectionState,
   PanelPosition,
   StudioAhistoricState,
+  StudioHistoricStateSequenceEditorMarker,
 } from './types'
 import {clamp, uniq} from 'lodash-es'
 import {
@@ -52,6 +54,7 @@ import {
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
+import {pointableSetUtil} from '@theatre/shared/utils/PointableSet'
 
 export const setDrafts__onlyMeantToBeCalledByTransaction = (
   drafts: undefined | Drafts,
@@ -251,44 +254,83 @@ namespace stateEditors {
                 }
               }
 
-              export function replaceMarker(options: {
-                sheetAddress: SheetAddress
-                markerAt: {position: number}
-              }) {
+              function _ensureMarkers(sheetAddress: SheetAddress) {
                 const sequenceEditor =
                   stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId._ensure(
-                    options.sheetAddress,
+                    sheetAddress,
                   ).sequenceEditor
 
-                if (!sequenceEditor.markers) {
-                  sequenceEditor.markers = [options.markerAt]
-                } else {
-                  sequenceEditor.markers = [
-                    ...sequenceEditor.markers.filter(
-                      (otherMarker) =>
-                        otherMarker.position !== options.markerAt.position,
-                    ),
-                    options.markerAt,
-                  ]
+                if (!sequenceEditor.markerSet) {
+                  sequenceEditor.markerSet = pointableSetUtil.create()
                 }
+
+                return sequenceEditor.markerSet
+              }
+
+              export function replaceMarkers(p: {
+                sheetAddress: SheetAddress
+                markers: Array<StudioHistoricStateSequenceEditorMarker>
+                snappingFunction: (p: number) => number
+              }) {
+                const currentMarkerSet = _ensureMarkers(p.sheetAddress)
+
+                const sanitizedMarkers = p.markers
+                  .filter((marker) => {
+                    if (!isFinite(marker.position)) return false
+
+                    return true // marker looks valid
+                  })
+                  .map((marker) => ({
+                    ...marker,
+                    position: p.snappingFunction(marker.position),
+                  }))
+
+                const newMarkersById = keyBy(sanitizedMarkers, 'id')
+
+                /** Usually starts as the "unselected" markers */
+                let markersThatArentBeingReplaced = pointableSetUtil.filter(
+                  currentMarkerSet,
+                  (marker) => marker && !newMarkersById[marker.id],
+                )
+
+                const markersThatArentBeingReplacedByPosition = keyBy(
+                  Object.values(markersThatArentBeingReplaced.byId),
+                  'position',
+                )
+
+                // If the new transformed markers overlap with any existing markers,
+                // we remove the overlapped markers
+                sanitizedMarkers.forEach(({position}) => {
+                  const existingMarkerAtThisPosition =
+                    markersThatArentBeingReplacedByPosition[position]
+                  if (existingMarkerAtThisPosition) {
+                    markersThatArentBeingReplaced = pointableSetUtil.remove(
+                      markersThatArentBeingReplaced,
+                      existingMarkerAtThisPosition.id,
+                    )
+                  }
+                })
+
+                Object.assign(
+                  currentMarkerSet,
+                  pointableSetUtil.merge([
+                    markersThatArentBeingReplaced,
+                    pointableSetUtil.create(
+                      sanitizedMarkers.map((marker) => [marker.id, marker]),
+                    ),
+                  ]),
+                )
               }
 
               export function removeMarker(options: {
                 sheetAddress: SheetAddress
-                markerAt: {position: number}
+                markerId: SequenceMarkerId
               }) {
-                const sequenceEditor =
-                  stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId._ensure(
-                    options.sheetAddress,
-                  ).sequenceEditor
-
-                if (!sequenceEditor.markers) {
-                  sequenceEditor.markers = []
-                } else {
-                  sequenceEditor.markers = sequenceEditor.markers.filter(
-                    (marker) => marker.position !== options.markerAt.position,
-                  )
-                }
+                const currentMarkerSet = _ensureMarkers(options.sheetAddress)
+                Object.assign(
+                  currentMarkerSet,
+                  pointableSetUtil.remove(currentMarkerSet, options.markerId),
+                )
               }
             }
           }
@@ -614,6 +656,9 @@ namespace stateEditors {
             )
             if (indexOfLeftKeyframe === -1) {
               keyframes.unshift({
+                // generating the keyframe within the `setKeyframeAtPosition` makes it impossible for us
+                // to make this business logic deterministic, which is important to guarantee for collaborative
+                // editing.
                 id: generateKeyframeId(),
                 position,
                 connectedRight: true,

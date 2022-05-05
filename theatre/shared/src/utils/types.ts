@@ -68,7 +68,7 @@ export type DeepPartialOfSerializableValue<T extends SerializableValue> =
  * This is equivalent to `Partial<Record<Key, V>>` being used to describe a sort of Map
  * where the keys might not have values.
  *
- * We do not use `Map`s, because they add comlpexity with converting to `JSON.stringify` + pointer types
+ * We do not use `Map`s, because they add complexity with converting to `JSON.stringify` + pointer types
  */
 export type StrictRecord<Key extends string, V> = {[K in Key]?: V}
 

@@ -26,6 +26,7 @@ import {
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getStudio from '@theatre/studio/getStudio'
+import {generateSequenceMarkerId} from '@theatre/shared/utils/ids'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -328,12 +329,17 @@ function usePlayheadContextMenu(
             getStudio().transaction(({stateEditors}) => {
               // only retrieve val on callback to reduce unnecessary work on every use
               const sheet = val(options.layoutP.sheet)
-              stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.replaceMarker(
+              const sheetSequence = sheet.getSequence()
+              stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.replaceMarkers(
                 {
                   sheetAddress: sheet.address,
-                  markerAt: {
-                    position: sheet.getSequence().position,
-                  },
+                  markers: [
+                    {
+                      id: generateSequenceMarkerId(),
+                      position: sheetSequence.position,
+                    },
+                  ],
+                  snappingFunction: sheetSequence.closestGridPosition,
                 },
               )
             })

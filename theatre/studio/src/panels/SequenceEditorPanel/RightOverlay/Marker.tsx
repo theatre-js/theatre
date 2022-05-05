@@ -1,4 +1,5 @@
 import type {Pointer} from '@theatre/dataverse'
+import {val} from '@theatre/dataverse'
 import {useVal} from '@theatre/react'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
@@ -9,7 +10,8 @@ import React from 'react'
 import styled from 'styled-components'
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {StudioHistoricStateSequenceEditorMarker} from '@theatre/studio/store/types'
+import type {SequenceMarkerId} from '@theatre/shared/utils/ids'
+import type {SheetAddress} from '@theatre/shared/utils/addresses'
 
 const MarkerDot = styled.div`
   position: absolute;
@@ -37,14 +39,28 @@ const MarkerDot = styled.div`
 
 const Marker: React.VFC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
-  marker: StudioHistoricStateSequenceEditorMarker
-}> = ({layoutP, marker}) => {
-  const layout = useVal(layoutP)
-  const clippedSpaceFromUnitSpace = layout.clippedSpace.fromUnitSpace
+  markerId: SequenceMarkerId
+}> = ({layoutP, markerId}) => {
+  const sheetAddress = val(layoutP.sheet.address)
+  const marker = useVal(
+    getStudio().atomP.historic.projects.stateByProjectId[sheetAddress.projectId]
+      .stateBySheetId[sheetAddress.sheetId].sequenceEditor.markerSet.byId[
+      markerId
+    ],
+  )
+
+  const clippedSpaceFromUnitSpace = useVal(layoutP.clippedSpace.fromUnitSpace)
 
   const [markRef, markNode] = useRefAndState<HTMLDivElement | null>(null)
 
-  const [contextMenu] = useMarkerContextMenu(markNode, {layout, marker})
+  const [contextMenu] = useMarkerContextMenu(markNode, {sheetAddress, markerId})
+
+  if (!marker) {
+    // 1/10 maybe this is normal if React tries to re-render this with
+    // out of date data. (e.g. Suspense / Transition stuff?)
+    return null
+  }
+
   return (
     <>
       {contextMenu}
@@ -72,8 +88,8 @@ export default Marker
 function useMarkerContextMenu(
   node: HTMLElement | null,
   options: {
-    layout: SequenceEditorPanelLayout
-    marker: StudioHistoricStateSequenceEditorMarker
+    sheetAddress: SheetAddress
+    markerId: SequenceMarkerId
   },
 ) {
   return useContextMenu(node, {
@@ -85,8 +101,8 @@ function useMarkerContextMenu(
             getStudio().transaction(({stateEditors}) => {
               stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.removeMarker(
                 {
-                  sheetAddress: options.layout.sheet.address,
-                  markerAt: {position: options.marker.position},
+                  sheetAddress: options.sheetAddress,
+                  markerId: options.markerId,
                 },
               )
             })
