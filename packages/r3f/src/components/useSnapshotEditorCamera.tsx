@@ -4,6 +4,7 @@ import type {MutableRefObject} from 'react'
 import {useLayoutEffect, useRef} from 'react'
 import React from 'react'
 import useRefAndState from './useRefAndState'
+import type {IScrub} from '@theatre/studio';
 import studio from '@theatre/studio'
 import type {PerspectiveCamera as PerspectiveCameraImpl} from 'three'
 import type {ISheet} from '@theatre/core'
@@ -88,17 +89,18 @@ function usePassValuesFromOrbitControlsToTheatre(
   useLayoutEffect(() => {
     if (!cam || orbitControls == null) return
 
-    let currentScrub: undefined | ReturnType<typeof studio['debouncedScrub']>
+    let currentScrub: undefined | IScrub
 
     let started = false
 
     const onStart = () => {
       started = true
-      if (!currentScrub) {
-        currentScrub = studio.debouncedScrub(600)
-      }
+      currentScrub = studio.scrub()
     }
     const onEnd = () => {
+      if (currentScrub) {
+        currentScrub.commit()
+      }
       started = false
     }
 
