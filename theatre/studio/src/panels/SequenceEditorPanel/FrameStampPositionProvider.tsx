@@ -147,6 +147,14 @@ export const useLockFrameStampPosition = (shouldLock: boolean, val: number) => {
  * This attribute is used so that when the cursor hovers over a keyframe,
  * the framestamp snaps to the position of that keyframe.
  *
+ * Use as a spread in a React element.
+ *
+ * @example
+ * ```tsx
+ * <div {...includeLockFrameStampAttrs(10)}/>
+ * ```
+ *
+ * @remarks
  * Elements that need this behavior must set a data attribute like so:
  * <div data-theatre-lock-framestamp-to="120.55" />
  * Setting this attribute to "hide" hides the stamp.
@@ -157,9 +165,13 @@ export const useLockFrameStampPosition = (shouldLock: boolean, val: number) => {
  * `pointer-events` on an element that should lock the framestamp.
  *
  * See {@link FrameStampPositionProvider}
+ *
  */
-export const attributeNameThatLocksFramestamp =
-  'data-theatre-lock-framestamp-to'
+export const includeLockFrameStampAttrs = (value: number | 'hide') => ({
+  [ATTR_LOCK_FRAMESTAMP]: value === 'hide' ? value : value.toFixed(3),
+})
+
+const ATTR_LOCK_FRAMESTAMP = 'data-theatre-lock-framestamp-to'
 
 const pointerPositionInUnitSpace = (
   layoutP: Pointer<SequenceEditorPanelLayout>,
@@ -175,8 +187,8 @@ const pointerPositionInUnitSpace = (
     for (const el of mousePos.composedPath()) {
       if (!(el instanceof HTMLElement || el instanceof SVGElement)) break
 
-      if (el.hasAttribute(attributeNameThatLocksFramestamp)) {
-        const val = el.getAttribute(attributeNameThatLocksFramestamp)
+      if (el.hasAttribute(ATTR_LOCK_FRAMESTAMP)) {
+        const val = el.getAttribute(ATTR_LOCK_FRAMESTAMP)
         if (typeof val !== 'string') continue
         if (val === 'hide') return [-1, FrameStampPositionType.hidden]
         const double = parseFloat(val)

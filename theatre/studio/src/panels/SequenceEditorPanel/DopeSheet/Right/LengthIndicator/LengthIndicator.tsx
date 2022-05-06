@@ -13,7 +13,7 @@ import getStudio from '@theatre/studio/getStudio'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import {
-  attributeNameThatLocksFramestamp,
+  includeLockFrameStampAttrs,
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {GoChevronLeft, GoChevronRight} from 'react-icons/all'
@@ -130,6 +130,10 @@ type IProps = {
   layoutP: Pointer<SequenceEditorPanelLayout>
 }
 
+/**
+ * This appears at the end of the sequence where you can adjust the length of the sequence.
+ * Kinda looks like `< >` at the top bar at end of the sequence editor.
+ */
 const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
   const [isDragging] = useDragBulge(node, {layoutP})
@@ -186,7 +190,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
               onClick={(e) => {
                 openPopover(e, node!)
               }}
-              {...{[attributeNameThatLocksFramestamp]: 'hide'}}
+              {...includeLockFrameStampAttrs('hide')}
             >
               <GoChevronLeft />
               <GoChevronRight />

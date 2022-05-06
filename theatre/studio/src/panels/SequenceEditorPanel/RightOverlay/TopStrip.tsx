@@ -4,7 +4,7 @@ import React from 'react'
 import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import StampsGrid from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/StampsGrid'
-import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {includeLockFrameStampAttrs} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import FocusRangeZone from './FocusRangeZone/FocusRangeZone'
 
@@ -34,7 +34,7 @@ const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 
   return (
     <>
-      <Container {...{[attributeNameThatLocksFramestamp]: 'hide'}}>
+      <Container {...includeLockFrameStampAttrs('hide')}>
         <StampsGrid layoutP={layoutP} width={width} height={topStripHeight} />
         <FocusRangeZone layoutP={layoutP} />
       </Container>

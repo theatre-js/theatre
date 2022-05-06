@@ -12,6 +12,7 @@ import {useReceiveVerticalWheelEvent} from '@theatre/studio/panels/SequenceEdito
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import type {IRange} from '@theatre/shared/utils/types'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 
 const Container = styled.div`
   position: absolute;
@@ -87,19 +88,9 @@ function useDragHandlers(
 
         let newPosition = unsnappedPos
 
-        const snapTarget = event.composedPath().find(
-          (el): el is Element =>
-            el instanceof Element &&
-            // el !== thumbNode &&
-            el.hasAttribute('data-pos'),
-        )
-
-        if (snapTarget) {
-          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
-
-          if (isFinite(snapPos)) {
-            newPosition = snapPos
-          }
+        const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {})
+        if (snapPos != null) {
+          newPosition = snapPos
         }
 
         sequence.position = newPosition

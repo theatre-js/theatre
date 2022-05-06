@@ -11,12 +11,13 @@ import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {includeLockFrameStampAttrs} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {
   lockedCursorCssVarName,
   useCssCursorLock,
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 
 export const dotSize = 6
 
@@ -79,10 +80,8 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
           cx: `calc(var(--unitSpaceToScaledSpaceMultiplier) * ${cur.position} * 1px)`,
           cy: `calc((var(--graphEditorVerticalSpace) - var(--graphEditorVerticalSpace) * ${cyInExtremumSpace}) * 1px)`,
         }}
-        {...{
-          [attributeNameThatLocksFramestamp]: cur.position.toFixed(3),
-        }}
-        data-pos={cur.position.toFixed(3)}
+        {...includeLockFrameStampAttrs(cur.position)}
+        {...DopeSnap.includePositionSnapAttrs(cur.position)}
         className={isDragging ? 'beingDragged' : ''}
       />
       <Circle

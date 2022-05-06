@@ -98,12 +98,10 @@ export default function useDrag(
     }
 
     const dragEndHandler = () => {
-      if (modeRef.current === 'dragging') {
-        removeDragListeners()
-        modeRef.current = 'notDragging'
+      removeDragListeners()
+      modeRef.current = 'notDragging'
 
-        optsRef.current.onDragEnd?.(stateRef.current.dragHappened)
-      }
+      optsRef.current.onDragEnd?.(stateRef.current.dragHappened)
     }
 
     const addDragListeners = () => {
