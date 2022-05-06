@@ -40,6 +40,13 @@ const dims = (w: number, h = w) => `
   height: ${h}px;
 `
 
+const MarkerDotContainer = styled.div`
+  position: absolute;
+  // below the sequence ruler "top bar"
+  top: 18px;
+  z-index: ${() => zIndexes.marker};
+`
+
 const MarkerVisualDot = styled.div`
   position: absolute;
   ${dims(MARKER_SIZE_W_PX, MARKER_SIZE_H_PX)}
@@ -113,22 +120,43 @@ const MarkerDot: React.VFC<IMarkerDotProps> = ({layoutP, markerId}) => {
     return null
   }
 
-  return <MarkerDotDefined marker={marker} layoutP={layoutP} />
+  // check marker in viewable bounds
+  const clippedSpaceWidth = useVal(layoutP.clippedSpace.width)
+  const clippedSpaceFromUnitSpace = useVal(layoutP.clippedSpace.fromUnitSpace)
+  const clippedSpaceMarkerX = clippedSpaceFromUnitSpace(marker.position)
+
+  const outsideClipDims =
+    clippedSpaceMarkerX <= 0 || clippedSpaceMarkerX > clippedSpaceWidth
+
+  // If outside the clip space, we want to hide the marker dot. We
+  // hide the dot by translating it far away and scaling it to 0.
+  // This method of hiding does not cause reflow/repaint.
+  const translateX = outsideClipDims ? -10000 : clippedSpaceMarkerX
+  const scale = outsideClipDims ? 0 : 1
+
+  return (
+    <MarkerDotContainer
+      style={{
+        transform: `translateX(${translateX}px) scale(${scale})`,
+      }}
+    >
+      <MarkerDotVisible marker={marker} layoutP={layoutP} />
+    </MarkerDotContainer>
+  )
 }
 
 export default MarkerDot
 
-type IMarkerDotDefinedProps = {
+type IMarkerDotVisibleProps = {
   layoutP: Pointer<SequenceEditorPanelLayout>
   marker: StudioHistoricStateSequenceEditorMarker
 }
 
-const MarkerDotDefined: React.VFC<IMarkerDotDefinedProps> = ({
+const MarkerDotVisible: React.VFC<IMarkerDotVisibleProps> = ({
   layoutP,
   marker,
 }) => {
   const sheetAddress = useVal(layoutP.sheet.address)
-  const clippedSpaceFromUnitSpace = useVal(layoutP.clippedSpace.fromUnitSpace)
 
   const [markRef, markNode] = useRefAndState<HTMLDivElement | null>(null)
 
@@ -143,17 +171,7 @@ const MarkerDotDefined: React.VFC<IMarkerDotDefinedProps> = ({
   })
 
   return (
-    <div
-      style={{
-        position: 'absolute',
-        zIndex: zIndexes.marker,
-        transform: `translateX(${clippedSpaceFromUnitSpace(
-          marker.position,
-        )}px)`,
-        // below the sequence ruler "top bar"
-        top: '18px',
-      }}
-    >
+    <>
       {contextMenu}
       <HitZone
         ref={markRef}
@@ -167,7 +185,7 @@ const MarkerDotDefined: React.VFC<IMarkerDotDefinedProps> = ({
         className={isDragging ? 'beingDragged' : ''}
       />
       <MarkerVisualDot />
-    </div>
+    </>
   )
 }
 
