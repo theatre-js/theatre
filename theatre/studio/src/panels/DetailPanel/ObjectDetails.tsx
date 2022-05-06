@@ -5,9 +5,9 @@ import type {Pointer} from '@theatre/dataverse'
 import type {$FixMe} from '@theatre/shared/utils/types'
 
 const ObjectDetails: React.FC<{
-  objects: SheetObject[]
+  /** TODO: add support for multiple objects (it would show their common props) */
+  objects: [SheetObject]
 }> = ({objects}) => {
-  // @todo add support for multiple objects (it would show their common props)
   const obj = objects[0]
   const key = useMemo(() => JSON.stringify(obj.address), [obj])
 

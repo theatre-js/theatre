@@ -42,7 +42,7 @@ const HexInput = styled(BasicStringInput)`
 
 const noop = () => {}
 
-const Popover = styled.div`
+const RgbaPopover = styled.div`
   position: absolute;
   background-color: ${popoverBackgroundColor};
   color: white;
@@ -79,7 +79,7 @@ const RgbaPropEditor: IPropEditorFC<PropTypeConfig_Rgba> = ({
 
   const [popoverNode, openPopover] = usePopover({}, () => {
     return (
-      <Popover>
+      <RgbaPopover>
         <RgbaColorPicker
           color={{
             r: stuff.value.r,
@@ -98,7 +98,7 @@ const RgbaPropEditor: IPropEditorFC<PropTypeConfig_Rgba> = ({
           }}
           discardTemporaryValue={stuff.discardTemporaryValue}
         />
-      </Popover>
+      </RgbaPopover>
     )
   })
 

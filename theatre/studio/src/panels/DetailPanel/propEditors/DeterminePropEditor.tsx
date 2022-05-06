@@ -63,7 +63,7 @@ type PropConfigByType<K extends PropTypeConfig['type']> = Extract<
 >
 
 type IPropEditorByPropType = {
-  [K in PropTypeConfig['type']]: React.FC<{
+  [K in PropTypeConfig['type']]: React.VFC<{
     obj: SheetObject
     pointerToProp: Pointer<PropConfigByType<K>['valueType']>
     propConfig: PropConfigByType<K>
@@ -92,7 +92,7 @@ type IDeterminePropEditorProps<K extends PropTypeConfig['type']> =
     visualIndentation: number
   }
 
-const DeterminePropEditor: React.FC<
+const DeterminePropEditor: React.VFC<
   IDeterminePropEditorProps<PropTypeConfig['type']>
 > = (p) => {
   const propConfig =
