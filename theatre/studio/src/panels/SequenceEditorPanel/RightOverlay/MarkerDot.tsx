@@ -39,6 +39,13 @@ const dims = (w: number, h = w) => `
   height: ${h}px;
 `
 
+const Container = styled.div`
+  position: absolute;
+  // below the sequence ruler "top bar"
+  top: 18px;
+  z-index: ${() => zIndexes.marker};
+`
+
 const MarkerVisualDot = styled.div`
   position: absolute;
   ${dims(MARKER_SIZE_W_PX, MARKER_SIZE_H_PX)}
@@ -141,16 +148,20 @@ const MarkerDotDefined: React.VFC<IMarkerDotDefinedProps> = ({
     marker,
   })
 
+  let translateX = clippedSpaceFromUnitSpace(marker.position)
+  let scale = 1
+
+  const clippedSpaceWidth = useVal(layoutP.clippedSpace.width)
+  // if the marker would fall out of the bounds of RightOverlay
+  if (translateX < 0 || translateX > clippedSpaceWidth) {
+    translateX = -10000
+    scale = 0
+  }
+
   return (
-    <div
+    <Container
       style={{
-        position: 'absolute',
-        zIndex: zIndexes.marker,
-        transform: `translateX(${clippedSpaceFromUnitSpace(
-          marker.position,
-        )}px)`,
-        // below the sequence ruler "top bar"
-        top: '18px',
+        transform: `translateX(${translateX}px) scale(${scale})`,
       }}
     >
       {contextMenu}
@@ -169,7 +180,7 @@ const MarkerDotDefined: React.VFC<IMarkerDotDefinedProps> = ({
         className={isDragging ? 'beingDragged' : ''}
       />
       <MarkerVisualDot />
-    </div>
+    </Container>
   )
 }
 
