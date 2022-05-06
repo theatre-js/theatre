@@ -80,10 +80,10 @@ export default function useDrag(
     }
   }>({dragHappened: false, startPos: {x: 0, y: 0}})
 
+  const capturedPointerRef = useRef<undefined | CapturedPointer>()
   useLayoutEffect(() => {
     if (!target) return
 
-    let capturedPointer: undefined | CapturedPointer
     const getDistances = (event: MouseEvent): [number, number] => {
       const {startPos} = stateRef.current
       return [event.screenX - startPos.x, event.screenY - startPos.y]
@@ -98,11 +98,12 @@ export default function useDrag(
     }
 
     const dragEndHandler = () => {
-      removeDragListeners()
-      modeRef.current = 'notDragging'
+      if (modeRef.current === 'dragging') {
+        removeDragListeners()
+        modeRef.current = 'notDragging'
 
-      optsRef.current.onDragEnd &&
-        optsRef.current.onDragEnd(stateRef.current.dragHappened)
+        optsRef.current.onDragEnd?.(stateRef.current.dragHappened)
+      }
     }
 
     const addDragListeners = () => {
@@ -111,7 +112,7 @@ export default function useDrag(
     }
 
     const removeDragListeners = () => {
-      capturedPointer?.release()
+      capturedPointerRef.current?.release()
       document.removeEventListener('mousemove', dragHandler)
       document.removeEventListener('mouseup', dragEndHandler)
     }
@@ -132,7 +133,7 @@ export default function useDrag(
 
     const dragStartHandler = (event: MouseEvent) => {
       // defensively release
-      capturedPointer?.release()
+      capturedPointerRef.current?.release()
 
       const opts = optsRef.current
       if (opts.disabled === true) return
@@ -147,7 +148,7 @@ export default function useDrag(
       }
 
       // need to capture pointer after we know the provided handler wants to handle drag start
-      capturedPointer = capturePointer('Drag start')
+      capturedPointerRef.current = capturePointer('Drag start')
 
       if (!opts.dontBlockMouseDown) {
         event.stopPropagation()
@@ -176,8 +177,7 @@ export default function useDrag(
       target.removeEventListener('click', preventUnwantedClick as $FixMe)
 
       if (modeRef.current !== 'notDragging') {
-        optsRef.current.onDragEnd &&
-          optsRef.current.onDragEnd(modeRef.current === 'dragging')
+        optsRef.current.onDragEnd?.(modeRef.current === 'dragging')
       }
       modeRef.current = 'notDragging'
     }

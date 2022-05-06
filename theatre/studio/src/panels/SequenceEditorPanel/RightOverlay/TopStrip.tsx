@@ -7,7 +7,6 @@ import StampsGrid from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/Sta
 import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import FocusRangeZone from './FocusRangeZone/FocusRangeZone'
-import Markers from './Markers'
 
 export const topStripHeight = 18
 
@@ -37,7 +36,6 @@ const TopStrip: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
     <>
       <Container {...{[attributeNameThatLocksFramestamp]: 'hide'}}>
         <StampsGrid layoutP={layoutP} width={width} height={topStripHeight} />
-        <Markers layoutP={layoutP}></Markers>
         <FocusRangeZone layoutP={layoutP} />
       </Container>
     </>
