@@ -18,11 +18,12 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {
-  attributeNameThatLocksFramestamp,
+  includeLockFrameStampAttrs,
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {focusRangeStripTheme, RangeStrip} from './FocusRangeStrip'
 import type Sheet from '@theatre/core/sheets/Sheet'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 
 const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   position: absolute;
@@ -199,30 +200,17 @@ const FocusRangeThumb: React.FC<{
         )
       },
       onDrag(dx, _, event) {
-        range = existingRangeD.getValue()?.range || defaultRange
-
-        const deltaPos = scaledSpaceToUnitSpace(dx)
         let newPosition: number
-        const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
-
-        // Enable snapping
-        const snapTarget = event
-          .composedPath()
-          .find(
-            (el): el is Element =>
-              el instanceof Element &&
-              el !== hitZoneNode &&
-              el.hasAttribute('data-pos'),
-          )
-
-        if (snapTarget) {
-          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
-
-          if (isFinite(snapPos)) {
-            newPosition = snapPos
-          }
+        const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {
+          ignore: hitZoneNode,
+        })
+        if (snapPos != null) {
+          newPosition = snapPos
         }
 
+        range = existingRangeD.getValue()?.range || defaultRange
+        const deltaPos = scaledSpaceToUnitSpace(dx)
+        const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
         // Make sure that the focus range has a minimal width
         if (thumbType === 'start') {
           // Prevent the start thumb from going below 0
@@ -263,11 +251,8 @@ const FocusRangeThumb: React.FC<{
         })
       },
       onDragEnd(dragHappened) {
-        if (dragHappened && tempTransaction !== undefined) {
-          tempTransaction.commit()
-        } else if (tempTransaction) {
-          tempTransaction.discard()
-        }
+        if (dragHappened) tempTransaction?.commit()
+        else tempTransaction?.discard()
       },
     }
   }, [layoutP])
@@ -305,10 +290,8 @@ const FocusRangeThumb: React.FC<{
     return (
       <TheDiv
         ref={hitZoneRef as $IntentionalAny}
-        data-pos={position.toFixed(3)}
-        {...{
-          [attributeNameThatLocksFramestamp]: position.toFixed(3),
-        }}
+        {...DopeSnap.includePositionSnapAttrs(position)}
+        {...includeLockFrameStampAttrs(position)}
         className={`${isDragging && 'dragging'} ${enabled && 'enabled'}`}
         enabled={enabled}
         type={thumbType}

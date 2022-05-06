@@ -14,7 +14,7 @@ import {lighten} from 'polished'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {includeLockFrameStampAttrs} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {
   lockedCursorCssVarName,
   useCssCursorLock,
@@ -22,6 +22,7 @@ import {
 import SnapCursor from './SnapCursor.svg'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import type {IKeyframeEditorProps} from './KeyframeEditor'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 
 export const DOT_SIZE_PX = 6
 const HIT_ZONE_SIZE_PX = 12
@@ -106,11 +107,8 @@ const KeyframeDot: React.VFC<IKeyframeDotProps> = (props) => {
     <>
       <HitZone
         ref={ref}
-        data-pos={props.keyframe.position.toFixed(3)}
-        {...{
-          [attributeNameThatLocksFramestamp]:
-            props.keyframe.position.toFixed(3),
-        }}
+        {...includeLockFrameStampAttrs(props.keyframe.position)}
+        {...DopeSnap.includePositionSnapAttrs(props.keyframe.position)}
         className={isDragging ? 'beingDragged' : ''}
       />
       <Diamond isSelected={!!props.selection} />
@@ -190,31 +188,19 @@ function useDragKeyframe(
 
         const original =
           propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
-        const deltaPos = toUnitSpace(dx)
-        const newPosBeforeSnapping = Math.max(original.position + deltaPos, 0)
+        const newPosition = Math.max(
+          // check if our event hoversover a [data-pos] element
+          DopeSnap.checkIfMouseEventSnapToPos(event, {
+            ignore: node,
+          }) ??
+            // if we don't find snapping target, check the distance dragged + original position
+            original.position + toUnitSpace(dx),
+          // sanitize to minimum of zero
+          0,
+        )
 
-        let newPosition = newPosBeforeSnapping
-
-        const snapTarget = event
-          .composedPath()
-          .find(
-            (el): el is Element =>
-              el instanceof Element &&
-              el !== node &&
-              el.hasAttribute('data-pos'),
-          )
-
-        if (snapTarget) {
-          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
-          if (isFinite(snapPos)) {
-            newPosition = snapPos
-          }
-        }
-
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
-        }
+        tempTransaction?.discard()
+        tempTransaction = undefined
         tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
           stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
             {

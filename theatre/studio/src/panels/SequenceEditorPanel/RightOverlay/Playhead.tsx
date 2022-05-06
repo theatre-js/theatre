@@ -12,7 +12,7 @@ import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import {
-  attributeNameThatLocksFramestamp,
+  includeLockFrameStampAttrs,
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
@@ -27,6 +27,7 @@ import {
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getStudio from '@theatre/studio/getStudio'
 import {generateSequenceMarkerId} from '@theatre/shared/utils/ids'
+import DopeSnap from './DopeSnap'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -218,27 +219,13 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       },
       onDrag(dx, _, event) {
         const deltaPos = scaledSpaceToUnitSpace(dx)
-        const unsnappedPos = clamp(posBeforeSeek + deltaPos, 0, sequence.length)
 
-        let newPosition = unsnappedPos
-
-        const snapTarget = event
-          .composedPath()
-          .find(
-            (el): el is Element =>
-              el instanceof Element &&
-              el !== thumbNode &&
-              el.hasAttribute('data-pos'),
-          )
-
-        if (snapTarget) {
-          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
-          if (isFinite(snapPos)) {
-            newPosition = snapPos
-          }
-        }
-
-        sequence.position = newPosition
+        sequence.position =
+          DopeSnap.checkIfMouseEventSnapToPos(event, {
+            ignore: thumbNode,
+          }) ??
+          // unsnapped
+          clamp(posBeforeSeek + deltaPos, 0, sequence.length)
       },
       onDragEnd() {
         setIsSeeking(false)
@@ -286,11 +273,11 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
           className={`${isSeeking && 'seeking'} ${
             isPlayheadAttachedToFocusRange && 'playheadattachedtofocusrange'
           }`}
-          {...{[attributeNameThatLocksFramestamp]: 'hide'}}
+          {...includeLockFrameStampAttrs('hide')}
         >
           <Thumb
             ref={thumbRef as $IntentionalAny}
-            data-pos={posInUnitSpace.toFixed(3)}
+            {...DopeSnap.includePositionSnapAttrs(posInUnitSpace)}
             onClick={(e) => {
               openPopover(e, thumbNode!)
             }}
@@ -305,7 +292,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
           </Thumb>
 
           <Rod
-            data-pos={posInUnitSpace.toFixed(3)}
+            {...DopeSnap.includePositionSnapAttrs(posInUnitSpace)}
             className={isSeeking ? 'seeking' : ''}
           />
         </Container>

@@ -16,6 +16,7 @@ import type {
   SequenceEditorPanelLayout,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {SequenceEditorTree_AllRowTypes} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 
 const Container = styled.div<{isShiftDown: boolean}>`
   cursor: ${(props) => (props.isShiftDown ? 'cell' : 'default')};
@@ -191,26 +192,20 @@ namespace utils {
             toUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
           },
           onDrag(dx, _, event) {
-            let delta = toUnitSpace(dx)
             if (tempTransaction) {
               tempTransaction.discard()
               tempTransaction = undefined
             }
 
-            const snapTarget = event
-              .composedPath()
-              .find(
-                (el): el is Element =>
-                  el instanceof Element &&
-                  el !== origin.domNode &&
-                  el.hasAttribute('data-pos'),
-              )
+            const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {
+              ignore: origin.domNode,
+            })
 
-            if (snapTarget) {
-              const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
-              if (isFinite(snapPos)) {
-                delta = snapPos - origin.positionAtStartOfDrag
-              }
+            let delta: number
+            if (snapPos != null) {
+              delta = snapPos - origin.positionAtStartOfDrag
+            } else {
+              delta = toUnitSpace(dx)
             }
 
             tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
@@ -238,15 +233,8 @@ namespace utils {
             })
           },
           onDragEnd(dragHappened) {
-            if (dragHappened) {
-              if (tempTransaction) {
-                tempTransaction.commit()
-              }
-            } else {
-              if (tempTransaction) {
-                tempTransaction.discard()
-              }
-            }
+            if (dragHappened) tempTransaction?.commit()
+            else tempTransaction?.discard()
             tempTransaction = undefined
           },
         }

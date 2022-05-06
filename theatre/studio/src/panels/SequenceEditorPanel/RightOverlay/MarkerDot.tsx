@@ -12,7 +12,7 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {
-  attributeNameThatLocksFramestamp,
+  includeLockFrameStampAttrs,
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
@@ -25,6 +25,7 @@ import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type {StudioHistoricStateSequenceEditorMarker} from '@theatre/studio/store/types'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
+import DopeSnap from './DopeSnap'
 
 const MARKER_SIZE_W_PX = 10
 const MARKER_SIZE_H_PX = 8
@@ -156,16 +157,13 @@ const MarkerDotDefined: React.VFC<IMarkerDotDefinedProps> = ({
       {contextMenu}
       <HitZone
         ref={markRef}
-        // `data-pos` and `attributeNameThatLocksFramestamp` are used by FrameStampPositionProvider
+        // `data-pos` and `includeLockFrameStampAttrs` are used by FrameStampPositionProvider
         // in order to handle snapping the playhead. Adding these props effectively
         // causes the playhead to "snap" to the marker on mouse over.
         // `pointerEventsAutoInNormalMode` and `lockedCursorCssVarName` in the CSS above are also
         // used to make this behave correctly.
-        {...{
-          [attributeNameThatLocksFramestamp]: marker.position.toFixed(3),
-          [POSITION_SNAPPING.attributeNameForPosition]:
-            marker.position.toFixed(3),
-        }}
+        {...includeLockFrameStampAttrs(marker.position)}
+        {...DopeSnap.includePositionSnapAttrs(marker.position)}
         className={isDragging ? 'beingDragged' : ''}
       />
       <MarkerVisualDot />
@@ -227,7 +225,7 @@ function useDragMarker(
         const original = markerAtStartOfDrag
         const newPosition = Math.max(
           // check if our event hoversover a [data-pos] element
-          POSITION_SNAPPING.checkIfMouseEventSnapToPos(event, {
+          DopeSnap.checkIfMouseEventSnapToPos(event, {
             ignore: node,
           }) ??
             // if we don't find snapping target, check the distance dragged + original position
@@ -266,40 +264,4 @@ function useDragMarker(
   )
 
   return [isDragging]
-}
-
-// Pretty much same code as for keyframe and similar for playhead.
-// Consider if we should unify the implementations.
-// - See "useLockFrameStampPosition"
-// - Also see "pointerPositionInUnitSpace" for a related impl (for different problem)
-const POSITION_SNAPPING = {
-  /**
-   * Used to indicate that when hovering over this element, we should enable
-   * snapping to the given position.
-   */
-  attributeNameForPosition: 'data-pos',
-  checkIfMouseEventSnapToPos(
-    event: MouseEvent,
-    options?: {ignore?: HTMLElement | null},
-  ): number | null {
-    const snapTarget = event
-      .composedPath()
-      .find(
-        (el): el is Element =>
-          el instanceof Element &&
-          el !== options?.ignore &&
-          el.hasAttribute(POSITION_SNAPPING.attributeNameForPosition),
-      )
-
-    if (snapTarget) {
-      const snapPos = parseFloat(
-        snapTarget.getAttribute(POSITION_SNAPPING.attributeNameForPosition)!,
-      )
-      if (isFinite(snapPos)) {
-        return snapPos
-      }
-    }
-
-    return null
-  },
 }
