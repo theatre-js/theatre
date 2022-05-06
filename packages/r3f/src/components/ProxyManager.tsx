@@ -6,8 +6,8 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import type {Editable} from '../store';
-import { useEditorStore} from '../store'
+import type {Editable} from '../store'
+import {useEditorStore} from '../store'
 import {createPortal} from '@react-three/fiber'
 import EditableProxy from './EditableProxy'
 import type {OrbitControls} from 'three-stdlib'
@@ -15,6 +15,7 @@ import TransformControls from './TransformControls'
 import shallow from 'zustand/shallow'
 import type {Material, Mesh, Object3D} from 'three'
 import {MeshBasicMaterial, MeshPhongMaterial} from 'three'
+import type {IScrub} from '@theatre/studio';
 import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
@@ -213,9 +214,7 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
     })
   }, [viewportShading, renderMaterials, sceneProxy])
 
-  const scrub = useMemo(() => {
-    return studio.debouncedScrub(1000)
-  }, [selected, editableProxyOfSelected])
+  const scrub = useRef<IScrub>(undefined!)
 
   if (!sceneProxy) {
     return null
@@ -237,7 +236,7 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
               const sheetObject = editableProxyOfSelected.editable.sheetObject
               const obj = editableProxyOfSelected.object
 
-              scrub.capture(({set}) => {
+              scrub.current.capture(({set}) => {
                 set(sheetObject.props, {
                   ...sheetObject.value,
                   position: {
@@ -258,7 +257,14 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
                 })
               })
             }}
-            onDraggingChange={(event) => (isBeingEdited.current = event.value)}
+            onDraggingChange={(event) => {
+              if (event.value) {
+                scrub.current = studio.scrub()
+              } else {
+                scrub.current.commit()
+              }
+              return (isBeingEdited.current = event.value)
+            }}
           />
         )}
       {Object.values(editableProxies).map(
