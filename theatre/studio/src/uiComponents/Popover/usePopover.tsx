@@ -1,10 +1,13 @@
 import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {PortalContext} from 'reakit'
-import type {AbsolutePlacementBoxConstraints} from './TooltipWrapper';
+import type {AbsolutePlacementBoxConstraints} from './TooltipWrapper'
 import TooltipWrapper from './TooltipWrapper'
 
-export type OpenFn = (e: React.MouseEvent, target: HTMLElement) => void
+export type OpenFn = (
+  e: React.MouseEvent | MouseEvent | {clientX: number; clientY: number},
+  target: HTMLElement,
+) => void
 type CloseFn = () => void
 type State =
   | {isOpen: false}
