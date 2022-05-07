@@ -94,6 +94,7 @@ const Connector: React.FC<IProps> = (props) => {
   const rightDims = val(props.layoutP.rightDims)
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {
+      debugName: 'Connector',
       closeWhenPointerIsDistant: !isPointerBeingCaptured(),
       constraints: {
         minX: rightDims.screenX + POPOVER_MARGIN,
@@ -130,9 +131,10 @@ const Connector: React.FC<IProps> = (props) => {
       {...themeValues}
       ref={nodeRef}
       style={{
-        transform: `scale3d(calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
+        // scale3d looks like poo with a weird fuzzy rendering look
+        transform: `scaleX(calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
           connectorLengthInUnitSpace / CONNECTOR_WIDTH_UNSCALED
-        }), 1, 1)`,
+        }))`,
       }}
       onClick={(e) => {
         if (node) openPopover(e, node)

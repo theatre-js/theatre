@@ -1,21 +1,13 @@
 import type {PropTypeConfig_Number} from '@theatre/core/propTypes'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import React, {useCallback} from 'react'
-import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
-import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
-import type {IPropEditorFC} from './utils/IPropEditorFC'
+import type {ISimplePropEditorVFC} from './utils/IPropEditorFC'
 
-const NumberPropEditor: IPropEditorFC<PropTypeConfig_Number> = ({
+const NumberPropEditor: ISimplePropEditorVFC<PropTypeConfig_Number> = ({
   propConfig,
-  pointerToProp,
-  obj,
+  editingTools,
+  value,
 }) => {
-  const stuff = useEditingToolsForPrimitiveProp<number>(
-    pointerToProp,
-    obj,
-    propConfig,
-  )
-
   const nudge = useCallback(
     (params: {deltaX: number; deltaFraction: number; magnitude: number}) => {
       return propConfig.nudgeFn({...params, config: propConfig})
@@ -24,16 +16,14 @@ const NumberPropEditor: IPropEditorFC<PropTypeConfig_Number> = ({
   )
 
   return (
-    <SingleRowPropEditor {...{stuff, propConfig, pointerToProp}}>
-      <BasicNumberInput
-        value={stuff.value}
-        temporarilySetValue={stuff.temporarilySetValue}
-        discardTemporaryValue={stuff.discardTemporaryValue}
-        permanentlySetValue={stuff.permanentlySetValue}
-        range={propConfig.range}
-        nudge={nudge}
-      />
-    </SingleRowPropEditor>
+    <BasicNumberInput
+      value={value}
+      temporarilySetValue={editingTools.temporarilySetValue}
+      discardTemporaryValue={editingTools.discardTemporaryValue}
+      permanentlySetValue={editingTools.permanentlySetValue}
+      range={propConfig.range}
+      nudge={nudge}
+    />
   )
 }
 

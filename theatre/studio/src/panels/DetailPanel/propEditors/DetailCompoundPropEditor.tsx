@@ -6,7 +6,6 @@ import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
 import React from 'react'
 import styled from 'styled-components'
-import DeterminePropEditor from './DeterminePropEditor'
 import {
   indentationFormula,
   propNameText,
@@ -15,7 +14,8 @@ import {
 import DefaultOrStaticValueIndicator from './utils/DefaultValueIndicator'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {IPropEditorFC} from './utils/IPropEditorFC'
+import type {ICompoundPropDetailEditorVFC} from './utils/IPropEditorFC'
+import {DetailDeterminePropEditor} from './DeterminePropEditor'
 
 const Container = styled.div`
   --step: 8px;
@@ -59,7 +59,7 @@ const SubProps = styled.div<{depth: number; lastSubIsComposite: boolean}>`
   /* padding: ${(props) => (props.lastSubIsComposite ? 0 : '4px')} 0; */
 `
 
-const CompoundPropEditor: IPropEditorFC<
+const DetailCompoundPropEditor: ICompoundPropDetailEditorVFC<
   PropTypeConfig_Compound<$IntentionalAny>
 > = ({pointerToProp, obj, propConfig, visualIndentation}) => {
   const propName = propConfig.label ?? last(getPointerParts(pointerToProp).path)
@@ -149,7 +149,7 @@ const CompoundPropEditor: IPropEditorFC<
         {[...nonCompositeSubs, ...compositeSubs].map(
           ([subPropKey, subPropConfig]) => {
             return (
-              <DeterminePropEditor
+              <DetailDeterminePropEditor
                 key={'prop-' + subPropKey}
                 propConfig={subPropConfig}
                 pointerToProp={pointerToProp[subPropKey]}
@@ -164,4 +164,4 @@ const CompoundPropEditor: IPropEditorFC<
   )
 }
 
-export default CompoundPropEditor
+export default DetailCompoundPropEditor

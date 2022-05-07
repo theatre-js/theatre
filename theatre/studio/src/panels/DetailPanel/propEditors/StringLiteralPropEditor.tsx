@@ -1,44 +1,32 @@
 import type {PropTypeConfig_StringLiteral} from '@theatre/core/propTypes'
 import React, {useCallback} from 'react'
-import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import BasicSwitch from '@theatre/studio/uiComponents/form/BasicSwitch'
 import BasicSelect from '@theatre/studio/uiComponents/form/BasicSelect'
-import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
-import type {IPropEditorFC} from './utils/IPropEditorFC'
+import type {ISimplePropEditorVFC} from './utils/IPropEditorFC'
 
-const StringLiteralPropEditor: IPropEditorFC<
+const StringLiteralPropEditor: ISimplePropEditorVFC<
   PropTypeConfig_StringLiteral<$IntentionalAny>
-> = ({propConfig, pointerToProp, obj}) => {
-  const stuff = useEditingToolsForPrimitiveProp<string>(
-    pointerToProp,
-    obj,
-    propConfig,
-  )
-
+> = ({propConfig, editingTools, value}) => {
   const onChange = useCallback(
     (val: string) => {
-      stuff.permanentlySetValue(val)
+      editingTools.permanentlySetValue(val)
     },
-    [propConfig, pointerToProp, obj],
+    [propConfig, editingTools],
   )
 
-  return (
-    <SingleRowPropEditor {...{stuff, propConfig, pointerToProp}}>
-      {propConfig.as === 'menu' ? (
-        <BasicSelect
-          value={stuff.value}
-          onChange={onChange}
-          options={propConfig.valuesAndLabels}
-        />
-      ) : (
-        <BasicSwitch
-          value={stuff.value}
-          onChange={onChange}
-          options={propConfig.valuesAndLabels}
-        />
-      )}
-    </SingleRowPropEditor>
+  return propConfig.as === 'menu' ? (
+    <BasicSelect
+      value={value}
+      onChange={onChange}
+      options={propConfig.valuesAndLabels}
+    />
+  ) : (
+    <BasicSwitch
+      value={value}
+      onChange={onChange}
+      options={propConfig.valuesAndLabels}
+    />
   )
 }
 

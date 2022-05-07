@@ -6,14 +6,12 @@ import {
   parseRgbaFromHex,
 } from '@theatre/shared/utils/color'
 import React, {useCallback, useRef} from 'react'
-import {useEditingToolsForPrimitiveProp} from './utils/useEditingToolsForPrimitiveProp'
-import {SingleRowPropEditor} from './utils/SingleRowPropEditor'
 import {RgbaColorPicker} from '@theatre/studio/uiComponents/colorPicker'
 import styled from 'styled-components'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
 import {popoverBackgroundColor} from '@theatre/studio/uiComponents/Popover/BasicPopover'
-import type {IPropEditorFC} from './utils/IPropEditorFC'
+import type {ISimplePropEditorVFC} from './utils/IPropEditorFC'
 
 const RowContainer = styled.div`
   display: flex;
@@ -22,16 +20,18 @@ const RowContainer = styled.div`
   gap: 4px;
 `
 
-interface PuckProps {
-  background: Rgba
+interface ColorPreviewPuckProps {
+  rgbaColor: Rgba
 }
 
-const Puck = styled.div.attrs<PuckProps>((props) => ({
+const ColorPreviewPuck = styled.div.attrs<ColorPreviewPuckProps>((props) => ({
   style: {
-    background: props.background,
+    // weirdly, rgba2hex is needed to ensure initial render was correct background?
+    // huge head scratcher.
+    background: rgba2hex(props.rgbaColor),
   },
-}))<PuckProps>`
-  height: calc(100% - 12px);
+}))<ColorPreviewPuckProps>`
+  height: 18px;
   aspect-ratio: 1;
   border-radius: 2px;
 `
@@ -60,60 +60,58 @@ const RgbaPopover = styled.div`
   box-shadow: none;
 `
 
-const RgbaPropEditor: IPropEditorFC<PropTypeConfig_Rgba> = ({
-  propConfig,
-  pointerToProp,
-  obj,
+const RgbaPropEditor: ISimplePropEditorVFC<PropTypeConfig_Rgba> = ({
+  editingTools,
+  value,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null!)
-
-  const stuff = useEditingToolsForPrimitiveProp(pointerToProp, obj, propConfig)
 
   const onChange = useCallback(
     (color: string) => {
       const rgba = decorateRgba(parseRgbaFromHex(color))
-      stuff.permanentlySetValue(rgba)
+      editingTools.permanentlySetValue(rgba)
     },
-    [stuff],
+    [editingTools],
   )
 
-  const [popoverNode, openPopover] = usePopover({}, () => {
-    return (
+  const [popoverNode, openPopover] = usePopover(
+    {debugName: 'RgbaPropEditor'},
+    () => (
       <RgbaPopover>
         <RgbaColorPicker
           color={{
-            r: stuff.value.r,
-            g: stuff.value.g,
-            b: stuff.value.b,
-            a: stuff.value.a,
+            r: value.r,
+            g: value.g,
+            b: value.b,
+            a: value.a,
           }}
           temporarilySetValue={(color) => {
             const rgba = decorateRgba(color)
-            stuff.temporarilySetValue(rgba)
+            editingTools.temporarilySetValue(rgba)
           }}
           permanentlySetValue={(color) => {
             // console.log('perm')
             const rgba = decorateRgba(color)
-            stuff.permanentlySetValue(rgba)
+            editingTools.permanentlySetValue(rgba)
           }}
-          discardTemporaryValue={stuff.discardTemporaryValue}
+          discardTemporaryValue={editingTools.discardTemporaryValue}
         />
       </RgbaPopover>
-    )
-  })
+    ),
+  )
 
   return (
-    <SingleRowPropEditor {...{stuff, propConfig, pointerToProp}}>
+    <>
       <RowContainer>
-        <Puck
-          background={stuff.value}
+        <ColorPreviewPuck
+          rgbaColor={value}
           ref={containerRef}
           onClick={(e) => {
             openPopover(e, containerRef.current)
           }}
         />
         <HexInput
-          value={rgba2hex(stuff.value)}
+          value={rgba2hex(value)}
           temporarilySetValue={noop}
           discardTemporaryValue={noop}
           permanentlySetValue={onChange}
@@ -121,7 +119,7 @@ const RgbaPropEditor: IPropEditorFC<PropTypeConfig_Rgba> = ({
         />
       </RowContainer>
       {popoverNode}
-    </SingleRowPropEditor>
+    </>
   )
 }
 

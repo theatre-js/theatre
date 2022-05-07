@@ -24,7 +24,7 @@ type State =
 let lastScrubIdAsNumber = 0
 
 /**
- * The scrub API
+ * The scrub API is a simple construct for
  */
 export interface IScrubApi {
   /**
@@ -80,7 +80,7 @@ export interface IScrub {
   capture(fn: (api: IScrubApi) => void): void
 
   /**
-   * Clearts the ops of the scrub and destroys it. After calling this,
+   * Clears the ops of the scrub and destroys it. After calling this,
    * you won't be able to call `scrub.capture()` anymore.
    */
   discard(): void

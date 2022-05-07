@@ -31,7 +31,7 @@ const LengthEditorPopover: React.FC<{
   /**
    * Called when user hits enter/escape
    */
-  onRequestClose: () => void
+  onRequestClose: (reason: string) => void
 }> = ({layoutP, onRequestClose}) => {
   const sheet = useVal(layoutP.sheet)
 
@@ -89,7 +89,7 @@ const LengthEditorPopover: React.FC<{
           {...fns}
           isValid={greaterThanZero}
           inputRef={inputRef}
-          onBlur={onRequestClose}
+          onBlur={onRequestClose.bind(null, 'length editor number input blur')}
           nudge={nudge}
         />
       </Container>

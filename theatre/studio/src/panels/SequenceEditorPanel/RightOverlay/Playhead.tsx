@@ -188,7 +188,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   const [thumbRef, thumbNode] = useRefAndState<HTMLElement | null>(null)
 
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
-    {},
+    {debugName: 'Playhead'},
     () => {
       return (
         <BasicPopover>

@@ -5,8 +5,8 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {last} from 'lodash-es'
 import React from 'react'
-import type {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/DetailPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
-import {shadeToColor} from '@theatre/studio/panels/DetailPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
+import type {useEditingToolsForPrimitivePropInDetailsPanel} from '@theatre/studio/panels/DetailPanel/propEditors/utils/useEditingToolsForPrimitivePropInDetailsPanel'
+import {shadeToColor} from '@theatre/studio/panels/DetailPanel/propEditors/utils/useEditingToolsForPrimitivePropInDetailsPanel'
 import styled, {css} from 'styled-components'
 import {transparentize} from 'polished'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
@@ -111,7 +111,7 @@ const InputContainer = styled.div`
 type ISingleRowPropEditorProps<T> = {
   propConfig: propTypes.PropTypeConfig
   pointerToProp: Pointer<T>
-  stuff: ReturnType<typeof useEditingToolsForPrimitiveProp>
+  stuff: ReturnType<typeof useEditingToolsForPrimitivePropInDetailsPanel>
 }
 
 export function SingleRowPropEditor<T>({

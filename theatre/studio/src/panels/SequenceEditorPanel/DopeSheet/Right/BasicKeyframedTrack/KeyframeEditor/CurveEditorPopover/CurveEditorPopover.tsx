@@ -113,7 +113,7 @@ type IProps = {
   /**
    * Called when user hits enter/escape
    */
-  onRequestClose: () => void
+  onRequestClose: (reason: string) => void
 } & Parameters<typeof KeyframeEditor>[0]
 
 const CurveEditorPopover: React.FC<IProps> = (props) => {
@@ -175,9 +175,9 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
       optionsRef.current[displayedPresets[0].label]?.current?.focus()
     } else if (e.key === 'Escape') {
       discardTempValue(tempTransaction)
-      props.onRequestClose()
+      props.onRequestClose('key Escape')
     } else if (e.key === 'Enter') {
-      props.onRequestClose()
+      props.onRequestClose('key Enter')
     }
   }
 
@@ -241,10 +241,10 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   const onEasingOptionKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape') {
       discardTempValue(tempTransaction)
-      props.onRequestClose()
+      props.onRequestClose('key Escape')
       e.stopPropagation()
     } else if (e.key === 'Enter') {
-      props.onRequestClose()
+      props.onRequestClose('key Enter')
       e.stopPropagation()
     }
   }
@@ -253,7 +253,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   const onEasingOptionMouseOut = () => setPreview(null)
   const onSelectEasingOption = (item: {label: string; value: string}) => {
     setTempValue(tempTransaction, props, cur, next, item.value)
-    props.onRequestClose()
+    props.onRequestClose('selected easing option')
 
     return Outcome.Handled
   }

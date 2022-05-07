@@ -17,10 +17,11 @@ import type {PropTypeConfig} from '@theatre/core/propTypes'
 import {isPropConfSequencable} from '@theatre/shared/propTypes/utils'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 
-interface CommonStuff<T> {
+interface EditingToolsCommon<T> {
   value: T
   beingScrubbed: boolean
   contextMenuItems: Array<IContextMenuItem>
+  /** e.g. `< • >` or `<   >` for {@link Sequenced} */
   controlIndicators: React.ReactElement
 
   temporarilySetValue(v: T): void
@@ -28,38 +29,44 @@ interface CommonStuff<T> {
   permanentlySetValue(v: T): void
 }
 
-interface Default<T> extends CommonStuff<T> {
+interface Default<T> extends EditingToolsCommon<T> {
   type: 'Default'
   shade: Shade
 }
 
-interface Static<T> extends CommonStuff<T> {
+interface Static<T> extends EditingToolsCommon<T> {
   type: 'Static'
   shade: Shade
 }
 
-interface Sequenced<T> extends CommonStuff<T> {
+interface Sequenced<T> extends EditingToolsCommon<T> {
   type: 'Sequenced'
   shade: Shade
+  /** based on the position of the playhead */
   nearbyKeyframes: NearbyKeyframes
 }
 
-type Stuff<T> = Default<T> | Static<T> | Sequenced<T>
+type EditingTools<T> = Default<T> | Static<T> | Sequenced<T>
 
-export function useEditingToolsForPrimitiveProp<
+/**
+ * Notably, this uses the {@link Scrub} api in order to support
+ * indicating which pointers are being scrubbed so indicators of scrubbing
+ * can be presented to everyone.
+ */
+export function useEditingToolsForPrimitivePropInDetailsPanel<
   T extends SerializablePrimitive,
 >(
   pointerToProp: Pointer<T>,
   obj: SheetObject,
   propConfig: PropTypeConfig,
-): Stuff<T> {
+): EditingTools<T> {
   return usePrism(() => {
     const pathToProp = getPointerParts(pointerToProp).path
 
     const final = obj.getValueByPointer(pointerToProp) as T
 
-    const callbacks = prism.memo(
-      'callbacks',
+    const editPropValue = prism.memo(
+      'editPropValue',
       () => {
         let currentScrub: Scrub | null = null
 
@@ -96,6 +103,7 @@ export function useEditingToolsForPrimitiveProp<
       [],
     )
 
+    // hmmm... where was this going?
     // const validSequenceTracks = val(
     //   obj.template.getMapOfValidSequenceTracks_forStudio(),
     // )
@@ -114,8 +122,8 @@ export function useEditingToolsForPrimitiveProp<
 
     const contextMenuItems: IContextMenuItem[] = []
 
-    const common: CommonStuff<T> = {
-      ...callbacks,
+    const common: EditingToolsCommon<T> = {
+      ...editPropValue,
       value: final,
       beingScrubbed,
       contextMenuItems,
@@ -239,7 +247,7 @@ export function useEditingToolsForPrimitiveProp<
     contextMenuItems.push({
       label: 'Reset to default',
       callback: () => {
-        getStudio()!.transaction(({unset}) => {
+        getStudio()!.transaction(({unset: unset}) => {
           unset(pointerToProp)
         })
       },

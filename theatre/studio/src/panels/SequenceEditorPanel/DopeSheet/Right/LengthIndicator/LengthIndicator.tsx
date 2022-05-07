@@ -139,7 +139,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
   const [isDragging] = useDragBulge(node, {layoutP})
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
-    {},
+    {debugName: 'LengthIndicator'},
     () => {
       return (
         <BasicPopover>
