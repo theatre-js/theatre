@@ -61,7 +61,7 @@ const SubProps = styled.div<{depth: number; lastSubIsComposite: boolean}>`
 
 const CompoundPropEditor: IPropEditorFC<
   PropTypeConfig_Compound<$IntentionalAny>
-> = ({pointerToProp, obj, propConfig, visualIndentation: depth}) => {
+> = ({pointerToProp, obj, propConfig, visualIndentation}) => {
   const propName = propConfig.label ?? last(getPointerParts(pointerToProp).path)
 
   const allSubs = Object.entries(propConfig.props)
@@ -132,7 +132,7 @@ const CompoundPropEditor: IPropEditorFC<
       {/* {contextMenu} */}
       <Header
         // @ts-ignore
-        style={{'--depth': depth - 1}}
+        style={{'--depth': visualIndentation - 1}}
       >
         <Padding>
           <DefaultOrStaticValueIndicator hasStaticOverride={false} />
@@ -142,8 +142,8 @@ const CompoundPropEditor: IPropEditorFC<
 
       <SubProps
         // @ts-ignore
-        style={{'--depth': depth}}
-        depth={depth}
+        style={{'--depth': visualIndentation}}
+        depth={visualIndentation}
         lastSubIsComposite={lastSubPropIsComposite}
       >
         {[...nonCompositeSubs, ...compositeSubs].map(
@@ -154,7 +154,7 @@ const CompoundPropEditor: IPropEditorFC<
                 propConfig={subPropConfig}
                 pointerToProp={pointerToProp[subPropKey]}
                 obj={obj}
-                visualIndentation={depth + 1}
+                visualIndentation={visualIndentation + 1}
               />
             )
           },
