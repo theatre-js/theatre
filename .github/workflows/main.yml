@@ -60,7 +60,10 @@ jobs:
         run: npm install
       - name: Publish the packages
         env:
-          BUCKET: my-npm-packages
-          SECRET: ${{ secrets.DO_SPACES_SECRET }}
-          API_KEY: ${{ secrets.DO_SPACES_KEY }}
+          DO_REGION: 'nyc3'
+          DO_BUCKET: 'theatrejs-packages'
+          DO_SECRET: ${{ secrets.DO_SPACES_SECRET }}
+          DO_API_KEY: ${{ secrets.DO_SPACES_KEY }}
+          DO_DOMAIN: ''
+          FOLDER: '@theatre'
         run: npx zx scripts/generate-development-package-tarballs.mjs
