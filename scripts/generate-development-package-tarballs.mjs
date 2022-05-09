@@ -64,7 +64,7 @@ async function assignVersions(
       fs.readFileSync(pathToPackage, {encoding: 'utf-8'}),
     )
 
-    const {version, dependencies, peerDependencies, devDependencies} = original
+    let {version, dependencies, peerDependencies, devDependencies} = original
     for (const deps of [dependencies, peerDependencies, devDependencies]) {
       if (!deps) continue
       for (let wpObject of workspacesListObjects) {
@@ -80,6 +80,7 @@ async function assignVersions(
         }
       }
     }
+    version = monorepoVersion
     const newJson = {
       ...original,
       version,
@@ -111,7 +112,7 @@ async function assignVersions(
   // TODO: replace the dependency versions with the commit hash in the packages
   await assignVersions(
     // TODO: don't use `0.4.8` for the package versions
-    `0.4.8-${latestCommitHash.stdout}`,
+    `0.4.8-dev-${latestCommitHash.stdout}`,
     workspacesListObjects,
     latestCommitHash.stdout,
   )
