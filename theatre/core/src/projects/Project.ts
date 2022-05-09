@@ -18,9 +18,21 @@ import type {
   SheetId,
   SheetInstanceId,
 } from '@theatre/shared/utils/ids'
+import type {
+  ILogger,
+  ITheatreLoggerConfig,
+  ITheatreLoggingConfig,
+} from '@theatre/shared/logger'
+import {_coreLogger} from '@theatre/core/_coreLogger'
 
 export type Conf = Partial<{
   state: OnDiskState
+  experiments: ExperimentsConf
+}>
+
+export type ExperimentsConf = Partial<{
+  logger: ITheatreLoggerConfig
+  logging: ITheatreLoggingConfig
 }>
 
 export default class Project {
@@ -47,14 +59,19 @@ export default class Project {
   private _studio: Studio | undefined
 
   type: 'Theatre_Project' = 'Theatre_Project'
+  readonly _logger: ILogger
 
   constructor(
     id: ProjectId,
     readonly config: Conf = {},
     readonly publicApi: TheatreProject,
   ) {
+    this._logger = _coreLogger(config.experiments).named('Project', id)
+    this._logger.traceDev('creating project')
     this.address = {projectId: id}
 
+    // remove when logger is understood
+    this._logger._kapow('this is a "kapow"')
     const onDiskStateAtom = new Atom<ProjectState>({
       ahistoric: {
         ahistoricStuff: '',
@@ -94,6 +111,7 @@ export default class Project {
         // let's give it one tick to attach itself
         if (!this._studio) {
           this._readyDeferred.resolve(undefined)
+          this._logger._trace('ready deferred resolved with no state')
         }
       }, 0)
     } else {
@@ -118,7 +136,7 @@ export default class Project {
           `Project ${this.address.projectId} is already attached to studio ${this._studio.address.studioId}`,
         )
       } else {
-        console.warn(
+        this._logger.warnDev(
           `Project ${this.address.projectId} is already attached to studio ${this._studio.address.studioId}`,
         )
         return

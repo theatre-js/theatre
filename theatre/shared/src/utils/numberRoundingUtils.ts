@@ -1,25 +1,29 @@
 import padEnd from 'lodash-es/padEnd'
-import logger from '@theatre/shared/logger'
+import type {IUtilContext} from '@theatre/shared/logger'
 
-export function roundestNumberBetween(_a: number, _b: number): number {
+export function roundestNumberBetween(
+  ctx: IUtilContext,
+  _a: number,
+  _b: number,
+): number {
   if (_b < _a) {
-    return roundestNumberBetween(_b, _a)
+    return roundestNumberBetween(ctx, _b, _a)
   }
 
   if (_a < 0 && _b < 0) {
-    return noMinusZero(roundestNumberBetween(-_b, -_a) * -1)
+    return noMinusZero(roundestNumberBetween(ctx, -_b, -_a) * -1)
   }
 
   if (_a <= 0 && _b >= 0) return 0
 
   const aCeiling = Math.ceil(_a)
   if (aCeiling <= _b) {
-    return roundestIntegerBetween(aCeiling, Math.floor(_b))
+    return roundestIntegerBetween(ctx, aCeiling, Math.floor(_b))
   } else {
     const [a, b] = [_a, _b]
     const integer = Math.floor(a)
 
-    return integer + roundestFloat(a - integer, b - integer)
+    return integer + roundestFloat(ctx, a - integer, b - integer)
   }
 }
 
@@ -28,6 +32,7 @@ const halvesAndQuartiles = [5, 2.5, 7.5]
 const multipliersWithoutQuartiles = [5, 2, 4, 6, 8, 1, 3, 7, 9]
 
 export function roundestIntegerBetween(
+  ctx: IUtilContext,
   _a: number,
   _b: number,
   decimalsAllowed: boolean = true,
@@ -77,7 +82,9 @@ export function roundestIntegerBetween(
     base = highestTotalFound
 
     if (currentExponentiationOfTen === 1) {
-      logger.error(`Coudn't find a human-readable number between ${a} and ${b}`)
+      ctx.logger.error(
+        `Coudn't find a human-readable number between ${a} and ${b}`,
+      )
       return _a
     } else {
       currentExponentiationOfTen /= 10
@@ -126,7 +133,11 @@ export const stringifyNumber = (n: number): string => {
 /**
  * it is expected that both args are 0 \< arg \< 1
  */
-export const roundestFloat = (a: number, b: number): number => {
+export const roundestFloat = (
+  ctx: IUtilContext,
+  a: number,
+  b: number,
+): number => {
   const inString = {
     a: stringifyNumber(a),
     b: stringifyNumber(b),
@@ -160,6 +171,7 @@ export const roundestFloat = (a: number, b: number): number => {
   }
 
   const roundestInt = roundestIntegerBetween(
+    ctx,
     parseInt(withPaddedDecimals.a, 10) * Math.pow(10, maxNumberOfLeadingZeros),
     parseInt(withPaddedDecimals.b, 10) * Math.pow(10, maxNumberOfLeadingZeros),
     true,
