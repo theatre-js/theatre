@@ -19,7 +19,6 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import type {SequenceMarkerId} from '@theatre/shared/utils/ids'
 import type {SheetAddress} from '@theatre/shared/utils/addresses'
 import SnapCursor from './SnapCursor.svg'
-import MarkerDotVisual from './MarkerDotVisual.svg'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
@@ -27,8 +26,8 @@ import type {StudioHistoricStateSequenceEditorMarker} from '@theatre/studio/stor
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import DopeSnap from './DopeSnap'
 
-const MARKER_SIZE_W_PX = 10
-const MARKER_SIZE_H_PX = 8
+const MARKER_SIZE_W_PX = 12
+const MARKER_SIZE_H_PX = 12
 const HIT_ZONE_SIZE_PX = 12
 const SNAP_CURSOR_SIZE_PX = 34
 const MARKER_HOVER_SIZE_W_PX = MARKER_SIZE_W_PX * 2
@@ -47,14 +46,31 @@ const MarkerDotContainer = styled.div`
   z-index: ${() => zIndexes.marker};
 `
 
-const MarkerVisualDot = styled.div`
+const MarkerVisualDotSVGContainer = styled.div`
   position: absolute;
   ${dims(MARKER_SIZE_W_PX, MARKER_SIZE_H_PX)}
-
-  background-image: url(${MarkerDotVisual});
-  background-size: contain;
   pointer-events: none;
 `
+
+// Attempted to optimize via memo + inline svg rather than background-url
+const MarkerVisualDot = React.memo(() => (
+  <MarkerVisualDotSVGContainer
+    children={
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 12 12"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 5H0V7H2.71973L5.96237 10.2426L9.20501 7H12V5Z"
+          fill="#40AAA4"
+        />
+      </svg>
+    }
+  />
+))
 
 const HitZone = styled.div`
   position: absolute;
@@ -97,7 +113,10 @@ const HitZone = styled.div`
     pointer-events: none !important;
   }
 
-  &:hover + ${MarkerVisualDot}, &.beingDragged + ${MarkerVisualDot} {
+  &:hover
+    + ${MarkerVisualDotSVGContainer},
+    &.beingDragged
+    + ${MarkerVisualDotSVGContainer} {
     ${dims(MARKER_HOVER_SIZE_W_PX, MARKER_HOVER_SIZE_H_PX)}
   }
 `
