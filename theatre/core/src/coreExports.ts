@@ -17,6 +17,7 @@ import {isDerivation, valueDerivation} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import coreTicker from './coreTicker'
 import type {ProjectId} from '@theatre/shared/utils/ids'
+import {_coreLogger} from './_coreLogger'
 export {types}
 
 /**
@@ -45,7 +46,6 @@ export {types}
  * ```
  */
 export function getProject(id: string, config: IProjectConfig = {}): IProject {
-  const {...restOfConfig} = config
   const existingProject = projectsSingleton.get(id as ProjectId)
   if (existingProject) {
     if (process.env.NODE_ENV !== 'production') {
@@ -61,20 +61,28 @@ export function getProject(id: string, config: IProjectConfig = {}): IProject {
     return existingProject.publicApi
   }
 
+  const rootLogger = _coreLogger(config.experiments)
+  const plogger = rootLogger.named('Project', id)
+
   if (process.env.NODE_ENV !== 'production') {
     validateName(id, 'projectName in Theatre.getProject(projectName)', true)
     validateProjectIdOrThrow(id)
+    plogger._debug('validated projectName', {projectName: id})
   }
 
   if (config.state) {
     if (process.env.NODE_ENV !== 'production') {
       shallowValidateOnDiskState(id as ProjectId, config.state)
+      plogger._debug('shallow validated config.state on disk')
     } else {
       deepValidateOnDiskState(id as ProjectId, config.state)
+      plogger._debug('deep validated config.state on disk')
     }
+  } else {
+    plogger._debug('no config.state')
   }
 
-  return new TheatreProject(id, restOfConfig)
+  return new TheatreProject(id, config)
 }
 
 /**

@@ -1,6 +1,10 @@
 import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import Project from '@theatre/core/projects/Project'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
+import type {
+  ITheatreLoggerConfig,
+  ITheatreLoggingConfig,
+} from '@theatre/shared/logger'
 import type {ProjectAddress} from '@theatre/shared/utils/addresses'
 import type {
   ProjectId,
@@ -19,6 +23,22 @@ export type IProjectConfig = {
    * The state of the project, as [exported](https://docs.theatrejs.com/in-depth/#exporting) by the studio.
    */
   state?: $IntentionalAny
+  experiments?: IProjectConfigExperiments
+}
+
+export type IProjectConfigExperiments = {
+  /**
+   * Defaults to using global `console` with style args.
+   *
+   * (TODO: check for browser environment before using style args)
+   */
+  logger?: ITheatreLoggerConfig
+  /**
+   * Defaults:
+   *  * `production` builds: console - error
+   *  * `development` builds: console - error, warning
+   */
+  logging?: ITheatreLoggingConfig
 }
 
 /**

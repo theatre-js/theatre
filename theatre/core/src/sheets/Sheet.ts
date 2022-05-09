@@ -8,6 +8,7 @@ import {Atom, valueDerivation} from '@theatre/dataverse'
 import type SheetTemplate from './SheetTemplate'
 import type {ObjectAddressKey, SheetInstanceId} from '@theatre/shared/utils/ids'
 import type {StrictRecord} from '@theatre/shared/utils/types'
+import type {ILogger} from '@theatre/shared/logger'
 
 type SheetObjectMap = StrictRecord<ObjectAddressKey, SheetObject>
 
@@ -28,11 +29,14 @@ export default class Sheet {
   readonly project: Project
   readonly objectsP = this._objects.pointer
   type: 'Theatre_Sheet' = 'Theatre_Sheet'
+  readonly _logger: ILogger
 
   constructor(
     readonly template: SheetTemplate,
     public readonly instanceId: SheetInstanceId,
   ) {
+    this._logger = template.project._logger.named('Sheet', instanceId)
+    this._logger._trace('creating sheet')
     this.project = template.project
     this.address = {
       ...template.address,

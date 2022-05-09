@@ -1,4 +1,4 @@
-import logger from '@theatre/shared/logger'
+import type {IUtilContext} from '@theatre/shared/logger'
 import type {$IntentionalAny, GenericAction} from '@theatre/shared/utils/types'
 import mapValues from 'lodash-es/mapValues'
 
@@ -13,7 +13,7 @@ export type PayloadTypeOfReducer<
 > = Parameters<Fn>[1]['payload']
 
 const actionReducersBundle =
-  <State>() =>
+  <State>(ctx: IUtilContext) =>
   <
     Reducers extends Record<
       string,
@@ -37,7 +37,7 @@ const actionReducersBundle =
       const {type} = action
       const innerReducer = (reducers as $IntentionalAny)[type]
       if (!innerReducer) {
-        logger.error(`Unkown action type '${type}'`)
+        ctx.logger.error(`Unkown action type '${type}'`)
         return prevState
       }
       const newState: State = innerReducer(prevState, action)

@@ -14,7 +14,7 @@ import type {
 } from './playbackControllers/DefaultPlaybackController'
 import DefaultPlaybackController from './playbackControllers/DefaultPlaybackController'
 import TheatreSequence from './TheatreSequence'
-import logger from '@theatre/shared/logger'
+import type {ILogger} from '@theatre/shared/logger'
 import type {ISequence} from '..'
 
 export type IPlaybackRange = [from: number, to: number]
@@ -44,6 +44,7 @@ export default class Sequence {
 
   readonly pointer: ISequence['pointer'] = pointer({root: this, path: []})
   readonly $$isIdentityDerivationProvider = true
+  readonly _logger: ILogger
 
   constructor(
     readonly _project: Project,
@@ -52,6 +53,10 @@ export default class Sequence {
     readonly _subUnitsPerUnitD: IDerivation<number>,
     playbackController?: IPlaybackController,
   ) {
+    this._logger = _project._logger
+      .named('Sheet', _sheet.address.sheetId)
+      .named('Instance', _sheet.address.sheetInstanceId)
+
     this.address = {...this._sheet.address, sequenceName: 'default'}
 
     this.publicApi = new TheatreSequence(this)
@@ -140,13 +145,13 @@ export default class Sequence {
     this.pause()
     if (process.env.NODE_ENV !== 'production') {
       if (typeof position !== 'number') {
-        logger.error(
+        this._logger.errorDev(
           `value t in sequence.position = t must be a number. ${typeof position} given`,
         )
         position = 0
       }
       if (position < 0) {
-        logger.error(
+        this._logger.errorDev(
           `sequence.position must be a positive number. ${position} given`,
         )
         position = 0
@@ -226,7 +231,7 @@ export default class Sequence {
       }
 
       if (range[1] > sequenceDuration) {
-        logger.warn(
+        this._logger.warnDev(
           `Argument conf.range[1] in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}s. ${JSON.stringify(
             range[1],
           )} given.`,

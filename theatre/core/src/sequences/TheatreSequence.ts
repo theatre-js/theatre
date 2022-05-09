@@ -1,4 +1,3 @@
-import logger from '@theatre/shared/logger'
 import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import {defer} from '@theatre/shared/utils/defer'
 import type Sequence from './Sequence'
@@ -235,11 +234,12 @@ export default class TheatreSequence implements ISequence {
       direction: IPlaybackDirection
     }>,
   ): Promise<boolean> {
-    if (privateAPI(this)._project.isReady()) {
-      return privateAPI(this).play(conf)
+    const priv = privateAPI(this)
+    if (priv._project.isReady()) {
+      return priv.play(conf)
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        logger.warn(
+        priv._logger.warnDev(
           `You seem to have called sequence.play() before the project has finished loading.\n` +
             `This would **not** a problem in production when using '@theatre/core', since Theatre loads instantly in core mode. ` +
             `However, when using '@theatre/studio', it takes a few milliseconds for it to load your project's state, ` +

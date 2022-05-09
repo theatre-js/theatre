@@ -1,3 +1,4 @@
+import type {IUtilContext} from '@theatre/shared/logger'
 import {
   getLastMultipleOf,
   numberOfDecimals,
@@ -27,36 +28,44 @@ const example = <Args extends $IntentionalAny[], Return>(
   )
 }
 
+const CTX: IUtilContext = {
+  get logger(): never {
+    throw new Error('unexpected logger access in test example')
+  },
+}
+
 describe(`numberRoundingUtils()`, () => {
   describe(`roundestNumberBetween()`, () => {
-    example(roundestNumberBetween, [0.1, 1.1], 1)
-    example(roundestNumberBetween, [0.1111111123, 0.2943439448], 0.25)
-    example(roundestNumberBetween, [0.19, 0.23], 0.2)
-    example(roundestNumberBetween, [-0.19, 0.23], 0)
-    example(roundestNumberBetween, [-0.19, -0.02], -0.1, {debug: false})
-    example(roundestNumberBetween, [-0.19, -0.022], -0.1, {debug: false})
-    example(roundestNumberBetween, [-0.19, -0.022234324], -0.1, {debug: false})
-    example(roundestNumberBetween, [-0.19, 0.0222222], 0)
-    example(roundestNumberBetween, [-0.19, 0.02], 0)
+    example(roundestNumberBetween, [CTX, 0.1, 1.1], 1)
+    example(roundestNumberBetween, [CTX, 0.1111111123, 0.2943439448], 0.25)
+    example(roundestNumberBetween, [CTX, 0.19, 0.23], 0.2)
+    example(roundestNumberBetween, [CTX, -0.19, 0.23], 0)
+    example(roundestNumberBetween, [CTX, -0.19, -0.02], -0.1, {debug: false})
+    example(roundestNumberBetween, [CTX, -0.19, -0.022], -0.1, {debug: false})
+    example(roundestNumberBetween, [CTX, -0.19, -0.022234324], -0.1, {
+      debug: false,
+    })
+    example(roundestNumberBetween, [CTX, -0.19, 0.0222222], 0)
+    example(roundestNumberBetween, [CTX, -0.19, 0.02], 0)
     example(
       roundestNumberBetween,
-      [22304.2398427391, 22304.2398427393],
+      [CTX, 22304.2398427391, 22304.2398427393],
       22304.2398427392,
     )
-    example(roundestNumberBetween, [22304.2398427391, 22304.4], 22304.25)
-    example(roundestNumberBetween, [902, 901], 902)
-    example(roundestNumberBetween, [-10, -5], -10)
-    example(roundestNumberBetween, [-5, -10], -10)
-    example(roundestNumberBetween, [-10, -5], -10)
+    example(roundestNumberBetween, [CTX, 22304.2398427391, 22304.4], 22304.25)
+    example(roundestNumberBetween, [CTX, 902, 901], 902)
+    example(roundestNumberBetween, [CTX, -10, -5], -10)
+    example(roundestNumberBetween, [CTX, -5, -10], -10)
+    example(roundestNumberBetween, [CTX, -10, -5], -10)
     example(
       roundestNumberBetween,
-      [-0.00876370109231405, -2.909374013346118e-50],
+      [CTX, -0.00876370109231405, -2.909374013346118e-50],
       0,
       {debug: false},
     )
     example(
       roundestNumberBetween,
-      [0.059449443526800295, 0.06682093143783596],
+      [CTX, 0.059449443526800295, 0.06682093143783596],
       0.06,
       {debug: false},
     )
@@ -73,7 +82,7 @@ describe(`numberRoundingUtils()`, () => {
         const from = toPrecision(getRandomNumber())
         const to = toPrecision(getRandomNumber())
 
-        const result = roundestNumberBetween(from, to)
+        const result = roundestNumberBetween(CTX, from, to)
         if (from < to) {
           if (result < from || result > to) {
             throw new Error(`Invalid: ${from} ${to} ${result}`)
@@ -87,43 +96,43 @@ describe(`numberRoundingUtils()`, () => {
     })
   })
   describe(`roundestIntegerBetween`, () => {
-    example(roundestIntegerBetween, [-1, 6], 0, {})
-    example(roundestIntegerBetween, [0, 6], 0, {})
-    example(roundestIntegerBetween, [-1, 0], 0, {})
-    example(roundestIntegerBetween, [-1850, -1740], -1750, {})
-    example(roundestIntegerBetween, [1, 6], 5, {})
-    example(roundestIntegerBetween, [1, 5], 5)
-    example(roundestIntegerBetween, [1, 2], 2)
-    example(roundestIntegerBetween, [1, 10], 10)
-    example(roundestIntegerBetween, [1, 12], 10)
-    example(roundestIntegerBetween, [11, 15], 15)
-    example(roundestIntegerBetween, [101, 102], 102, {debug: true})
-    example(roundestIntegerBetween, [11, 14, false], 12)
-    example(roundestIntegerBetween, [11, 14, true], 12.5)
-    example(roundestIntegerBetween, [11, 12], 12)
-    example(roundestIntegerBetween, [11, 12], 12, {})
-    example(roundestIntegerBetween, [10, 90], 50)
-    example(roundestIntegerBetween, [10, 100], 100)
-    example(roundestIntegerBetween, [10, 110], 100)
-    example(roundestIntegerBetween, [9, 100], 10)
-    example(roundestIntegerBetween, [9, 1100], 10)
-    example(roundestIntegerBetween, [9, 699], 10)
-    example(roundestIntegerBetween, [9, 400], 10)
-    example(roundestIntegerBetween, [9, 199], 10)
-    example(roundestIntegerBetween, [9, 1199], 10)
-    example(roundestIntegerBetween, [1921, 1998], 1950)
-    example(roundestIntegerBetween, [1921, 2020], 2000)
-    example(roundestIntegerBetween, [1601, 1998], 1750)
-    example(roundestIntegerBetween, [1919, 1921], 1920)
-    example(roundestIntegerBetween, [1919, 1919], 1919)
-    example(roundestIntegerBetween, [3901, 3902], 3902)
-    example(roundestIntegerBetween, [901, 902], 902)
+    example(roundestIntegerBetween, [CTX, -1, 6], 0, {})
+    example(roundestIntegerBetween, [CTX, 0, 6], 0, {})
+    example(roundestIntegerBetween, [CTX, -1, 0], 0, {})
+    example(roundestIntegerBetween, [CTX, -1850, -1740], -1750, {})
+    example(roundestIntegerBetween, [CTX, 1, 6], 5, {})
+    example(roundestIntegerBetween, [CTX, 1, 5], 5)
+    example(roundestIntegerBetween, [CTX, 1, 2], 2)
+    example(roundestIntegerBetween, [CTX, 1, 10], 10)
+    example(roundestIntegerBetween, [CTX, 1, 12], 10)
+    example(roundestIntegerBetween, [CTX, 11, 15], 15)
+    example(roundestIntegerBetween, [CTX, 101, 102], 102, {debug: true})
+    example(roundestIntegerBetween, [CTX, 11, 14, false], 12)
+    example(roundestIntegerBetween, [CTX, 11, 14, true], 12.5)
+    example(roundestIntegerBetween, [CTX, 11, 12], 12)
+    example(roundestIntegerBetween, [CTX, 11, 12], 12, {})
+    example(roundestIntegerBetween, [CTX, 10, 90], 50)
+    example(roundestIntegerBetween, [CTX, 10, 100], 100)
+    example(roundestIntegerBetween, [CTX, 10, 110], 100)
+    example(roundestIntegerBetween, [CTX, 9, 100], 10)
+    example(roundestIntegerBetween, [CTX, 9, 1100], 10)
+    example(roundestIntegerBetween, [CTX, 9, 699], 10)
+    example(roundestIntegerBetween, [CTX, 9, 400], 10)
+    example(roundestIntegerBetween, [CTX, 9, 199], 10)
+    example(roundestIntegerBetween, [CTX, 9, 1199], 10)
+    example(roundestIntegerBetween, [CTX, 1921, 1998], 1950)
+    example(roundestIntegerBetween, [CTX, 1921, 2020], 2000)
+    example(roundestIntegerBetween, [CTX, 1601, 1998], 1750)
+    example(roundestIntegerBetween, [CTX, 1919, 1921], 1920)
+    example(roundestIntegerBetween, [CTX, 1919, 1919], 1919)
+    example(roundestIntegerBetween, [CTX, 3901, 3902], 3902)
+    example(roundestIntegerBetween, [CTX, 901, 902], 902)
   })
   describe(`roundestFloat()`, () => {
-    example(roundestFloat, [0.19, 0.2122], 0.2)
-    example(roundestFloat, [0.19, 0.31], 0.25)
-    example(roundestFloat, [0.19, 0.41], 0.25)
-    example(roundestFloat, [0.19, 1.9], 0.5)
+    example(roundestFloat, [CTX, 0.19, 0.2122], 0.2)
+    example(roundestFloat, [CTX, 0.19, 0.31], 0.25)
+    example(roundestFloat, [CTX, 0.19, 0.41], 0.25)
+    example(roundestFloat, [CTX, 0.19, 1.9], 0.5)
   })
   describe(`numberOfDecimals()`, () => {
     example(numberOfDecimals, [1.1], 1)

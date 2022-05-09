@@ -25,6 +25,7 @@ import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
 import type {Interpolator, PropTypeConfig} from '@theatre/core/propTypes'
 import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
+import type {ILogger, IUtilContext} from '@theatre/shared/logger'
 
 /**
  * Internally, the sheet's actual configured value is not a specific type, since we
@@ -50,12 +51,20 @@ export default class SheetObject implements IdentityDerivationProvider {
   readonly publicApi: TheatreSheetObject
   private readonly _initialValue = new Atom<SheetObjectPropsValue>({})
   private readonly _cache = new SimpleCache()
+  readonly _logger: ILogger
+  private readonly _internalUtilCtx: IUtilContext
 
   constructor(
     readonly sheet: Sheet,
     readonly template: SheetObjectTemplate,
     readonly nativeObject: unknown,
   ) {
+    this._logger = sheet._logger.named(
+      'SheetObject',
+      template.address.objectKey,
+    )
+    this._logger._trace('creating object')
+    this._internalUtilCtx = {logger: this._logger.downgrade.internal()}
     this.address = {
       ...template.address,
       sheetInstanceId: sheet.address.sheetInstanceId,
@@ -229,7 +238,7 @@ export default class SheetObject implements IdentityDerivationProvider {
 
     const timeD = this.sheet.getSequence().positionDerivation
 
-    return interpolationTripleAtPosition(trackP, timeD)
+    return interpolationTripleAtPosition(this._internalUtilCtx, trackP, timeD)
   }
 
   get propsP(): Pointer<SheetObjectPropsValue> {
