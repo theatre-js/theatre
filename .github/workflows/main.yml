@@ -58,6 +58,8 @@ jobs:
       - name: Install dependencies of the dev-package-uploader
         working-directory: ${{ github.workspace }}/scripts/dev-package-uploader
         run: npm install
+      - name: Build the theatre packages
+        run: yarn build
       - name: Publish the packages
         env:
           DO_REGION: 'nyc3'
