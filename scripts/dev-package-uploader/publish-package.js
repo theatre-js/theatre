@@ -35,7 +35,6 @@ try {
 }
 
 const fileStream = fs.readFileSync(TARBALL_PATH)
-console.log(`${BUCKET}/${FOLDER}/`)
 
 const s3Params = {
   Bucket: `${BUCKET}`, // The path to the directory you want to upload the object to, starting with your Space name.

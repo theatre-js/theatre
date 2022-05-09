@@ -40,7 +40,7 @@ async function generateAndPublishTarball(
     tarballName,
   )
   await $`yarn workspace ${workspace} pack --filename ${tarballName}`
-  await $`TARBALL_PATH=${pathToTarball} node scripts/dev-package-uploader/publish-package.js`
+  await $`DO_TARBALL_PATH=${pathToTarball} node scripts/dev-package-uploader/publish-package.js`
 }
 
 //TODO: add jsDoc/reuse the function from `./release.mjs` (that script must be refactored for this)
