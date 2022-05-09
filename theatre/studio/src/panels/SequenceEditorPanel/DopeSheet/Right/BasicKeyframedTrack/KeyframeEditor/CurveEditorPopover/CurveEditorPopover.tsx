@@ -102,6 +102,7 @@ const NoResultsFoundContainer = styled.div`
 `
 
 enum TextInputMode {
+  init,
   user,
   auto,
 }
@@ -183,7 +184,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   // in user mode, the text input field does not update when the curve
   // changes so that the user's search is preserved.
   const [textInputMode, setTextInputMode] = useState<TextInputMode>(
-    TextInputMode.auto,
+    TextInputMode.init,
   )
   useEffect(() => {
     if (textInputMode === TextInputMode.auto)
@@ -197,11 +198,10 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
 
   // When `preview` or `edit` change, use the `tempTransaction` to change the
   // curve in Theate's data.
-  useMemo(
-    () =>
-      setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? ''),
-    [preview, edit],
-  )
+  useMemo(() => {
+    if (textInputMode !== TextInputMode.init)
+      setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? '')
+  }, [preview, edit])
 
   //////  Curve editing reactivity //////
   const onCurveChange = (newHandles: CubicBezierHandles) => {
