@@ -1,4 +1,3 @@
-import type {Pointer} from '@theatre/dataverse'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
 import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
 import get from 'lodash-es/get'
@@ -80,7 +79,7 @@ export default function createTransactionPrivateApi(
       const _value = cloneDeepSerializableAndPrune(value)
       if (typeof _value === 'undefined') return
 
-      const {root, path} = getPointerParts(pointer as Pointer<$FixMe>)
+      const {root, path} = getPointerParts(pointer)
       if (isSheetObject(root)) {
         const sequenceTracksTree = root.template
           .getMapOfValidSequenceTracks_forStudio()
@@ -190,7 +189,7 @@ export default function createTransactionPrivateApi(
     },
     unset: (pointer) => {
       ensureRunning()
-      const {root, path} = getPointerParts(pointer as Pointer<$FixMe>)
+      const {root, path} = getPointerParts(pointer)
       if (isSheetObject(root)) {
         const sequenceTracksTree = root.template
           .getMapOfValidSequenceTracks_forStudio()
@@ -234,7 +233,7 @@ export default function createTransactionPrivateApi(
             (v, pathToProp) => {
               unsetStaticOrKeyframeProp(v, pathToProp)
             },
-            getPointerParts(pointer as Pointer<$IntentionalAny>).path,
+            getPointerParts(pointer).path,
           )
         } else {
           unsetStaticOrKeyframeProp(defaultValue, path)

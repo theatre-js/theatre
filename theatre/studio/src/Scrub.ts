@@ -178,7 +178,7 @@ export default class Scrub implements IScrub {
             )
           }
 
-          const {root, path} = getPointerParts(pointer as Pointer<$FixMe>)
+          const {root, path} = getPointerParts(pointer)
 
           if (!isSheetObject(root)) {
             throw new Error(`We can only scrub props of Sheet Objects for now`)
@@ -198,7 +198,7 @@ export default class Scrub implements IScrub {
 
     const flagsTransaction = this._studio.tempTransaction(({stateEditors}) => {
       sets.forEach((pointer) => {
-        const {root, path} = getPointerParts(pointer as Pointer<$FixMe>)
+        const {root, path} = getPointerParts(pointer)
         if (!isSheetObject(root)) {
           return
         }
