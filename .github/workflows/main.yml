@@ -58,8 +58,8 @@ jobs:
       - name: Install dependencies of the dev-package-uploader
         working-directory: ${{ github.workspace }}/scripts/dev-package-uploader
         run: npm install
-      - name: Build the theatre packages
-        run: yarn build
+      # - name: Build the theatre packages
+      #   run: yarn build
       - name: Publish the packages
         env:
           DO_REGION: 'nyc3'
@@ -67,6 +67,6 @@ jobs:
           DO_SECRET: ${{ secrets.DO_SPACES_SECRET }}
           DO_API_KEY: ${{ secrets.DO_SPACES_KEY }}
           DO_DOMAIN: ''
-          LATEST_COMMIT_HASH: ${{ github.sha }}
+          LATEST_COMMIT_HASH: ${{ github.event.pull_request.head.sha }}
           FOLDER: '@theatre'
         run: npx zx scripts/generate-development-package-tarballs.mjs
