@@ -154,14 +154,16 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     inputRef.current?.focus()
   }, [inputRef.current])
 
-  const [inputValue, setInputValue] = useState<string>('')
+  const [inputValue, setInputValue] = useState<string>(
+    cssCubicBezierArgsFromHandles(easing),
+  )
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextInputMode(TextInputMode.user)
     setInputValue(e.target.value)
 
-    const maybeHandles = handlesFromCssCubicBezierArgs(inputValue)
-    if (maybeHandles) setEdit(inputValue)
+    const maybeHandles = handlesFromCssCubicBezierArgs(e.target.value)
+    if (maybeHandles) setEdit(e.target.value)
   }
   const onSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     setTextInputMode(TextInputMode.user)
@@ -192,16 +194,19 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   }, [trackData])
 
   // `edit` keeps track of the current edited state of the curve.
-  const [edit, setEdit] = useState<CSSCubicBezierArgsString | null>(null)
+  const [edit, setEdit] = useState<CSSCubicBezierArgsString | null>(
+    cssCubicBezierArgsFromHandles(easing),
+  )
   // `preview` is used when hovering over a curve to preview it.
   const [preview, setPreview] = useState<CSSCubicBezierArgsString | null>(null)
 
   // When `preview` or `edit` change, use the `tempTransaction` to change the
   // curve in Theate's data.
-  useMemo(() => {
-    if (textInputMode !== TextInputMode.init)
-      setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? '')
-  }, [preview, edit])
+  useMemo(
+    () =>
+      setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? ''),
+    [preview, edit],
+  )
 
   //////  Curve editing reactivity //////
   const onCurveChange = (newHandles: CubicBezierHandles) => {
@@ -214,18 +219,22 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
 
   ////// Preset reactivity //////
   const displayedPresets = useMemo(() => {
-    const presetSearchResults = fuzzy.filter(inputValue, EASING_PRESETS, {
-      extract: (el) => el.label,
-    })
     const isInputValueAQuery = /^[A-Za-z]/.test(inputValue)
 
-    return isInputValueAQuery
-      ? presetSearchResults.map((result) => result.original)
-      : EASING_PRESETS
+    if (isInputValueAQuery) {
+      return fuzzy
+        .filter(inputValue, EASING_PRESETS, {
+          extract: (el) => el.label,
+        })
+        .map((result) => result.original)
+    } else {
+      return EASING_PRESETS
+    }
   }, [inputValue])
   // Use the first preset in the search when the displayed presets change
   useEffect(() => {
-    if (displayedPresets[0]) setEdit(displayedPresets[0].value)
+    if (textInputMode === TextInputMode.user && displayedPresets[0])
+      setEdit(displayedPresets[0].value)
   }, [displayedPresets])
 
   ////// Option grid specification and reactivity //////
@@ -243,8 +252,10 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     setPreview(item.value)
   const onEasingOptionMouseOut = () => setPreview(null)
   const onSelectEasingOption = (item: {label: string; value: string}) => {
-    setTextInputMode(TextInputMode.auto)
-    setEdit(item.value)
+    setTempValue(tempTransaction, props, cur, next, item.value)
+    props.onRequestClose()
+
+    return Outcome.Handled
   }
 
   // A map to store all html elements corresponding to easing options
@@ -316,6 +327,10 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
         optionsRef.current?.[grid.currentSelection.label]?.current
       maybePresetEl?.focus()
       setEdit(grid.currentSelection.value)
+      const isInputValueAQuery = /^[A-Za-z]/.test(inputValue)
+      if (!isInputValueAQuery) {
+        setInputValue(grid.currentSelection.value)
+      }
     }
   }, [grid.currentSelection])
 
