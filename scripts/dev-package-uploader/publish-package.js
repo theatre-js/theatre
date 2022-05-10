@@ -1,3 +1,7 @@
+/**
+ * This script uploads a tarball to our Digital Ocean Space (S3-compatible object storage).
+ */
+
 const {PutObjectCommand, S3Client} = require('@aws-sdk/client-s3')
 const fs = require('fs')
 const path = require('path')
@@ -8,9 +12,6 @@ const REGION = process.env.DO_REGION
 const API_KEY = process.env.DO_API_KEY
 const SECRET = process.env.DO_SECRET
 const FOLDER = process.env.FOLDER
-// TODO: change the package naming to this:
-// `@theatre/core@0.4.8-insiders.HASH`
-// https://theatrejs-packages.nyc3.cdn.digitaloceanspaces.com/theatre-browser-bundles-3c6b62cc.tgz
 const DOMAIN =
   process.env.DO_DOMAIN || `${BUCKET}.${REGION}.cdn.digitaloceanspaces.com`
 
