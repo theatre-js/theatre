@@ -44,22 +44,22 @@ jobs:
             ${{ runner.os }}-dev-package-uploader-cache-
 
       - run: yarn install
-      # - run: yarn typecheck
-      # - run: yarn lint:all --max-warnings 0
-      # - run: yarn test
-      # - name: Download playwright
-      #   run: yarn workspace playground run playwright install
-      # - name: Run e2e tests with percy
-      #   uses: percy/exec-action@v0.3.1
-      #   with:
-      #     custom-command: 'yarn test:e2e:ci'
-      #   env:
-      #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      - run: yarn typecheck
+      - run: yarn lint:all --max-warnings 0
+      - run: yarn test
+      - name: Download playwright
+        run: yarn workspace playground run playwright install
+      - name: Run e2e tests with percy
+        uses: percy/exec-action@v0.3.1
+        with:
+          custom-command: 'yarn test:e2e:ci'
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       - name: Install dependencies of the dev-package-uploader
         working-directory: ${{ github.workspace }}/scripts/dev-package-uploader
         run: npm install
-      # - name: Build the theatre packages
-      #   run: yarn build
+      - name: Build the theatre packages
+        run: yarn build
       - name: Publish the packages
         env:
           DO_REGION: 'nyc3'
