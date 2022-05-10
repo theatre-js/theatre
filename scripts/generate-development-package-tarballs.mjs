@@ -49,7 +49,7 @@ async function generateAndPublishTarball(
   )
   console.log(tarballName, pathToTarball)
   await $`yarn workspace ${workspace} pack --filename ${tarballName}`
-  // await $`DO_TARBALL_PATH=${pathToTarball} node scripts/dev-package-uploader/publish-package.js`
+  await $`DO_TARBALL_PATH=${pathToTarball} node scripts/dev-package-uploader/publish-package.js`
 }
 
 /**
