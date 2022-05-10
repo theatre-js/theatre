@@ -1,5 +1,5 @@
 /**
- * Generate tarballs from the theatre packages and publish them.
+ * This script generates tarballs from the theatre packages and publish them.
  */
 
 import os from 'os'
@@ -15,7 +15,19 @@ const packagesToPack = [
 ]
 
 /**
- * Generate the tarball for a workspace and publish it
+  * Creates a name for the tarball of the package
+  *
+  * @param {string} workspaceName - Name of the workspace
+  * @param {string} version - Version number of the package
+  */
+function createTarballName(workspaceName, commitHash) {
+  const [_, packageName] = workspaceName.split('/')
+
+  return `${packageName}-${commitHash}.tgz`
+}
+
+/**
+ * Generates a tarball for a workspace and publishes it
  *
  * @param {string} workspace - Name of the workspace
  * @param {string} latestCommitHash - Abbreviated hash of the latest commit
@@ -26,11 +38,7 @@ async function generateAndPublishTarball(
   latestCommitHash,
   workspacesListObjects,
 ) {
-  const tarballName = `${workspace
-    // Get rid of the "@"
-    .slice(1)
-    // Replace the "/" with "-"
-    .replace('/', '-')}-${latestCommitHash}.tgz`
+  const tarballName = createTarballName(workspace, latestCommitHash)
   const pathToTarball = path.join(
     __dirname,
     '..',
@@ -39,48 +47,92 @@ async function generateAndPublishTarball(
     })[0].location,
     tarballName,
   )
+  console.log(tarballName, pathToTarball)
   await $`yarn workspace ${workspace} pack --filename ${tarballName}`
-  await $`DO_TARBALL_PATH=${pathToTarball} node scripts/dev-package-uploader/publish-package.js`
+  // await $`DO_TARBALL_PATH=${pathToTarball} node scripts/dev-package-uploader/publish-package.js`
 }
 
-//TODO: add jsDoc/reuse the function from `./release.mjs` (that script must be refactored for this)
+/**
+  * Receives a version number and returns it without the tags, if there are any
+  *
+  * @param {string} version - Version number
+  * @returns Version number without the tags
+  *
+  * @example
+  * ```javascript
+  * const version_1 = '0.4.8-dev3-ec175817'
+  * const version_2 = '0.4.8'
+  *
+  * stripTag(version_1) === stripTag(version_2) === '0.4.8' // returns `true`
+  * ```
+  */
+function stripTag(version) {
+  const regExp = /^[0-9]\.[0-9]\.[0-9]/g
+  const matches = version.match(regExp)
+  if (!matches) {
+    throw new Error(`Version number not found in "${version}"`)
+  }
+
+  return matches[0]
+}
+
+/**
+  * Creates a version number like `0.4.8-insiders.ec175817`
+  *
+  * @param {string} packageName - Name of the package
+  * @param {string} commitHash - A commit hash
+  */
+function createNewVersion(packageName, commitHash) {
+  // The `r3f` package has its own release schedule, so its version numbers
+  // are almost always different from the rest of the packages.
+  const pathToPackageJson = packageName === '@theatre/r3f' ?
+    path.resolve(__dirname, '..', 'packages', 'r3f', 'package.json') :
+    path.resolve(__dirname, '../', './package.json')
+
+  const jsonData = JSON.parse(
+    fs.readFileSync(pathToPackageJson, { encoding: 'utf-8' }),
+  )
+  const strippedVersion = stripTag(jsonData.version)
+
+  return `${strippedVersion}-insiders.${commitHash}`
+}
+
+/**
+  * Assigns versions to the packages
+  *
+  * @param {{name: string, location: string}[]} workspacesListObjects - An Array of objects containing information about the workspaces
+  * @param {string} latestCommitHash - Hash of the latest commit
+  */
 async function assignVersions(
-  monorepoVersion,
   workspacesListObjects,
   latestCommitHash,
 ) {
-  const packagesWhoseVersionShouldBump = workspacesListObjects.map(
-    (wpData) => wpData.location,
-  )
-  for (const packagePathRelativeFromRoot of packagesWhoseVersionShouldBump) {
+  for (const wpData of workspacesListObjects) {
     const pathToPackage = path.resolve(
       __dirname,
       '../',
-      packagePathRelativeFromRoot,
+      wpData.location,
       './package.json',
     )
 
     const original = JSON.parse(
-      fs.readFileSync(pathToPackage, {encoding: 'utf-8'}),
+      fs.readFileSync(pathToPackage, { encoding: 'utf-8' }),
     )
 
-    let {version, dependencies, peerDependencies, devDependencies} = original
+    let { version, dependencies, peerDependencies, devDependencies } = original
     for (const deps of [dependencies, peerDependencies, devDependencies]) {
       if (!deps) continue
       for (let wpObject of workspacesListObjects) {
         if (deps[wpObject.name]) {
-          // TODO: create a function for generating the tarball's name
-          // and use it everywhere to avoid duplicating these lines
-          const tarballName = `${wpObject.name
-            // Get rid of the "@"
-            .slice(1)
-            // Replace the "/" with "-"
-            .replace('/', '-')}-${latestCommitHash}.tgz`
-          deps[wpObject.name] = `https://packages.fulop.dev/${tarballName}`
+          const tarballName = createTarballName(wpObject.name, latestCommitHash)
+          const { DO_BUCKET, DO_REGION, DO_DOMAIN } = process.env
+          const domain =
+            DO_DOMAIN || `${DO_BUCKET}.${DO_REGION}.cdn.digitaloceanspaces.com`
+          deps[wpObject.name] = `https://${domain}/@theatre/${tarballName}`
         }
       }
     }
-    version = monorepoVersion
+    version = createNewVersion(wpData.name, latestCommitHash)
     const newJson = {
       ...original,
       version,
@@ -91,16 +143,14 @@ async function assignVersions(
     fs.writeFileSync(
       path.join(pathToPackage),
       JSON.stringify(newJson, undefined, 2),
-      {encoding: 'utf-8'},
+      { encoding: 'utf-8' },
     )
-    await $`prettier --write ${packagePathRelativeFromRoot + '/package.json'}`
+    await $`prettier --write ${wpData.location + '/package.json'}`
   }
 }
 
-;(async function () {
+; (async function() {
   process.env.THEATRE_IS_PUBLISHING = true
-  // TODO: Bump up the version `zx` to be able to use the `quiet()` function
-  // that prevents the output of the `git log` command to be printed to the terminal
   const latestCommitHash = await $`git log -1 --pretty=format:%h`
 
   const workspacesListString = await $`yarn workspaces list --json`
@@ -109,10 +159,7 @@ async function assignVersions(
     .filter(Boolean)
     .map((x) => JSON.parse(x))
 
-  // TODO: replace the dependency versions with the commit hash in the packages
   await assignVersions(
-    // TODO: don't use `0.4.8` for the package versions
-    `0.4.8-dev-${latestCommitHash.stdout}`,
     workspacesListObjects,
     latestCommitHash.stdout,
   )
