@@ -1,11 +1,5 @@
 import type {VFC} from 'react'
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import type {Editable} from '../store'
 import {useEditorStore} from '../store'
 import {createPortal} from '@react-three/fiber'
@@ -15,11 +9,10 @@ import TransformControls from './TransformControls'
 import shallow from 'zustand/shallow'
 import type {Material, Mesh, Object3D} from 'three'
 import {MeshBasicMaterial, MeshPhongMaterial} from 'three'
-import type {IScrub} from '@theatre/studio';
+import type {IScrub} from '@theatre/studio'
 import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
-import useInvalidate from './useInvalidate'
 import {getEditorSheetObject} from './editorStuff'
 
 export interface ProxyManagerProps {
@@ -54,8 +47,6 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
       [name in string]?: IEditableProxy<any>
     }
   >({})
-
-  const invalidate = useInvalidate()
 
   // set up scene proxies
   useLayoutEffect(() => {
@@ -94,32 +85,6 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
   const selected = useSelected()
   const editableProxyOfSelected = selected && editableProxies[selected]
   const editable = selected ? editables[selected] : undefined
-
-  // subscribe to external changes
-  useEffect(() => {
-    if (!editableProxyOfSelected || !editable) return
-    const object = editableProxyOfSelected.object
-    const sheetObject = editableProxyOfSelected.editable.sheetObject
-    const objectConfig = editable.objectConfig
-
-    const setFromTheatre = (newValues: any) => {
-      // @ts-ignore
-      Object.entries(objectConfig.props).forEach(([key, value]) => {
-        // @ts-ignore
-        return value.apply(newValues[key], object)
-      })
-      objectConfig.updateObject?.(object)
-      invalidate()
-    }
-
-    setFromTheatre(sheetObject.value)
-
-    const untap = sheetObject.onValuesChange(setFromTheatre)
-
-    return () => {
-      untap()
-    }
-  }, [editableProxyOfSelected, selected])
 
   // set up viewport shading modes
   const [renderMaterials, setRenderMaterials] = useState<{

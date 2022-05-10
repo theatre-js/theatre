@@ -77,6 +77,30 @@ const EditableProxy: VFC<EditableProxyProps> = ({
     }
   })
 
+  // subscribe to external changes
+  useEffect(() => {
+    const sheetObject = editable.sheetObject
+    const objectConfig = editable.objectConfig
+
+    const setFromTheatre = (newValues: any) => {
+      // @ts-ignore
+      Object.entries(objectConfig.props).forEach(([key, value]) => {
+        // @ts-ignore
+        return value.apply(newValues[key], object)
+      })
+      objectConfig.updateObject?.(object)
+      invalidate()
+    }
+
+    setFromTheatre(sheetObject.value)
+
+    const untap = sheetObject.onValuesChange(setFromTheatre)
+
+    return () => {
+      untap()
+    }
+  }, [editable])
+
   return (
     <>
       <group
