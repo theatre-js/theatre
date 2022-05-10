@@ -14,13 +14,13 @@ type UIOptionGridOptions<Item> = {
   items: Item[]
   /** display of items */
   renderItem: (value: {
-    select(): void
+    select(e?: Event): void
     /** data item */
     item: Item
     /** arrow key nav */
     isSelected: boolean
   }) => React.ReactNode
-  onSelectItem(item: Item): void
+  onSelectItem(item: Item): Outcome
   /** Set a callback for what to do if we try to leave the grid */
   canVerticleExit?: (exitSide: 'top' | 'bottom') => Outcome
 }
@@ -98,9 +98,12 @@ export function useUIOptionGrid<T>(
       options.renderItem({
         isSelected: idx === selectionIndex,
         item,
-        select() {
+        select(e) {
           setSelectionIndex(idx)
-          options.onSelectItem(item)
+          if (options.onSelectItem(item) === Outcome.Handled) {
+            e?.preventDefault()
+            e?.stopPropagation()
+          }
         },
       }),
     ),
