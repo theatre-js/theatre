@@ -22,7 +22,6 @@ import {
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {focusRangeStripTheme, RangeStrip} from './FocusRangeStrip'
-import type Sheet from '@theatre/core/sheets/Sheet'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 
 const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
@@ -172,87 +171,84 @@ const FocusRangeThumb: React.FC<{
   )
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    let defaultRange: IRange
-    let range: IRange
-    let focusRangeEnabled: boolean
-    let posBeforeDrag: number
-    let tempTransaction: CommitOrDiscard | undefined
-    let minFocusRangeStripWidth: number
-    let sheet: Sheet
-    let scaledSpaceToUnitSpace: (s: number) => number
-
     return {
       debugName: 'FocusRangeThumb',
       onDragStart() {
-        sheet = val(layoutP.sheet)
+        let tempTransaction: CommitOrDiscard | undefined
+        let range: IRange
+
+        const sheet = val(layoutP.sheet)
         const sequence = sheet.getSequence()
-        defaultRange = {start: 0, end: sequence.length}
+        const defaultRange = {start: 0, end: sequence.length}
         let existingRange = existingRangeD.getValue() || {
           range: defaultRange,
           enabled: false,
         }
-        focusRangeEnabled = existingRange.enabled
+        const focusRangeEnabled = existingRange.enabled
 
-        posBeforeDrag = existingRange.range[thumbType]
-        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-        minFocusRangeStripWidth = scaledSpaceToUnitSpace(
+        const posBeforeDrag = existingRange.range[thumbType]
+        const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+        const minFocusRangeStripWidth = scaledSpaceToUnitSpace(
           focusRangeStripTheme.rangeStripMinWidth,
         )
-      },
-      onDrag(dx, _, event) {
-        let newPosition: number
-        const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {
-          ignore: hitZoneNode,
-        })
-        if (snapPos != null) {
-          newPosition = snapPos
+
+        return {
+          onDrag(dx, _, event) {
+            let newPosition: number
+            const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {
+              ignore: hitZoneNode,
+            })
+            if (snapPos != null) {
+              newPosition = snapPos
+            }
+
+            range = existingRangeD.getValue()?.range || defaultRange
+            const deltaPos = scaledSpaceToUnitSpace(dx)
+            const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
+            // Make sure that the focus range has a minimal width
+            if (thumbType === 'start') {
+              // Prevent the start thumb from going below 0
+              newPosition = Math.max(
+                Math.min(
+                  oldPosPlusDeltaPos,
+                  range['end'] - minFocusRangeStripWidth,
+                ),
+                0,
+              )
+            } else {
+              // Prevent the start thumb from going over the length of the sequence
+              newPosition = Math.min(
+                Math.max(
+                  oldPosPlusDeltaPos,
+                  range['start'] + minFocusRangeStripWidth,
+                ),
+                sheet.getSequence().length,
+              )
+            }
+
+            const newPositionInFrame = sheet
+              .getSequence()
+              .closestGridPosition(newPosition)
+
+            if (tempTransaction !== undefined) {
+              tempTransaction.discard()
+            }
+
+            tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
+              stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                {
+                  ...sheet.address,
+                  range: {...range, [thumbType]: newPositionInFrame},
+                  enabled: focusRangeEnabled,
+                },
+              )
+            })
+          },
+          onDragEnd(dragHappened) {
+            if (dragHappened) tempTransaction?.commit()
+            else tempTransaction?.discard()
+          },
         }
-
-        range = existingRangeD.getValue()?.range || defaultRange
-        const deltaPos = scaledSpaceToUnitSpace(dx)
-        const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
-        // Make sure that the focus range has a minimal width
-        if (thumbType === 'start') {
-          // Prevent the start thumb from going below 0
-          newPosition = Math.max(
-            Math.min(
-              oldPosPlusDeltaPos,
-              range['end'] - minFocusRangeStripWidth,
-            ),
-            0,
-          )
-        } else {
-          // Prevent the start thumb from going over the length of the sequence
-          newPosition = Math.min(
-            Math.max(
-              oldPosPlusDeltaPos,
-              range['start'] + minFocusRangeStripWidth,
-            ),
-            sheet.getSequence().length,
-          )
-        }
-
-        const newPositionInFrame = sheet
-          .getSequence()
-          .closestGridPosition(newPosition)
-
-        if (tempTransaction !== undefined) {
-          tempTransaction.discard()
-        }
-
-        tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
-          stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-            {
-              ...sheet.address,
-              range: {...range, [thumbType]: newPositionInFrame},
-              enabled: focusRangeEnabled,
-            },
-          )
-        })
-      },
-      onDragEnd(dragHappened) {
-        if (dragHappened) tempTransaction?.commit()
-        else tempTransaction?.discard()
       },
     }
   }, [layoutP])

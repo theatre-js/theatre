@@ -256,15 +256,17 @@ function useKeyframeDrag(
       lockCursorTo: 'move',
       onDragStart() {
         setFrozen(true)
-      },
-      onDrag(dx, dy) {
-        if (!svgNode) return
+        return {
+          onDrag(dx, dy) {
+            if (!svgNode) return
 
-        props.onCurveChange(setHandles(dx, dy))
-      },
-      onDragEnd(dragHappened) {
-        setFrozen(false)
-        props.onCancelCurveChange()
+            props.onCurveChange(setHandles(dx, dy))
+          },
+          onDragEnd(dragHappened) {
+            setFrozen(false)
+            props.onCancelCurveChange()
+          },
+        }
       },
     }),
     [svgNode, props.trackData],

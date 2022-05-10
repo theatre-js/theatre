@@ -1,4 +1,3 @@
-import type Sequence from '@theatre/core/sequences/Sequence'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import RoomToClick from '@theatre/studio/uiComponents/RoomToClick'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
@@ -203,32 +202,31 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   )
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    const setIsSeeking = val(layoutP.seeker.setIsSeeking)
-
-    let posBeforeSeek = 0
-    let sequence: Sequence
-    let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
-
     return {
       debugName: 'Playhead',
       onDragStart() {
-        sequence = val(layoutP.sheet).getSequence()
-        posBeforeSeek = sequence.position
-        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-        setIsSeeking(true)
-      },
-      onDrag(dx, _, event) {
-        const deltaPos = scaledSpaceToUnitSpace(dx)
+        const setIsSeeking = val(layoutP.seeker.setIsSeeking)
 
-        sequence.position =
-          DopeSnap.checkIfMouseEventSnapToPos(event, {
-            ignore: thumbNode,
-          }) ??
-          // unsnapped
-          clamp(posBeforeSeek + deltaPos, 0, sequence.length)
-      },
-      onDragEnd() {
-        setIsSeeking(false)
+        const sequence = val(layoutP.sheet).getSequence()
+        const posBeforeSeek = sequence.position
+        const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+        setIsSeeking(true)
+
+        return {
+          onDrag(dx, _, event) {
+            const deltaPos = scaledSpaceToUnitSpace(dx)
+
+            sequence.position =
+              DopeSnap.checkIfMouseEventSnapToPos(event, {
+                ignore: thumbNode,
+              }) ??
+              // unsnapped
+              clamp(posBeforeSeek + deltaPos, 0, sequence.length)
+          },
+          onDragEnd() {
+            setIsSeeking(false)
+          },
+        }
       },
     }
   }, [])

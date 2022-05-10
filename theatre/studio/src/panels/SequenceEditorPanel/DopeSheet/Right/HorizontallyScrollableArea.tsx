@@ -1,4 +1,3 @@
-import type Sequence from '@theatre/core/sequences/Sequence'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -50,7 +49,7 @@ const HorizontallyScrollableArea: React.FC<{
   )
 
   useHandlePanAndZoom(layoutP, containerNode)
-  useDragHandlers(layoutP, containerNode)
+  useDragPlayheadHandlers(layoutP, containerNode)
   useUpdateScrollFromClippedSpaceRange(layoutP, containerNode)
 
   return (
@@ -70,31 +69,13 @@ const HorizontallyScrollableArea: React.FC<{
 
 export default HorizontallyScrollableArea
 
-function useDragHandlers(
+function useDragPlayheadHandlers(
   layoutP: Pointer<SequenceEditorPanelLayout>,
   containerEl: HTMLDivElement | null,
 ) {
   const handlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    let posBeforeSeek = 0
-    let sequence: Sequence
-    let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
-    const setIsSeeking = val(layoutP.seeker.setIsSeeking)
-
     return {
       debugName: 'HorizontallyScrollableArea',
-      onDrag(dx: number, _, event) {
-        const deltaPos = scaledSpaceToUnitSpace(dx)
-        const unsnappedPos = clamp(posBeforeSeek + deltaPos, 0, sequence.length)
-
-        let newPosition = unsnappedPos
-
-        const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {})
-        if (snapPos != null) {
-          newPosition = snapPos
-        }
-
-        sequence.position = newPosition
-      },
       onDragStart(event) {
         if (event.target instanceof HTMLInputElement) {
           // editing some value
@@ -124,16 +105,38 @@ function useDragHandlers(
           Infinity,
         )
 
-        sequence = val(layoutP.sheet).getSequence()
+        const setIsSeeking = val(layoutP.seeker.setIsSeeking)
+
+        const sequence = val(layoutP.sheet).getSequence()
 
         sequence.position = initialPositionInUnitSpace
 
-        posBeforeSeek = initialPositionInUnitSpace
-        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+        const posBeforeSeek = initialPositionInUnitSpace
+        const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
         setIsSeeking(true)
-      },
-      onDragEnd() {
-        setIsSeeking(false)
+
+        return {
+          onDrag(dx: number, _, event) {
+            const deltaPos = scaledSpaceToUnitSpace(dx)
+            const unsnappedPos = clamp(
+              posBeforeSeek + deltaPos,
+              0,
+              sequence.length,
+            )
+
+            let newPosition = unsnappedPos
+
+            const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {})
+            if (snapPos != null) {
+              newPosition = snapPos
+            }
+
+            sequence.position = newPosition
+          },
+          onDragEnd() {
+            setIsSeeking(false)
+          },
+        }
       },
     }
   }, [layoutP, containerEl])
@@ -233,6 +236,39 @@ function useHandlePanAndZoom(
       node.removeEventListener('wheel', receiveWheelEvent, listenerOptions)
     }
   }, [node, layoutP])
+
+  useDrag(
+    node,
+    useMemo<Parameters<typeof useDrag>[1]>(() => {
+      return {
+        onDragStart(e) {
+          const oldRange = val(layoutP.clippedSpace.range)
+          const setRange = val(layoutP.clippedSpace.setRange)
+          const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+          e.preventDefault()
+          e.stopPropagation()
+
+          return {
+            onDrag(dx, dy, _, __, deltaYFromLastEvent) {
+              receiveVerticalWheelEvent({deltaY: -deltaYFromLastEvent})
+              const delta = -scaledSpaceToUnitSpace(dx)
+
+              const newRange = mapValues(
+                oldRange,
+                (originalPos) => originalPos + delta,
+              )
+
+              setRange(newRange)
+            },
+          }
+        },
+
+        debugName: 'HorizontallyScrollableArea Middle Button Drag',
+        buttons: [1],
+        lockCursorTo: 'grab',
+      }
+    }, [layoutP]),
+  )
 }
 
 function normalize(value: number, [min, max]: [min: number, max: number]) {

@@ -1,7 +1,7 @@
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
@@ -10,7 +10,6 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import getStudio from '@theatre/studio/getStudio'
-import type Sheet from '@theatre/core/sheets/Sheet'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import {
   includeLockFrameStampAttrs,
@@ -219,58 +218,56 @@ function useDragBulge(
 ): [isDragging: boolean] {
   const propsRef = useRef(props)
   propsRef.current = props
-  const [isDragging, setIsDragging] = useState(false)
-
-  useLockFrameStampPosition(isDragging, -1)
 
   const gestureHandlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
-    let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
-    let tempTransaction: CommitOrDiscard | undefined
-    let propsAtStartOfDrag: IProps
-    let sheet: Sheet
-    let initialLength: number
-
     return {
       debugName: 'LengthIndicator/useDragBulge',
       lockCursorTo: 'ew-resize',
       onDragStart(event) {
-        setIsDragging(true)
-        propsAtStartOfDrag = propsRef.current
-        sheet = val(propsRef.current.layoutP.sheet)
-        initialLength = sheet.getSequence().length
+        let tempTransaction: CommitOrDiscard | undefined
 
-        toUnitSpace = val(propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace)
-      },
-      onDrag(dx, dy, event) {
-        const delta = toUnitSpace(dx)
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
+        const propsAtStartOfDrag = propsRef.current
+        const sheet = val(propsRef.current.layoutP.sheet)
+        const initialLength = sheet.getSequence().length
+
+        const toUnitSpace = val(
+          propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace,
+        )
+
+        return {
+          onDrag(dx, dy, event) {
+            const delta = toUnitSpace(dx)
+            if (tempTransaction) {
+              tempTransaction.discard()
+              tempTransaction = undefined
+            }
+            tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+              stateEditors.coreByProject.historic.sheetsById.sequence.setLength(
+                {
+                  ...sheet.address,
+                  length: initialLength + delta,
+                },
+              )
+            })
+          },
+          onDragEnd(dragHappened) {
+            if (dragHappened) {
+              if (tempTransaction) {
+                tempTransaction.commit()
+              }
+            } else {
+              if (tempTransaction) {
+                tempTransaction.discard()
+              }
+            }
+          },
         }
-        tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
-            ...sheet.address,
-            length: initialLength + delta,
-          })
-        })
-      },
-      onDragEnd(dragHappened) {
-        setIsDragging(false)
-        if (dragHappened) {
-          if (tempTransaction) {
-            tempTransaction.commit()
-          }
-        } else {
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
-        }
-        tempTransaction = undefined
       },
     }
   }, [])
 
-  useDrag(node, gestureHandlers)
+  const [isDragging] = useDrag(node, gestureHandlers)
+  useLockFrameStampPosition(isDragging, -1)
 
   return [isDragging]
 }

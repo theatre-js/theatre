@@ -79,27 +79,30 @@ function useCaptureSelection(
           }
 
           val(layoutP.selectionAtom).setState({current: undefined})
-        },
-        onDrag(_dx, _dy, event) {
-          // const state = ref.current!
-          const rect = containerNode!.getBoundingClientRect()
 
-          const posInScaledSpace = event.clientX - rect.left
+          return {
+            onDrag(_dx, _dy, event) {
+              // const state = ref.current!
+              const rect = containerNode!.getBoundingClientRect()
 
-          const posInUnitSpace = val(layoutP.scaledSpace.toUnitSpace)(
-            posInScaledSpace,
-          )
+              const posInScaledSpace = event.clientX - rect.left
 
-          ref.current = {
-            positions: [ref.current!.positions[0], posInUnitSpace],
-            ys: [ref.current!.ys[0], event.clientY - rect.top],
+              const posInUnitSpace = val(layoutP.scaledSpace.toUnitSpace)(
+                posInScaledSpace,
+              )
+
+              ref.current = {
+                positions: [ref.current!.positions[0], posInUnitSpace],
+                ys: [ref.current!.ys[0], event.clientY - rect.top],
+              }
+
+              const selection = utils.boundsToSelection(layoutP, ref.current)
+              val(layoutP.selectionAtom).setState({current: selection})
+            },
+            onDragEnd(_dragHappened) {
+              ref.current = null
+            },
           }
-
-          const selection = utils.boundsToSelection(layoutP, ref.current)
-          val(layoutP.selectionAtom).setState({current: selection})
-        },
-        onDragEnd(_dragHappened) {
-          ref.current = null
         },
       }
     }, [layoutP, containerNode, ref]),
@@ -183,59 +186,65 @@ namespace utils {
       type: 'DopeSheetSelection',
       byObjectKey: {},
       getDragHandlers(origin) {
-        let tempTransaction: CommitOrDiscard | undefined
-
-        let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
         return {
           debugName: 'DopeSheetSelectionView/boundsToSelection',
           onDragStart() {
-            toUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-          },
-          onDrag(dx, _, event) {
-            if (tempTransaction) {
-              tempTransaction.discard()
-              tempTransaction = undefined
-            }
+            let tempTransaction: CommitOrDiscard | undefined
 
-            const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {
-              ignore: origin.domNode,
-            })
+            const toUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
 
-            let delta: number
-            if (snapPos != null) {
-              delta = snapPos - origin.positionAtStartOfDrag
-            } else {
-              delta = toUnitSpace(dx)
-            }
-
-            tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-              const transformKeyframes =
-                stateEditors.coreByProject.historic.sheetsById.sequence
-                  .transformKeyframes
-
-              for (const objectKey of Object.keys(selection.byObjectKey)) {
-                const {byTrackId} = selection.byObjectKey[objectKey]!
-                for (const trackId of Object.keys(byTrackId)) {
-                  const {byKeyframeId} = byTrackId[trackId]!
-                  transformKeyframes({
-                    trackId,
-                    keyframeIds: Object.keys(byKeyframeId),
-                    translate: delta,
-                    scale: 1,
-                    origin: 0,
-                    snappingFunction: sheet.getSequence().closestGridPosition,
-                    objectKey,
-                    projectId: origin.projectId,
-                    sheetId: origin.sheetId,
-                  })
+            return {
+              onDrag(dx, _, event) {
+                if (tempTransaction) {
+                  tempTransaction.discard()
+                  tempTransaction = undefined
                 }
-              }
-            })
-          },
-          onDragEnd(dragHappened) {
-            if (dragHappened) tempTransaction?.commit()
-            else tempTransaction?.discard()
-            tempTransaction = undefined
+
+                const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {
+                  ignore: origin.domNode,
+                })
+
+                let delta: number
+                if (snapPos != null) {
+                  delta = snapPos - origin.positionAtStartOfDrag
+                } else {
+                  delta = toUnitSpace(dx)
+                }
+
+                tempTransaction = getStudio()!.tempTransaction(
+                  ({stateEditors}) => {
+                    const transformKeyframes =
+                      stateEditors.coreByProject.historic.sheetsById.sequence
+                        .transformKeyframes
+
+                    for (const objectKey of Object.keys(
+                      selection.byObjectKey,
+                    )) {
+                      const {byTrackId} = selection.byObjectKey[objectKey]!
+                      for (const trackId of Object.keys(byTrackId)) {
+                        const {byKeyframeId} = byTrackId[trackId]!
+                        transformKeyframes({
+                          trackId,
+                          keyframeIds: Object.keys(byKeyframeId),
+                          translate: delta,
+                          scale: 1,
+                          origin: 0,
+                          snappingFunction:
+                            sheet.getSequence().closestGridPosition,
+                          objectKey,
+                          projectId: origin.projectId,
+                          sheetId: origin.sheetId,
+                        })
+                      }
+                    }
+                  },
+                )
+              },
+              onDragEnd(dragHappened) {
+                if (dragHappened) tempTransaction?.commit()
+                else tempTransaction?.discard()
+              },
+            }
           },
         }
       },

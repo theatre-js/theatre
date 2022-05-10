@@ -1,7 +1,7 @@
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {usePrism, useVal} from '@theatre/react'
-import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
@@ -179,81 +179,73 @@ const FocusRangeStrip: React.FC<{
   const sheet = useVal(layoutP.sheet)
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    let sequence = sheet.getSequence()
-    let startPosBeforeDrag: number,
-      endPosBeforeDrag: number,
-      tempTransaction: CommitOrDiscard | undefined
-    let dragHappened = false
-    let existingRange: {enabled: boolean; range: IRange<number>} | undefined
-    let target: HTMLDivElement | undefined
     let newStartPosition: number, newEndPosition: number
 
     return {
       debugName: 'FocusRangeStrip',
       onDragStart(event) {
-        existingRange = existingRangeD.getValue()
+        let tempTransaction: CommitOrDiscard | undefined
+        let existingRange = existingRangeD.getValue()
+        if (!existingRange) return false
 
-        if (existingRange) {
-          startPosBeforeDrag = existingRange.range.start
-          endPosBeforeDrag = existingRange.range.end
-          dragHappened = false
-          sequence = val(layoutP.sheet).getSequence()
-          target = event.target as HTMLDivElement
-          isDraggingRef.current = true
-        } else {
-          return false
-        }
-      },
-      onDrag(dx) {
-        existingRange = existingRangeD.getValue()
-        if (existingRange) {
-          dragHappened = true
-          const deltaPos = scaledSpaceToUnitSpace(dx)
+        const startPosBeforeDrag = existingRange.range.start
+        const endPosBeforeDrag = existingRange.range.end
+        let dragHappened = false
+        const sequence = val(layoutP.sheet).getSequence()
+        isDraggingRef.current = true
 
-          const start = startPosBeforeDrag + deltaPos
-          let end = endPosBeforeDrag + deltaPos
+        return {
+          onDrag(dx) {
+            existingRange = existingRangeD.getValue()
+            if (existingRange) {
+              dragHappened = true
+              const deltaPos = scaledSpaceToUnitSpace(dx)
 
-          if (end < start) {
-            end = start
-          }
+              const start = startPosBeforeDrag + deltaPos
+              let end = endPosBeforeDrag + deltaPos
 
-          ;[newStartPosition, newEndPosition] = clampRange(
-            [start, end],
-            [0, sequence.length],
-          ).map((pos) => sequence.closestGridPosition(pos))
+              if (end < start) {
+                end = start
+              }
 
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
+              ;[newStartPosition, newEndPosition] = clampRange(
+                [start, end],
+                [0, sequence.length],
+              ).map((pos) => sequence.closestGridPosition(pos))
 
-          tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
-            stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-              {
-                ...sheet.address,
-                range: {
-                  start: newStartPosition,
-                  end: newEndPosition,
+              if (tempTransaction) {
+                tempTransaction.discard()
+              }
+
+              tempTransaction = getStudio().tempTransaction(
+                ({stateEditors}) => {
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                    {
+                      ...sheet.address,
+                      range: {
+                        start: newStartPosition,
+                        end: newEndPosition,
+                      },
+                      enabled: existingRange?.enabled ?? true,
+                    },
+                  )
                 },
-                enabled: existingRange?.enabled ?? true,
-              },
-            )
-          })
+              )
+            }
+          },
+          onDragEnd() {
+            isDraggingRef.current = false
+            if (existingRange) {
+              if (dragHappened && tempTransaction !== undefined) {
+                tempTransaction.commit()
+              } else if (tempTransaction) {
+                tempTransaction.discard()
+              }
+            }
+          },
         }
       },
-      onDragEnd() {
-        isDraggingRef.current = false
-        if (existingRange) {
-          if (dragHappened && tempTransaction !== undefined) {
-            tempTransaction.commit()
-          } else if (tempTransaction) {
-            tempTransaction.discard()
-          }
-          tempTransaction = undefined
-        }
-        if (target !== undefined) {
-          target = undefined
-        }
-      },
+
       lockCursorTo: 'grabbing',
     }
   }, [sheet, scaledSpaceToUnitSpace])

@@ -1,10 +1,10 @@
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import {lighten} from 'polished'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {panelDimsToPanelPosition, usePanel} from './BasePanel'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
@@ -142,96 +142,84 @@ const PanelResizeHandle: React.FC<{
   const panelStuff = usePanel()
   const panelStuffRef = useRef(panelStuff)
   panelStuffRef.current = panelStuff
-  const [isDragging, setIsDragging] = useState(false)
 
   const [ref, node] = useRefAndState<HTMLDivElement>(null as $IntentionalAny)
   const dragOpts: Parameters<typeof useDrag>[1] = useMemo(() => {
-    let stuffBeforeDrag = panelStuffRef.current
-    let tempTransaction: CommitOrDiscard | undefined
-    let unlock: VoidFn | undefined
-
     return {
       debugName: 'PanelResizeHandle',
       lockCursorTo: cursors[which],
       onDragStart() {
-        stuffBeforeDrag = panelStuffRef.current
-        setIsDragging(true)
-        if (unlock) {
-          const u = unlock
-          unlock = undefined
-          u()
-        }
-        unlock = panelStuff.addBoundsHighlightLock()
-      },
-      onDrag(dx, dy) {
-        const newDims: typeof panelStuff['dims'] = {
-          ...stuffBeforeDrag.dims,
-        }
+        let tempTransaction: CommitOrDiscard | undefined
 
-        if (which.startsWith('Bottom')) {
-          newDims.height = Math.max(
-            newDims.height + dy,
-            stuffBeforeDrag.minDims.height,
-          )
-        } else if (which.startsWith('Top')) {
-          const bottom = newDims.top + newDims.height
-          const top = Math.min(
-            bottom - stuffBeforeDrag.minDims.height,
-            newDims.top + dy,
-          )
-          const height = bottom - top
+        const stuffBeforeDrag = panelStuffRef.current
+        const unlock = panelStuff.addBoundsHighlightLock()
 
-          newDims.height = height
-          newDims.top = top
-        }
-        if (which.endsWith('Left')) {
-          const right = newDims.left + newDims.width
-          const left = Math.min(
-            right - stuffBeforeDrag.minDims.width,
-            newDims.left + dx,
-          )
-          const width = right - left
+        return {
+          onDrag(dx, dy) {
+            const newDims: typeof panelStuff['dims'] = {
+              ...stuffBeforeDrag.dims,
+            }
 
-          newDims.width = width
-          newDims.left = left
-        } else if (which.endsWith('Right')) {
-          newDims.width = Math.max(
-            newDims.width + dx,
-            stuffBeforeDrag.minDims.width,
-          )
-        }
+            if (which.startsWith('Bottom')) {
+              newDims.height = Math.max(
+                newDims.height + dy,
+                stuffBeforeDrag.minDims.height,
+              )
+            } else if (which.startsWith('Top')) {
+              const bottom = newDims.top + newDims.height
+              const top = Math.min(
+                bottom - stuffBeforeDrag.minDims.height,
+                newDims.top + dy,
+              )
+              const height = bottom - top
 
-        const position = panelDimsToPanelPosition(newDims, {
-          width: window.innerWidth,
-          height: window.innerHeight,
-        })
+              newDims.height = height
+              newDims.top = top
+            }
+            if (which.endsWith('Left')) {
+              const right = newDims.left + newDims.width
+              const left = Math.min(
+                right - stuffBeforeDrag.minDims.width,
+                newDims.left + dx,
+              )
+              const width = right - left
 
-        tempTransaction?.discard()
-        tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          stateEditors.studio.historic.panelPositions.setPanelPosition({
-            position,
-            panelId: stuffBeforeDrag.panelId,
-          })
-        })
-      },
-      onDragEnd(dragHappened) {
-        if (unlock) {
-          const u = unlock
-          unlock = undefined
-          u()
+              newDims.width = width
+              newDims.left = left
+            } else if (which.endsWith('Right')) {
+              newDims.width = Math.max(
+                newDims.width + dx,
+                stuffBeforeDrag.minDims.width,
+              )
+            }
+
+            const position = panelDimsToPanelPosition(newDims, {
+              width: window.innerWidth,
+              height: window.innerHeight,
+            })
+
+            tempTransaction?.discard()
+            tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+              stateEditors.studio.historic.panelPositions.setPanelPosition({
+                position,
+                panelId: stuffBeforeDrag.panelId,
+              })
+            })
+          },
+          onDragEnd(dragHappened) {
+            unlock()
+            if (dragHappened) {
+              tempTransaction?.commit()
+            } else {
+              tempTransaction?.discard()
+            }
+          },
         }
-        setIsDragging(false)
-        if (dragHappened) {
-          tempTransaction?.commit()
-        } else {
-          tempTransaction?.discard()
-        }
-        tempTransaction = undefined
       },
     }
   }, [which])
 
-  useDrag(node, dragOpts)
+  const [isDragging] = useDrag(node, dragOpts)
   const Comp = els[which]
 
   const isOnCorner = which.length <= 6

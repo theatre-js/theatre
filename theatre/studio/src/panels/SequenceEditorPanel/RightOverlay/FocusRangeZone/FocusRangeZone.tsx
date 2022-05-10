@@ -1,9 +1,7 @@
-import type Sequence from '@theatre/core/sequences/Sequence'
-import type Sheet from '@theatre/core/sheets/Sheet'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {usePrism} from '@theatre/react'
-import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import {
   panelDimsToPanelPosition,
@@ -102,152 +100,150 @@ function usePanelDragZoneGestureHandlers(
     const focusRangeCreationGestureHandlers = (): Parameters<
       typeof useDrag
     >[1] => {
-      let startPosInUnitSpace: number,
-        tempTransaction: CommitOrDiscard | undefined
-
-      let clippedSpaceToUnitSpace: (s: number) => number
-      let scaledSpaceToUnitSpace: (s: number) => number
-      let sequence: Sequence
-      let sheet: Sheet
-      let minFocusRangeStripWidth: number
-
       return {
         debugName: 'FocusRangeZone/focusRangeCreationGestureHandlers',
         onDragStart(event) {
-          clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)
-          scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-          sheet = val(layoutP.sheet)
-          sequence = sheet.getSequence()
+          let tempTransaction: CommitOrDiscard | undefined
+
+          const clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)
+          const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+          const sheet = val(layoutP.sheet)
+          const sequence = sheet.getSequence()
 
           const targetElement: HTMLElement = event.target as HTMLElement
           const rect = targetElement!.getBoundingClientRect()
-          startPosInUnitSpace = clippedSpaceToUnitSpace(
+          const startPosInUnitSpace = clippedSpaceToUnitSpace(
             event.clientX - rect.left,
           )
-          minFocusRangeStripWidth = scaledSpaceToUnitSpace(
+          const minFocusRangeStripWidth = scaledSpaceToUnitSpace(
             focusRangeStripTheme.rangeStripMinWidth,
           )
-        },
-        onDrag(dx) {
-          const deltaPos = scaledSpaceToUnitSpace(dx)
 
-          let start = startPosInUnitSpace
-          let end = startPosInUnitSpace + deltaPos
+          return {
+            onDrag(dx) {
+              const deltaPos = scaledSpaceToUnitSpace(dx)
 
-          ;[start, end] = [
-            clamp(start, 0, sequence.length),
-            clamp(end, 0, sequence.length),
-          ].map((pos) => sequence.closestGridPosition(pos))
+              let start = startPosInUnitSpace
+              let end = startPosInUnitSpace + deltaPos
 
-          if (end < start) {
-            ;[start, end] = [
-              Math.max(Math.min(end, start - minFocusRangeStripWidth), 0),
-              start,
-            ]
-          } else if (dx > 0) {
-            end = Math.min(
-              Math.max(end, start + minFocusRangeStripWidth),
-              sequence.length,
-            )
+              ;[start, end] = [
+                clamp(start, 0, sequence.length),
+                clamp(end, 0, sequence.length),
+              ].map((pos) => sequence.closestGridPosition(pos))
+
+              if (end < start) {
+                ;[start, end] = [
+                  Math.max(Math.min(end, start - minFocusRangeStripWidth), 0),
+                  start,
+                ]
+              } else if (dx > 0) {
+                end = Math.min(
+                  Math.max(end, start + minFocusRangeStripWidth),
+                  sequence.length,
+                )
+              }
+
+              if (tempTransaction) {
+                tempTransaction.discard()
+              }
+
+              tempTransaction = getStudio().tempTransaction(
+                ({stateEditors}) => {
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                    {
+                      ...sheet.address,
+                      range: {start, end},
+                      enabled: true,
+                    },
+                  )
+                },
+              )
+            },
+            onDragEnd(dragHappened) {
+              if (dragHappened && tempTransaction !== undefined) {
+                tempTransaction.commit()
+              } else if (tempTransaction) {
+                tempTransaction.discard()
+              }
+            },
           }
-
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
-
-          tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
-            stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-              {
-                ...sheet.address,
-                range: {start, end},
-                enabled: true,
-              },
-            )
-          })
         },
-        onDragEnd(dragHappened) {
-          if (dragHappened && tempTransaction !== undefined) {
-            tempTransaction.commit()
-          } else if (tempTransaction) {
-            tempTransaction.discard()
-          }
-          tempTransaction = undefined
-        },
+
         lockCursorTo: 'ew-resize',
       }
     }
 
     const panelMoveGestureHandlers = (): Parameters<typeof useDrag>[1] => {
-      let stuffBeforeDrag = panelStuffRef.current
-      let tempTransaction: CommitOrDiscard | undefined
-      let unlock: VoidFn | undefined
       return {
         debugName: 'FocusRangeZone/panelMoveGestureHandlers',
         onDragStart() {
-          stuffBeforeDrag = panelStuffRef.current
-          if (unlock) {
-            const u = unlock
-            unlock = undefined
-            u()
-          }
-          unlock = panelStuffRef.current.addBoundsHighlightLock()
-        },
-        onDrag(dx, dy) {
-          const newDims: typeof panelStuffRef.current['dims'] = {
-            ...stuffBeforeDrag.dims,
-            top: stuffBeforeDrag.dims.top + dy,
-            left: stuffBeforeDrag.dims.left + dx,
-          }
-          const position = panelDimsToPanelPosition(newDims, {
-            width: window.innerWidth,
-            height: window.innerHeight,
-          })
+          let tempTransaction: CommitOrDiscard | undefined
+          const stuffBeforeDrag = panelStuffRef.current
 
-          tempTransaction?.discard()
-          tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-            stateEditors.studio.historic.panelPositions.setPanelPosition({
-              position,
-              panelId: stuffBeforeDrag.panelId,
-            })
-          })
-        },
-        onDragEnd(dragHappened) {
-          if (unlock) {
-            const u = unlock
-            unlock = undefined
-            u()
+          const unlock = panelStuffRef.current.addBoundsHighlightLock()
+
+          return {
+            onDrag(dx, dy) {
+              const newDims: typeof panelStuffRef.current['dims'] = {
+                ...stuffBeforeDrag.dims,
+                top: stuffBeforeDrag.dims.top + dy,
+                left: stuffBeforeDrag.dims.left + dx,
+              }
+              const position = panelDimsToPanelPosition(newDims, {
+                width: window.innerWidth,
+                height: window.innerHeight,
+              })
+
+              tempTransaction?.discard()
+              tempTransaction = getStudio()!.tempTransaction(
+                ({stateEditors}) => {
+                  stateEditors.studio.historic.panelPositions.setPanelPosition({
+                    position,
+                    panelId: stuffBeforeDrag.panelId,
+                  })
+                },
+              )
+            },
+            onDragEnd(dragHappened) {
+              unlock()
+              if (dragHappened) {
+                tempTransaction?.commit()
+              } else {
+                tempTransaction?.discard()
+              }
+            },
           }
-          if (dragHappened) {
-            tempTransaction?.commit()
-          } else {
-            tempTransaction?.discard()
-          }
-          tempTransaction = undefined
         },
         lockCursorTo: 'move',
       }
     }
 
-    let currentGestureHandlers: undefined | Parameters<typeof useDrag>[1]
-
     return {
       debugName: 'FocusRangeZone',
       onDragStart(event) {
-        if (event.shiftKey) {
-          setMode('creating')
-          currentGestureHandlers = focusRangeCreationGestureHandlers()
-        } else {
-          setMode('moving-panel')
-          currentGestureHandlers = panelMoveGestureHandlers()
+        const [_mode, currentGestureHandlers] = event.shiftKey
+          ? [
+              'creating' as 'creating',
+              focusRangeCreationGestureHandlers().onDragStart(event),
+            ]
+          : [
+              'moving-panel' as 'moving-panel',
+              panelMoveGestureHandlers().onDragStart(event),
+            ]
+
+        setMode(_mode)
+
+        if (currentGestureHandlers === false) return false
+
+        return {
+          onDrag(dx, dy, event, ddx, ddy) {
+            currentGestureHandlers.onDrag(dx, dy, event, ddx, ddy)
+          },
+          onDragEnd(dragHappened) {
+            setMode('none')
+            currentGestureHandlers.onDragEnd?.(dragHappened)
+          },
         }
-        currentGestureHandlers.onDragStart!(event)
-      },
-      onDrag(dx, dy, event) {
-        currentGestureHandlers!.onDrag(dx, dy, event)
-      },
-      onDragEnd(dragHappened) {
-        setMode('none')
-        currentGestureHandlers!.onDragEnd!(dragHappened)
       },
     }
   }, [layoutP, panelStuffRef])
