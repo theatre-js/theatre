@@ -47,7 +47,6 @@ async function generateAndPublishTarball(
     })[0].location,
     tarballName,
   )
-  console.log(tarballName, pathToTarball)
   await $`yarn workspace ${workspace} pack --filename ${tarballName}`
   await $`DO_TARBALL_PATH=${pathToTarball} node scripts/dev-package-uploader/publish-package.js`
 }
@@ -151,13 +150,10 @@ async function assignVersions(
 
 ; (async function() {
   process.env.THEATRE_IS_PUBLISHING = true
-  const latestCommitHash = process.env.LATEST_COMMIT_HASH ? process.env.LATEST_COMMIT_HASH.slice(0, 8) : await $`git log -1 --pretty=format:%h`
-  console.log(process.env.LATEST_COMMIT_HASH)
-  console.log(await $`git log -1`)
-  console.log(await $`git remote get-url origin`)
-  throw new Error('stop here')
-
-
+  // In the CI `git log -1` points to a fake merge commit,
+  // so we have to use the value of a special GitHub context variable
+  // through the `LATEST_COMMIT_HASH` environmental variable.
+  const latestCommitHash = process.env.LATEST_COMMIT_HASH.slice(0, 8)
 
   const workspacesListString = await $`yarn workspaces list --json`
   const workspacesListObjects = workspacesListString.stdout
