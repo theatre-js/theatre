@@ -35,7 +35,7 @@ const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   height: ${() => topStripHeight - 1}px;
   z-index: 3;
 
-  background-color: ${({enabled}) =>
+  --bg: ${({enabled}) =>
     enabled
       ? focusRangeStripTheme.enabled.backgroundColor
       : focusRangeStripTheme.disabled.backgroundColor};
@@ -64,23 +64,27 @@ const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
     pointer-events: none !important;
   }
 
-  // highlight the handle when it's being dragged or the whole strip is being dragged
+  // highlight the handle if it's hovered, or the whole strip is hovverd
+  ${() => RangeStrip}:hover ~ &, &:hover {
+    --bg: ${focusRangeStripTheme.hover.backgroundColor};
+    stroke: ${focusRangeStripTheme.hover.stroke};
+  }
+
+  // highlight the handle when it's being dragged or the whole strip is being dragged.
+  // using dragging.dragging to give this selector priority, as it seems to be overridden
+  // by the hover selector above
   &.dragging,
-  ${() => RangeStrip}.dragging ~ & {
-    background: ${focusRangeStripTheme.dragging.backgroundColor};
+  ${() => RangeStrip}.dragging.dragging ~ & {
+    --bg: ${focusRangeStripTheme.dragging.backgroundColor};
     stroke: ${focusRangeStripTheme.dragging.stroke};
   }
 
   #pointer-root.draggingPositionInSequenceEditor &:hover {
-    background: ${focusRangeStripTheme.dragging.backgroundColor};
+    --bg: ${focusRangeStripTheme.dragging.backgroundColor};
     stroke: #40aaa4;
   }
 
-  // highlight the handle if it's hovered, or the whole strip is hovverd
-  ${() => RangeStrip}:hover ~ &, &:hover {
-    background: ${focusRangeStripTheme.hover.backgroundColor};
-    stroke: ${focusRangeStripTheme.hover.stroke};
-  }
+  background-color: var(--bg);
 
   // a larger hit zone
   &:before {
@@ -100,20 +104,6 @@ const ColoredMargin = styled.div<{type: 'start' | 'end'; enabled: boolean}>`
   top: 0;
   bottom: 0;
   pointer-events: none;
-
-  ${() => RangeStrip}.dragging ~ ${TheDiv} > & {
-    --bg: ${focusRangeStripTheme.dragging.backgroundColor};
-  }
-
-  --bg: ${({enabled}) =>
-    enabled
-      ? focusRangeStripTheme.enabled.backgroundColor
-      : focusRangeStripTheme.disabled.backgroundColor};
-
-  // highlight the handle if it's hovered, or the whole strip is hovverd
-  ${() => RangeStrip}:hover ~ ${TheDiv} > & {
-    --bg: ${focusRangeStripTheme.hover.backgroundColor};
-  }
 
   background: linear-gradient(
     ${(props) => (props.type === 'start' ? 90 : -90)}deg,
@@ -138,11 +128,9 @@ const OuterColoredMargin = styled.div<{
   bottom: 0;
   pointer-events: none;
 
-  --bg: ${() => topStripTheme.backgroundColor};
-
   background: linear-gradient(
     ${(props) => (props.type === 'start' ? -90 : 90)}deg,
-    var(--bg) 0%,
+    ${() => topStripTheme.backgroundColor} 0%,
     #ffffff00 100%
   );
 
