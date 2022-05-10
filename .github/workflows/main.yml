@@ -75,5 +75,6 @@ jobs:
           DO_SECRET: ${{ secrets.DO_SPACES_SECRET }}
           DO_API_KEY: ${{ secrets.DO_SPACES_KEY }}
           DO_DOMAIN: ''
+          LATEST_COMMIT_HASH: ${{ github.sha }}
           FOLDER: '@theatre'
         run: npx zx scripts/generate-development-package-tarballs.mjs
