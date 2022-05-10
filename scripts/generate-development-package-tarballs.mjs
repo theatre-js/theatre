@@ -152,6 +152,12 @@ async function assignVersions(
 ; (async function() {
   process.env.THEATRE_IS_PUBLISHING = true
   const latestCommitHash = process.env.LATEST_COMMIT_HASH ? process.env.LATEST_COMMIT_HASH.slice(0, 8) : await $`git log -1 --pretty=format:%h`
+  console.log(process.env.LATEST_COMMIT_HASH)
+  console.log(await $`git log -1`)
+  console.log(await $`git remote get-url origin`)
+  throw new Error('stop here')
+
+
 
   const workspacesListString = await $`yarn workspaces list --json`
   const workspacesListObjects = workspacesListString.stdout
