@@ -163,7 +163,7 @@ async function assignVersions(
 
   await assignVersions(
     workspacesListObjects,
-    latestCommitHash.stdout,
+    latestCommitHash,
   )
 
   await Promise.all(
