@@ -152,23 +152,6 @@ function useHandlePanAndZoom(
     if (!node) return
 
     const receiveWheelEvent = (event: WheelEvent) => {
-      if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) {
-        // receiveVerticalWheelEvent(event)
-        event.preventDefault()
-        event.stopPropagation()
-
-        const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-        const deltaPos = scaledSpaceToUnitSpace(event.deltaX * 1)
-        const oldRange = val(layoutP.clippedSpace.range)
-        const newRange = mapValues(oldRange, (p) => p + deltaPos)
-
-        const setRange = val(layoutP.clippedSpace.setRange)
-
-        setRange(newRange)
-
-        return
-      }
-
       // pinch
       if (event.ctrlKey) {
         event.preventDefault()
@@ -200,8 +183,9 @@ function useHandlePanAndZoom(
         val(layoutP.clippedSpace.setRange)(
           normalizeRange(newRange, [0, maxEnd]),
         )
+        return
       }
-      // paning
+      // panning
       else if (event.shiftKey) {
         event.preventDefault()
         event.stopPropagation()
@@ -220,6 +204,22 @@ function useHandlePanAndZoom(
         )
 
         val(layoutP.clippedSpace.setRange)(newRange)
+        return
+      } else {
+        receiveVerticalWheelEvent(event)
+        event.preventDefault()
+        event.stopPropagation()
+
+        const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+        const deltaPos = scaledSpaceToUnitSpace(event.deltaX * 1)
+        const oldRange = val(layoutP.clippedSpace.range)
+        const newRange = mapValues(oldRange, (p) => p + deltaPos)
+
+        const setRange = val(layoutP.clippedSpace.setRange)
+
+        setRange(newRange)
+
+        return
       }
     }
 
