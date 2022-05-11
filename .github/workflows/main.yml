@@ -14,8 +14,8 @@ jobs:
       matrix:
         node-version: [16.x]
 
-    # env:
-    #   NODE_AUTH_TOKEN: '' # We don't need the real token yet
+    env:
+      NODE_AUTH_TOKEN: '' # We don't need the real token yet
 
     steps:
       - uses: actions/checkout@v2
@@ -64,8 +64,8 @@ jobs:
       matrix:
         node-version: [16.x]
 
-    # env:
-    #   NODE_AUTH_TOKEN: '' # We don't need the real token yet
+    env:
+      NODE_AUTH_TOKEN: '' # We don't need the real token yet
     steps:
       - uses: actions/checkout@v2
       - name: Get yarn cache directory path
