@@ -113,7 +113,14 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
   // In the CI `git log -1` points to a fake merge commit,
   // so we have to use the value of a special GitHub context variable
   // through the `LATEST_COMMIT_HASH` environmental variable.
-  const latestCommitHash = process.env.LATEST_COMMIT_HASH.slice(0, 8)
+  //
+  // The length of the abbreviated commit hash can change, that's why we
+  // need the lenght of the fake merge commit's abbreviated hash.
+  const fakeMergeCommitHash = await $`git log -1 --pretty=format:%h`
+  const latestCommitHash = process.env.LATEST_COMMIT_HASH.slice(
+    0,
+    fakeMergeCommitHash.stdout.length,
+  )
 
   const workspacesListString = await $`yarn workspaces list --json`
   const workspacesListObjects = workspacesListString.stdout
@@ -125,7 +132,7 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
 
   await Promise.all(
     packagesToPublish.map((workspaceName) => {
-      const npmTag = getNewVersionName(workspaceName, latestCommitHash)
+      const npmTag = 'insiders'
       $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
     }),
   )
