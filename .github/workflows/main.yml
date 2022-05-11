@@ -17,10 +17,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-
+          registry-url: 'https://registry.npmjs.org'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
@@ -57,5 +57,6 @@ jobs:
         run: yarn build
       - name: Publish the theatre packages
         env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           LATEST_COMMIT_HASH: ${{ github.event.pull_request.head.sha }}
         run: npx zx scripts/dev-release.mjs
