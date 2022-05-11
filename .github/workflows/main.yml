@@ -38,16 +38,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - uses: actions/cache@v2
-        id: dev-package-uploader-cache
-        with:
-          path:
-            '${{ github.workspace }}/scripts/dev-package-uploader/node_modules'
-          key:
-            ${{ runner.os }}-dev-package-uploader-cache-${{
-            hashFiles('scripts/dev-package-uploader/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-dev-package-uploader-cache-
 
       - run: yarn install
       - run: yarn typecheck
@@ -63,18 +53,9 @@ jobs:
           custom-command: 'yarn test:e2e:ci'
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      - name: Install dependencies of the dev-package-uploader
-        working-directory: ${{ github.workspace }}/scripts/dev-package-uploader
-        run: npm install
       - name: Build the theatre packages
         run: yarn build
-      - name: Publish the packages
+      - name: Publish the theatre packages
         env:
-          DO_REGION: 'nyc3'
-          DO_BUCKET: 'theatrejs-packages'
-          DO_SECRET: ${{ secrets.DO_SPACES_SECRET }}
-          DO_API_KEY: ${{ secrets.DO_SPACES_KEY }}
-          DO_DOMAIN: ''
           LATEST_COMMIT_HASH: ${{ github.event.pull_request.head.sha }}
-          FOLDER: '@theatre'
-        run: npx zx scripts/generate-development-package-tarballs.mjs
+        run: npx zx scripts/dev-release.mjs
