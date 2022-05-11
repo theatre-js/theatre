@@ -14,8 +14,8 @@ jobs:
       matrix:
         node-version: [16.x]
 
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    # env:
+    #   NODE_AUTH_TOKEN: '' # We don't need the real token yet
 
     steps:
       - uses: actions/checkout@v2
@@ -64,8 +64,8 @@ jobs:
       matrix:
         node-version: [16.x]
 
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    # env:
+    #   NODE_AUTH_TOKEN: '' # We don't need the real token yet
     steps:
       - uses: actions/checkout@v2
       - name: Get yarn cache directory path
@@ -83,5 +83,6 @@ jobs:
         run: yarn build
       - name: Publish the theatre packages
         env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           LATEST_COMMIT_HASH: ${{ github.event.pull_request.head.sha }}
         run: npx zx scripts/dev-release.mjs
