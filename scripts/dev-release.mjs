@@ -126,8 +126,7 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
   await Promise.all(
     packagesToPublish.map((workspaceName) => {
       const npmTag = getNewVersionName(workspaceName, latestCommitHash)
-      // TODO: remove --dry-run when it becomes redundant
-      $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag} --dry-run`
+      $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
     }),
   )
 })()
