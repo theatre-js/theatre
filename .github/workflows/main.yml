@@ -52,6 +52,7 @@ jobs:
           custom-command: 'yarn test:e2e:ci'
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+
       - name: Build the theatre packages
         run: yarn build
       - name: Publish the theatre packages
