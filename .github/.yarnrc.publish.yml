@@ -1,0 +1,9 @@
+# Auth config for the publish registry (npm)
+# It should be only used in the CI.
+
+npmPublishRegistry: 'https://registry.npmjs.org'
+
+npmRegistries:
+  //registry.npmjs.org:
+    npmAlwaysAuth: true
+    npmAuthToken: ${NODE_AUTH_TOKEN}

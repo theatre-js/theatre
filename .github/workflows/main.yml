@@ -10,9 +10,6 @@ jobs:
   Test:
     runs-on: ubuntu-latest
 
-    env:
-      NODE_AUTH_TOKEN: '' # We don't need the real token yet
-
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
@@ -56,9 +53,6 @@ jobs:
     needs: [test]
     runs-on: ubuntu-latest
 
-    env:
-      NODE_AUTH_TOKEN: '' # We don't need the real token yet
-
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
@@ -78,6 +72,8 @@ jobs:
       - run: yarn install
       - name: Build the theatre packages
         run: yarn build
+      - name: Update .yarnrc.yml with the auth config for the publish registry
+        run: cat .github/.yarnrc.publish.yml >> .yarnrc.yml
       - name: Publish the theatre packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
