@@ -7,7 +7,7 @@ import getStudio from '@theatre/studio/getStudio'
 import type {BasicNumberInputNudgeFn} from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
+import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 
 const greaterThanZero = (v: number) => isFinite(v) && v > 0
 
@@ -20,7 +20,7 @@ const Container = styled.div`
 `
 
 const Label = styled.div`
-  ${propNameText};
+  ${propNameTextCSS};
   white-space: nowrap;
 `
 

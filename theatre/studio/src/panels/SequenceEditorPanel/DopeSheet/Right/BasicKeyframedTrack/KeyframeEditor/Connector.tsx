@@ -131,7 +131,7 @@ const Connector: React.FC<IProps> = (props) => {
       {...themeValues}
       ref={nodeRef}
       style={{
-        // scale3d looks like poo with a weird fuzzy rendering look
+        // Previously we used scale3d, which had weird fuzzy rendering look in both FF & Chrome
         transform: `scaleX(calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
           connectorLengthInUnitSpace / CONNECTOR_WIDTH_UNSCALED
         }))`,

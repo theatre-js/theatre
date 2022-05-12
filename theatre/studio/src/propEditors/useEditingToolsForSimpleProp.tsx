@@ -1,3 +1,9 @@
+import get from 'lodash-es/get'
+import last from 'lodash-es/last'
+import React from 'react'
+
+import type {Pointer} from '@theatre/dataverse'
+import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
@@ -5,23 +11,19 @@ import type Scrub from '@theatre/studio/Scrub'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getDeep from '@theatre/shared/utils/getDeep'
 import {usePrism} from '@theatre/react'
-import type {SerializablePrimitive} from '@theatre/shared/utils/types'
-import {getPointerParts, prism, val} from '@theatre/dataverse'
-import type {Pointer} from '@theatre/dataverse'
-import get from 'lodash-es/get'
-import last from 'lodash-es/last'
-import React from 'react'
-import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
-import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
-import type {PropTypeConfig} from '@theatre/core/propTypes'
+import type {SerializablePrimitive as SerializablePrimitive} from '@theatre/shared/utils/types'
+import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import {isPropConfSequencable} from '@theatre/shared/propTypes/utils'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+
+import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
+import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 
 interface EditingToolsCommon<T> {
   value: T
   beingScrubbed: boolean
   contextMenuItems: Array<IContextMenuItem>
-  /** e.g. `< • >` or `<   >` for {@link Sequenced} */
+  /** e.g. `< • >` or `<   >` for {@link EditingToolsSequenced} */
   controlIndicators: React.ReactElement
 
   temporarilySetValue(v: T): void
@@ -29,36 +31,42 @@ interface EditingToolsCommon<T> {
   permanentlySetValue(v: T): void
 }
 
-interface Default<T> extends EditingToolsCommon<T> {
+interface EditingToolsDefault<T> extends EditingToolsCommon<T> {
   type: 'Default'
   shade: Shade
 }
 
-interface Static<T> extends EditingToolsCommon<T> {
+interface EditingToolsStatic<T> extends EditingToolsCommon<T> {
   type: 'Static'
   shade: Shade
 }
 
-interface Sequenced<T> extends EditingToolsCommon<T> {
+interface EditingToolsSequenced<T> extends EditingToolsCommon<T> {
   type: 'Sequenced'
   shade: Shade
   /** based on the position of the playhead */
   nearbyKeyframes: NearbyKeyframes
 }
 
-type EditingTools<T> = Default<T> | Static<T> | Sequenced<T>
+type EditingTools<T> =
+  | EditingToolsDefault<T>
+  | EditingToolsStatic<T>
+  | EditingToolsSequenced<T>
 
 /**
- * Notably, this uses the {@link Scrub} api in order to support
- * indicating which pointers are being scrubbed so indicators of scrubbing
- * can be presented to everyone.
+ * Notably, this uses the {@link Scrub} API to support
+ * indicating in the UI which pointers (values/props) are being
+ * scrubbed. See how impl of {@link Scrub} manages
+ * `state.flagsTransaction` to keep a list of these touched paths
+ * for the UI to be able to recognize. (e.g. to highlight the
+ * item in r3f as you change its scale).
  */
-export function useEditingToolsForPrimitivePropInDetailsPanel<
+export function useEditingToolsForSimplePropInDetailsPanel<
   T extends SerializablePrimitive,
 >(
   pointerToProp: Pointer<T>,
   obj: SheetObject,
-  propConfig: PropTypeConfig,
+  propConfig: PropTypeConfig_AllSimples,
 ): EditingTools<T> {
   return usePrism(() => {
     const pathToProp = getPointerParts(pointerToProp).path
@@ -102,11 +110,6 @@ export function useEditingToolsForPrimitivePropInDetailsPanel<
       },
       [],
     )
-
-    // hmmm... where was this going?
-    // const validSequenceTracks = val(
-    //   obj.template.getMapOfValidSequenceTracks_forStudio(),
-    // )
 
     const beingScrubbed =
       val(
@@ -232,7 +235,7 @@ export function useEditingToolsForPrimitivePropInDetailsPanel<
           />
         )
 
-        const ret: Sequenced<T> = {
+        const ret: EditingToolsSequenced<T> = {
           ...common,
           type: 'Sequenced',
           shade,
@@ -272,7 +275,7 @@ export function useEditingToolsForPrimitivePropInDetailsPanel<
     const statics = val(obj.template.getStaticValues())
 
     if (typeof getDeep(statics, pathToProp) !== 'undefined') {
-      const ret: Static<T> = {
+      const ret: EditingToolsStatic<T> = {
         ...common,
         type: 'Static',
         shade: common.beingScrubbed ? 'Static_BeingScrubbed' : 'Static',
@@ -283,7 +286,7 @@ export function useEditingToolsForPrimitivePropInDetailsPanel<
       return ret
     }
 
-    const ret: Default<T> = {
+    const ret: EditingToolsDefault<T> = {
       ...common,
       type: 'Default',
       shade: 'Default',

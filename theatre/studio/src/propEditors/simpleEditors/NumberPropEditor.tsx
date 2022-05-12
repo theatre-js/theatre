@@ -1,13 +1,13 @@
 import type {PropTypeConfig_Number} from '@theatre/core/propTypes'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import React, {useCallback} from 'react'
-import type {ISimplePropEditorVFC} from './utils/IPropEditorFC'
+import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
 
-const NumberPropEditor: ISimplePropEditorVFC<PropTypeConfig_Number> = ({
+function NumberPropEditor({
   propConfig,
   editingTools,
   value,
-}) => {
+}: ISimplePropEditorReactProps<PropTypeConfig_Number>) {
   const nudge = useCallback(
     (params: {deltaX: number; deltaFraction: number; magnitude: number}) => {
       return propConfig.nudgeFn({...params, config: propConfig})

@@ -1,21 +1,22 @@
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {getPointerParts} from '@theatre/dataverse'
+import type {Pointer} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
 import React from 'react'
 import styled from 'styled-components'
 import {
   indentationFormula,
-  propNameText,
   rowBg,
-} from './utils/SingleRowPropEditor'
-import DefaultOrStaticValueIndicator from './utils/DefaultValueIndicator'
+} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/SingleRowPropEditor'
+import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import DefaultOrStaticValueIndicator from '@theatre/studio/propEditors/DefaultValueIndicator'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {ICompoundPropDetailEditorVFC} from './utils/IPropEditorFC'
-import {DetailDeterminePropEditor} from './DeterminePropEditor'
+import DeterminePropEditorForDetail from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail'
+import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import type {$FixMe} from '@theatre/shared/utils/types'
 
 const Container = styled.div`
   --step: 8px;
@@ -49,7 +50,7 @@ const PropName = styled.div`
     /* color: white; */
   }
 
-  ${() => propNameText};
+  ${() => propNameTextCSS};
 `
 
 const color = transparentize(0.05, `#282b2f`)
@@ -59,9 +60,23 @@ const SubProps = styled.div<{depth: number; lastSubIsComposite: boolean}>`
   /* padding: ${(props) => (props.lastSubIsComposite ? 0 : '4px')} 0; */
 `
 
-const DetailCompoundPropEditor: ICompoundPropDetailEditorVFC<
-  PropTypeConfig_Compound<$IntentionalAny>
-> = ({pointerToProp, obj, propConfig, visualIndentation}) => {
+export type ICompoundPropDetailEditorProps<
+  TPropTypeConfig extends PropTypeConfig_Compound<any>,
+> = {
+  propConfig: TPropTypeConfig
+  pointerToProp: Pointer<TPropTypeConfig['valueType']>
+  obj: SheetObject
+  visualIndentation: number
+}
+
+function DetailCompoundPropEditor<
+  TPropTypeConfig extends PropTypeConfig_Compound<any>,
+>({
+  pointerToProp,
+  obj,
+  propConfig,
+  visualIndentation,
+}: ICompoundPropDetailEditorProps<TPropTypeConfig>) {
   const propName = propConfig.label ?? last(getPointerParts(pointerToProp).path)
 
   const allSubs = Object.entries(propConfig.props)
@@ -75,61 +90,12 @@ const DetailCompoundPropEditor: ICompoundPropDetailEditorVFC<
   const [propNameContainerRef, propNameContainer] =
     useRefAndState<HTMLDivElement | null>(null)
 
-  // const [contextMenu] = useContextMenu(propNameContainer, {
-  //   items: () => {
-  //     const items: IContextMenuItem[] = []
-
-  //     const pathToProp = getPointerParts(pointerToProp).path
-
-  //     const validSequencedTracks = val(
-  //       obj.template.getMapOfValidSequenceTracks_forStudio(),
-  //     )
-  //     const possibleSequenceTrackIds = getDeep(validSequencedTracks, pathToProp)
-
-  //     const hasSequencedTracks = !!(
-  //       typeof possibleSequenceTrackIds === 'object' &&
-  //       possibleSequenceTrackIds &&
-  //       Object.keys(possibleSequenceTrackIds).length > 0
-  //     )
-
-  //     if (hasSequencedTracks) {
-  //       items.push({
-  //         label: 'Make All Static',
-  //         enabled: hasSequencedTracks,
-  //         callback: () => {
-  //           getStudio()!.transaction(({stateEditors}) => {
-  //             const propAddress = {...obj.address, pathToProp}
-
-  //             stateEditors.coreByProject.historic.sheetsById.sequence.setCompoundPropAsStatic(
-  //               {
-  //                 ...propAddress,
-  //                 value: obj.getValueByPointer(
-  //                   pointerToProp,
-  //                 ) as unknown as SerializableMap,
-  //               },
-  //             )
-  //           })
-  //         },
-  //       })
-  //     }
-
-  //     items.push({
-  //       label: 'Reset all',
-  //       callback: () => {
-  //         getStudio()!.transaction(({unset}) => {
-  //           unset(pointerToProp)
-  //         })
-  //       },
-  //     })
-  //     return items
-  //   },
-  // })
-
   const lastSubPropIsComposite = compositeSubs.length > 0
+
+  // previous versions of the DetailCompoundPropEditor had a context menu item for "Reset values".
 
   return (
     <Container>
-      {/* {contextMenu} */}
       <Header
         // @ts-ignore
         style={{'--depth': visualIndentation - 1}}
@@ -149,10 +115,10 @@ const DetailCompoundPropEditor: ICompoundPropDetailEditorVFC<
         {[...nonCompositeSubs, ...compositeSubs].map(
           ([subPropKey, subPropConfig]) => {
             return (
-              <DetailDeterminePropEditor
+              <DeterminePropEditorForDetail
                 key={'prop-' + subPropKey}
                 propConfig={subPropConfig}
-                pointerToProp={pointerToProp[subPropKey]}
+                pointerToProp={pointerToProp[subPropKey] as Pointer<$FixMe>}
                 obj={obj}
                 visualIndentation={visualIndentation + 1}
               />

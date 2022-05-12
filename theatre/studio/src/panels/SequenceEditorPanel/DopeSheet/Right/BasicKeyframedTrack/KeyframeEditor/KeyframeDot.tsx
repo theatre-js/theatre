@@ -1,3 +1,8 @@
+import {lighten} from 'polished'
+import React, {useMemo, useRef} from 'react'
+import styled from 'styled-components'
+import last from 'lodash-es/last'
+
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -6,9 +11,6 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
-import {lighten} from 'polished'
-import React, {useMemo, useRef} from 'react'
-import styled from 'styled-components'
 import {
   includeLockFrameStampAttrs,
   useLockFrameStampPosition,
@@ -24,9 +26,8 @@ import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/Do
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
-import {useTempTransactionEditingTools} from '@theatre/studio/panels/DetailPanel/propEditors/utils/useTempTransactionEditingTools'
-import {KeyframeDeterminePropEditor} from '@theatre/studio/panels/DetailPanel/propEditors/DeterminePropEditor'
-import last from 'lodash-es/last'
+import {useTempTransactionEditingTools} from './useTempTransactionEditingTools'
+import {DeterminePropEditorForKeyframe} from './DeterminePropEditorForKeyframe'
 
 export const DOT_SIZE_PX = 6
 const HIT_ZONE_SIZE_PX = 12
@@ -105,7 +106,8 @@ const KeyframeDot: React.VFC<IKeyframeDotProps> = (props) => {
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
-  const [inlineEditor, openEditor] = useKeyframeInlineEditor(props)
+  const [inlineEditorPopover, openEditor] =
+    useKeyframeInlineEditorPopover(props)
   const [isDragging] = useDragForKeyframeDot(node, props, {
     onClickFromDrag(dragStartEvent) {
       openEditor(dragStartEvent, ref.current!)
@@ -121,7 +123,7 @@ const KeyframeDot: React.VFC<IKeyframeDotProps> = (props) => {
         className={isDragging ? 'beingDragged' : ''}
       />
       <Diamond isSelected={!!props.selection} />
-      {inlineEditor}
+      {inlineEditorPopover}
       {contextMenu}
     </>
   )
@@ -151,13 +153,13 @@ function useKeyframeContextMenu(
 }
 
 /** The editor that pops up when directly clicking a Keyframe. */
-function useKeyframeInlineEditor(props: IKeyframeDotProps) {
-  const editingTools = useEditingToolsForKeyframe(props)
+function useKeyframeInlineEditorPopover(props: IKeyframeDotProps) {
+  const editingTools = useEditingToolsForKeyframeEditorPopover(props)
   const label = props.leaf.propConf.label ?? last(props.leaf.pathToProp)
 
-  return usePopover({debugName: 'useKeyframeInlineEditor'}, () => (
+  return usePopover({debugName: 'useKeyframeInlineEditorPopover'}, () => (
     <BasicPopover showPopoverEdgeTriangle>
-      <KeyframeDeterminePropEditor
+      <DeterminePropEditorForKeyframe
         propConfig={props.leaf.propConf}
         editingTools={editingTools}
         keyframeValue={props.keyframe.value}
@@ -167,7 +169,7 @@ function useKeyframeInlineEditor(props: IKeyframeDotProps) {
   ))
 }
 
-function useEditingToolsForKeyframe(props: IKeyframeDotProps) {
+function useEditingToolsForKeyframeEditorPopover(props: IKeyframeDotProps) {
   const obj = props.leaf.sheetObject
   return useTempTransactionEditingTools(({stateEditors}, value) => {
     const newKeyframe = {...props.keyframe, value}

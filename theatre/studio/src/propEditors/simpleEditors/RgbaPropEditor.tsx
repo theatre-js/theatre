@@ -11,7 +11,7 @@ import styled from 'styled-components'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
 import {popoverBackgroundColor} from '@theatre/studio/uiComponents/Popover/BasicPopover'
-import type {ISimplePropEditorVFC} from './utils/IPropEditorFC'
+import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
 
 const RowContainer = styled.div`
   display: flex;
@@ -60,10 +60,10 @@ const RgbaPopover = styled.div`
   box-shadow: none;
 `
 
-const RgbaPropEditor: ISimplePropEditorVFC<PropTypeConfig_Rgba> = ({
+function RgbaPropEditor({
   editingTools,
   value,
-}) => {
+}: ISimplePropEditorReactProps<PropTypeConfig_Rgba>) {
   const containerRef = useRef<HTMLDivElement>(null!)
 
   const onChange = useCallback(

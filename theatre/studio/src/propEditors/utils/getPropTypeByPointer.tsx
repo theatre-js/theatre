@@ -5,6 +5,15 @@ import {getPointerParts} from '@theatre/dataverse'
 /**
  * Returns the PropTypeConfig by path. Assumes `path` is a valid prop path and that
  * it exists in obj.
+ *
+ * Example usage:
+ * ```
+ * const propConfig = getPropTypeByPointer(propP, sheetObject)
+ *
+ * if (propConfig.type === 'number') {
+ * //... etc.
+ * }
+ * ```
  */
 
 export function getPropTypeByPointer(

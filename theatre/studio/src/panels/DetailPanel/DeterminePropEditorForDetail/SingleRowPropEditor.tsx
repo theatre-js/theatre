@@ -5,11 +5,11 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {last} from 'lodash-es'
 import React from 'react'
-import type {useEditingToolsForPrimitivePropInDetailsPanel} from '@theatre/studio/panels/DetailPanel/propEditors/utils/useEditingToolsForPrimitivePropInDetailsPanel'
-import {shadeToColor} from '@theatre/studio/panels/DetailPanel/propEditors/utils/useEditingToolsForPrimitivePropInDetailsPanel'
+import type {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
 import styled, {css} from 'styled-components'
 import {transparentize} from 'polished'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 
 export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
 
@@ -37,13 +37,6 @@ export const rowBg = css`
     left: calc(-2px + var(--left-pad) + var(--depth) * var(--step));
     background-color: ${transparentize(0.2, rowBgColor)};
   }
-`
-
-export const propNameText = css`
-  font-weight: 300;
-  font-size: 11px;
-  color: #9a9a9a;
-  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.3);
 `
 
 const Row = styled.div`
@@ -83,7 +76,7 @@ const PropNameContainer = styled.div`
   user-select: none;
   cursor: default;
 
-  ${propNameText};
+  ${propNameTextCSS};
   &:hover {
     color: white;
   }
@@ -111,13 +104,13 @@ const InputContainer = styled.div`
 type ISingleRowPropEditorProps<T> = {
   propConfig: propTypes.PropTypeConfig
   pointerToProp: Pointer<T>
-  stuff: ReturnType<typeof useEditingToolsForPrimitivePropInDetailsPanel>
+  editingTools: ReturnType<typeof useEditingToolsForSimplePropInDetailsPanel>
 }
 
 export function SingleRowPropEditor<T>({
   propConfig,
   pointerToProp,
-  stuff,
+  editingTools,
   children,
 }: React.PropsWithChildren<ISingleRowPropEditorProps<T>>): React.ReactElement<
   any,
@@ -129,16 +122,14 @@ export function SingleRowPropEditor<T>({
     useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useContextMenu(propNameContainer, {
-    menuItems: stuff.contextMenuItems,
+    menuItems: editingTools.contextMenuItems,
   })
-
-  const color = shadeToColor[stuff.shade]
 
   return (
     <Row>
       {contextMenu}
       <Left>
-        <ControlsContainer>{stuff.controlIndicators}</ControlsContainer>
+        <ControlsContainer>{editingTools.controlIndicators}</ControlsContainer>
 
         <PropNameContainer
           ref={propNameContainerRef}

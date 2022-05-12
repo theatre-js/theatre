@@ -50,18 +50,24 @@ const Select = styled.select`
   }
 `
 
-const BasicSelect: React.FC<{
-  value: string
-  onChange: (val: string) => void
-  options: Record<string, string>
+function BasicSelect<TLiteralOptions extends string>({
+  value,
+  onChange,
+  options,
+  className,
+}: {
+  value: TLiteralOptions
+  onChange: (val: TLiteralOptions) => void
+  options: Record<TLiteralOptions, string>
   className?: string
-}> = ({value, onChange, options, className}) => {
+}) {
   const _onChange = useCallback(
     (el: React.ChangeEvent<HTMLSelectElement>) => {
-      onChange(String(el.target.value))
+      onChange(String(el.target.value) as TLiteralOptions)
     },
     [onChange],
   )
+
   return (
     <Container>
       <Select className={className} value={value} onChange={_onChange}>

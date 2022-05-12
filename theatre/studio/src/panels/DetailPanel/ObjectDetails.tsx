@@ -2,7 +2,7 @@ import React, {useMemo} from 'react'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {Pointer} from '@theatre/dataverse'
 import type {$FixMe} from '@theatre/shared/utils/types'
-import {DetailDeterminePropEditor} from './propEditors/DeterminePropEditor'
+import DeterminePropEditorForDetail from './DeterminePropEditorForDetail'
 
 const ObjectDetails: React.FC<{
   /** TODO: add support for multiple objects (it would show their common props) */
@@ -12,7 +12,7 @@ const ObjectDetails: React.FC<{
   const key = useMemo(() => JSON.stringify(obj.address), [obj])
 
   return (
-    <DetailDeterminePropEditor
+    <DeterminePropEditorForDetail
       key={key}
       obj={obj}
       pointerToProp={obj.propsP as Pointer<$FixMe>}

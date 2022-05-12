@@ -14,9 +14,7 @@ type State_Captured = {
 }
 
 type State =
-  | {
-      type: 'Ready'
-    }
+  | {type: 'Ready'}
   | State_Captured
   | {type: 'Committed'}
   | {type: 'Discarded'}
@@ -24,12 +22,20 @@ type State =
 let lastScrubIdAsNumber = 0
 
 /**
- * The scrub API is a simple construct for
+ * The scrub API is a simple construct for changing values in Theatre in a history-compatible way.
+ * Primarily, it can be used to create a series of value changes using a temp transaction without
+ * creating multiple transactions.
+ *
+ * The name is inspired by the activity of "scrubbing" the value of an input through clicking and
+ * dragging left and right. But, the API is not limited to chaning a single prop's value.
+ *
+ * For now, using the {@link IScrubApi.set} will result in changing the values where the
+ * playhead is (the `sequence.position`).
  */
 export interface IScrubApi {
   /**
    * Set the value of a prop by its pointer. If the prop is sequenced, the value
-   * will be a keyframe at the current sequence position.
+   * will be a keyframe at the current playhead position (`sequence.position`).
    *
    * @param pointer - A Pointer, like object.props
    * @param value - The value to override the existing value. This is treated as a deep partial value.

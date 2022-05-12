@@ -3,7 +3,7 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import {usePrism} from '@theatre/react'
 import type {BasicNumberInputNudgeFn} from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
-import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
+import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {useLayoutEffect, useMemo, useRef} from 'react'
 import React from 'react'
 import {val} from '@theatre/dataverse'
@@ -21,7 +21,7 @@ const Container = styled.div`
 `
 
 const Label = styled.div`
-  ${propNameText};
+  ${propNameTextCSS};
   white-space: nowrap;
 `
 
