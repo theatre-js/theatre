@@ -214,6 +214,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     const value = cssCubicBezierArgsFromHandles(newHandles)
     setInputValue(value)
     setEdit(value)
+    inputRef.current?.select()
+    inputRef.current?.focus()
   }
   const onCancelCurveChange = () => {}
 
