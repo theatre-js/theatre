@@ -12,6 +12,7 @@ import type {IconID} from '../icons'
 import icons from '../icons'
 import type {Helper} from '../editableFactoryConfigUtils'
 import {invalidate, useFrame, useThree} from '@react-three/fiber'
+import {useDragDetector} from './DragDetector'
 
 export interface EditableProxyProps {
   editableName: string
@@ -27,6 +28,8 @@ const EditableProxy: VFC<EditableProxyProps> = ({
     (state) => [state.setSnapshotProxyObject, state.editables],
     shallow,
   )
+
+  const dragging = useDragDetector()
 
   const editable = editables[uniqueName]
 
@@ -76,6 +79,11 @@ const EditableProxy: VFC<EditableProxyProps> = ({
       helper.update()
     }
   })
+  useEffect(() => {
+    if (dragging) {
+      setHovered(false)
+    }
+  }, [dragging])
 
   return (
     <>
@@ -94,14 +102,22 @@ const EditableProxy: VFC<EditableProxyProps> = ({
             }
           }
         }}
-        onPointerOver={(e) => {
-          e.stopPropagation()
-          setHovered(true)
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation()
-          setHovered(false)
-        }}
+        onPointerOver={
+          !dragging
+            ? (e) => {
+                e.stopPropagation()
+                setHovered(true)
+              }
+            : undefined
+        }
+        onPointerOut={
+          !dragging
+            ? (e) => {
+                e.stopPropagation()
+                setHovered(false)
+              }
+            : undefined
+        }
       >
         <primitive object={object}>
           {(showOverlayIcons ||
