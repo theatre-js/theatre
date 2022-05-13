@@ -50,6 +50,9 @@ function cloneDeepSerializableAndPrune<T>(v: T): T | undefined {
   }
 }
 
+/**
+ * TODO replace with {@link iteratePropType}
+ */
 function forEachDeepSimplePropOfCompoundProp(
   propType: PropTypeConfig_Compound<$IntentionalAny>,
   path: Array<string | number>,

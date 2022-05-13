@@ -1,10 +1,13 @@
 import get from 'lodash-es/get'
 import last from 'lodash-es/last'
 import React from 'react'
-
 import type {Pointer} from '@theatre/dataverse'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {
+  Keyframe,
+  TrackData,
+} from '@theatre/core/projects/store/types/SheetState_Historic'
+
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import type Scrub from '@theatre/studio/Scrub'
@@ -170,33 +173,10 @@ export function useEditingToolsForSimplePropInDetailsPanel<
                 sequenceTrackId
               ],
             )
-            if (!track || track.keyframes.length === 0) return {}
-
-            const pos = val(obj.sheet.getSequence().positionDerivation)
-
-            const i = track.keyframes.findIndex((kf) => kf.position >= pos)
-
-            if (i === -1)
-              return {
-                prev: last(track.keyframes),
-              }
-
-            const k = track.keyframes[i]!
-            if (k.position === pos) {
-              return {
-                prev: i > 0 ? track.keyframes[i - 1] : undefined,
-                cur: k,
-                next:
-                  i === track.keyframes.length - 1
-                    ? undefined
-                    : track.keyframes[i + 1],
-              }
-            } else {
-              return {
-                next: k,
-                prev: i > 0 ? track.keyframes[i - 1] : undefined,
-              }
-            }
+            const sequencePosition = val(
+              obj.sheet.getSequence().positionDerivation,
+            )
+            return getNearbyKeyframes(track, sequencePosition)
           },
           [sequenceTrackId],
         )
@@ -323,3 +303,32 @@ type Shade =
   | 'Sequenced_OnKeyframe_BeingScrubbed'
   | 'Sequenced_BeingInterpolated'
   | 'Sequened_NotBeingInterpolated'
+
+function getNearbyKeyframes(
+  track: TrackData | undefined,
+  sequencePosition: number,
+): NearbyKeyframes {
+  if (!track || track.keyframes.length === 0) return {}
+
+  const i = track.keyframes.findIndex((kf) => kf.position >= sequencePosition)
+
+  if (i === -1)
+    return {
+      prev: last(track.keyframes),
+    }
+
+  const k = track.keyframes[i]!
+  if (k.position === sequencePosition) {
+    return {
+      prev: i > 0 ? track.keyframes[i - 1] : undefined,
+      cur: k,
+      next:
+        i === track.keyframes.length - 1 ? undefined : track.keyframes[i + 1],
+    }
+  } else {
+    return {
+      next: k,
+      prev: i > 0 ? track.keyframes[i - 1] : undefined,
+    }
+  }
+}

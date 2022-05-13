@@ -1,5 +1,6 @@
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
+import type {$FixMe} from '@theatre/shared/utils/types'
 import {getPointerParts} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import last from 'lodash-es/last'
@@ -8,12 +9,13 @@ import React from 'react'
 import styled from 'styled-components'
 import {indentationFormula} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/SingleRowPropEditor'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
-import DefaultOrStaticValueIndicator from '@theatre/studio/propEditors/DefaultValueIndicator'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import DeterminePropEditorForDetail from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import type {$FixMe} from '@theatre/shared/utils/types'
+
+import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
+import {useEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEditingToolsForCompoundProp'
 
 const Container = styled.div`
   --step: 8px;
@@ -42,7 +44,7 @@ const PropName = styled.div`
   align-items: center;
   user-select: none;
   &:hover {
-    /* color: white; */
+    color: white;
   }
 
   ${() => propNameTextCSS};
@@ -85,18 +87,33 @@ function DetailCompoundPropEditor<
   const [propNameContainerRef, propNameContainer] =
     useRefAndState<HTMLDivElement | null>(null)
 
+  const tools = useEditingToolsForCompoundProp(
+    pointerToProp as $FixMe,
+    obj,
+    propConfig,
+  )
+
+  if (propName === 'position') {
+    console.log(propName, tools)
+  }
+
+  const [contextMenu] = useContextMenu(propNameContainer, {
+    menuItems: tools.contextMenuItems,
+  })
+
   const lastSubPropIsComposite = compositeSubs.length > 0
 
   // previous versions of the DetailCompoundPropEditor had a context menu item for "Reset values".
 
   return (
     <Container>
+      {contextMenu}
       <Header
         // @ts-ignore
         style={{'--depth': visualIndentation - 1}}
       >
         <Padding>
-          <DefaultOrStaticValueIndicator hasStaticOverride={false} />
+          {tools.controlIndicators}
           <PropName ref={propNameContainerRef}>{propName || 'Props'}</PropName>
         </Padding>
       </Header>
