@@ -325,6 +325,7 @@ const BasicNumberInput: React.FC<{
     debugName: 'form/BasicNumberInput',
     onDragStart: callbacks.transitionToDraggingMode,
     lockCSSCursorTo: 'ew-resize',
+    shouldPointerLock: true,
     disabled: stateRef.current.mode === 'editingViaKeyboard',
   })
 

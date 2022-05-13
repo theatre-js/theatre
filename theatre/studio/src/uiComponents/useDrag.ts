@@ -5,6 +5,7 @@ import {useCssCursorLock} from './PointerEventsHandler'
 import type {CapturedPointer} from '@theatre/studio/UIRoot/PointerCapturing'
 import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
 import noop from '@theatre/shared/utils/noop'
+import {isSafari} from './isSafari'
 
 export enum MouseButton {
   Left = 0,
@@ -15,11 +16,19 @@ export enum MouseButton {
 
 /**
  * dx, dy: delta x/y from the start of the drag
+ *
+ * Total movement since the start of the drag. This is commonly used with something like "drag keyframe" or "drag handle",
+ * where you might be dragging an item around in the UI.
+ * @param totalDragDeltaX - x moved total
+ * @param totalDragDeltaY - y moved total
+ *
+ * Movement from the last event / on drag call. This is commonly used with something like "prop nudge".
+ * @param dxFromLastEvent - x moved since last event
+ * @param dyFromLastEvent - y moved since last event
  */
 type OnDragCallback = (
-  // deltaX/Y are counted from the start of the drag
-  deltaX: number,
-  deltaY: number,
+  totalDragDeltaX: number,
+  totalDragDeltaY: number,
   event: MouseEvent,
   dxFromLastEvent: number,
   dyFromLastEvent: number,
@@ -41,6 +50,18 @@ export type UseDragOpts = {
    * Setting it to true will allow the mouse down events to propagate up
    */
   dontBlockMouseDown?: boolean
+  /**
+   * Tells the browser to take control of the mouse pointer so that
+   * the user can drag endlessly in any direction without hitting the
+   * side of their screen.
+   *
+   * Note: that if we detect that the browser is
+   * safari then pointer lock is not used because the pointer lock
+   * banner annoyingly shifts the entire page down.
+   *
+   * ref: https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
+   */
+  shouldPointerLock?: boolean
   /**
    * The css cursor property during the gesture will be locked to this value
    */
@@ -87,6 +108,12 @@ export default function useDrag(
     'dragStartCalled' | 'dragging' | 'notDragging'
   >('notDragging')
 
+  /**
+   * Safari has a gross behavior with locking the pointer changes the height of the webpage
+   * See {@link UseDragOpts.shouldPointerLock} for more context.
+   */
+  const isPointerLockUsed = opts.shouldPointerLock && !isSafari
+
   useCssCursorLock(
     mode === 'dragging' && typeof opts.lockCSSCursorTo === 'string',
     'dragging',
@@ -97,11 +124,17 @@ export default function useDrag(
 
   const stateRef = useRef<{
     dragHappened: boolean
+    // used when `isPointerLockUsed` is false, so we can calculate
+    // dx / dy based on the difference of the moved pointer from the start position of the pointer.
     startPos: {
       x: number
       y: number
     }
-  }>({dragHappened: false, startPos: {x: 0, y: 0}})
+    totalMovement: {
+      x: number
+      y: number
+    }
+  }>({dragHappened: false, startPos: {x: 0, y: 0}, totalMovement: {x: 0, y: 0}})
 
   const callbacksRef = useRef<{
     onDrag: OnDragCallback
@@ -111,36 +144,42 @@ export default function useDrag(
   const capturedPointerRef = useRef<undefined | CapturedPointer>()
   useLayoutEffect(() => {
     if (!target) return
-    let lastDeltas = [0, 0]
-
-    const getDistances = (event: MouseEvent): [number, number] => {
-      const {startPos} = stateRef.current
-      return [event.screenX - startPos.x, event.screenY - startPos.y]
-    }
 
     const dragHandler = (event: MouseEvent) => {
-      if (!stateRef.current.dragHappened) stateRef.current.dragHappened = true
+      if (!stateRef.current.dragHappened) {
+        stateRef.current.dragHappened = true
+        if (isPointerLockUsed) {
+          target.requestPointerLock()
+        }
+      }
       modeRef.current = 'dragging'
 
-      const deltas = getDistances(event)
-      const [deltaFromLastX, deltaFromLastY] = [
-        deltas[0] - lastDeltas[0],
-        deltas[1] - lastDeltas[1],
-      ]
-      lastDeltas = deltas
+      if (didPointerLockCauseMovement(event)) return
+
+      const {totalMovement} = stateRef.current
+      if (isPointerLockUsed) {
+        // when locked, the pointer event screen position is going to be 0s, since the pointer can't move.
+        totalMovement.x += event.movementX
+        totalMovement.y += event.movementY
+      } else {
+        const {startPos} = stateRef.current
+        totalMovement.x = event.screenX - startPos.x
+        totalMovement.y = event.screenY - startPos.y
+      }
 
       callbacksRef.current.onDrag(
-        deltas[0],
-        deltas[1],
+        totalMovement.x,
+        totalMovement.y,
         event,
-        deltaFromLastX,
-        deltaFromLastY,
+        event.movementX,
+        event.movementY,
       )
     }
 
     const dragEndHandler = () => {
       removeDragListeners()
       modeRef.current = 'notDragging'
+      if (opts.shouldPointerLock && !isSafari) document.exitPointerLock()
 
       callbacksRef.current.onDragEnd(stateRef.current.dragHappened)
     }
@@ -186,10 +225,10 @@ export default function useDrag(
       if (returnOfOnDragStart === false) {
         // we should ignore the gesture
         return
-      } else {
-        callbacksRef.current.onDrag = returnOfOnDragStart.onDrag
-        callbacksRef.current.onDragEnd = returnOfOnDragStart.onDragEnd ?? noop
       }
+
+      callbacksRef.current.onDrag = returnOfOnDragStart.onDrag
+      callbacksRef.current.onDragEnd = returnOfOnDragStart.onDragEnd ?? noop
 
       // need to capture pointer after we know the provided handler wants to handle drag start
       capturedPointerRef.current = capturePointer('Drag start')
@@ -202,8 +241,11 @@ export default function useDrag(
       modeRef.current = 'dragStartCalled'
 
       const {screenX, screenY} = event
-      stateRef.current.startPos = {x: screenX, y: screenY}
-      stateRef.current.dragHappened = false
+      stateRef.current = {
+        startPos: {x: screenX, y: screenY},
+        totalMovement: {x: 0, y: 0},
+        dragHappened: false,
+      }
 
       addDragListeners()
     }
@@ -228,4 +270,16 @@ export default function useDrag(
   }, [target])
 
   return [mode === 'dragging']
+}
+
+/**
+ * shouldPointerLock moves the mouse to the center of your screen in firefox, which
+ * can cause it to report very large movementX when the pointer lock begins. This
+ * function hackily detects unnaturally large movements of the mouse.
+ *
+ * @param event - MouseEvent from onDrag
+ * @returns
+ */
+function didPointerLockCauseMovement(event: MouseEvent) {
+  return Math.abs(event.movementX) > 100 || Math.abs(event.movementY) > 100
 }
