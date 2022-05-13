@@ -253,7 +253,7 @@ function useKeyframeDrag(
   const handlers = useFreezableMemo<Parameters<typeof useDrag>[1]>(
     (setFrozen) => ({
       debugName: 'CurveSegmentEditor/useKeyframeDrag',
-      lockCursorTo: 'move',
+      lockCSSCursorTo: 'move',
       onDragStart() {
         setFrozen(true)
         return {

@@ -39,10 +39,10 @@ const CursorOverride = styled.div`
 `
 
 type Context = {
-  getLock: (className: string, cursor: string) => () => void
+  getLock: (className: string, cursor?: string) => () => void
 }
 
-type Lock = {className: string; cursor: string}
+type Lock = {className: string; cursor?: string}
 
 const context = createContext<Context>({} as $IntentionalAny)
 
@@ -51,7 +51,7 @@ const PointerEventsHandler: React.FC<{
 }> = (props) => {
   const [locks, setLocks] = useState<Lock[]>([])
   const contextValue = useMemo<Context>(() => {
-    const getLock = (className: string, cursor: string) => {
+    const getLock = (className: string, cursor?: string) => {
       const lock = {className, cursor}
       setLocks((s) => [...s, lock])
       const unlock = () => {
@@ -104,7 +104,7 @@ export const useCssCursorLock = (
   enabled: boolean,
   className: string,
   /** e.g. `"ew"`, `"help"`, `"pointer"`, `"text"`, etc */
-  cursor: string,
+  cursor?: string,
 ) => {
   const ctx = useContext(context)
   useLayoutEffect(() => {

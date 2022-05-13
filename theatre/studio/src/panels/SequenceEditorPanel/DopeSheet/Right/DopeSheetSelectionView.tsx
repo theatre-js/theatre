@@ -60,7 +60,7 @@ function useCaptureSelection(
       return {
         debugName: 'DopeSheetSelectionView/useCaptureSelection',
         dontBlockMouseDown: true,
-        lockCursorTo: 'cell',
+        lockCSSCursorTo: 'cell',
         onDragStart(event) {
           if (!event.shiftKey || event.target instanceof HTMLInputElement) {
             return false

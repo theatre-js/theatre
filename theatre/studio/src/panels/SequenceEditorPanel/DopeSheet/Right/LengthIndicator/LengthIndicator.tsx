@@ -226,7 +226,7 @@ function useDragBulge(
   const gestureHandlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
     return {
       debugName: 'LengthIndicator/useDragBulge',
-      lockCursorTo: 'ew-resize',
+      lockCSSCursorTo: 'ew-resize',
       onDragStart(event) {
         let tempTransaction: CommitOrDiscard | undefined
 

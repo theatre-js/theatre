@@ -108,7 +108,7 @@ function useDragKeyframe(
   const gestureHandlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
     return {
       debugName: 'GraphEditorDotScalar/useDragKeyframe',
-      lockCursorTo: 'move',
+      lockCSSCursorTo: 'move',
       onDragStart(event) {
         setIsDragging(true)
         const keepSpeeds = !!event.altKey

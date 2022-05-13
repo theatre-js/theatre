@@ -1,5 +1,4 @@
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
 import {useVal} from '@theatre/react'
 import type {IRange} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
@@ -11,6 +10,8 @@ import styled from 'styled-components'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import {includeLockFrameStampAttrs} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import useDrag from '@theatre/studio/uiComponents/useDrag'
 
 const Container = styled.div`
   --threadHeight: 6px;
@@ -174,69 +175,113 @@ const HorizontalScrollbar: React.FC<{
     }
 
     const self = {
-      onDragStart() {
+      onRangeDragStart() {
         noteValuesBeforeDrag()
-      },
-      onDragEnd() {
-        setBeingDragged('nothing')
-      },
-      dragRange: (dx: number) => {
-        setBeingDragged('both')
-        const deltaPosInUnitSpace = deltaXToDeltaPos(dx)
+        return {
+          onDrag(dx: number) {
+            setBeingDragged('both')
+            const deltaPosInUnitSpace = deltaXToDeltaPos(dx)
 
-        const newRange: IRange = mapValues(
-          valuesBeforeDrag.clippedSpaceRange,
-          (p) => p + deltaPosInUnitSpace,
-        )
+            const newRange: IRange = mapValues(
+              valuesBeforeDrag.clippedSpaceRange,
+              (p) => p + deltaPosInUnitSpace,
+            )
 
-        val(layoutP.clippedSpace.setRange)(newRange)
-      },
-
-      dragRangeStart: (dx: number) => {
-        setBeingDragged('start')
-
-        const deltaPosInUnitSpace = deltaXToDeltaPos(dx)
-
-        const newRange: IRange = {
-          start: valuesBeforeDrag.clippedSpaceRange.start + deltaPosInUnitSpace,
-          end: valuesBeforeDrag.clippedSpaceRange.end,
+            val(layoutP.clippedSpace.setRange)(newRange)
+          },
+          onDragEnd() {
+            setBeingDragged('nothing')
+          },
         }
-
-        if (newRange.start > newRange.end - 1) {
-          newRange.start = newRange.end - 1
-        }
-
-        if (newRange.start <= 0) {
-          newRange.start = 0
-        }
-
-        val(layoutP.clippedSpace.setRange)(newRange)
       },
 
-      dragRangeEnd: (dx: number) => {
-        setBeingDragged('end')
+      onRangeStartDragStart() {
+        noteValuesBeforeDrag()
+        return {
+          onDrag(dx: number) {
+            setBeingDragged('start')
 
-        const deltaPosInUnitSpace = deltaXToDeltaPos(dx)
+            const deltaPosInUnitSpace = deltaXToDeltaPos(dx)
 
-        const newRange: IRange = {
-          start: valuesBeforeDrag.clippedSpaceRange.start,
-          end: valuesBeforeDrag.clippedSpaceRange.end + deltaPosInUnitSpace,
+            const newRange: IRange = {
+              start:
+                valuesBeforeDrag.clippedSpaceRange.start + deltaPosInUnitSpace,
+              end: valuesBeforeDrag.clippedSpaceRange.end,
+            }
+
+            if (newRange.start > newRange.end - 1) {
+              newRange.start = newRange.end - 1
+            }
+
+            if (newRange.start <= 0) {
+              newRange.start = 0
+            }
+
+            val(layoutP.clippedSpace.setRange)(newRange)
+          },
+          onDragEnd() {
+            setBeingDragged('nothing')
+          },
         }
+      },
 
-        if (newRange.end < newRange.start + 1) {
-          newRange.end = newRange.start + 1
+      onRangeEndDragStart() {
+        noteValuesBeforeDrag()
+        return {
+          onDrag(dx: number) {
+            setBeingDragged('end')
+
+            const deltaPosInUnitSpace = deltaXToDeltaPos(dx)
+
+            const newRange: IRange = {
+              start: valuesBeforeDrag.clippedSpaceRange.start,
+              end: valuesBeforeDrag.clippedSpaceRange.end + deltaPosInUnitSpace,
+            }
+
+            if (newRange.end < newRange.start + 1) {
+              newRange.end = newRange.start + 1
+            }
+
+            if (newRange.end >= valuesBeforeDrag.assumedLengthOfSequence) {
+              newRange.end = valuesBeforeDrag.assumedLengthOfSequence
+            }
+
+            val(layoutP.clippedSpace.setRange)(newRange)
+          },
+          onDragEnd() {
+            setBeingDragged('nothing')
+          },
         }
-
-        if (newRange.end >= valuesBeforeDrag.assumedLengthOfSequence) {
-          newRange.end = valuesBeforeDrag.assumedLengthOfSequence
-        }
-
-        val(layoutP.clippedSpace.setRange)(newRange)
       },
     }
 
     return self
   }, [layoutP, relevantValuesD])
+
+  const [refRangeDrag, nodeRangeDrag] = useRefAndState<HTMLDivElement | null>(
+    null,
+  )
+  useDrag(nodeRangeDrag, {
+    debugName: 'HorizontalScrollbar/onRangeDrag',
+    onDragStart: handles.onRangeDragStart,
+    lockCSSCursorTo: 'ew-resize',
+  })
+
+  const [refRangeStartDrag, nodeRangeStartDrag] =
+    useRefAndState<HTMLDivElement | null>(null)
+  useDrag(nodeRangeStartDrag, {
+    debugName: 'HorizontalScrollbar/onRangeStartDrag',
+    onDragStart: handles.onRangeStartDragStart,
+    lockCSSCursorTo: 'w-resize',
+  })
+
+  const [refRangeEndDrag, nodeRangeEndDrag] =
+    useRefAndState<HTMLDivElement | null>(null)
+  useDrag(nodeRangeEndDrag, {
+    debugName: 'HorizontalScrollbar/onRangeEndDrag',
+    onDragStart: handles.onRangeEndDragStart,
+    lockCSSCursorTo: 'e-resize',
+  })
 
   return (
     <Container
@@ -244,47 +289,29 @@ const HorizontalScrollbar: React.FC<{
       {...includeLockFrameStampAttrs('hide')}
     >
       <TimeThread>
-        <DraggableArea
-          onDragStart={handles.onDragStart}
-          onDragEnd={handles.onDragEnd}
-          onDrag={handles.dragRange}
-          lockCursorTo="ew-resize"
+        <RangeBar
+          ref={refRangeDrag}
+          style={{
+            width: `${rangeEndX - rangeStartX}px`,
+            transform: `translate3d(${rangeStartX}px, 0, 0)`,
+          }}
+        />
+        <RangeStartHandle
+          ref={refRangeStartDrag}
+          style={{transform: `translate3d(${rangeStartX}px, 0, 0)`}}
         >
-          <RangeBar
-            style={{
-              width: `${rangeEndX - rangeStartX}px`,
-              transform: `translate3d(${rangeStartX}px, 0, 0)`,
-            }}
-          />
-        </DraggableArea>
-        <DraggableArea
-          onDragStart={handles.onDragStart}
-          onDrag={handles.dragRangeStart}
-          lockCursorTo="w-resize"
+          <Tooltip active={beingDragged === 'both' || beingDragged === 'start'}>
+            {unitPosToHumanReadablePos(clippedSpaceRange.start)}
+          </Tooltip>
+        </RangeStartHandle>
+        <RangeEndHandle
+          ref={refRangeEndDrag}
+          style={{transform: `translate3d(${rangeEndX}px, 0, 0)`}}
         >
-          <RangeStartHandle
-            style={{transform: `translate3d(${rangeStartX}px, 0, 0)`}}
-          >
-            <Tooltip
-              active={beingDragged === 'both' || beingDragged === 'start'}
-            >
-              {unitPosToHumanReadablePos(clippedSpaceRange.start)}
-            </Tooltip>
-          </RangeStartHandle>
-        </DraggableArea>
-        <DraggableArea
-          onDragStart={handles.onDragStart}
-          onDrag={handles.dragRangeEnd}
-          lockCursorTo="e-resize"
-        >
-          <RangeEndHandle
-            style={{transform: `translate3d(${rangeEndX}px, 0, 0)`}}
-          >
-            <Tooltip active={beingDragged === 'both' || beingDragged === 'end'}>
-              {unitPosToHumanReadablePos(clippedSpaceRange.end)}
-            </Tooltip>
-          </RangeEndHandle>
-        </DraggableArea>
+          <Tooltip active={beingDragged === 'both' || beingDragged === 'end'}>
+            {unitPosToHumanReadablePos(clippedSpaceRange.end)}
+          </Tooltip>
+        </RangeEndHandle>
       </TimeThread>
     </Container>
   )
