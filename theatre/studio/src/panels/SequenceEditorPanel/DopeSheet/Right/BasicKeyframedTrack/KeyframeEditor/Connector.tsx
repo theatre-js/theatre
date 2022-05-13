@@ -155,7 +155,7 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
   const gestureHandlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
     return {
       debugName: 'useDragKeyframe',
-      lockCursorTo: 'ew-resize',
+      lockCSSCursorTo: 'ew-resize',
       onDragStart(event) {
         const props = propsRef.current
         let tempTransaction: CommitOrDiscard | undefined

@@ -246,7 +246,7 @@ const FocusRangeStrip: React.FC<{
         }
       },
 
-      lockCursorTo: 'grabbing',
+      lockCSSCursorTo: 'grabbing',
     }
   }, [sheet, scaledSpaceToUnitSpace])
 

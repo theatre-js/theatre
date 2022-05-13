@@ -125,7 +125,7 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
   const handlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
     return {
       debugName: 'CurveHandler/useOurDrags',
-      lockCursorTo: 'move',
+      lockCSSCursorTo: 'move',
       onDragStart() {
         let tempTransaction: CommitOrDiscard | undefined
 

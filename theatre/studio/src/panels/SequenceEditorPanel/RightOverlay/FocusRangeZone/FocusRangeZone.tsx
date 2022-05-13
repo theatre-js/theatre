@@ -169,7 +169,7 @@ function usePanelDragZoneGestureHandlers(
           }
         },
 
-        lockCursorTo: 'ew-resize',
+        lockCSSCursorTo: 'ew-resize',
       }
     }
 
@@ -214,7 +214,7 @@ function usePanelDragZoneGestureHandlers(
             },
           }
         },
-        lockCursorTo: 'move',
+        lockCSSCursorTo: 'move',
       }
     }
 

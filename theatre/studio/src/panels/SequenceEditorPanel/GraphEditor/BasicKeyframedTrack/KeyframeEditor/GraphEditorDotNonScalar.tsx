@@ -107,7 +107,7 @@ function useDragKeyframe(
   const gestureHandlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
     return {
       debugName: 'GraphEditorDotNonScalar/useDragKeyframe',
-      lockCursorTo: 'ew-resize',
+      lockCSSCursorTo: 'ew-resize',
       onDragStart(event) {
         setIsDragging(true)
         const propsAtStartOfDrag = propsRef.current

@@ -44,7 +44,7 @@ export type UseDragOpts = {
   /**
    * The css cursor property during the gesture will be locked to this value
    */
-  lockCursorTo?: string
+  lockCSSCursorTo?: string
   /**
    * Called at the start of the gesture. Mind you, that this would be called, even
    * if the user is just clicking (and not dragging). However, if the gesture turns
@@ -88,9 +88,9 @@ export default function useDrag(
   >('notDragging')
 
   useCssCursorLock(
-    mode === 'dragging' && typeof opts.lockCursorTo === 'string',
+    mode === 'dragging' && typeof opts.lockCSSCursorTo === 'string',
     'dragging',
-    opts.lockCursorTo!,
+    opts.lockCSSCursorTo,
   )
 
   const {capturePointer} = usePointerCapturing(`useDrag for ${opts.debugName}`)

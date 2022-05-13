@@ -265,7 +265,7 @@ function useHandlePanAndZoom(
 
         debugName: 'HorizontallyScrollableArea Middle Button Drag',
         buttons: [1],
-        lockCursorTo: 'grabbing',
+        lockCSSCursorTo: 'grabbing',
       }
     }, [layoutP]),
   )
