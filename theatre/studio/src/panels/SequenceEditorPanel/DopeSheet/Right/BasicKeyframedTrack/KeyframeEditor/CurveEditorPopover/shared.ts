@@ -20,6 +20,8 @@ export type CubicBezierHandles = [
 export type CSSCubicBezierArgsString = string
 
 const CSS_BEZIER_ARGS_DECIMAL_POINTS = 3 // Doesn't have to be 3, but it matches our preset data
+
+/** Returns e.g. `"0, 0, 1, 1"`. See {@link CSSCubicBezierArgsString} docs for more context. */
 export function cssCubicBezierArgsFromHandles(
   points: CubicBezierHandles,
 ): CSSCubicBezierArgsString {
