@@ -1,10 +1,11 @@
 import {editable as e, RefreshSnapshot, SheetProvider} from '@theatre/r3f'
-import { Stars} from '@react-three/drei'
+import {Stars} from '@react-three/drei'
 import {getProject} from '@theatre/core'
-import React, {Suspense, useState} from 'react'
+import React, {Suspense, useMemo, useState} from 'react'
 import {Canvas} from '@react-three/fiber'
 import {useGLTF, PerspectiveCamera} from '@react-three/drei'
 import sceneGLB from './scene.glb'
+import {Color} from 'three'
 
 document.body.style.backgroundColor = '#171717'
 
@@ -55,7 +56,13 @@ function App() {
     >
       <Canvas dpr={[1.5, 2]} linear shadows frameloop="demand">
         <SheetProvider getSheet={() => getProject('Space').sheet('Scene')}>
-          <fog attach="fog" args={[bg, 16, 30]} />
+          <e.fog
+            attach="fog"
+            color={useMemo(() => new Color(bg), [bg])}
+            near={16}
+            far={30}
+            uniqueName="Fog"
+          />
           <color attach="background" args={[bg]} />
           <ambientLight intensity={0.75} />
           <EditableCamera

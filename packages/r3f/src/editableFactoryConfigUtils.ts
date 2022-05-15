@@ -2,6 +2,7 @@ import type {UnknownShorthandCompoundProps} from '@theatre/core'
 import {types} from '@theatre/core'
 import type {Object3D} from 'three'
 import type {IconID} from './icons'
+import {Color} from 'three'
 
 export type Helper = Object3D & {
   update?: () => void
@@ -17,7 +18,7 @@ type Meta<T> = {
   updateObject?: (object: T) => void
   icon: IconID
   dimensionless?: boolean
-  createHelper: (object: T) => Helper
+  createHelper?: (object: T) => Helper
 }
 export type ObjectConfig<T> = {props: Props} & Meta<T>
 export type EditableFactoryConfig = Partial<
@@ -79,13 +80,35 @@ export const createNumberPropConfig = (
   {nudgeMultiplier = 0.01} = {},
 ): PropConfig<number> => ({
   parse: (props) => {
-    return props[key] ?? defaultValue ?? 0
+    return props[key] ?? defaultValue
   },
   apply: (value, object) => {
     object[key] = value
   },
   type: {
     [key]: types.number(defaultValue, {nudgeMultiplier}),
+  },
+})
+
+export type Rgba = {
+  r: number
+  g: number
+  b: number
+  a: number
+}
+
+export const createColorPropConfig = (
+  key: string,
+  defaultValue = new Color(0, 0, 0),
+): PropConfig<Rgba> => ({
+  parse: (props) => {
+    return {...(props[key] ?? defaultValue), a: 1}
+  },
+  apply: (value, object) => {
+    object[key].setRGB(value.r, value.g, value.b)
+  },
+  type: {
+    [key]: types.rgba({...defaultValue, a: 1}),
   },
 })
 
