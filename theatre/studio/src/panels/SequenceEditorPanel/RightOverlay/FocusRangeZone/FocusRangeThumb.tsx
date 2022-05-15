@@ -186,30 +186,28 @@ const FocusRangeThumb: React.FC<{
             const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {
               ignore: hitZoneNode,
             })
-            if (snapPos != null) {
+
+            if (snapPos == null) {
+              const deltaPos = scaledSpaceToUnitSpace(dx)
+              const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
+              newPosition = oldPosPlusDeltaPos
+            } else {
               newPosition = snapPos
             }
 
             range = existingRangeD.getValue()?.range || defaultRange
-            const deltaPos = scaledSpaceToUnitSpace(dx)
-            const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
+
             // Make sure that the focus range has a minimal width
             if (thumbType === 'start') {
               // Prevent the start thumb from going below 0
               newPosition = Math.max(
-                Math.min(
-                  oldPosPlusDeltaPos,
-                  range['end'] - minFocusRangeStripWidth,
-                ),
+                Math.min(newPosition, range['end'] - minFocusRangeStripWidth),
                 0,
               )
             } else {
               // Prevent the start thumb from going over the length of the sequence
               newPosition = Math.min(
-                Math.max(
-                  oldPosPlusDeltaPos,
-                  range['start'] + minFocusRangeStripWidth,
-                ),
+                Math.max(newPosition, range['start'] + minFocusRangeStripWidth),
                 sheet.getSequence().length,
               )
             }
