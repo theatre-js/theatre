@@ -2,6 +2,7 @@ import type {UnknownShorthandCompoundProps} from '@theatre/core'
 import {types} from '@theatre/core'
 import type {Object3D} from 'three'
 import type {IconID} from './icons'
+import {Color} from 'three'
 
 export type Helper = Object3D & {
   update?: () => void
@@ -86,6 +87,28 @@ export const createNumberPropConfig = (
   },
   type: {
     [key]: types.number(defaultValue, {nudgeMultiplier}),
+  },
+})
+
+export type Rgba = {
+  r: number
+  g: number
+  b: number
+  a: number
+}
+
+export const createColorPropConfig = (
+  key: string,
+  defaultValue = new Color(0, 0, 0),
+): PropConfig<Rgba> => ({
+  parse: (props) => {
+    return {...(props[key] ?? defaultValue), a: 1}
+  },
+  apply: (value, object) => {
+    object[key].setRGB(value.r, value.g, value.b)
+  },
+  type: {
+    [key]: types.rgba({...defaultValue, a: 1}),
   },
 })
 
