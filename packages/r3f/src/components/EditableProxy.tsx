@@ -59,11 +59,15 @@ const EditableProxy: VFC<EditableProxyProps> = ({
 
   // Helpers
   const scene = useThree((state) => state.scene)
-  const helper = useMemo<Helper>(
-    () => editable.objectConfig.createHelper(object),
+  const helper = useMemo<Helper | undefined>(
+    () => editable.objectConfig.createHelper?.(object),
     [object],
   )
   useEffect(() => {
+    if (helper == undefined) {
+      return
+    }
+
     if (selected === uniqueName || hovered) {
       scene.add(helper)
       invalidate()
@@ -75,6 +79,10 @@ const EditableProxy: VFC<EditableProxyProps> = ({
     }
   }, [selected, hovered, helper, scene])
   useFrame(() => {
+    if (helper == undefined) {
+      return
+    }
+
     if (helper.update) {
       helper.update()
     }
