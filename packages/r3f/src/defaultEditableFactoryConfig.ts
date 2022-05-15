@@ -1,6 +1,5 @@
 import type {EditableFactoryConfig} from './editableFactoryConfigUtils'
 import {
-  createColorPropConfig,
   createNumberPropConfig,
   createVector,
   createVectorPropConfig,
@@ -101,15 +100,6 @@ const defaultEditableFactoryConfig = {
   line: baseObjectConfig,
   lineLoop: baseObjectConfig,
   lineSegments: baseObjectConfig,
-  fog: {
-    props: {
-      color: createColorPropConfig('color'),
-      near: createNumberPropConfig('near', 1, {nudgeMultiplier: 0.1}),
-      far: createNumberPropConfig('far', 1000, {nudgeMultiplier: 0.1}),
-    },
-    useTransformControls: false,
-    icon: 'cloud' as const,
-  },
 }
 
 // Assert that the config is indeed of EditableFactoryConfig without actually

@@ -17,7 +17,7 @@ type Meta<T> = {
   updateObject?: (object: T) => void
   icon: IconID
   dimensionless?: boolean
-  createHelper?: (object: T) => Helper
+  createHelper: (object: T) => Helper
 }
 export type ObjectConfig<T> = {props: Props} & Meta<T>
 export type EditableFactoryConfig = Partial<
@@ -79,7 +79,7 @@ export const createNumberPropConfig = (
   {nudgeMultiplier = 0.01} = {},
 ): PropConfig<number> => ({
   parse: (props) => {
-    return props[key] ?? defaultValue
+    return props[key] ?? defaultValue ?? 0
   },
   apply: (value, object) => {
     object[key] = value
