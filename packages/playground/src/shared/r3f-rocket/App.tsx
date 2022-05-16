@@ -1,11 +1,10 @@
 import {editable as e, RefreshSnapshot, SheetProvider} from '@theatre/r3f'
 import {Stars} from '@react-three/drei'
 import {getProject} from '@theatre/core'
-import React, {Suspense, useMemo, useState} from 'react'
+import React, {Suspense, useState} from 'react'
 import {Canvas} from '@react-three/fiber'
 import {useGLTF, PerspectiveCamera} from '@react-three/drei'
 import sceneGLB from './scene.glb'
-import {Color} from 'three'
 
 document.body.style.backgroundColor = '#171717'
 
