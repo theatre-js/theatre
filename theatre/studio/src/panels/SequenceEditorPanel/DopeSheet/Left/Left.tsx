@@ -18,7 +18,7 @@ const ListContainer = styled.ul`
   list-style: none;
 `
 
-const Left: React.FC<{
+const Left: React.VFC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
   return usePrism(() => {
