@@ -5,10 +5,11 @@ import BaseItem from '@theatre/studio/panels/OutlinePanel/BaseItem'
 import {usePrism} from '@theatre/react'
 import {getOutlineSelection} from '@theatre/studio/selectors'
 
-export const ObjectItem: React.FC<{
+export const ObjectItem: React.VFC<{
   sheetObject: SheetObject
   depth: number
-}> = ({sheetObject, depth}) => {
+  overrideLabel?: string
+}> = ({sheetObject, depth, overrideLabel}) => {
   const select = () => {
     getStudio()!.transaction(({stateEditors}) => {
       stateEditors.studio.historic.panels.outline.selection.set([sheetObject])
@@ -20,7 +21,7 @@ export const ObjectItem: React.FC<{
   return (
     <BaseItem
       select={select}
-      label={sheetObject.address.objectKey}
+      label={overrideLabel ?? sheetObject.address.objectKey}
       depth={depth}
       selectionStatus={
         selection.includes(sheetObject) ? 'selected' : 'not-selected'
