@@ -1,6 +1,8 @@
 import type {SequenceEditorTree_Row} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import React from 'react'
 import styled from 'styled-components'
+import type {ICollapsableItem} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/useSequenceEditorCollapsable'
+import {useVal} from '@theatre/react'
 
 const Container = styled.li<{}>`
   margin: 0;
@@ -35,11 +37,13 @@ const Children = styled.ul`
   list-style: none;
 `
 
-const Row: React.FC<{
+const RightRow: React.FC<{
   leaf: SequenceEditorTree_Row<unknown>
   node: React.ReactElement
-}> = ({leaf, children, node}) => {
+  collapsable?: ICollapsableItem
+}> = ({leaf, children, node, collapsable}) => {
   const hasChildren = Array.isArray(children) && children.length > 0
+  const isCollapsed = useVal(collapsable?.isCollapsed) ?? false
 
   return (
     <Container>
@@ -49,9 +53,9 @@ const Row: React.FC<{
       >
         {node}
       </NodeWrapper>
-      {hasChildren && <Children>{children}</Children>}
+      {hasChildren && !isCollapsed && <Children>{children}</Children>}
     </Container>
   )
 }
 
-export default Row
+export default RightRow

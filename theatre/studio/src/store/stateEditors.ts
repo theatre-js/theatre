@@ -13,6 +13,7 @@ import type {
 } from '@theatre/shared/utils/addresses'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
 import type {
+  StudioSheetItemKey,
   KeyframeId,
   SequenceMarkerId,
   SequenceTrackId,
@@ -480,6 +481,35 @@ namespace stateEditors {
                   stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
                     p,
                   ).clippedSpaceRange = {...p.range}
+                }
+              }
+
+              export namespace sequenceEditorCollapsableItems {
+                function _ensure(p: WithoutSheetInstance<SheetAddress>) {
+                  const seq =
+                    stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
+                      p,
+                    )
+                  let existing = seq.sequenceEditorCollapsableItems
+                  if (!existing) {
+                    existing = seq.sequenceEditorCollapsableItems =
+                      pointableSetUtil.create()
+                  }
+                  return existing
+                }
+                export function set(
+                  p: WithoutSheetInstance<SheetAddress> & {
+                    studioSheetItemKey: StudioSheetItemKey
+                    isCollapsed: boolean
+                  },
+                ) {
+                  const collapsableSet = _ensure(p)
+                  Object.assign(
+                    collapsableSet,
+                    pointableSetUtil.add(collapsableSet, p.studioSheetItemKey, {
+                      isCollapsed: p.isCollapsed,
+                    }),
+                  )
                 }
               }
             }

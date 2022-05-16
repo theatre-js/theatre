@@ -6,7 +6,7 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
 import KeyframedTrack from './BasicKeyframedTrack/BasicKeyframedTrack'
-import Row from './Row'
+import RightRow from './Row'
 
 const PrimitivePropRow: React.FC<{
   leaf: SequenceEditorTree_PrimitiveProp
@@ -27,13 +27,13 @@ const PrimitivePropRow: React.FC<{
       console.error(
         `trackData type ${trackData?.type} is not yet supported on the sequence editor`,
       )
-      return <Row leaf={leaf} node={<div />}></Row>
+      return <RightRow leaf={leaf} node={<div />}></RightRow>
     } else {
       const node = (
         <KeyframedTrack layoutP={layoutP} trackData={trackData} leaf={leaf} />
       )
 
-      return <Row leaf={leaf} node={node}></Row>
+      return <RightRow leaf={leaf} node={node}></RightRow>
     }
   }, [leaf, layoutP])
 }
