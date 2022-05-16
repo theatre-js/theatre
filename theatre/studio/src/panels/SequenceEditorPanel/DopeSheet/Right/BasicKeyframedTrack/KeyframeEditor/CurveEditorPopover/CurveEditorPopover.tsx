@@ -100,10 +100,23 @@ const NoResultsFoundContainer = styled.div`
   padding: 6px;
   color: #888888;
 `
-
+/**
+ * Tracking for what kinds of events are allowed to change the input's value.
+ */
 enum TextInputMode {
+  /**
+   * Initial mode, don't try to override the value.
+   */
   init,
+  /**
+   * In `user` mode, the text input field does not update when the curve
+   * changes so that the user's search is preserved.
+   */
   user,
+  /**
+   * In `auto` mode, the text input field is continually updated to
+   * a CSS cubic bezier args string to reflect the state of the curve.
+   */
   auto,
 }
 
@@ -181,10 +194,6 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     }
   }
 
-  // In auto mode, the text input field is continually updated to
-  // a CSS cubic bezier args string to reflect the state of the curve;
-  // in user mode, the text input field does not update when the curve
-  // changes so that the user's search is preserved.
   const [textInputMode, setTextInputMode] = useState<TextInputMode>(
     TextInputMode.init,
   )
@@ -214,6 +223,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     const value = cssCubicBezierArgsFromHandles(newHandles)
     setInputValue(value)
     setEdit(value)
+
+    // ensure that the text input is selected when curve is changing.
     inputRef.current?.select()
     inputRef.current?.focus()
   }
@@ -233,6 +244,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
       return EASING_PRESETS
     }
   }, [inputValue])
+
   // Use the first preset in the search when the displayed presets change
   useEffect(() => {
     if (textInputMode === TextInputMode.user && displayedPresets[0])
