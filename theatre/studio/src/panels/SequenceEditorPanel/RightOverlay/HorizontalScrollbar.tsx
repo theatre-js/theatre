@@ -10,7 +10,6 @@ import styled from 'styled-components'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import {includeLockFrameStampAttrs} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 
 const Container = styled.div`
@@ -258,26 +257,26 @@ const HorizontalScrollbar: React.FC<{
     return self
   }, [layoutP, relevantValuesD])
 
-  const [refRangeDrag, nodeRangeDrag] = useRefAndState<HTMLDivElement | null>(
+  const [rangeDragNode, setRangeDragNode] = useState<HTMLDivElement | null>(
     null,
   )
-  useDrag(nodeRangeDrag, {
+  useDrag(rangeDragNode, {
     debugName: 'HorizontalScrollbar/onRangeDrag',
     onDragStart: handles.onRangeDragStart,
     lockCSSCursorTo: 'ew-resize',
   })
 
-  const [refRangeStartDrag, nodeRangeStartDrag] =
-    useRefAndState<HTMLDivElement | null>(null)
-  useDrag(nodeRangeStartDrag, {
+  const [rangeStartDragNode, setRangeStartDragNode] =
+    useState<HTMLDivElement | null>(null)
+  useDrag(rangeStartDragNode, {
     debugName: 'HorizontalScrollbar/onRangeStartDrag',
     onDragStart: handles.onRangeStartDragStart,
     lockCSSCursorTo: 'w-resize',
   })
 
-  const [refRangeEndDrag, nodeRangeEndDrag] =
-    useRefAndState<HTMLDivElement | null>(null)
-  useDrag(nodeRangeEndDrag, {
+  const [rangeEndDragNode, setRangeEndDragNode] =
+    useState<HTMLDivElement | null>(null)
+  useDrag(rangeEndDragNode, {
     debugName: 'HorizontalScrollbar/onRangeEndDrag',
     onDragStart: handles.onRangeEndDragStart,
     lockCSSCursorTo: 'e-resize',
@@ -290,14 +289,14 @@ const HorizontalScrollbar: React.FC<{
     >
       <TimeThread>
         <RangeBar
-          ref={refRangeDrag}
+          ref={setRangeDragNode}
           style={{
             width: `${rangeEndX - rangeStartX}px`,
             transform: `translate3d(${rangeStartX}px, 0, 0)`,
           }}
         />
         <RangeStartHandle
-          ref={refRangeStartDrag}
+          ref={setRangeStartDragNode}
           style={{transform: `translate3d(${rangeStartX}px, 0, 0)`}}
         >
           <Tooltip active={beingDragged === 'both' || beingDragged === 'start'}>
@@ -305,7 +304,7 @@ const HorizontalScrollbar: React.FC<{
           </Tooltip>
         </RangeStartHandle>
         <RangeEndHandle
-          ref={refRangeEndDrag}
+          ref={setRangeEndDragNode}
           style={{transform: `translate3d(${rangeEndX}px, 0, 0)`}}
         >
           <Tooltip active={beingDragged === 'both' || beingDragged === 'end'}>

@@ -1,5 +1,6 @@
 import {clamp, isInteger, round} from 'lodash-es'
 import type {MutableRefObject} from 'react'
+import {useState} from 'react'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import mergeRefs from 'react-merge-refs'
@@ -320,8 +321,8 @@ const BasicNumberInput: React.FC<{
     />
   ) : null
 
-  const [refDrag, nodeDrag] = useRefAndState<HTMLDivElement | null>(null)
-  useDrag(nodeDrag, {
+  const [dragNode, setDragNode] = useState<HTMLDivElement | null>(null)
+  useDrag(dragNode, {
     debugName: 'form/BasicNumberInput',
     onDragStart: callbacks.transitionToDraggingMode,
     lockCSSCursorTo: 'ew-resize',
@@ -331,7 +332,7 @@ const BasicNumberInput: React.FC<{
 
   return (
     <Container className={propsA.className + ' ' + stateRef.current.mode}>
-      <DragWrap ref={refDrag}>{theInput}</DragWrap>
+      <DragWrap ref={setDragNode}>{theInput}</DragWrap>
       {fillIndicator}
     </Container>
   )
