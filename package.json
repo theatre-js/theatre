@@ -15,7 +15,7 @@
     "build": "zx scripts/build.mjs",
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
-    "test:build_test": "yarn yalc:publish && yalc:install && yarn yalc:link && yarn yalc:build",
+    "test:build_test": "yarn yalc:publish && yarn yalc:install && yarn yalc:link && yarn yalc:build",
     "yalc:publish": "zx scripts/publish-to-yalc.mjs",
     "yalc:install": "zx scripts/build-tests/install-dependencies.mjs",
     "yalc:link": "zx scripts/build-tests/link-theatre-packages.mjs",
