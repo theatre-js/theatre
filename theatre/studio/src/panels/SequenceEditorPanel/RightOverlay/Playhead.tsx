@@ -223,8 +223,11 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
               // unsnapped
               clamp(posBeforeSeek + deltaPos, 0, sequence.length)
           },
-          onDragEnd() {
+          onDragEnd(dragHappened) {
             setIsSeeking(false)
+          },
+          onClick(e) {
+            openPopover(e, thumbRef.current!)
           },
         }
       },
@@ -276,9 +279,6 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
           <Thumb
             ref={thumbRef as $IntentionalAny}
             {...DopeSnap.includePositionSnapAttrs(posInUnitSpace)}
-            onClick={(e) => {
-              openPopover(e, thumbNode!)
-            }}
           >
             <RoomToClick room={8} />
             <Squinch />
