@@ -9,7 +9,7 @@ import {useTooltipOpenState} from './TooltipContext'
 import {PortalContext} from 'reakit'
 import noop from '@theatre/shared/utils/noop'
 
-export default function useTooltip(
+export default function useTooltip<T extends HTMLElement>(
   opts: {
     enabled?: boolean
     enterDelay?: number
@@ -20,15 +20,13 @@ export default function useTooltip(
   render: () => React.ReactElement,
 ): [
   node: React.ReactNode,
-  targetRef: MutableRefObject<HTMLElement | SVGElement | null>,
+  targetRef: MutableRefObject<T | null>,
   isOpen: boolean,
 ] {
   const enabled = opts.enabled !== false
   const [isOpen, setIsOpen] = useTooltipOpenState()
 
-  const [targetRef, targetNode] = useRefAndState<
-    HTMLElement | SVGElement | null
-  >(null)
+  const [targetRef, targetNode] = useRefAndState<T | null>(null)
 
   useEffect(() => {
     if (!enabled) {
