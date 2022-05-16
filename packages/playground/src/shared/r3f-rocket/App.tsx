@@ -1,5 +1,5 @@
 import {editable as e, RefreshSnapshot, SheetProvider} from '@theatre/r3f'
-import { Stars} from '@react-three/drei'
+import {Stars} from '@react-three/drei'
 import {getProject} from '@theatre/core'
 import React, {Suspense, useState} from 'react'
 import {Canvas} from '@react-three/fiber'
@@ -54,7 +54,7 @@ function App() {
       }}
     >
       <Canvas dpr={[1.5, 2]} linear shadows frameloop="demand">
-        <SheetProvider getSheet={() => getProject('Space').sheet('Scene')}>
+        <SheetProvider sheet={getProject('Space').sheet('Scene')}>
           <fog attach="fog" args={[bg, 16, 30]} />
           <color attach="background" args={[bg]} />
           <ambientLight intensity={0.75} />

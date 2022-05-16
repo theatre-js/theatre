@@ -92,7 +92,7 @@ function App() {
         shadowMap
       >
         <SheetProvider
-          getSheet={() => getProject('Playground - R3F').sheet('R3F-Canvas')}
+          sheet={getProject('Playground - R3F').sheet('R3F-Canvas')}
         >
           {/* @ts-ignore */}
           <e.perspectiveCamera makeDefault uniqueName="Camera" />
