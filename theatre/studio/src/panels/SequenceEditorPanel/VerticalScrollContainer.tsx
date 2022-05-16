@@ -20,19 +20,29 @@ const Container = styled.div`
   scrollbar-width: none;
 `
 
-type ReceiveVerticalWheelEventFn = (ev: WheelEvent) => void
+type ReceiveVerticalWheelEventFn = (ev: Pick<WheelEvent, 'deltaY'>) => void
 
 const ctx = createContext<ReceiveVerticalWheelEventFn>(voidFn)
+
+/**
+ * See {@link VerticalScrollContainer} and references for how to use this.
+ */
 export const useReceiveVerticalWheelEvent = (): ReceiveVerticalWheelEventFn =>
   useContext(ctx)
 
+/**
+ * This is used in the sequence editor where we block wheel events to handle
+ * pan/zoom on the time axis. The issue this solves, is that when blocking those
+ * wheel events, we prevent the vertical scroll events from being fired. This container
+ * comes with a context and a hook (see {@link useReceiveVerticalWheelEvent}) that allows
+ * the code that traps the wheel events to pass them to the vertical scroller root, which
+ * we then use to manually dispatch scroll events.
+ */
 const VerticalScrollContainer: React.FC<{}> = (props) => {
   const ref = useRef<HTMLDivElement | null>(null)
   const receiveVerticalWheelEvent = useCallback<ReceiveVerticalWheelEventFn>(
-    (event: WheelEvent) => {
-      // const ev = new WheelEvent('wheel', {deltaY: event.deltaY})
-      // ref.current!.scrollBy(0, event.deltaY)
-      // ref.current!.dispatchEvent(ev)
+    (event) => {
+      ref.current!.scrollBy(0, event.deltaY)
     },
     [],
   )

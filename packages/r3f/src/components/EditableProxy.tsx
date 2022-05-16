@@ -12,6 +12,7 @@ import type {IconID} from '../icons'
 import icons from '../icons'
 import type {Helper} from '../editableFactoryConfigUtils'
 import {invalidate, useFrame, useThree} from '@react-three/fiber'
+import {useDragDetector} from './DragDetector'
 
 export interface EditableProxyProps {
   editableName: string
@@ -27,6 +28,8 @@ const EditableProxy: VFC<EditableProxyProps> = ({
     (state) => [state.setSnapshotProxyObject, state.editables],
     shallow,
   )
+
+  const dragging = useDragDetector()
 
   const editable = editables[uniqueName]
 
@@ -56,11 +59,15 @@ const EditableProxy: VFC<EditableProxyProps> = ({
 
   // Helpers
   const scene = useThree((state) => state.scene)
-  const helper = useMemo<Helper>(
-    () => editable.objectConfig.createHelper(object),
+  const helper = useMemo<Helper | undefined>(
+    () => editable.objectConfig.createHelper?.(object),
     [object],
   )
   useEffect(() => {
+    if (helper == undefined) {
+      return
+    }
+
     if (selected === uniqueName || hovered) {
       scene.add(helper)
       invalidate()
@@ -72,10 +79,19 @@ const EditableProxy: VFC<EditableProxyProps> = ({
     }
   }, [selected, hovered, helper, scene])
   useFrame(() => {
+    if (helper == undefined) {
+      return
+    }
+
     if (helper.update) {
       helper.update()
     }
   })
+  useEffect(() => {
+    if (dragging) {
+      setHovered(false)
+    }
+  }, [dragging])
 
   // subscribe to external changes
   useEffect(() => {
@@ -118,14 +134,22 @@ const EditableProxy: VFC<EditableProxyProps> = ({
             }
           }
         }}
-        onPointerOver={(e) => {
-          e.stopPropagation()
-          setHovered(true)
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation()
-          setHovered(false)
-        }}
+        onPointerOver={
+          !dragging
+            ? (e) => {
+                e.stopPropagation()
+                setHovered(true)
+              }
+            : undefined
+        }
+        onPointerOut={
+          !dragging
+            ? (e) => {
+                e.stopPropagation()
+                setHovered(false)
+              }
+            : undefined
+        }
       >
         <primitive object={object}>
           {(showOverlayIcons ||

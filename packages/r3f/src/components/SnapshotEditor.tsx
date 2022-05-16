@@ -15,6 +15,7 @@ import useSnapshotEditorCamera from './useSnapshotEditorCamera'
 import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
+import {DragDetectorProvider} from './DragDetector'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -54,7 +55,7 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
   const grid = useMemo(() => new InfiniteGridHelper(), [])
 
   return (
-    <>
+    <DragDetectorProvider>
       {showGrid && <primitive object={grid} />}
       {showAxes && <axesHelper args={[500]} />}
       {editorCamera}
@@ -62,7 +63,7 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
       <primitive object={helpersRoot}></primitive>
       <ProxyManager orbitControlsRef={orbitControlsRef} />
       <color attach="background" args={[0.24, 0.24, 0.24]} />
-    </>
+    </DragDetectorProvider>
   )
 }
 

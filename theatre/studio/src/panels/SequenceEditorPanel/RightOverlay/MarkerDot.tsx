@@ -247,46 +247,44 @@ function useDragMarker(
   propsRef.current = props
 
   const useDragOpts = useMemo<UseDragOpts>(() => {
-    let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
-    let tempTransaction: CommitOrDiscard | undefined
-    let markerAtStartOfDrag: StudioHistoricStateSequenceEditorMarker
-
     return {
       debugName: `MarkerDot/useDragMarker (${props.marker.id})`,
-
       onDragStart(_event) {
-        markerAtStartOfDrag = propsRef.current.marker
-        toUnitSpace = val(props.layoutP.scaledSpace.toUnitSpace)
-      },
-      onDrag(dx, _dy, event) {
-        const original = markerAtStartOfDrag
-        const newPosition = Math.max(
-          // check if our event hoversover a [data-pos] element
-          DopeSnap.checkIfMouseEventSnapToPos(event, {
-            ignore: node,
-          }) ??
-            // if we don't find snapping target, check the distance dragged + original position
-            original.position + toUnitSpace(dx),
-          // sanitize to minimum of zero
-          0,
-        )
+        const markerAtStartOfDrag = propsRef.current.marker
+        const toUnitSpace = val(props.layoutP.scaledSpace.toUnitSpace)
+        let tempTransaction: CommitOrDiscard | undefined
 
-        tempTransaction?.discard()
-        tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.replaceMarkers(
-            {
-              sheetAddress: val(props.layoutP.sheet.address),
-              markers: [{...original, position: newPosition}],
-              snappingFunction: val(props.layoutP.sheet).getSequence()
-                .closestGridPosition,
-            },
-          )
-        })
-      },
-      onDragEnd(dragHappened) {
-        if (dragHappened) tempTransaction?.commit()
-        else tempTransaction?.discard()
-        tempTransaction = undefined
+        return {
+          onDrag(dx, _dy, event) {
+            const original = markerAtStartOfDrag
+            const newPosition = Math.max(
+              // check if our event hoversover a [data-pos] element
+              DopeSnap.checkIfMouseEventSnapToPos(event, {
+                ignore: node,
+              }) ??
+                // if we don't find snapping target, check the distance dragged + original position
+                original.position + toUnitSpace(dx),
+              // sanitize to minimum of zero
+              0,
+            )
+
+            tempTransaction?.discard()
+            tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+              stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.replaceMarkers(
+                {
+                  sheetAddress: val(props.layoutP.sheet.address),
+                  markers: [{...original, position: newPosition}],
+                  snappingFunction: val(props.layoutP.sheet).getSequence()
+                    .closestGridPosition,
+                },
+              )
+            })
+          },
+          onDragEnd(dragHappened) {
+            if (dragHappened) tempTransaction?.commit()
+            else tempTransaction?.discard()
+          },
+        }
       },
     }
   }, [])

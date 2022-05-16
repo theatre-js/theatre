@@ -1,7 +1,3 @@
-import type {
-  DopeSheetSelection,
-  SequenceEditorPanelLayout,
-} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -148,14 +144,6 @@ function useDragKeyframe(
   propsRef.current = props
 
   const useDragOpts = useMemo<UseDragOpts>(() => {
-    let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
-    let tempTransaction: CommitOrDiscard | undefined
-    let propsAtStartOfDrag: IKeyframeDotProps
-
-    let selectionDragHandlers:
-      | ReturnType<DopeSheetSelection['getDragHandlers']>
-      | undefined
-
     return {
       debugName: 'KeyframeDot/useDragKeyframe',
 
@@ -164,65 +152,61 @@ function useDragKeyframe(
         if (props.selection) {
           const {selection, leaf} = props
           const {sheetObject} = leaf
-          selectionDragHandlers = selection.getDragHandlers({
-            ...sheetObject.address,
-            pathToProp: leaf.pathToProp,
-            trackId: leaf.trackId,
-            keyframeId: props.keyframe.id,
-            domNode: node!,
-            positionAtStartOfDrag:
-              props.trackData.keyframes[props.index].position,
-          })
-          selectionDragHandlers.onDragStart?.(event)
-          return
+          return selection
+            .getDragHandlers({
+              ...sheetObject.address,
+              pathToProp: leaf.pathToProp,
+              trackId: leaf.trackId,
+              keyframeId: props.keyframe.id,
+              domNode: node!,
+              positionAtStartOfDrag:
+                props.trackData.keyframes[props.index].position,
+            })
+            .onDragStart(event)
         }
 
-        propsAtStartOfDrag = props
-        toUnitSpace = val(propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace)
-      },
-      onDrag(dx, dy, event) {
-        if (selectionDragHandlers) {
-          selectionDragHandlers.onDrag(dx, dy, event)
-          return
-        }
-
-        const original =
-          propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
-        const newPosition = Math.max(
-          // check if our event hoversover a [data-pos] element
-          DopeSnap.checkIfMouseEventSnapToPos(event, {
-            ignore: node,
-          }) ??
-            // if we don't find snapping target, check the distance dragged + original position
-            original.position + toUnitSpace(dx),
-          // sanitize to minimum of zero
-          0,
+        const propsAtStartOfDrag = props
+        const toUnitSpace = val(
+          propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace,
         )
 
-        tempTransaction?.discard()
-        tempTransaction = undefined
-        tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
-            {
-              ...propsAtStartOfDrag.leaf.sheetObject.address,
-              trackId: propsAtStartOfDrag.leaf.trackId,
-              keyframes: [{...original, position: newPosition}],
-              snappingFunction: val(
-                propsAtStartOfDrag.layoutP.sheet,
-              ).getSequence().closestGridPosition,
-            },
-          )
-        })
-      },
-      onDragEnd(dragHappened) {
-        if (selectionDragHandlers) {
-          selectionDragHandlers.onDragEnd?.(dragHappened)
+        let tempTransaction: CommitOrDiscard | undefined
 
-          selectionDragHandlers = undefined
+        return {
+          onDrag(dx, dy, event) {
+            const original =
+              propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
+            const newPosition = Math.max(
+              // check if our event hoversover a [data-pos] element
+              DopeSnap.checkIfMouseEventSnapToPos(event, {
+                ignore: node,
+              }) ??
+                // if we don't find snapping target, check the distance dragged + original position
+                original.position + toUnitSpace(dx),
+              // sanitize to minimum of zero
+              0,
+            )
+
+            tempTransaction?.discard()
+            tempTransaction = undefined
+            tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+              stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
+                {
+                  ...propsAtStartOfDrag.leaf.sheetObject.address,
+                  trackId: propsAtStartOfDrag.leaf.trackId,
+                  keyframes: [{...original, position: newPosition}],
+                  snappingFunction: val(
+                    propsAtStartOfDrag.layoutP.sheet,
+                  ).getSequence().closestGridPosition,
+                },
+              )
+            })
+          },
+          onDragEnd(dragHappened) {
+            if (dragHappened) tempTransaction?.commit()
+            else tempTransaction?.discard()
+          },
         }
-        if (dragHappened) tempTransaction?.commit()
-        else tempTransaction?.discard()
-        tempTransaction = undefined
       },
     }
   }, [])

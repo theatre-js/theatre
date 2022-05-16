@@ -8,13 +8,8 @@ import {lighten} from 'polished'
 import React from 'react'
 import {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import type {
-  SequenceEditorPanelLayout,
-  DopeSheetSelection,
-} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {DOT_SIZE_PX} from './KeyframeDot'
 import type KeyframeEditor from './KeyframeEditor'
-import type Sequence from '@theatre/core/sequences/Sequence'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
@@ -156,84 +151,74 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
   propsRef.current = props
 
   const gestureHandlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
-    let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
-    let tempTransaction: CommitOrDiscard | undefined
-    let propsAtStartOfDrag: IProps
-    let selectionDragHandlers:
-      | ReturnType<DopeSheetSelection['getDragHandlers']>
-      | undefined
-    let sequence: Sequence
     return {
       debugName: 'useDragKeyframe',
       lockCursorTo: 'ew-resize',
       onDragStart(event) {
         const props = propsRef.current
+        let tempTransaction: CommitOrDiscard | undefined
+
         if (props.selection) {
           const {selection, leaf} = props
           const {sheetObject} = leaf
-          selectionDragHandlers = selection.getDragHandlers({
-            ...sheetObject.address,
-            pathToProp: leaf.pathToProp,
-            trackId: leaf.trackId,
-            keyframeId: props.keyframe.id,
-            domNode: node!,
-            positionAtStartOfDrag:
-              props.trackData.keyframes[props.index].position,
-          })
-          selectionDragHandlers.onDragStart?.(event)
-          return
+          return selection
+            .getDragHandlers({
+              ...sheetObject.address,
+              pathToProp: leaf.pathToProp,
+              trackId: leaf.trackId,
+              keyframeId: props.keyframe.id,
+              domNode: node!,
+              positionAtStartOfDrag:
+                props.trackData.keyframes[props.index].position,
+            })
+            .onDragStart(event)
         }
 
-        propsAtStartOfDrag = props
-        sequence = val(propsAtStartOfDrag.layoutP.sheet).getSequence()
+        const propsAtStartOfDrag = props
+        const sequence = val(propsAtStartOfDrag.layoutP.sheet).getSequence()
 
-        toUnitSpace = val(propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace)
-      },
-      onDrag(dx, dy, event) {
-        if (selectionDragHandlers) {
-          selectionDragHandlers.onDrag(dx, dy, event)
-          return
-        }
-        const delta = toUnitSpace(dx)
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
-        }
-        tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          stateEditors.coreByProject.historic.sheetsById.sequence.transformKeyframes(
-            {
-              ...propsAtStartOfDrag.leaf.sheetObject.address,
-              trackId: propsAtStartOfDrag.leaf.trackId,
-              keyframeIds: [
-                propsAtStartOfDrag.keyframe.id,
-                propsAtStartOfDrag.trackData.keyframes[
-                  propsAtStartOfDrag.index + 1
-                ].id,
-              ],
-              translate: delta,
-              scale: 1,
-              origin: 0,
-              snappingFunction: sequence.closestGridPosition,
-            },
-          )
-        })
-      },
-      onDragEnd(dragHappened) {
-        if (selectionDragHandlers) {
-          selectionDragHandlers.onDragEnd?.(dragHappened)
+        const toUnitSpace = val(
+          propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace,
+        )
 
-          selectionDragHandlers = undefined
+        return {
+          onDrag(dx, dy, event) {
+            const delta = toUnitSpace(dx)
+            if (tempTransaction) {
+              tempTransaction.discard()
+              tempTransaction = undefined
+            }
+            tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+              stateEditors.coreByProject.historic.sheetsById.sequence.transformKeyframes(
+                {
+                  ...propsAtStartOfDrag.leaf.sheetObject.address,
+                  trackId: propsAtStartOfDrag.leaf.trackId,
+                  keyframeIds: [
+                    propsAtStartOfDrag.keyframe.id,
+                    propsAtStartOfDrag.trackData.keyframes[
+                      propsAtStartOfDrag.index + 1
+                    ].id,
+                  ],
+                  translate: delta,
+                  scale: 1,
+                  origin: 0,
+                  snappingFunction: sequence.closestGridPosition,
+                },
+              )
+            })
+          },
+          onDragEnd(dragHappened) {
+            if (dragHappened) {
+              if (tempTransaction) {
+                tempTransaction.commit()
+              }
+            } else {
+              if (tempTransaction) {
+                tempTransaction.discard()
+              }
+            }
+          },
         }
-        if (dragHappened) {
-          if (tempTransaction) {
-            tempTransaction.commit()
-          }
-        } else {
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
-        }
-        tempTransaction = undefined
       },
     }
   }, [])
