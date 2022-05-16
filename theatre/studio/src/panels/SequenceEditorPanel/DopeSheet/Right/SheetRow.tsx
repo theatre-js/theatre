@@ -3,7 +3,7 @@ import type {SequenceEditorTree_Sheet} from '@theatre/studio/panels/SequenceEdit
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
-import SheetObjectRow from './SheetObjectRow'
+import RightSheetObjectRow from './SheetObjectRow'
 
 const SheetRow: React.FC<{
   leaf: SequenceEditorTree_Sheet
@@ -13,7 +13,7 @@ const SheetRow: React.FC<{
     return (
       <>
         {leaf.children.map((sheetObjectLeaf) => (
-          <SheetObjectRow
+          <RightSheetObjectRow
             layoutP={layoutP}
             key={'sheetObject-' + sheetObjectLeaf.sheetObject.address.objectKey}
             leaf={sheetObjectLeaf}

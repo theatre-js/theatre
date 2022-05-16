@@ -3,24 +3,26 @@ import type {SequenceEditorTree_SheetObject} from '@theatre/studio/panels/Sequen
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
-import styled from 'styled-components'
 import {decideRowByPropType} from './PropWithChildrenRow'
-import Row from './Row'
+import RightRow from './Row'
+import {useSequenceEditorCollapsable} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/useSequenceEditorCollapsable'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 
-const Container = styled.div``
-
-const SheetObjectRow: React.FC<{
+const RightSheetObjectRow: React.VFC<{
   leaf: SequenceEditorTree_SheetObject
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({leaf, layoutP}) => {
+  const collapsable = useSequenceEditorCollapsable(
+    createStudioSheetItemKey.forSheetObject(leaf.sheetObject),
+  )
   return usePrism(() => {
     const node = <div />
     return (
-      <Row leaf={leaf} node={node}>
+      <RightRow leaf={leaf} node={node} collapsable={collapsable}>
         {leaf.children.map((leaf) => decideRowByPropType(leaf, layoutP))}
-      </Row>
+      </RightRow>
     )
   }, [leaf, layoutP])
 }
 
-export default SheetObjectRow
+export default RightSheetObjectRow

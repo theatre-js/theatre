@@ -5,6 +5,8 @@ import React from 'react'
 import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import type {ICollapsableItem} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/useSequenceEditorCollapsable'
+import {useVal} from '@theatre/react'
 
 export const Container = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -21,7 +23,7 @@ const Header = styled(BaseHeader)<{
   isSelectable: boolean
   isSelected: boolean
 }>`
-  padding-left: calc(16px + var(--depth) * 20px);
+  padding-left: calc(8px + var(--depth) * 20px);
 
   display: flex;
   align-items: stretch;
@@ -42,14 +44,21 @@ const Head_Label = styled.span`
   flex-wrap: nowrap;
 `
 
-const Head_Icon = styled.span<{isOpen: boolean}>`
+const Head_Icon = styled.span<{isCollapsed: boolean}>`
   width: 12px;
-  margin-right: 8px;
+  padding: 8px;
   font-size: 9px;
   display: flex;
   align-items: center;
 
-  transform: rotateZ(${(props) => (props.isOpen ? 90 : 0)}deg);
+  transition: transform 0.05s ease-out, color 0.1s ease-out;
+  transform: rotateZ(${(props) => (props.isCollapsed ? 0 : 90)}deg);
+  color: #66686a;
+
+  &:hover {
+    transform: rotateZ(${(props) => (props.isCollapsed ? 15 : 75)}deg);
+    color: #c0c4c9;
+  }
 `
 
 const Children = styled.ul`
@@ -64,8 +73,18 @@ const AnyCompositeRow: React.FC<{
   toggleSelect?: VoidFn
   isSelected?: boolean
   isSelectable?: boolean
-}> = ({leaf, label, children, isSelectable, isSelected, toggleSelect}) => {
+  collapsable?: ICollapsableItem
+}> = ({
+  leaf,
+  label,
+  children,
+  isSelectable,
+  isSelected,
+  toggleSelect,
+  collapsable,
+}) => {
   const hasChildren = Array.isArray(children) && children.length > 0
+  const isCollapsed = useVal(collapsable?.isCollapsed) ?? false
 
   return (
     <Container depth={leaf.depth}>
@@ -78,12 +97,15 @@ const AnyCompositeRow: React.FC<{
         onClick={toggleSelect}
         isEven={leaf.n % 2 === 0}
       >
-        <Head_Icon isOpen={true}>
+        <Head_Icon
+          isCollapsed={isCollapsed}
+          onClick={() => collapsable?.toggleCollapsed()}
+        >
           <HiOutlineChevronRight />
         </Head_Icon>
         <Head_Label>{label}</Head_Label>
       </Header>
-      {hasChildren && <Children>{children}</Children>}
+      {hasChildren && !isCollapsed && <Children>{children}</Children>}
     </Container>
   )
 }

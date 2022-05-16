@@ -1,10 +1,9 @@
 import type {ProjectState} from '@theatre/core/projects/store/storeTypes'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
-import type {
-  ProjectId,
-  SheetId,
-} from '@theatre/shared/utils/ids'
+import type {ProjectId, SheetId} from '@theatre/shared/utils/ids'
 import type {IRange, StrictRecord} from '@theatre/shared/utils/types'
+import type {PointableSet} from '@theatre/shared/utils/PointableSet'
+import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
 
 export type StudioAhistoricState = {
   visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
@@ -48,6 +47,13 @@ export type StudioAhistoricState = {
                 enabled: boolean
                 range: IRange
               }
+
+              sequenceEditorCollapsableItems?: PointableSet<
+                StudioSheetItemKey,
+                {
+                  isCollapsed: boolean
+                }
+              >
             }
           }
         >

@@ -1,7 +1,7 @@
 import type {SequenceEditorTree_Sheet} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import {usePrism} from '@theatre/react'
 import React from 'react'
-import SheetObjectRow from './SheetObjectRow'
+import LeftSheetObjectRow from './SheetObjectRow'
 
 const SheetRow: React.VFC<{
   leaf: SequenceEditorTree_Sheet
@@ -10,7 +10,7 @@ const SheetRow: React.VFC<{
     return (
       <>
         {leaf.children.map((sheetObjectLeaf) => (
-          <SheetObjectRow
+          <LeftSheetObjectRow
             key={'sheetObject-' + sheetObjectLeaf.sheetObject.address.objectKey}
             leaf={sheetObjectLeaf}
           />
