@@ -6,3 +6,10 @@ export type {EditableState, BindFunction} from './store'
 export {default as SheetProvider, useCurrentSheet} from './SheetProvider'
 export {refreshSnapshot} from './utils'
 export {default as RefreshSnapshot} from './components/RefreshSnapshot'
+export {createEditable} from './components/editable'
+export {
+  createColorPropConfig,
+  createNumberPropConfig,
+  createVectorPropConfig,
+} from './editableFactoryConfigUtils'
+export {default as defaultEditableConfig} from './defaultEditableFactoryConfig'

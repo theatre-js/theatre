@@ -1,4 +1,3 @@
-import type {EditableFactoryConfig} from './editableFactoryConfigUtils'
 import {
   createColorPropConfig,
   createNumberPropConfig,
@@ -111,9 +110,5 @@ const defaultEditableFactoryConfig = {
     icon: 'cloud' as const,
   },
 }
-
-// Assert that the config is indeed of EditableFactoryConfig without actually
-// forcing it to that type so that we can pass the real type to the editable factory
-defaultEditableFactoryConfig as EditableFactoryConfig
 
 export default defaultEditableFactoryConfig

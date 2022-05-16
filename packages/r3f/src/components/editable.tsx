@@ -10,8 +10,8 @@ import defaultEditableFactoryConfig from '../defaultEditableFactoryConfig'
 import type {EditableFactoryConfig} from '../editableFactoryConfigUtils'
 import {makeStoreKey} from '../utils'
 
-const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
-  config: EditableFactoryConfig,
+export const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
+  config: EditableFactoryConfig<Keys>,
 ) => {
   const editable = <
     T extends ComponentType<any> | Keys | 'primitive',
@@ -173,8 +173,6 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   return Object.assign(editable, extensions)
 }
 
-const editable = createEditable<keyof typeof defaultEditableFactoryConfig>(
-  defaultEditableFactoryConfig,
-)
+const editable = createEditable(defaultEditableFactoryConfig)
 
 export default editable

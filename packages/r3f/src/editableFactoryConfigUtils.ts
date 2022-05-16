@@ -21,8 +21,10 @@ type Meta<T> = {
   createHelper?: (object: T) => Helper
 }
 export type ObjectConfig<T> = {props: Props} & Meta<T>
-export type EditableFactoryConfig = Partial<
-  Record<keyof JSX.IntrinsicElements, ObjectConfig<any>>
+export type EditableFactoryConfig<Keys extends string> = Partial<
+  {
+    [Key in Keys]: ObjectConfig<any>
+  }
 >
 
 type Vector3 = {
