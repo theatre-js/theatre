@@ -14,7 +14,7 @@ const Container = styled.div`
   right: 0;
 `
 
-const DopeSheet: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
+const DopeSheet: React.VFC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   layoutP,
 }) => {
   const height = useVal(layoutP.dopeSheetDims.height)

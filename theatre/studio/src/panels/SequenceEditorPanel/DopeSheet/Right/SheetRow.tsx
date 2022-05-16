@@ -3,18 +3,13 @@ import type {SequenceEditorTree_Sheet} from '@theatre/studio/panels/SequenceEdit
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
-import styled from 'styled-components'
 import SheetObjectRow from './SheetObjectRow'
-
-const Container = styled.div``
 
 const SheetRow: React.FC<{
   leaf: SequenceEditorTree_Sheet
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({leaf, layoutP}) => {
   return usePrism(() => {
-    const node = <div />
-
     return (
       <>
         {leaf.children.map((sheetObjectLeaf) => (
