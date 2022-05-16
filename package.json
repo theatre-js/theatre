@@ -15,6 +15,7 @@
     "build": "zx scripts/build.mjs",
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
+    "test:build_test": "zx scripts/publish-to-yalc.mjs && zx scripts/build-tests/link-theatre-packages.mjs && zx ./scripts/build-tests/build-projects.mjs",
     "postinstall": "husky install",
     "release": "zx scripts/release.mjs",
     "build:api-docs": "zx scripts/build-api-docs.mjs",
@@ -54,7 +55,12 @@
     "node-gyp": "^8.1.0",
     "prettier": "^2.3.2",
     "typescript": "^4.4.2",
+    "yalc": "^1.0.0-pre.53",
     "zx": "^2.0.0"
   },
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.2.0",
+  "resolutions": {
+    "@types/react": "^17.0.9",
+    "@types/react-dom": "^17.0.9"
+  }
 }

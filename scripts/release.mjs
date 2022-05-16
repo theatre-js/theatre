@@ -187,6 +187,7 @@ const packagesWhoseVersionsShouldBump = [
   )
 })()
 
+/** @param {string} monorepoVersion */
 async function assignVersions(monorepoVersion) {
   for (const packagePathRelativeFromRoot of packagesWhoseVersionsShouldBump) {
     const pathToPackage = path.resolve(

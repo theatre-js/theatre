@@ -19,3 +19,11 @@
 !.yarn/sdks
 !.yarn/versions
 
+# Required by the `parcel_v2`
+# build test
+.parcel-cache
+
+yalc.lock
+
+/build_tests/*/.yalc
+/build_tests/*/.yarn
