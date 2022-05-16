@@ -3,6 +3,7 @@ import {allRegisteredObjects} from '../store'
 import studio from '@theatre/studio'
 import type {ISheetObject} from '@theatre/core'
 import type {$IntentionalAny} from '../types'
+import {makeStoreKey} from '../utils'
 
 export function useSelected(): undefined | string {
   const [state, set] = useState<string | undefined>(undefined)
@@ -19,7 +20,7 @@ export function useSelected(): undefined | string {
       if (!item) {
         set(undefined)
       } else {
-        set(item.address.objectKey)
+        set(makeStoreKey(item.sheet, item.address.objectKey))
       }
     }
     setFromStudio(studio.selection)
@@ -38,6 +39,6 @@ export function getSelected(): undefined | string {
   if (!item) {
     return undefined
   } else {
-    return item.address.objectKey
+    return makeStoreKey(item.sheet, item.address.objectKey)
   }
 }

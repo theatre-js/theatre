@@ -8,6 +8,7 @@ import useInvalidate from './useInvalidate'
 import {useCurrentSheet} from '../SheetProvider'
 import defaultEditableFactoryConfig from '../defaultEditableFactoryConfig'
 import type {EditableFactoryConfig} from '../editableFactoryConfigUtils'
+import {makeStoreKey} from '../utils'
 
 const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   config: EditableFactoryConfig,
@@ -47,7 +48,9 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
 
         const objectRef = useRef<JSX.IntrinsicElements[U]>()
 
-        const sheet = useCurrentSheet()
+        const sheet = useCurrentSheet()!
+
+        const storeKey = makeStoreKey(sheet, uniqueName)
 
         const [sheetObject, setSheetObject] = useState<
           undefined | ISheetObject<$FixMe>
@@ -75,14 +78,14 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
 
           if (objRef) objRef!.current = sheetObject
 
-          useEditorStore.getState().addEditable(uniqueName, {
+          useEditorStore.getState().addEditable(storeKey, {
             type: actualType,
             sheetObject,
             visibleOnlyInEditor: visible === 'editor',
             // @ts-ignore
             objectConfig: config[actualType],
           })
-        }, [sheet, uniqueName])
+        }, [sheet, storeKey])
 
         // store initial values of props
         useLayoutEffect(() => {
@@ -95,7 +98,6 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
             ),
           )
         }, [
-          uniqueName,
           sheetObject,
           // @ts-ignore
           ...Object.keys(config[actualType].props).map(
@@ -138,7 +140,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
             visible={visible !== 'editor' && visible}
             userData={{
               __editable: true,
-              __editableName: uniqueName,
+              __storeKey: storeKey,
             }}
           />
         )

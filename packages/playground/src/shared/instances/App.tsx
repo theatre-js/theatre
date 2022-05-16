@@ -10,33 +10,44 @@ document.body.style.backgroundColor = '#171717'
 
 const EditableCamera = e(PerspectiveCamera, 'perspectiveCamera')
 
-function Model({url}: {url: string}) {
+function Model({
+  url,
+  instance,
+  ...props
+}: {url: string; instance?: string} & JSX.IntrinsicElements['group']) {
   const {nodes} = useGLTF(url) as any
 
   return (
-    <group rotation={[-Math.PI / 2, 0, 0]} position={[0, -7, 0]} scale={7}>
-      <group rotation={[Math.PI / 13.5, -Math.PI / 5.8, Math.PI / 5.6]}>
-        <e.mesh
-          uniqueName="Thingy"
-          receiveShadow
-          castShadow
-          geometry={nodes.planet001.geometry}
-          material={nodes.planet001.material}
-        />
-        <e.mesh
-          uniqueName="Debris 2"
-          receiveShadow
-          castShadow
-          geometry={nodes.planet002.geometry}
-          material={nodes.planet002.material}
-        />
-        <e.mesh
-          uniqueName="Debris 1"
-          geometry={nodes.planet003.geometry}
-          material={nodes.planet003.material}
-        />
-      </group>
-    </group>
+    <e.group
+      uniqueName={`Transforms for Rocket: ${instance ?? 'default'}`}
+      {...props}
+    >
+      <SheetProvider sheet={getProject('Space').sheet('Rocket', instance)}>
+        <group rotation={[-Math.PI / 2, 0, 0]} position={[0, -7, 0]} scale={7}>
+          <group rotation={[Math.PI / 13.5, -Math.PI / 5.8, Math.PI / 5.6]}>
+            <e.mesh
+              uniqueName="Thingy"
+              receiveShadow
+              castShadow
+              geometry={nodes.planet001.geometry}
+              material={nodes.planet001.material}
+            />
+            <e.mesh
+              uniqueName="Debris 2"
+              receiveShadow
+              castShadow
+              geometry={nodes.planet002.geometry}
+              material={nodes.planet002.material}
+            />
+            <e.mesh
+              uniqueName="Debris 1"
+              geometry={nodes.planet003.geometry}
+              material={nodes.planet003.material}
+            />
+          </group>
+        </group>
+      </SheetProvider>
+    </e.group>
   )
 }
 
@@ -55,14 +66,16 @@ function App() {
     >
       <Canvas dpr={[1.5, 2]} linear shadows frameloop="demand">
         <SheetProvider sheet={getProject('Space').sheet('Scene')}>
-          <fog attach="fog" args={[bg, 16, 30]} />
+          <fog attach="fog" args={[bg, 16, 70]} />
           <color attach="background" args={[bg]} />
           <ambientLight intensity={0.75} />
           <EditableCamera
             uniqueName="Camera"
             makeDefault
-            position={[0, 0, 16]}
+            position={[0, 0, 0]}
             fov={75}
+            near={20}
+            far={70}
           >
             <e.pointLight
               uniqueName="Light 1"
@@ -83,7 +96,8 @@ function App() {
           </EditableCamera>
           <Suspense fallback={null}>
             <RefreshSnapshot />
-            <Model url={sceneGLB} />
+            <Model url={sceneGLB} instance="Apollo" position={[18, 5, -42]} />
+            <Model url={sceneGLB} instance="Sputnik" position={[-18, 5, -42]} />
           </Suspense>
           <Stars radius={500} depth={50} count={1000} factor={10} />
         </SheetProvider>
