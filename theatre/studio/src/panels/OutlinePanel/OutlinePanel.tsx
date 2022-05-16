@@ -9,7 +9,6 @@ import {usePrism} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
 import {val} from '@theatre/dataverse'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 import ErrorTooltip from '@theatre/studio/uiComponents/Popover/ErrorTooltip'
 
@@ -148,7 +147,7 @@ const OutlinePanel: React.FC<{}> = (props) => {
       )
   }, [])
 
-  const [triggerTooltip, triggerButtonRef] = useTooltip(
+  const [triggerTooltip, triggerButtonRef] = useTooltip<HTMLButtonElement>(
     {enabled: conflicts.length > 0, enterDelay: conflicts.length > 0 ? 0 : 200},
     () =>
       conflicts.length > 0 ? (
@@ -167,7 +166,7 @@ const OutlinePanel: React.FC<{}> = (props) => {
       <TriggerContainer>
         {triggerTooltip}
         <TriggerButton
-          ref={triggerButtonRef as $IntentionalAny}
+          ref={triggerButtonRef}
           data-testid="OutlinePanel-TriggerButton"
         >
           <VscListTree />
