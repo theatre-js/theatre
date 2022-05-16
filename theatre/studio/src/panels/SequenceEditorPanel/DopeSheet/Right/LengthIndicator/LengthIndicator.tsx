@@ -129,6 +129,8 @@ type IProps = {
   layoutP: Pointer<SequenceEditorPanelLayout>
 }
 
+const RENDER_OUT_OF_VIEW_X = -10000
+
 /**
  * This appears at the end of the sequence where you can adjust the length of the sequence.
  * Kinda looks like `< >` at the top bar at end of the sequence editor.
@@ -137,7 +139,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
   const [isDragging] = useDragBulge(node, {layoutP})
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
-    {},
+    {debugName: 'LengthIndicator'},
     () => {
       return (
         <BasicPopover>
@@ -178,7 +180,9 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
         <Strip
           style={{
             height: height + 'px',
-            transform: `translateX(${translateX === 0 ? -1000 : translateX}px)`,
+            transform: `translateX(${
+              translateX === 0 ? RENDER_OUT_OF_VIEW_X : translateX
+            }px)`,
           }}
           className={isDragging ? 'dragging' : ''}
         >

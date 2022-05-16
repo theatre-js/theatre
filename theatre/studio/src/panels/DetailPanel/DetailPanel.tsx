@@ -10,7 +10,7 @@ import {
 } from '@theatre/studio/panels/BasePanel/common'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import ObjectDetails from './ObjectDetails'
-import ProjectDetails from './ProjectDetails/ProjectDetails'
+import ProjectDetails from './ProjectDetails'
 
 const Container = styled.div`
   background-color: transparent;

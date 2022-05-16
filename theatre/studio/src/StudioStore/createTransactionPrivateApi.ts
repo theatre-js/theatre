@@ -234,7 +234,7 @@ export default function createTransactionPrivateApi(
             (v, pathToProp) => {
               unsetStaticOrKeyframeProp(v, pathToProp)
             },
-            getPointerParts(pointer as Pointer<$IntentionalAny>).path,
+            getPointerParts(pointer).path,
           )
         } else {
           unsetStaticOrKeyframeProp(defaultValue, path)

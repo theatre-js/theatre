@@ -739,6 +739,9 @@ namespace stateEditors {
             )
           }
 
+          // Future: consider whether a list of "partial" keyframes requiring `id` is possible to accept
+          //  * Consider how common this pattern is, as this sort of concept would best be encountered
+          //    a few times to start to see an opportunity for improved ergonomics / crdt.
           export function replaceKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: SequenceTrackId
