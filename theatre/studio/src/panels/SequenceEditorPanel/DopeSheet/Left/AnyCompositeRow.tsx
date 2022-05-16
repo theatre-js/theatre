@@ -4,7 +4,7 @@ import type {VoidFn} from '@theatre/shared/utils/types'
 import React from 'react'
 import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
-import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
+import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 
 export const Container = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -33,7 +33,7 @@ const Header = styled(BaseHeader)<{
 `
 
 const Head_Label = styled.span`
-  ${propNameText};
+  ${propNameTextCSS};
   overflow-x: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

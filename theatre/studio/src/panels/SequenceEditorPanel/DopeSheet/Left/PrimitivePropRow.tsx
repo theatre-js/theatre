@@ -8,11 +8,11 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useCallback, useRef} from 'react'
 import styled from 'styled-components'
-import {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/DetailPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
-import {nextPrevCursorsTheme} from '@theatre/studio/panels/DetailPanel/propEditors/utils/NextPrevKeyframeCursors'
+import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
+import {nextPrevCursorsTheme} from '@theatre/studio/propEditors/NextPrevKeyframeCursors'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import {BaseHeader, Container as BaseContainer} from './AnyCompositeRow'
-import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
+import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 
 const theme = {
   label: {
@@ -75,7 +75,7 @@ const GraphIcon = () => (
 
 const Head_Label = styled.span`
   margin-right: 4px;
-  ${propNameText};
+  ${propNameTextCSS};
 `
 
 const PrimitivePropRow: React.FC<{
@@ -87,7 +87,7 @@ const PrimitivePropRow: React.FC<{
   ) as Pointer<$IntentionalAny>
 
   const obj = leaf.sheetObject
-  const {controlIndicators} = useEditingToolsForPrimitiveProp(
+  const {controlIndicators} = useEditingToolsForSimplePropInDetailsPanel(
     pointerToProp,
     obj,
     leaf.propConf,

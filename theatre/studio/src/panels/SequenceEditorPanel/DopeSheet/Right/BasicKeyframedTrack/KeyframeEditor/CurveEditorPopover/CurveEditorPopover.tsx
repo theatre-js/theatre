@@ -100,10 +100,23 @@ const NoResultsFoundContainer = styled.div`
   padding: 6px;
   color: #888888;
 `
-
+/**
+ * Tracking for what kinds of events are allowed to change the input's value.
+ */
 enum TextInputMode {
+  /**
+   * Initial mode, don't try to override the value.
+   */
   init,
+  /**
+   * In `user` mode, the text input field does not update when the curve
+   * changes so that the user's search is preserved.
+   */
   user,
+  /**
+   * In `auto` mode, the text input field is continually updated to
+   * a CSS cubic bezier args string to reflect the state of the curve.
+   */
   auto,
 }
 
@@ -113,7 +126,7 @@ type IProps = {
   /**
    * Called when user hits enter/escape
    */
-  onRequestClose: () => void
+  onRequestClose: (reason: string) => void
 } & Parameters<typeof KeyframeEditor>[0]
 
 const CurveEditorPopover: React.FC<IProps> = (props) => {
@@ -175,16 +188,12 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
       optionsRef.current[displayedPresets[0].label]?.current?.focus()
     } else if (e.key === 'Escape') {
       discardTempValue(tempTransaction)
-      props.onRequestClose()
+      props.onRequestClose('key Escape')
     } else if (e.key === 'Enter') {
-      props.onRequestClose()
+      props.onRequestClose('key Enter')
     }
   }
 
-  // In auto mode, the text input field is continually updated to
-  // a CSS cubic bezier args string to reflect the state of the curve;
-  // in user mode, the text input field does not update when the curve
-  // changes so that the user's search is preserved.
   const [textInputMode, setTextInputMode] = useState<TextInputMode>(
     TextInputMode.init,
   )
@@ -214,6 +223,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     const value = cssCubicBezierArgsFromHandles(newHandles)
     setInputValue(value)
     setEdit(value)
+
+    // ensure that the text input is selected when curve is changing.
     inputRef.current?.select()
     inputRef.current?.focus()
   }
@@ -233,6 +244,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
       return EASING_PRESETS
     }
   }, [inputValue])
+
   // Use the first preset in the search when the displayed presets change
   useEffect(() => {
     if (textInputMode === TextInputMode.user && displayedPresets[0])
@@ -243,10 +255,10 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   const onEasingOptionKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape') {
       discardTempValue(tempTransaction)
-      props.onRequestClose()
+      props.onRequestClose('key Escape')
       e.stopPropagation()
     } else if (e.key === 'Enter') {
-      props.onRequestClose()
+      props.onRequestClose('key Enter')
       e.stopPropagation()
     }
   }
@@ -255,7 +267,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
   const onEasingOptionMouseOut = () => setPreview(null)
   const onSelectEasingOption = (item: {label: string; value: string}) => {
     setTempValue(tempTransaction, props, cur, next, item.value)
-    props.onRequestClose()
+    props.onRequestClose('selected easing option')
 
     return Outcome.Handled
   }

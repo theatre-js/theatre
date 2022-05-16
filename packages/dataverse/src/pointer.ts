@@ -113,9 +113,7 @@ const proxyHandler = {
  *
  * @param p - The pointer.
  */
-export const getPointerMeta = (
-  p: Pointer<$IntentionalAny> | Pointer<{}> | Pointer<unknown>,
-): PointerMeta => {
+export const getPointerMeta = <_>(p: PointerType<_>): PointerMeta => {
   // @ts-ignore @todo
   const meta: PointerMeta = p[
     pointerMetaSymbol as unknown as $IntentionalAny
@@ -135,8 +133,8 @@ export const getPointerMeta = (
  *
  * @returns An object with two properties: `root`-the root object or the pointer, and `path`-the path of the pointer. `path` is an array of the property-chain.
  */
-export const getPointerParts = (
-  p: Pointer<$IntentionalAny> | Pointer<{}> | Pointer<unknown>,
+export const getPointerParts = <_>(
+  p: Pointer<_>,
 ): {root: {}; path: PathToProp} => {
   const {root, path} = getPointerMeta(p)
   return {root, path}

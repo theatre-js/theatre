@@ -4,9 +4,9 @@ import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
-import {rowBgColor} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
-import StateConflictRow from './StateConflictRow'
 import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
+import {rowBgColor} from './DeterminePropEditorForDetail/SingleRowPropEditor'
+import StateConflictRow from './ProjectDetails/StateConflictRow'
 
 const Container = styled.div`
   background-color: ${rowBgColor};
@@ -59,7 +59,7 @@ const ProjectDetails: React.FC<{
   }, [])
 
   const [tooltip, openExportTooltip] = usePopover(
-    {pointerDistanceThreshold: 50},
+    {debugName: 'ProjectDetails', pointerDistanceThreshold: 50},
     () => (
       <ExportTooltip>
         This will create a JSON file with the state of your project. You can

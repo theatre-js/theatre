@@ -37,6 +37,8 @@ export type SerializableMap<
  *
  * However this wouldn't protect against other unserializable stuff, or nested
  * unserializable stuff, since using mapped types seem to break it for some reason.
+ *
+ * TODO: Consider renaming to `SerializableSimple` if this should be aligned with "simple props".
  */
 export type SerializablePrimitive =
   | string
