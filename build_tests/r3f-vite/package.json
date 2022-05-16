@@ -10,8 +10,6 @@
   "dependencies": {
     "@react-three/drei": "^7.2.2",
     "@react-three/fiber": "^7.0.6",
-    "@theatre/core": "file:.yalc/@theatre/core",
-    "@theatre/r3f": "file:.yalc/@theatre/r3f",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-shadow": "^19.0.3",
@@ -19,7 +17,6 @@
     "three": "^0.130.1"
   },
   "devDependencies": {
-    "@theatre/studio": "file:.yalc/@theatre/studio",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
     "@vitejs/plugin-react": "^1.3.0",
