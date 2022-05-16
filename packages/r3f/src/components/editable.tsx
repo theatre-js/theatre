@@ -140,7 +140,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
             visible={visible !== 'editor' && visible}
             userData={{
               __editable: true,
-              __editableName: storeKey,
+              __storeKey: storeKey,
             }}
           />
         )

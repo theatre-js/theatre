@@ -15,14 +15,11 @@ import {invalidate, useFrame, useThree} from '@react-three/fiber'
 import {useDragDetector} from './DragDetector'
 
 export interface EditableProxyProps {
-  editableName: string
+  storeKey: string
   object: Object3D
 }
 
-const EditableProxy: VFC<EditableProxyProps> = ({
-  editableName: uniqueName,
-  object,
-}) => {
+const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
   const editorObject = getEditorSheetObject()
   const [setSnapshotProxyObject, editables] = useEditorStore(
     (state) => [state.setSnapshotProxyObject, state.editables],
@@ -31,17 +28,17 @@ const EditableProxy: VFC<EditableProxyProps> = ({
 
   const dragging = useDragDetector()
 
-  const editable = editables[uniqueName]
+  const editable = editables[storeKey]
 
   const selected = useSelected()
   const showOverlayIcons =
     useVal(editorObject?.props.viewport.showOverlayIcons) ?? false
 
   useEffect(() => {
-    setSnapshotProxyObject(object, uniqueName)
+    setSnapshotProxyObject(object, storeKey)
 
-    return () => setSnapshotProxyObject(null, uniqueName)
-  }, [uniqueName, object, setSnapshotProxyObject])
+    return () => setSnapshotProxyObject(null, storeKey)
+  }, [storeKey, object, setSnapshotProxyObject])
 
   useLayoutEffect(() => {
     const originalVisibility = object.visible
@@ -68,7 +65,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({
       return
     }
 
-    if (selected === uniqueName || hovered) {
+    if (selected === storeKey || hovered) {
       scene.add(helper)
       invalidate()
     }
@@ -125,10 +122,10 @@ const EditableProxy: VFC<EditableProxyProps> = ({
             e.stopPropagation()
 
             const theatreObject =
-              useEditorStore.getState().editables[uniqueName].sheetObject
+              useEditorStore.getState().editables[storeKey].sheetObject
 
             if (!theatreObject) {
-              console.log('no theatre object for', uniqueName)
+              console.log('no theatre object for', storeKey)
             } else {
               studio.setSelection([theatreObject])
             }
@@ -153,8 +150,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({
       >
         <primitive object={object}>
           {(showOverlayIcons ||
-            (editable.objectConfig.dimensionless &&
-              selected !== uniqueName)) && (
+            (editable.objectConfig.dimensionless && selected !== storeKey)) && (
             <Html
               center
               style={{
@@ -173,10 +169,10 @@ const EditableProxy: VFC<EditableProxyProps> = ({
                 if (e.delta < 2) {
                   e.stopPropagation()
                   const theatreObject =
-                    useEditorStore.getState().editables[uniqueName].sheetObject
+                    useEditorStore.getState().editables[storeKey].sheetObject
 
                   if (!theatreObject) {
-                    console.log('no theatre object for', uniqueName)
+                    console.log('no theatre object for', storeKey)
                   } else {
                     studio.setSelection([theatreObject])
                   }
