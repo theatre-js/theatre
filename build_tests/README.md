@@ -8,9 +8,9 @@ tools (`parcel`, `Next.js`, `vanilla Rollup`, etc...) to build them in the CI
 
 ## The currently tested setups
 
-| project                          | tools                               | `package.json`                        |
-| -------------------------------- | ----------------------------------- | ------------------------------------- |
-| build_tests/create-react-app-r3f | `create-react-app`, `r3f extension` | [link](create-react-app/package.json) |
+| setup                        | tools                               | `package.json`                        |
+| ---------------------------- | ----------------------------------- | ------------------------------------- |
+| build_tests/create-react-app | `create-react-app`, `r3f extension` | [link](create-react-app/package.json) |
 
 ## Testing the configurations locally
 
@@ -22,17 +22,17 @@ Run the following command in the root of the theatre monorepo:
 npx zx scripts/publish-to-yalc.mjs
 ```
 
-2. **Install the dependencies of the test project**
+2. **Install the dependencies of the setup**
 
 Navigate into the directory of the selected configuration (`parcel_v2` in this
-case) and install the dependencies of the project:
+case) and install the dependencies of the setup:
 
 ```sh
 cd build_tests/parcel_v2/
 yarn
 ```
 
-3. **Add the theatre packages to the project from the local registry**
+3. **Add the Theatre.js packages to the setup from the local registry**
 
 ```sh
 npx yalc link @theatre/core
@@ -47,48 +47,81 @@ yarn start
 
 ## Adding a new setup
 
-2. Build the `@theatre` packages and run the following command to publish the
-   newest version of `@theatre/core` and `@theatre/studio` to the local registry
-   managed with `yalc`:
+If you wish to test a new setup (say Vite, or cool-new-bundler), here is how to
+do it:
+
+1. Build the monorepo packages and publish them to the local npm registry,
+   [yalc](https://github.com/wclr/yalc).
 
    ```sh
+   cd /path/to/theatre-monorepo
+   # build all the packages
+   yarn build
+   # publish them to yalc (the local npm registry)
    zx scripts/publish-to-yalc.mjs
    ```
 
-3. Create a new directory in `theatre/build_tests/` with the new setup
-4. Do not add the `@theatre/core` and `@theatre/dataverse` packages to the
-   config! The script will handle that.
-5. Create an empty `yarn.lock` file in the new project's root folder, if it
-   doesn't already exist:
+1. Start your new setup in a directory outside of the monorepo
+
+   ```sh
+   # start a project outside the monorepo we'll copy it in later
+   cd /path/---------outside---------/theatre-monorepo
+   # make a new setup folder
+   mkdir new-setup .
+   cd new-setup
+   ```
+
+1. Bootstrap your setup using npm, yarn, or other bootstrapping scripts (like
+   `npx create-react-app`)
+
+   ```sh
+   npm init --yes
+   ```
+
+1. Make sure there is a `yarn.lock` or `package-lock.json` file in this
+   directory. Otherwise, when we move it back into the monorepo, yarn will
+   complain that this package is not listed in the monorepo as a workspace.
 
    ```sh
    touch yarn.lock
    ```
 
-6. Install the dependencies
+1. Copy the new directory back to the monorepo and `cd` into it
 
    ```sh
-   yarn
+   cp -r ./path/---------outside---------/theatre-monorepo/new-setup /path/to/theatre/monorepo/build-tests/new-setup
+   cd /path/to/theatre/monorepo/build-tests/new-setup
    ```
 
-7. Install `@theatre/core` and `@theatre/studio` from the local registry:
+1. Let yarn/npm run an install
 
    ```sh
-   npx yalc link @theatre/core @theatre/studio
+   yarn install
    ```
 
-8. Use the
-   [Hello world](https://docs.theatrejs.com/getting-started/install/#install-theatre)
-   example from the docs for creating a `Theatre.js` project
+1. Install `@theatre/core` and `@theatre/studio`, and possibly `@theatre/r3f`
+   from the local registry:
 
-9. Make sure that you add a `yarn build` script to the repo, because the it will
-   be used to build the project in the CI.
+   ```sh
+   npx yalc link @theatre/core @theatre/studio @theatre/r3f
+   ```
 
-10. Test your config by starting a dev server in the new project's root. In
-    `parcel_v2`' you can do it with the following command:
-    ```sh
-    yarn start
-    ```
+1. Copy the source (`src/*`) of one of the other setups into `new-setup` so you
+   don't have to start from scratch.
 
-Feel free to check out [the existing projects](#the-currently-tested-setups) in
+1. Make sure that you add a `yarn build` script to `new-setup/package.json`,
+   because it
+   [will be used](https://github.com/theatre-js/theatre/blob/db7dadc0c997316f2027736e2ecba0ea4acda2d4/scripts/build-tests/build-projects.mjs#L18)
+   to build the setup in the CI.
+
+1. Test your setup by running its dev server or doing a build
+
+   ```sh
+   yarn start
+   ```
+
+> **Gotchas**
+> Some bundlers like webpack are not configured to work well with yarn workspaces by default. For example, the webpack config of create-react-app, tries to look up the node_modules chain to find missing dependencies, which is not a behavior that we want in build-tests setups. So if a setup doesn't work, try running it outside the monorepo to see if being in the monorepo is what's causing it to fail.
+
+Feel free to check out [the existing setups](#the-currently-tested-setups) in
 `build_tests` if you get stuck.
