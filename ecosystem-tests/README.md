@@ -14,36 +14,17 @@ tools (`parcel`, `Next.js`, `vanilla Rollup`, etc...) to build them in the CI
 
 ## Testing the configurations locally
 
-1. **Build and publish the theatre packages to a local registry**
-
-Run the following command in the root of the theatre monorepo:
-
 ```sh
 # clean existing build artifacts
 yarn clean
-# build all theatre packags and publish them to yalc
-yarn zx scripts/publish-to-yalc.mjs
+# this will build all packages, publish them to yalc, link them to each setup, and run the `yarn build` command on that setup
+yarn test:ecosystem
 ```
 
-2. **Install the dependencies of the setup**
-
-Navigate into the directory of the selected configuration (`parcel_v2` in this
-case) and install the dependencies of the setup:
+After running the above, you can also start the dev server of each setup to try it manually:
 
 ```sh
-cd ecosystem-tests/parcel_v2/
-yarn
-```
-
-3. **Add the Theatre.js packages to the setup from the local registry**
-
-```sh
-yarn zx scripts/ecosystem-tests/link-theatre-packages.mjs
-```
-
-4. **Start the dev server**
-
-```sh
+cd ecosystem-tests/[setup-name]
 yarn start
 ```
 
