@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist/esm",
+    "outDir": "dist",
     "lib": ["ESNext", "DOM"],
     "rootDir": "src",
     "types": ["jest", "node"],

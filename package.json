@@ -11,8 +11,10 @@
     "playground": "yarn workspace playground run serve",
     "test:e2e": "yarn workspace playground run test",
     "test:e2e:ci": "yarn workspace playground run test:ci",
+    "test:ecosystem": "zx scripts/ecosystem-tests/ci.mjs",
     "typecheck": "yarn run build:ts",
     "build": "zx scripts/build.mjs",
+    "clean": "zx scripts/clean.mjs",
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
     "postinstall": "husky install",
@@ -54,7 +56,12 @@
     "node-gyp": "^8.1.0",
     "prettier": "^2.3.2",
     "typescript": "^4.4.2",
+    "yalc": "^1.0.0-pre.53",
     "zx": "^2.0.0"
   },
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.2.0",
+  "resolutions": {
+    "@types/react": "^17.0.9",
+    "@types/react-dom": "^17.0.9"
+  }
 }

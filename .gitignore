@@ -19,3 +19,12 @@
 !.yarn/sdks
 !.yarn/versions
 
+# Required by the `parcel_v2`
+# ecosystem tests
+.parcel-cache
+
+yalc.lock
+
+/ecosystem-tests/*/.yalc
+/ecosystem-tests/*/.yarn
+/ecosystem-tests/*/build
