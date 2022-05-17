@@ -84,6 +84,8 @@ function Plane({color, uniqueName, ...props}) {
   )
 }
 
+const sheet = getProject('Playground - R3F').sheet('R3F-Canvas')
+
 function App() {
   return (
     <div>
@@ -91,9 +93,7 @@ function App() {
         // @ts-ignore
         shadowMap
       >
-        <SheetProvider
-          getSheet={() => getProject('Playground - R3F').sheet('R3F-Canvas')}
-        >
+        <SheetProvider sheet={sheet}>
           {/* @ts-ignore */}
           <e.perspectiveCamera makeDefault uniqueName="Camera" />
           <ambientLight intensity={0.4} />
