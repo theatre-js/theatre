@@ -17,12 +17,12 @@ const packagesToLink = [
   '@theatre/r3f',
 ]
 
-const projectsWithErrors = []
+const setupsWithErrors = []
 
 ;(async function () {
-  for (const project of buildTestProjectAbsPaths) {
+  for (const setup of buildTestProjectAbsPaths) {
     try {
-      cd(project)
+      cd(setup)
       for (let pkg of packagesToLink) {
         // Add the specified package to the project's dependencies
         // with `yalc link`.
@@ -30,16 +30,16 @@ const projectsWithErrors = []
       }
     } catch (err) {
       console.error(err)
-      projectsWithErrors.push(project)
+      setupsWithErrors.push(setup)
     }
   }
 
   // Stop if there were any errors during the linking process,
   // and print all of them to the console.
-  if (projectsWithErrors.length !== 0) {
+  if (setupsWithErrors.length !== 0) {
     throw new Error(
       `The following projects had problems when their dependencies were being linked:\n${colorize.red(
-        projectsWithErrors.join('\n'),
+        setupsWithErrors.join('\n'),
       )}`,
     )
   }

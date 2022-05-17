@@ -8,7 +8,7 @@ import {colorize, getTestBuildProjects} from './utils.mjs'
 const root = path.resolve(__dirname, '../..')
 const buildTestProjectAbsPaths = getTestBuildProjects(root)
 
-const projectsWithErrors = []
+const setupsWithErros = []
 
 // Try building the test projects
 ;(async function () {
@@ -18,16 +18,16 @@ const projectsWithErrors = []
       await $`yarn build`
     } catch (err) {
       console.error(err)
-      projectsWithErrors.push(project)
+      setupsWithErros.push(project)
     }
   }
 
   // Stop if there were any errors during the build process,
   // and print all of them to the console.
-  if (projectsWithErrors.length !== 0) {
+  if (setupsWithErros.length !== 0) {
     throw new Error(
       `The following projects had problems when their dependencies were being installed:\n${colorize.red(
-        projectsWithErrors.join('\n'),
+        setupsWithErros.join('\n'),
       )}`,
     )
   }

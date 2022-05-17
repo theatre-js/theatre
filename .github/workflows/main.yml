@@ -34,7 +34,7 @@ jobs:
           # It's not that robust, but should be sufficient for us for now.
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            ${{ github.workspace }}/build_tests/*/.yarn/cache
+            ${{ github.workspace }}/ecosystem-tests/*/.yarn/cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-

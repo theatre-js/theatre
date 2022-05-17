@@ -10,7 +10,7 @@ tools (`parcel`, `Next.js`, `vanilla Rollup`, etc...) to build them in the CI
 
 | setup                        | tools                               | `package.json`                        |
 | ---------------------------- | ----------------------------------- | ------------------------------------- |
-| build_tests/create-react-app | `create-react-app`, `r3f extension` | [link](create-react-app/package.json) |
+| ecosystem-tests/create-react-app | `create-react-app`, `r3f extension` | [link](create-react-app/package.json) |
 
 ## Testing the configurations locally
 
@@ -28,7 +28,7 @@ Navigate into the directory of the selected configuration (`parcel_v2` in this
 case) and install the dependencies of the setup:
 
 ```sh
-cd build_tests/parcel_v2/
+cd ecosystem-tests/parcel_v2/
 yarn
 ```
 
@@ -124,4 +124,4 @@ do it:
 > Some bundlers like webpack are not configured to work well with yarn workspaces by default. For example, the webpack config of create-react-app, tries to look up the node_modules chain to find missing dependencies, which is not a behavior that we want in build-tests setups. So if a setup doesn't work, try running it outside the monorepo to see if being in the monorepo is what's causing it to fail.
 
 Feel free to check out [the existing setups](#the-currently-tested-setups) in
-`build_tests` if you get stuck.
+`ecosystem-tests` if you get stuck.

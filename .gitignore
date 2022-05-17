@@ -25,6 +25,6 @@
 
 yalc.lock
 
-/build_tests/*/.yalc
-/build_tests/*/.yarn
-/build_tests/*/build
+/ecosystem-tests/*/.yalc
+/ecosystem-tests/*/.yarn
+/ecosystem-tests/*/build

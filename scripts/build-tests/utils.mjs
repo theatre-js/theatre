@@ -18,13 +18,13 @@ export const colorize = {
 }
 
 /**
- * Get all the projects from `./build_tests/`
+ * Get all the projects from `./ecosystem-tests/`
  *
  * @param {string} root - Absolute path to the theatre monorepo
  * @returns An array containing the absolute paths to the build test projects
  */
 export function getTestBuildProjects(root) {
-  const buildTestsDir = path.join(root, 'build_tests')
+  const buildTestsDir = path.join(root, 'ecosystem-tests')
   let buildTestsDirEntries
 
   try {
@@ -36,7 +36,7 @@ export function getTestBuildProjects(root) {
   }
   const projectAbsPaths = []
 
-  // NOTE: We assume that every directory in `build_tests` is
+  // NOTE: We assume that every directory in `ecosystem-tests` is
   // a build test project!
   for (const entry of buildTestsDirEntries) {
     const entryAbsPath = path.join(buildTestsDir, entry)
