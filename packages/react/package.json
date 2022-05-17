@@ -20,11 +20,12 @@
   "scripts": {
     "prepack": "node ../../devEnv/ensurePublishing.js",
     "typecheck": "yarn run build",
-    "build": "run-s build:ts build:js build:api-json",
+    "build": "run-s clean build:ts build:js build:api-json",
     "build:ts": "tsc --build ./tsconfig.json",
     "build:js": "node -r esbuild-register ./devEnv/build.ts",
     "build:api-json": "api-extractor run --local --config devEnv/api-extractor.json",
-    "prepublish": "node ../../devEnv/ensurePublishing.js"
+    "prepublish": "node ../../devEnv/ensurePublishing.js",
+    "clean": "rm -rf ./dist && rm -f tsconfig.tsbuildinfo"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.18.11",
