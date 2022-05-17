@@ -18,12 +18,12 @@ export const colorize = {
 }
 
 /**
- * Get all the projects from `./ecosystem-tests/`
+ * Get all the setups from `./ecosystem-tests/`
  *
  * @param {string} root - Absolute path to the theatre monorepo
  * @returns An array containing the absolute paths to the ecosystem test setups
  */
-export function getTestBuildProjects(root) {
+export function getEcosystemTestSetups(root) {
   const buildTestsDir = path.join(root, 'ecosystem-tests')
   let buildTestsDirEntries
 
@@ -34,16 +34,16 @@ export function getTestBuildProjects(root) {
       `Could not list directory: "${buildTestsDir}" Is it an existing directory?`,
     )
   }
-  const projectAbsPaths = []
+  const setupsAbsPaths = []
 
   // NOTE: We assume that every directory in `ecosystem-tests` is
   // an ecosystem test setup!
   for (const entry of buildTestsDirEntries) {
     const entryAbsPath = path.join(buildTestsDir, entry)
     if (fs.lstatSync(entryAbsPath).isDirectory()) {
-      projectAbsPaths.push(entryAbsPath)
+      setupsAbsPaths.push(entryAbsPath)
     }
   }
 
-  return projectAbsPaths
+  return setupsAbsPaths
 }

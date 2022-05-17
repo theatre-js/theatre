@@ -111,7 +111,7 @@ do it:
 
 1. Make sure that you add a `yarn build` script to `new-setup/package.json`,
    because it
-   [will be used](https://github.com/theatre-js/theatre/blob/db7dadc0c997316f2027736e2ecba0ea4acda2d4/scripts/build-tests/build-projects.mjs#L18)
+   [will be used](https://github.com/theatre-js/theatre/blob/db7dadc0c997316f2027736e2ecba0ea4acda2d4/scripts/build-tests/build-setups.mjs#L18)
    to build the setup in the CI.
 
 1. Test your setup by running its dev server or doing a build

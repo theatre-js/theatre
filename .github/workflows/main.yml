@@ -50,7 +50,7 @@ jobs:
       - name: Add the theatre packages to the ecosystem test setups
         run: npx zx ./scripts/ecosystem-tests/link-theatre-packages.mjs
       - name: Run the ecosystem tests
-        run: npx zx ./scripts/ecosystem-tests/build-projects.mjs
+        run: npx zx ./scripts/ecosystem-tests/build-setups.mjs
       - name: Download playwright
         run: yarn workspace playground run playwright install
       - name: Run e2e tests with percy

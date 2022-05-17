@@ -1,12 +1,12 @@
 /**
- * Add the theatre packages to the ecosystem test projects with `yalc link`
+ * Add the theatre packages to the ecosystem test setups with `yalc link`
  */
 
 import path from 'path'
-import {colorize, getTestBuildProjects} from './utils.mjs'
+import {colorize, getEcosystemTestSetups} from './utils.mjs'
 
 const root = path.resolve(__dirname, '../..')
-const buildTestProjectAbsPaths = getTestBuildProjects(root)
+const absPathsOfSetups = getEcosystemTestSetups(root)
 
 // The packages that should be linked with `yalc`
 const packagesToLink = [
@@ -20,17 +20,17 @@ const packagesToLink = [
 const setupsWithErrors = []
 
 ;(async function () {
-  for (const setup of buildTestProjectAbsPaths) {
+  for (const setupDir of absPathsOfSetups) {
     try {
-      cd(setup)
+      cd(setupDir)
       for (let pkg of packagesToLink) {
-        // Add the specified package to the project's dependencies
+        // Add the specified package to the setup's dependencies
         // with `yalc link`.
         await $`npx yalc link ${pkg}`
       }
     } catch (err) {
       console.error(err)
-      setupsWithErrors.push(setup)
+      setupsWithErrors.push(setupDir)
     }
   }
 
@@ -38,7 +38,7 @@ const setupsWithErrors = []
   // and print all of them to the console.
   if (setupsWithErrors.length !== 0) {
     throw new Error(
-      `The following projects had problems when their dependencies were being linked:\n${colorize.red(
+      `The following setups had problems when their dependencies were being linked:\n${colorize.red(
         setupsWithErrors.join('\n'),
       )}`,
     )

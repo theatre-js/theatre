@@ -3,32 +3,32 @@
  */
 
 import path from 'path'
-import {colorize, getTestBuildProjects} from './utils.mjs'
+import {colorize, getEcosystemTestSetups} from './utils.mjs'
 
 const root = path.resolve(__dirname, '../..')
 
-const buildTestProjectAbsPaths = getTestBuildProjects(root)
+const absPathOfTestSetups = getEcosystemTestSetups(root)
 
-const projectsWithErrors = []
+const setupsWithErrors = []
 
-// Try installing the dependencies of the build projects
+// Try installing the dependencies of the test setups
 ;(async function () {
-  for (const project of buildTestProjectAbsPaths) {
+  for (const dirOfSetup of absPathOfTestSetups) {
     try {
-      cd(project)
+      cd(dirOfSetup)
       await $`yarn`
     } catch (err) {
       console.error(err)
-      projectsWithErrors.push(project)
+      setupsWithErrors.push(dirOfSetup)
     }
   }
 
   // Stop if there were any errors during the linking process,
   // and print all of them to the console.
-  if (projectsWithErrors.length !== 0) {
+  if (setupsWithErrors.length !== 0) {
     throw new Error(
-      `The following projects had problems when their dependencies were being installed:\n${colorize.red(
-        projectsWithErrors.join('\n'),
+      `The following setups had problems when their dependencies were being installed:\n${colorize.red(
+        setupsWithErrors.join('\n'),
       )}`,
     )
   }
