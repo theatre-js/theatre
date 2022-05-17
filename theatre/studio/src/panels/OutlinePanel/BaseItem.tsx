@@ -43,7 +43,7 @@ const Header = styled(BaseHeader)`
     --item-border-color: #254355;
   }
 
-  &:hover {
+  &:not(.not-selectable):hover {
     color: #fff;
 
     --item-bg: #1e5866;
