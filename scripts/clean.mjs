@@ -1,14 +1,15 @@
 /**
- * Builds all the packages for production
+ * cleans the build artifacts of all packages
  */
 
-const packagesToBuild = [
+const packages = [
   'theatre',
   '@theatre/dataverse',
   '@theatre/react',
   '@theatre/browser-bundles',
   '@theatre/r3f',
 ]
+
 ;(async function () {
   // better quote function from https://github.com/google/zx/pull/167
   $.quote = function quote(arg) {
@@ -31,9 +32,6 @@ const packagesToBuild = [
   }
 
   await Promise.all([
-    $`yarn run build:ts`,
-    ...packagesToBuild.map(
-      (workspace) => $`yarn workspace ${workspace} run build`,
-    ),
+    ...packages.map((workspace) => $`yarn workspace ${workspace} run clean`),
   ])
 })()

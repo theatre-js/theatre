@@ -29,7 +29,7 @@
   "scripts": {
     "prepack": "yarn run build",
     "typecheck": "yarn run build",
-    "build": "yarn run clean && tsc --build ./tsconfig.json",
+    "build": "tsc --build ./tsconfig.json",
     "prepublish": "yarn run build",
     "clean": "rm -rf ./dist && rm -f tsconfig.tsbuildinfo"
   },

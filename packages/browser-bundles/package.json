@@ -16,7 +16,7 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "yarn run clean && yarn run build:js",
+    "build": "yarn run build:js",
     "build:js": "node -r esbuild-register ./devEnv/build.ts",
     "prepublish": "node ../../devEnv/ensurePublishing.js",
     "clean": "rm -rf ./dist && rm -f tsconfig.tsbuildinfo"

@@ -20,7 +20,7 @@
   "scripts": {
     "prepack": "node ../../devEnv/ensurePublishing.js",
     "typecheck": "yarn run build:ts",
-    "build": "run-s clean build:ts build:js build:api-json",
+    "build": "run-s build:ts build:js build:api-json",
     "build:ts": "tsc --build ./tsconfig.json",
     "build:js": "node -r esbuild-register ./devEnv/build.ts",
     "build:api-json": "api-extractor run --local --config devEnv/api-extractor.json",
