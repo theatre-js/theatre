@@ -44,13 +44,13 @@ jobs:
       - run: yarn lint:all --max-warnings 0
       - run: yarn test
       - name: Publish theatre packages to the local registry
-        run: yarn yalc:publish
+        run: npx zx ./scripts/publish-to-yalc.mjs
       - name: Install the dependencies of the build test projects
-        run: yarn yalc:install
+        run: npx zx ./scripts/build-tests/install-dependencies.mjs
       - name: Add the theatre packages to the build test projects
-        run: yarn yalc:link
+        run: npx zx ./scripts/build-tests/link-theatre-packages.mjs
       - name: Run the build tests
-        run: yarn yalc:build
+        run: npx zx ./scripts/build-tests/build-projects.mjs
       - name: Download playwright
         run: yarn workspace playground run playwright install
       - name: Run e2e tests with percy
