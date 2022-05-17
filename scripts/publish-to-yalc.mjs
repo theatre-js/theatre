@@ -19,9 +19,6 @@ const packagesToPublish = [
 ]
 
 ;(async function () {
-  // Build the theatre packages before publishing them
-  await $`yarn build`
-
   // Publish the packages to the local `yalc` registry
   for (const pkg of packagesToPublish) {
     await $`npx yalc publish ${pkg}`
