@@ -1,10 +1,10 @@
-# Build tests
+# Ecosystem tests
 
 Inspired by the
 [#help channel on our Discord](https://discord.com/channels/870988717190426644/870988717190426647)
 we collect examples for including `Theatre.js` in project that use different
 tools (`parcel`, `Next.js`, `vanilla Rollup`, etc...) to build them in the CI
-(these are the _build tests_).
+(these are the _ecosystem tests_).
 
 ## The currently tested setups
 

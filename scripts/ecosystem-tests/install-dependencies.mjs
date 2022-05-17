@@ -1,5 +1,5 @@
 /**
- * Install the dependencies of the build test projects
+ * Install the dependencies of the ecosystem test setups
  */
 
 import path from 'path'

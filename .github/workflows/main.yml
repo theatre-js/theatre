@@ -28,7 +28,7 @@ jobs:
       - uses: actions/cache@v2
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          # Note that we assume the following things about the build tests here:
+          # Note that we assume the following things about the ecosystem tests here:
           #   1. Every directory in `build_test` is a project managed with yarn
           #   2. All these projects store their cache in `<project>/.yarn/cache`
           # It's not that robust, but should be sufficient for us for now.
@@ -45,12 +45,12 @@ jobs:
       - run: yarn test
       - name: Publish theatre packages to the local registry
         run: npx zx ./scripts/publish-to-yalc.mjs
-      - name: Install the dependencies of the build test projects
-        run: npx zx ./scripts/build-tests/install-dependencies.mjs
-      - name: Add the theatre packages to the build test projects
-        run: npx zx ./scripts/build-tests/link-theatre-packages.mjs
-      - name: Run the build tests
-        run: npx zx ./scripts/build-tests/build-projects.mjs
+      - name: Install the dependencies of the ecosystem test setups
+        run: npx zx ./scripts/ecosystem-tests/install-dependencies.mjs
+      - name: Add the theatre packages to the ecosystem test setups
+        run: npx zx ./scripts/ecosystem-tests/link-theatre-packages.mjs
+      - name: Run the ecosystem tests
+        run: npx zx ./scripts/ecosystem-tests/build-projects.mjs
       - name: Download playwright
         run: yarn workspace playground run playwright install
       - name: Run e2e tests with percy

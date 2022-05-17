@@ -20,7 +20,7 @@
 !.yarn/versions
 
 # Required by the `parcel_v2`
-# build test
+# ecosystem tests
 .parcel-cache
 
 yalc.lock

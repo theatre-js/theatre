@@ -1,5 +1,5 @@
 /**
- * Add the theatre packages to the build test projects with `yalc link`
+ * Add the theatre packages to the ecosystem test projects with `yalc link`
  */
 
 import path from 'path'
