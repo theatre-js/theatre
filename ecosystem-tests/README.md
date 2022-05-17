@@ -19,7 +19,10 @@ tools (`parcel`, `Next.js`, `vanilla Rollup`, etc...) to build them in the CI
 Run the following command in the root of the theatre monorepo:
 
 ```sh
-npx zx scripts/publish-to-yalc.mjs
+# clean existing build artifacts
+yarn clean
+# build all theatre packags and publish them to yalc
+yarn zx scripts/publish-to-yalc.mjs
 ```
 
 2. **Install the dependencies of the setup**
@@ -35,8 +38,7 @@ yarn
 3. **Add the Theatre.js packages to the setup from the local registry**
 
 ```sh
-npx yalc link @theatre/core
-npx yalc link @theatre/studio
+yarn zx scripts/ecosystem-tests/link-theatre-packages.mjs
 ```
 
 4. **Start the dev server**
