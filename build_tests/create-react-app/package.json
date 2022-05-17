@@ -1,5 +1,5 @@
 {
-  "name": "theatre-build_test-create-react-app-r3f",
+  "name": "@theatre-build-tests/react-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
