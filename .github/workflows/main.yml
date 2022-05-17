@@ -43,6 +43,7 @@ jobs:
       - run: yarn typecheck
       - run: yarn lint:all --max-warnings 0
       - run: yarn test
+      - run: yarn build
       - name: Publish theatre packages to the local registry
         run: npx zx ./scripts/publish-to-yalc.mjs
       - name: Install the dependencies of the ecosystem test setups
