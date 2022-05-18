@@ -1,6 +1,5 @@
 import type {$FixMe} from '@theatre/shared/utils/types'
 import {useLayoutEffect, useRef} from 'react'
-import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {useCssCursorLock} from './PointerEventsHandler'
 import type {CapturedPointer} from '@theatre/studio/UIRoot/PointerCapturing'
 import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
@@ -97,16 +96,63 @@ export type UseDragOpts = {
     | [MouseButton | MouseButton | MouseButton]
 }
 
+/** How far in total does the cursor have to move before we decide that the user is dragging */
+const DRAG_DETECTION_DISTANCE_THRESHOLD = 3
+const DRAG_DETECTION_WAS_POINTER_LOCK_MOVEMENT = 100
+
+type IUseDragStateRef = IUseDragState_NotStarted | IUseDragState_Started
+
+type IUseDragState_NotStarted = {
+  /** We have not yet encountered a `"dragstart"` event. */
+  domDragStarted: false
+}
+
+type IUseDragState_Started = {
+  /** We have encountered a `"dragstart"` event. */
+  domDragStarted: true
+  detection:
+    | IUseDragStateDetection_Detected
+    | IUseDragStateDetection_NotDetected
+  /**
+   * Used when `isPointerLockUsed` is false, so we can calculate
+   * dx / dy based on the difference of the moved pointer from the start position of the pointer.
+   *
+   * This is generally going to give us a much more accurate estimation than accumulating
+   * movementX & movementY values.
+   */
+  startPos: {
+    x: number
+    y: number
+  }
+}
+type IUseDragStateDetection_NotDetected = {
+  detected: false
+  // Used for detection thresholds
+  /** Accumulated in all directions */
+  totalDistanceMoved: number
+}
+
+type IUseDragStateDetection_Detected = {
+  detected: true
+  dragMovement: {
+    x: number
+    y: number
+  }
+  /**
+   * Number of drag events since we started guessing this was a drag
+   * This is used to determine if requesting pointer lock causes a
+   * large change to mouse movement (since on at least FF, requesting
+   * pointer lock will move the pointer to the center of the screen)
+   */
+  dragEventCount: number
+}
+
 export default function useDrag(
   target: HTMLElement | SVGElement | undefined | null,
   opts: UseDragOpts,
 ): [isDragging: boolean] {
-  const optsRef = useRef<typeof opts>(opts)
+  const optsRef = useRef<UseDragOpts>(opts)
   optsRef.current = opts
-
-  const [modeRef, mode] = useRefAndState<
-    'dragStartCalled' | 'dragging' | 'notDragging'
-  >('notDragging')
 
   /**
    * Safari has a gross behavior with locking the pointer changes the height of the webpage
@@ -114,27 +160,11 @@ export default function useDrag(
    */
   const isPointerLockUsed = opts.shouldPointerLock && !isSafari
 
-  useCssCursorLock(
-    mode === 'dragging' && typeof opts.lockCSSCursorTo === 'string',
-    'dragging',
-    opts.lockCSSCursorTo,
-  )
+  const stateRef = useRef<IUseDragStateRef>({
+    domDragStarted: false,
+  })
 
   const {capturePointer} = usePointerCapturing(`useDrag for ${opts.debugName}`)
-
-  const stateRef = useRef<{
-    dragHappened: boolean
-    // used when `isPointerLockUsed` is false, so we can calculate
-    // dx / dy based on the difference of the moved pointer from the start position of the pointer.
-    startPos: {
-      x: number
-      y: number
-    }
-    totalMovement: {
-      x: number
-      y: number
-    }
-  }>({dragHappened: false, startPos: {x: 0, y: 0}, totalMovement: {x: 0, y: 0}})
 
   const callbacksRef = useRef<{
     onDrag: OnDragCallback
@@ -146,42 +176,64 @@ export default function useDrag(
     if (!target) return
 
     const dragHandler = (event: MouseEvent) => {
-      if (!stateRef.current.dragHappened) {
-        stateRef.current.dragHappened = true
-        if (isPointerLockUsed) {
-          target.requestPointerLock()
+      if (!stateRef.current.domDragStarted) return
+
+      const stateStarted = stateRef.current
+
+      if (didPointerLockCauseMovement(event, stateStarted)) return
+
+      if (!stateStarted.detection.detected) {
+        stateStarted.detection.totalDistanceMoved +=
+          Math.abs(event.movementY) + Math.abs(event.movementX)
+
+        if (
+          stateStarted.detection.totalDistanceMoved >
+          DRAG_DETECTION_DISTANCE_THRESHOLD
+        ) {
+          if (isPointerLockUsed) {
+            target.requestPointerLock()
+          }
+
+          stateStarted.detection = {
+            detected: true,
+            dragMovement: {x: 0, y: 0},
+            dragEventCount: 0,
+          }
         }
       }
-      modeRef.current = 'dragging'
 
-      if (didPointerLockCauseMovement(event)) return
+      // drag detection threshold checking
+      if (stateStarted.detection.detected) {
+        stateStarted.detection.dragEventCount += 1
+        const {dragMovement} = stateStarted.detection
+        if (isPointerLockUsed) {
+          // when locked, the pointer event screen position is going to be 0s, since the pointer can't move.
+          // So, we use the movement on the event
+          dragMovement.x += event.movementX
+          dragMovement.y += event.movementY
+        } else {
+          const {startPos} = stateStarted
+          dragMovement.x = event.screenX - startPos.x
+          dragMovement.y = event.screenY - startPos.y
+        }
 
-      const {totalMovement} = stateRef.current
-      if (isPointerLockUsed) {
-        // when locked, the pointer event screen position is going to be 0s, since the pointer can't move.
-        totalMovement.x += event.movementX
-        totalMovement.y += event.movementY
-      } else {
-        const {startPos} = stateRef.current
-        totalMovement.x = event.screenX - startPos.x
-        totalMovement.y = event.screenY - startPos.y
+        callbacksRef.current.onDrag(
+          dragMovement.x,
+          dragMovement.y,
+          event,
+          event.movementX,
+          event.movementY,
+        )
       }
-
-      callbacksRef.current.onDrag(
-        totalMovement.x,
-        totalMovement.y,
-        event,
-        event.movementX,
-        event.movementY,
-      )
     }
 
     const dragEndHandler = () => {
       removeDragListeners()
-      modeRef.current = 'notDragging'
+      if (!stateRef.current.domDragStarted) return
+      const dragHappened = stateRef.current.detection.detected
+      stateRef.current = {domDragStarted: false}
       if (opts.shouldPointerLock && !isSafari) document.exitPointerLock()
-
-      callbacksRef.current.onDragEnd(stateRef.current.dragHappened)
+      callbacksRef.current.onDragEnd(dragHappened)
     }
 
     const addDragListeners = () => {
@@ -197,15 +249,16 @@ export default function useDrag(
 
     const preventUnwantedClick = (event: MouseEvent) => {
       if (optsRef.current.disabled) return
-      if (stateRef.current.dragHappened) {
-        if (
-          !optsRef.current.dontBlockMouseDown &&
-          modeRef.current !== 'notDragging'
-        ) {
+      if (!stateRef.current.domDragStarted) return
+      if (stateRef.current.detection.detected) {
+        if (!optsRef.current.dontBlockMouseDown) {
           event.stopPropagation()
           event.preventDefault()
         }
-        stateRef.current.dragHappened = false
+        stateRef.current.detection = {
+          detected: false,
+          totalDistanceMoved: 0,
+        }
       }
     }
 
@@ -238,13 +291,13 @@ export default function useDrag(
         event.preventDefault()
       }
 
-      modeRef.current = 'dragStartCalled'
-
-      const {screenX, screenY} = event
       stateRef.current = {
-        startPos: {x: screenX, y: screenY},
-        totalMovement: {x: 0, y: 0},
-        dragHappened: false,
+        domDragStarted: true,
+        startPos: {x: event.screenX, y: event.screenY},
+        detection: {
+          detected: false,
+          totalDistanceMoved: 0,
+        },
       }
 
       addDragListeners()
@@ -262,14 +315,23 @@ export default function useDrag(
       target.removeEventListener('mousedown', onMouseDown as $FixMe)
       target.removeEventListener('click', preventUnwantedClick as $FixMe)
 
-      if (modeRef.current !== 'notDragging') {
-        callbacksRef.current.onDragEnd?.(modeRef.current === 'dragging')
+      if (stateRef.current.domDragStarted) {
+        callbacksRef.current.onDragEnd?.(stateRef.current.detection.detected)
       }
-      modeRef.current = 'notDragging'
+      stateRef.current = {domDragStarted: false}
     }
   }, [target])
 
-  return [mode === 'dragging']
+  const isDragging =
+    stateRef.current.domDragStarted && stateRef.current.detection.detected
+
+  useCssCursorLock(
+    isDragging && !!opts.lockCSSCursorTo,
+    'dragging',
+    opts.lockCSSCursorTo,
+  )
+
+  return [isDragging]
 }
 
 /**
@@ -280,6 +342,18 @@ export default function useDrag(
  * @param event - MouseEvent from onDrag
  * @returns
  */
-function didPointerLockCauseMovement(event: MouseEvent) {
-  return Math.abs(event.movementX) > 100 || Math.abs(event.movementY) > 100
+function didPointerLockCauseMovement(
+  event: MouseEvent,
+  state: IUseDragState_Started,
+) {
+  const isEarlyInDragging =
+    !state.detection.detected ||
+    (state.detection.detected && state.detection.dragEventCount < 3)
+
+  return (
+    isEarlyInDragging &&
+    // sudden movement
+    (Math.abs(event.movementX) > DRAG_DETECTION_WAS_POINTER_LOCK_MOVEMENT ||
+      Math.abs(event.movementY) > DRAG_DETECTION_WAS_POINTER_LOCK_MOVEMENT)
+  )
 }
