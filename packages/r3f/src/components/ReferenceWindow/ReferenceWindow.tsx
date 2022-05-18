@@ -1,4 +1,4 @@
-import type { VFC} from 'react';
+import type {VFC} from 'react'
 import React, {useEffect, useLayoutEffect, useRef} from 'react'
 import {useEditorStore} from '../../store'
 import shallow from 'zustand/shallow'
@@ -6,8 +6,8 @@ import type {WebGLRenderer} from 'three'
 import useMeasure from 'react-use-measure'
 import styled, {keyframes} from 'styled-components'
 import {TiWarningOutline} from 'react-icons/ti'
-// @ts-ignore
-import staticImgUrl from './noise-transparent.png'
+// This is ugly, but pure TS doesn't let you do bundler-stuff
+import noiseImageUrl from './noiseImage'
 
 const Container = styled.div`
   position: relative;
@@ -50,7 +50,7 @@ const Static = styled.div`
     left: -50%;
     right: -50%;
     bottom: -50%;
-    background: #2f2f2f url(${staticImgUrl}) repeat 0 0;
+    background: #2f2f2f url(${noiseImageUrl}) repeat 0 0;
     animation: ${staticAnimation} 0.2s infinite;
   }
 `
