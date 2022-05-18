@@ -29,7 +29,7 @@ const packagesToPublish = [
  * ```
  */
 function stripTag(version) {
-  const regExp = /^[0-9]\.[0-9]\.[0-9]/g
+  const regExp = /^[0-9]+\.[0-9]+\.[0-9]+/g
   const matches = version.match(regExp)
   if (!matches) {
     throw new Error(`Version number not found in "${version}"`)
@@ -80,7 +80,13 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
     )
 
     let {version, dependencies, peerDependencies, devDependencies} = original
+    // The @theatre/r3f package curently doesn't track the same version number of the other packages like @theatre/core,
+    // so we need to generate version numbers independently for each package
     version = getNewVersionName(workspaceData.name, latestCommitHash)
+    // Normally we don't have to override the package versions in dependencies because yarn would already convert
+    // all the "workspace:*" versions to a fixed version before publishing. However, packages like @theatre/studio
+    // have a peerDependency on @theatre/core set to "*" (meaning they would work with any version of @theatre/core).
+    // This is not the desired behavior in pre-release versions, so here, we'll fix those "*" versions to the set version.
     for (const deps of [dependencies, peerDependencies, devDependencies]) {
       if (!deps) continue
       for (const wpObject of workspacesListObjects) {
@@ -109,22 +115,26 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
 }
 
 ;(async function () {
+  // @ts-ignore ignore
   process.env.THEATRE_IS_PUBLISHING = true
   // In the CI `git log -1` points to a fake merge commit,
   // so we have to use the value of a special GitHub context variable
   // through the `LATEST_COMMIT_HASH` environmental variable.
-  //
+
   // The length of the abbreviated commit hash can change, that's why we
   // need the lenght of the fake merge commit's abbreviated hash.
-  const fakeMergeCommitHash = await $`git log -1 --pretty=format:%h`
+  const fakeMergeCommitHashLength = (await $`git log -1 --pretty=format:%h`)
+    .stdout.length
+
   const latestCommitHash = process.env.LATEST_COMMIT_HASH.slice(
     0,
-    fakeMergeCommitHash.stdout.length,
+    fakeMergeCommitHashLength,
   )
 
   const workspacesListString = await $`yarn workspaces list --json`
   const workspacesListObjects = workspacesListString.stdout
     .split(os.EOL)
+    // strip out empty lines
     .filter(Boolean)
     .map((x) => JSON.parse(x))
 
@@ -133,7 +143,7 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
   await Promise.all(
     packagesToPublish.map((workspaceName) => {
       const npmTag = 'insiders'
-      $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
+      return $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
     }),
   )
 })()

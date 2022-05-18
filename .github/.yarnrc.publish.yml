@@ -1,5 +1,6 @@
-# Auth config for the publish registry (npm)
-# It should be only used in the CI.
+# Auth config for publishing to npm registry.
+# It's put in /.github so it's only picked up by
+# github actions.
 
 npmPublishRegistry: 'https://registry.npmjs.org'
 
