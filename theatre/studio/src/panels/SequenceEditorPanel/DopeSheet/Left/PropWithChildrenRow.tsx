@@ -6,9 +6,7 @@ import {usePrism} from '@theatre/react'
 import React from 'react'
 import AnyCompositeRow from './AnyCompositeRow'
 import PrimitivePropRow from './PrimitivePropRow'
-import {useSequenceEditorCollapsable} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/useSequenceEditorCollapsable'
-import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
-
+import {setCollapsedSheetObjectOrCompoundProp} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/setCollapsedSheetObjectOrCompoundProp'
 export const decideRowByPropType = (
   leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp,
 ): React.ReactElement =>
@@ -27,19 +25,15 @@ export const decideRowByPropType = (
 const PropWithChildrenRow: React.VFC<{
   leaf: SequenceEditorTree_PropWithChildren
 }> = ({leaf}) => {
-  const collapsable = useSequenceEditorCollapsable(
-    createStudioSheetItemKey.forSheetObjectProp(
-      leaf.sheetObject,
-      leaf.pathToProp,
-    ),
-  )
-
   return usePrism(() => {
     return (
       <AnyCompositeRow
         leaf={leaf}
         label={leaf.pathToProp[leaf.pathToProp.length - 1]}
-        collapsable={collapsable}
+        isCollapsed={leaf.isCollapsed}
+        toggleCollapsed={() =>
+          setCollapsedSheetObjectOrCompoundProp(!leaf.isCollapsed, leaf)
+        }
       >
         {leaf.children.map((propLeaf) => decideRowByPropType(propLeaf))}
       </AnyCompositeRow>

@@ -186,7 +186,11 @@ export function sequenceEditorPanelLayout(
       .stateBySheetId[sheet.address.sheetId]
 
   return prism(() => {
-    const tree = subPrism('tree', () => calculateSequenceEditorTree(sheet), [])
+    const tree = subPrism(
+      'tree',
+      () => calculateSequenceEditorTree(sheet, studio),
+      [],
+    )
 
     const panelDims = val(panelDimsP)
     const graphEditorState = val(

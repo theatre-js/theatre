@@ -5,20 +5,15 @@ import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
 import {decideRowByPropType} from './PropWithChildrenRow'
 import RightRow from './Row'
-import {useSequenceEditorCollapsable} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/useSequenceEditorCollapsable'
-import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 
 const RightSheetObjectRow: React.VFC<{
   leaf: SequenceEditorTree_SheetObject
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({leaf, layoutP}) => {
-  const collapsable = useSequenceEditorCollapsable(
-    createStudioSheetItemKey.forSheetObject(leaf.sheetObject),
-  )
   return usePrism(() => {
     const node = <div />
     return (
-      <RightRow leaf={leaf} node={node} collapsable={collapsable}>
+      <RightRow leaf={leaf} node={node} isCollapsed={leaf.isCollapsed}>
         {leaf.children.map((leaf) => decideRowByPropType(leaf, layoutP))}
       </RightRow>
     )

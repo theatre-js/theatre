@@ -490,10 +490,9 @@ namespace stateEditors {
                     stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
                       p,
                     )
-                  let existing = seq.sequenceEditorCollapsableItems
+                  let existing = seq.collapsableItems
                   if (!existing) {
-                    existing = seq.sequenceEditorCollapsableItems =
-                      pointableSetUtil.create()
+                    existing = seq.collapsableItems = pointableSetUtil.create()
                   }
                   return existing
                 }

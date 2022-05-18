@@ -28,7 +28,6 @@ import {
   TitleBar_Punctuation,
 } from '@theatre/studio/panels/BasePanel/common'
 import type {UIPanelId} from '@theatre/shared/utils/ids'
-import {ProvideCollapsable} from './DopeSheet/useSequenceEditorCollapsable'
 
 const Container = styled(PanelWrapper)`
   z-index: ${panelZIndexes.sequenceEditorPanel};
@@ -164,17 +163,15 @@ const Content: React.VFC<{}> = () => {
     return (
       <Container ref={containerRef}>
         <LeftBackground style={{width: `${val(layoutP.leftDims.width)}px`}} />
-        <ProvideCollapsable sheetId={sheet.address.sheetId} layoutP={layoutP}>
-          <FrameStampPositionProvider layoutP={layoutP}>
-            <Header layoutP={layoutP} />
-            <DopeSheet key={key + '-dopeSheet'} layoutP={layoutP} />
-            {graphEditorOpen && (
-              <GraphEditor key={key + '-graphEditor'} layoutP={layoutP} />
-            )}
-            {graphEditorAvailable && <GraphEditorToggle layoutP={layoutP} />}
-            <RightOverlay layoutP={layoutP} />
-          </FrameStampPositionProvider>
-        </ProvideCollapsable>
+        <FrameStampPositionProvider layoutP={layoutP}>
+          <Header layoutP={layoutP} />
+          <DopeSheet key={key + '-dopeSheet'} layoutP={layoutP} />
+          {graphEditorOpen && (
+            <GraphEditor key={key + '-graphEditor'} layoutP={layoutP} />
+          )}
+          {graphEditorAvailable && <GraphEditorToggle layoutP={layoutP} />}
+          <RightOverlay layoutP={layoutP} />
+        </FrameStampPositionProvider>
       </Container>
     )
   }, [dims])
