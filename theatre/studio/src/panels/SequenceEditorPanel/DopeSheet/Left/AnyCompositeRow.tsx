@@ -5,8 +5,6 @@ import React from 'react'
 import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
-import type {ICollapsableItem} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/useSequenceEditorCollapsable'
-import {useVal} from '@theatre/react'
 
 export const Container = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -71,9 +69,10 @@ const AnyCompositeRow: React.FC<{
   leaf: SequenceEditorTree_Row<unknown>
   label: React.ReactNode
   toggleSelect?: VoidFn
+  toggleCollapsed: VoidFn
   isSelected?: boolean
   isSelectable?: boolean
-  collapsable?: ICollapsableItem
+  isCollapsed: boolean
 }> = ({
   leaf,
   label,
@@ -81,10 +80,10 @@ const AnyCompositeRow: React.FC<{
   isSelectable,
   isSelected,
   toggleSelect,
-  collapsable,
+  toggleCollapsed,
+  isCollapsed,
 }) => {
   const hasChildren = Array.isArray(children) && children.length > 0
-  const isCollapsed = useVal(collapsable?.isCollapsed) ?? false
 
   return (
     <Container depth={leaf.depth}>
@@ -97,15 +96,12 @@ const AnyCompositeRow: React.FC<{
         onClick={toggleSelect}
         isEven={leaf.n % 2 === 0}
       >
-        <Head_Icon
-          isCollapsed={isCollapsed}
-          onClick={() => collapsable?.toggleCollapsed()}
-        >
+        <Head_Icon isCollapsed={isCollapsed} onClick={toggleCollapsed}>
           <HiOutlineChevronRight />
         </Head_Icon>
         <Head_Label>{label}</Head_Label>
       </Header>
-      {hasChildren && !isCollapsed && <Children>{children}</Children>}
+      {hasChildren && <Children>{children}</Children>}
     </Container>
   )
 }

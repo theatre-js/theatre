@@ -48,7 +48,7 @@ export type StudioAhistoricState = {
                 range: IRange
               }
 
-              sequenceEditorCollapsableItems?: PointableSet<
+              collapsableItems?: PointableSet<
                 StudioSheetItemKey,
                 {
                   isCollapsed: boolean

@@ -27,13 +27,15 @@ const PrimitivePropRow: React.FC<{
       console.error(
         `trackData type ${trackData?.type} is not yet supported on the sequence editor`,
       )
-      return <RightRow leaf={leaf} node={<div />}></RightRow>
+      return (
+        <RightRow leaf={leaf} isCollapsed={false} node={<div />}></RightRow>
+      )
     } else {
       const node = (
         <KeyframedTrack layoutP={layoutP} trackData={trackData} leaf={leaf} />
       )
 
-      return <RightRow leaf={leaf} node={node}></RightRow>
+      return <RightRow leaf={leaf} isCollapsed={false} node={node}></RightRow>
     }
   }, [leaf, layoutP])
 }
