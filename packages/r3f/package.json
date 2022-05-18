@@ -19,9 +19,9 @@
     "url": "https://github.com/AriaMinaei/theatre",
     "directory": "packages/r3f"
   },
-  "main": "dist/esm/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/esm/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "sideEffects": false,
   "files": [
     "dist/**/*"
@@ -30,7 +30,8 @@
     "prepack": "yarn run build",
     "typecheck": "yarn run build",
     "build": "tsc --build ./tsconfig.json",
-    "prepublish": "yarn run build"
+    "prepublish": "yarn run build",
+    "clean": "rm -rf ./dist && rm -f tsconfig.tsbuildinfo"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
