@@ -48,34 +48,3 @@ jobs:
           custom-command: 'yarn test:e2e:ci'
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-
-  Publish:
-    needs: [test]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-      - uses: actions/cache@v2
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install
-      - name: Build the theatre packages
-        run: yarn build
-      - name: Update .yarnrc.yml with the auth config for the publish registry
-        run: cat .github/.yarnrc.publish.yml >> .yarnrc.yml
-      - name: Publish the theatre packages
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          LATEST_COMMIT_HASH: ${{ github.event.pull_request.head.sha }}
-        run: npx zx scripts/dev-release.mjs
