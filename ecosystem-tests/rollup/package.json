@@ -1,0 +1,21 @@
+{
+  "name": "theatre-build_test-rollup",
+  "description": "Theatre.js project using rollup",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.3",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@rollup/plugin-replace": "^4.0.0",
+    "rollup": "^2.36.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "serve": "^11.3.2"
+  },
+  "scripts": {
+    "build": "rollup -c --environment NODE_ENV:'production'",
+    "build-dev": "rollup -c --environment NODE_ENV:'development'",
+    "watch-dev": "rollup -c -w --environment NODE_ENV:'development'",
+    "watch-prod": "rollup -c -w --environment NODE_ENV:'production'",
+    "dev": "yarn watch-dev & serve public",
+    "start": "serve public"
+  }
+}

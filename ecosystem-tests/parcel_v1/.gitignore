@@ -1,0 +1,7 @@
+node_modules
+.cache
+/.vscode
+/.history
+**/.DS_Store
+*.tsbuildinfo
+dist

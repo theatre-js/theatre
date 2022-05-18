@@ -1,0 +1,9 @@
+**/node_modules
+*.log
+*.temp
+/.vscode
+/.history
+**/.DS_Store
+*.tsbuildinfo
+
+dist
