@@ -53,7 +53,13 @@ function App() {
         height: '100vh',
       }}
     >
-      <Canvas dpr={[1.5, 2]} linear shadows frameloop="demand">
+      <Canvas
+        dpr={[1.5, 2]}
+        linear
+        shadows
+        gl={{preserveDrawingBuffer: true}}
+        frameloop="demand"
+      >
         <SheetProvider sheet={getProject('Space').sheet('Scene')}>
           <fog attach="fog" args={[bg, 16, 30]} />
           <color attach="background" args={[bg]} />
