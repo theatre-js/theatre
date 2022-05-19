@@ -1,6 +1,6 @@
-import {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useLayoutEffect, useMemo} from 'react'
 import React from 'react'
-import {Canvas} from '@react-three/fiber'
+import {Canvas, useThree} from '@react-three/fiber'
 import type {BaseSheetObjectType} from '../store'
 import {allRegisteredObjects, useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
@@ -16,7 +16,6 @@ import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
 import {DragDetectorProvider} from './DragDetector'
-import type {Camera, Scene, WebGLRenderer} from 'three'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -41,12 +40,27 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
   snapshotEditorSheet,
   paneId,
 }) => {
+  const [gl, scene, camera] = useThree(
+    (store) => [store.gl, store.scene, store.camera] as const,
+    shallow,
+  )
+
   const [editorCamera, orbitControlsRef] = useSnapshotEditorCamera(
     snapshotEditorSheet,
     paneId,
   )
 
   const editorObject = getEditorSheetObject()
+
+  const viewportLighting =
+    useVal(editorObject?.props.viewport.lighting) ?? 'physical'
+
+  useEffect(() => {
+    if (gl && scene && camera) {
+      gl.physicallyCorrectLights = viewportLighting === 'physical'
+      gl.compile(scene, camera)
+    }
+  }, [gl, viewportLighting, scene, camera])
 
   const helpersRoot = useEditorStore((state) => state.helpersRoot, shallow)
 
@@ -107,12 +121,6 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   const snapshotEditorSheet = getEditorSheet()
   const paneId = props.paneId
   const editorObject = getEditorSheetObject()
-  const [gl, setGL] = useState<WebGLRenderer>()
-  const [scene, setScene] = useState<Scene>()
-  const [camera, setCamera] = useState<Camera>()
-
-  const viewportLighting =
-    useVal(editorObject?.props.viewport.lighting) ?? 'physical'
 
   const [sceneSnapshot, createSnapshot] = useEditorStore(
     (state) => [state.sceneSnapshot, state.createSnapshot],
@@ -133,13 +141,6 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
       }
     }
   }, [editorOpen])
-
-  useEffect(() => {
-    if (gl && scene && camera) {
-      gl.physicallyCorrectLights = viewportLighting === 'physical'
-      gl.compile(scene, camera)
-    }
-  }, [gl, viewportLighting])
 
   const onPointerMissed = useCallback(() => {
     // This callback runs when the user clicks in an empty space inside a SnapshotEditor.
@@ -178,17 +179,11 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
               <>
                 <CanvasWrapper>
                   <Canvas
-                    // @ts-ignore
-                    colorManagement
-                    onCreated={({gl, scene, camera}) => {
+                    onCreated={({gl}) => {
                       gl.setClearColor('white')
-                      setGL(gl)
-                      setScene(scene)
-                      setCamera(camera)
                     }}
-                    shadowMap
+                    shadows
                     dpr={[1, 2]}
-                    fog={'red'}
                     frameloop="demand"
                     onPointerMissed={onPointerMissed}
                   >
