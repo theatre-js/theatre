@@ -4,83 +4,32 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
-import {lighten} from 'polished'
 import React from 'react'
 import {useMemo, useRef} from 'react'
-import styled from 'styled-components'
-import {DOT_SIZE_PX} from './KeyframeDot'
-import type KeyframeEditor from './KeyframeEditor'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
-import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
+import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
+import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
+import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import {COLOR_POPOVER_BACK} from './CurveEditorPopover/colors'
-
-const CONNECTOR_HEIGHT = DOT_SIZE_PX / 2 + 1
-const CONNECTOR_WIDTH_UNSCALED = 1000
+import styled from 'styled-components'
 
 const POPOVER_MARGIN = 5
-
-type IConnectorThemeValues = {
-  isPopoverOpen: boolean
-  isSelected: boolean
-}
-
-export const CONNECTOR_THEME = {
-  normalColor: `#365b59`, // (greenish-blueish)ish
-  popoverOpenColor: `#817720`, // orangey yellowish
-  barColor: (values: IConnectorThemeValues) => {
-    const base = values.isPopoverOpen
-      ? CONNECTOR_THEME.popoverOpenColor
-      : CONNECTOR_THEME.normalColor
-    return values.isSelected ? lighten(0.2, base) : base
-  },
-  hoverColor: (values: IConnectorThemeValues) => {
-    const base = values.isPopoverOpen
-      ? CONNECTOR_THEME.popoverOpenColor
-      : CONNECTOR_THEME.normalColor
-    return values.isSelected ? lighten(0.4, base) : lighten(0.1, base)
-  },
-}
-
-const Container = styled.div<IConnectorThemeValues>`
-  position: absolute;
-  background: ${CONNECTOR_THEME.barColor};
-  height: ${CONNECTOR_HEIGHT}px;
-  width: ${CONNECTOR_WIDTH_UNSCALED}px;
-
-  left: 0;
-  top: -${CONNECTOR_HEIGHT / 2}px;
-  transform-origin: top left;
-  z-index: 0;
-  cursor: ew-resize;
-
-  &:after {
-    display: block;
-    position: absolute;
-    content: ' ';
-    top: -4px;
-    bottom: -4px;
-    left: 0;
-    right: 0;
-  }
-
-  &:hover {
-    background: ${CONNECTOR_THEME.hoverColor};
-  }
-`
 
 const EasingPopover = styled(BasicPopover)`
   --popover-outer-stroke: transparent;
   --popover-inner-stroke: ${COLOR_POPOVER_BACK};
 `
 
-type IProps = Parameters<typeof KeyframeEditor>[0]
+type IBasicKeyframeConnectorProps = ISingleKeyframeEditorProps
 
-const Connector: React.FC<IProps> = (props) => {
+const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
+  props,
+) => {
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
@@ -121,34 +70,27 @@ const Connector: React.FC<IProps> = (props) => {
 
   const connectorLengthInUnitSpace = next.position - cur.position
 
-  const themeValues: IConnectorThemeValues = {
-    isPopoverOpen,
-    isSelected: !!props.selection,
-  }
-
   return (
-    <Container
-      {...themeValues}
+    <ConnectorLine
       ref={nodeRef}
-      style={{
-        // Previously we used scale3d, which had weird fuzzy rendering look in both FF & Chrome
-        transform: `scaleX(calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
-          connectorLengthInUnitSpace / CONNECTOR_WIDTH_UNSCALED
-        }))`,
-      }}
-      onClick={(e) => {
+      connectorLengthInUnitSpace={connectorLengthInUnitSpace}
+      isPopoverOpen={isPopoverOpen}
+      isSelected={!!props.selection}
+      openPopover={(e) => {
         if (node) openPopover(e, node)
       }}
     >
       {popoverNode}
       {contextMenu}
-    </Container>
+    </ConnectorLine>
   )
 }
+export default BasicKeyframeConnector
 
-export default Connector
-
-function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
+function useDragKeyframe(
+  node: HTMLDivElement | null,
+  props: IBasicKeyframeConnectorProps,
+) {
   const propsRef = useRef(props)
   propsRef.current = props
 
@@ -227,9 +169,8 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
 
   useDrag(node, gestureHandlers)
 }
-
 function useConnectorContextMenu(
-  props: IProps,
+  props: IBasicKeyframeConnectorProps,
   node: HTMLDivElement | null,
   cur: Keyframe,
   next: Keyframe,

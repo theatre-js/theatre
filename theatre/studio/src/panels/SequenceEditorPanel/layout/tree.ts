@@ -16,12 +16,25 @@ import logger from '@theatre/shared/logger'
 import {titleBarHeight} from '@theatre/studio/panels/BasePanel/common'
 import type {Studio} from '@theatre/studio/Studio'
 
-export type SequenceEditorTree_Row<Type> = {
-  type: Type
+/**
+ * Base "view model" for each row with common
+ * required information such as row heights & depth.
+ */
+export type SequenceEditorTree_Row<TypeName extends string> = {
+  /** type of this row, e.g. `"sheet"` or `"sheetObject"` */
+  type: TypeName
+  /** Height of just the row in pixels */
   nodeHeight: number
+  /** Height of the row + height with children in pixels */
   heightIncludingChildren: number
+  /** Visual indentation */
   depth: number
+  /**
+   * Distance in pixels from the top of this row to the row container's top
+   * This can be used to help figure out what's being box selected (marquee).
+   */
   top: number
+  /** Row number (e.g. for correctly styling even / odd alternating styles) */
   n: number
 }
 

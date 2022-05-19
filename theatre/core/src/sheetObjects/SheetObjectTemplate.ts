@@ -30,7 +30,7 @@ import {
 import getOrderingOfPropTypeConfig from './getOrderingOfPropTypeConfig'
 
 export type IPropPathToTrackIdTree = {
-  [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
+  [prop in string]?: SequenceTrackId | IPropPathToTrackIdTree
 }
 
 /**

@@ -37,12 +37,21 @@ export type HistoricPositionalSequence = {
   tracksByObject: StrictRecord<
     ObjectAddressKey,
     {
+      // I think this prop path has to be to a basic keyframe track (simple prop)
+      // at least until we have other kinds of "TrackData".
+      // Explicitly, this does not include prop paths for compound props.
       trackIdByPropPath: StrictRecord<string, SequenceTrackId>
       trackData: StrictRecord<SequenceTrackId, TrackData>
     }
   >
 }
 
+/**
+ * Currently just {@link BasicKeyframedTrack}.
+ *
+ * Future: Other types of tracks can be added in, such as `MixedTrack` which would
+ * look like `[keyframes, expression, moreKeyframes, anotherExpression, …]`.
+ */
 export type TrackData = BasicKeyframedTrack
 
 export type Keyframe = {

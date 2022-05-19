@@ -17,6 +17,7 @@ import type {
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {SequenceEditorTree_AllRowTypes} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
+import {collectAggregateKeyframes} from './collectAggregateKeyframes'
 
 const Container = styled.div<{isShiftDown: boolean}>`
   cursor: ${(props) => (props.isShiftDown ? 'cell' : 'default')};
@@ -120,7 +121,41 @@ namespace utils {
       selectionByObjectKey: DopeSheetSelection['byObjectKey'],
     ) => void
   } = {
-    propWithChildren(layoutP, leaf, bounds, selection) {},
+    propWithChildren(layoutP, leaf, bounds, selectionByObjectKey) {
+      const sheetObject = leaf.sheetObject
+      const aggregatedKeyframes = collectAggregateKeyframes(leaf)
+
+      const bottom = leaf.top + leaf.nodeHeight
+      if (bottom > bounds.ys[0]) {
+        // console.error('TODO: in bounds?', {
+        //   top: leaf.top,
+        //   nodeHeight: leaf.nodeHeight,
+        //   ys: bounds.ys,
+        // })
+
+        for (const [position, keyframes] of aggregatedKeyframes.byPosition) {
+          if (position <= bounds.positions[0]) continue
+          if (position >= bounds.positions[1]) break
+
+          // yes selected
+
+          for (const kf of keyframes) {
+            mutableSetDeep(
+              selectionByObjectKey,
+              (selectionByObjectKeyP) =>
+                // convenience for accessing a deep path which might not actually exist
+                // through the use of pointer proxy (so we don't have to deal with undeifned )
+                selectionByObjectKeyP[sheetObject.address.objectKey].byTrackId[
+                  kf.track.id
+                ].byKeyframeId[kf.kf.id],
+              true,
+            )
+          }
+        }
+      }
+
+      collectChildren(layoutP, leaf, bounds, selectionByObjectKey)
+    },
     primitiveProp(layoutP, leaf, bounds, selectionByObjectKey) {
       const {sheetObject, trackId} = leaf
       const trackData = val(

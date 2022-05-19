@@ -66,7 +66,7 @@ const Children = styled.ul`
 `
 
 const AnyCompositeRow: React.FC<{
-  leaf: SequenceEditorTree_Row<unknown>
+  leaf: SequenceEditorTree_Row<string>
   label: React.ReactNode
   toggleSelect?: VoidFn
   toggleCollapsed: VoidFn

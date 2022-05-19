@@ -19,15 +19,15 @@ import {
   lockedCursorCssVarName,
   useCssCursorLock,
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
-import SnapCursor from './SnapCursor.svg'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
-import type {IKeyframeEditorProps} from './KeyframeEditor'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import {useTempTransactionEditingTools} from './useTempTransactionEditingTools'
-import {DeterminePropEditorForKeyframe} from './DeterminePropEditorForKeyframe'
+import {DeterminePropEditorForSingleKeyframe} from './DeterminePropEditorForSingleKeyframe'
+import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
+import {SNAP_CURSOR_SVG_URL} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/SNAP_CURSOR_SVG_URL'
 
 export const DOT_SIZE_PX = 6
 const HIT_ZONE_SIZE_PX = 12
@@ -85,7 +85,7 @@ const HitZone = styled.div`
       height: ${SNAP_CURSOR_SIZE_PX}px;
       display: block;
       content: ' ';
-      background: url(${SnapCursor}) no-repeat 100% 100%;
+      background: url(${SNAP_CURSOR_SVG_URL}) no-repeat 100% 100%;
       // This icon might also fit: GiConvergenceTarget
     }
   }
@@ -99,16 +99,16 @@ const HitZone = styled.div`
   }
 `
 
-type IKeyframeDotProps = IKeyframeEditorProps
+type ISingleKeyframeDotProps = ISingleKeyframeEditorProps
 
 /** The ◆ you can grab onto in "keyframe editor" (aka "dope sheet" in other programs) */
-const KeyframeDot: React.VFC<IKeyframeDotProps> = (props) => {
+const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
-  const [contextMenu] = useKeyframeContextMenu(node, props)
+  const [contextMenu] = useSingleKeyframeContextMenu(node, props)
   const [inlineEditorPopover, openEditor] =
-    useKeyframeInlineEditorPopover(props)
-  const [isDragging] = useDragForKeyframeDot(node, props, {
+    useSingleKeyframeInlineEditorPopover(props)
+  const [isDragging] = useDragForSingleKeyframeDot(node, props, {
     onClickFromDrag(dragStartEvent) {
       openEditor(dragStartEvent, ref.current!)
     },
@@ -129,11 +129,11 @@ const KeyframeDot: React.VFC<IKeyframeDotProps> = (props) => {
   )
 }
 
-export default KeyframeDot
+export default SingleKeyframeDot
 
-function useKeyframeContextMenu(
+function useSingleKeyframeContextMenu(
   target: HTMLDivElement | null,
-  props: IKeyframeDotProps,
+  props: ISingleKeyframeDotProps,
 ) {
   const maybeSelectedKeyframeIds = selectedKeyframeIdsIfInSingleTrack(
     props.selection,
@@ -153,13 +153,13 @@ function useKeyframeContextMenu(
 }
 
 /** The editor that pops up when directly clicking a Keyframe. */
-function useKeyframeInlineEditorPopover(props: IKeyframeDotProps) {
+function useSingleKeyframeInlineEditorPopover(props: ISingleKeyframeDotProps) {
   const editingTools = useEditingToolsForKeyframeEditorPopover(props)
   const label = props.leaf.propConf.label ?? last(props.leaf.pathToProp)
 
   return usePopover({debugName: 'useKeyframeInlineEditorPopover'}, () => (
     <BasicPopover showPopoverEdgeTriangle>
-      <DeterminePropEditorForKeyframe
+      <DeterminePropEditorForSingleKeyframe
         propConfig={props.leaf.propConf}
         editingTools={editingTools}
         keyframeValue={props.keyframe.value}
@@ -169,7 +169,9 @@ function useKeyframeInlineEditorPopover(props: IKeyframeDotProps) {
   ))
 }
 
-function useEditingToolsForKeyframeEditorPopover(props: IKeyframeDotProps) {
+function useEditingToolsForKeyframeEditorPopover(
+  props: ISingleKeyframeDotProps,
+) {
   const obj = props.leaf.sheetObject
   return useTempTransactionEditingTools(({stateEditors}, value) => {
     const newKeyframe = {...props.keyframe, value}
@@ -182,9 +184,9 @@ function useEditingToolsForKeyframeEditorPopover(props: IKeyframeDotProps) {
   })
 }
 
-function useDragForKeyframeDot(
+function useDragForSingleKeyframeDot(
   node: HTMLDivElement | null,
-  props: IKeyframeDotProps,
+  props: ISingleKeyframeDotProps,
   options: {
     /**
      * hmm: this is a hack so we can actually receive the
@@ -277,7 +279,7 @@ function useDragForKeyframeDot(
 }
 
 function deleteSelectionOrKeyframeContextMenuItem(
-  props: IKeyframeDotProps,
+  props: ISingleKeyframeDotProps,
 ): IContextMenuItem {
   return {
     label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
@@ -300,7 +302,7 @@ function deleteSelectionOrKeyframeContextMenuItem(
 }
 
 function copyKeyFrameContextMenuItem(
-  props: IKeyframeDotProps,
+  props: ISingleKeyframeDotProps,
   keyframeIds: string[],
 ): IContextMenuItem {
   return {

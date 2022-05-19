@@ -13,7 +13,7 @@ import fuzzy from 'fuzzy'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import type KeyframeEditor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/KeyframeEditor'
+import type {ISingleKeyframeEditorProps} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/SingleKeyframeEditor'
 import CurveSegmentEditor from './CurveSegmentEditor'
 import EasingOption from './EasingOption'
 import type {CSSCubicBezierArgsString, CubicBezierHandles} from './shared'
@@ -127,7 +127,7 @@ type IProps = {
    * Called when user hits enter/escape
    */
   onRequestClose: (reason: string) => void
-} & Parameters<typeof KeyframeEditor>[0]
+} & ISingleKeyframeEditorProps
 
 const CurveEditorPopover: React.FC<IProps> = (props) => {
   ////// `tempTransaction` //////

@@ -10,16 +10,18 @@ import type {PropConfigForType} from '@theatre/studio/propEditors/utils/PropConf
 import type {ISimplePropEditorReactProps} from '@theatre/studio/propEditors/simpleEditors/ISimplePropEditorReactProps'
 import {simplePropEditorByPropType} from '@theatre/studio/propEditors/simpleEditors/simplePropEditorByPropType'
 
-import KeyframeSimplePropEditor from './DeterminePropEditorForKeyframe/KeyframeSimplePropEditor'
+import SingleKeyframeSimplePropEditor from './DeterminePropEditorForSingleKeyframe/SingleKeyframeSimplePropEditor'
 
-type IDeterminePropEditorForKeyframeProps<K extends PropTypeConfig['type']> = {
+type IDeterminePropEditorForSingleKeyframeProps<
+  K extends PropTypeConfig['type'],
+> = {
   editingTools: IEditingTools<PropConfigForType<K>['valueType']>
   propConfig: PropConfigForType<K>
   keyframeValue: PropConfigForType<K>['valueType']
   displayLabel?: string
 }
 
-const KeyframePropEditorContainer = styled.div`
+const SingleKeyframePropEditorContainer = styled.div`
   padding: 2px;
   display: flex;
   align-items: stretch;
@@ -28,7 +30,7 @@ const KeyframePropEditorContainer = styled.div`
     min-width: 100px;
   }
 `
-const KeyframePropLabel = styled.span`
+const SingleKeyframePropLabel = styled.span`
   font-style: normal;
   font-weight: 400;
   font-size: 11px;
@@ -50,8 +52,8 @@ const KeyframePropLabel = styled.span`
  *
  * @param p - propConfig object for any type of prop.
  */
-export function DeterminePropEditorForKeyframe(
-  p: IDeterminePropEditorForKeyframeProps<PropTypeConfig['type']>,
+export function DeterminePropEditorForSingleKeyframe(
+  p: IDeterminePropEditorForSingleKeyframeProps<PropTypeConfig['type']>,
 ) {
   const propConfig = p.propConfig
 
@@ -66,9 +68,9 @@ export function DeterminePropEditorForKeyframe(
     const PropEditor = simplePropEditorByPropType[propConfig.type]
 
     return (
-      <KeyframePropEditorContainer>
-        <KeyframePropLabel>{p.displayLabel}</KeyframePropLabel>
-        <KeyframeSimplePropEditor
+      <SingleKeyframePropEditorContainer>
+        <SingleKeyframePropLabel>{p.displayLabel}</SingleKeyframePropLabel>
+        <SingleKeyframeSimplePropEditor
           SimpleEditorComponent={
             PropEditor as React.VFC<
               ISimplePropEditorReactProps<PropTypeConfig_AllSimples>
@@ -78,7 +80,7 @@ export function DeterminePropEditorForKeyframe(
           editingTools={p.editingTools}
           keyframeValue={p.keyframeValue}
         />
-      </KeyframePropEditorContainer>
+      </SingleKeyframePropEditorContainer>
     )
   }
 }

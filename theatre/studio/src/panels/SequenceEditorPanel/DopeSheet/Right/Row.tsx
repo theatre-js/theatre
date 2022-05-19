@@ -35,8 +35,9 @@ const Children = styled.ul`
   list-style: none;
 `
 
+
 const RightRow: React.FC<{
-  leaf: SequenceEditorTree_Row<unknown>
+  leaf: SequenceEditorTree_Row<string>
   node: React.ReactElement
   isCollapsed: boolean
 }> = ({leaf, children, node, isCollapsed}) => {
