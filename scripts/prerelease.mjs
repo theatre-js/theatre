@@ -65,8 +65,10 @@ function getNewVersionName(packageName, commitHash) {
  *
  * @param {{name: string, location: string}[]} workspacesListObjects - An Array of objects containing information about the workspaces
  * @param {string} latestCommitHash - Hash of the latest commit
+ * @returns {Promise<Record<string, string>>} - A record of {[packageId]: assignedVersion}
  */
 async function assignVersions(workspacesListObjects, latestCommitHash) {
+  const assignedVersionByPackageName = {}
   for (const workspaceData of workspacesListObjects) {
     const pathToPackage = path.resolve(
       __dirname,
@@ -83,6 +85,7 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
     // The @theatre/r3f package curently doesn't track the same version number of the other packages like @theatre/core,
     // so we need to generate version numbers independently for each package
     version = getNewVersionName(workspaceData.name, latestCommitHash)
+    assignedVersionByPackageName[workspaceData.name] = version
     // Normally we don't have to override the package versions in dependencies because yarn would already convert
     // all the "workspace:*" versions to a fixed version before publishing. However, packages like @theatre/studio
     // have a peerDependency on @theatre/core set to "*" (meaning they would work with any version of @theatre/core).
@@ -112,6 +115,7 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
     )
     await $`prettier --write ${workspaceData.location + '/package.json'}`
   }
+  return assignedVersionByPackageName
 }
 
 ;(async function () {
@@ -138,12 +142,23 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
     .filter(Boolean)
     .map((x) => JSON.parse(x))
 
-  await assignVersions(workspacesListObjects, latestCommitHash)
+  const assignedVersionByPackageName = await assignVersions(
+    workspacesListObjects,
+    latestCommitHash,
+  )
 
   await Promise.all(
-    packagesToPublish.map((workspaceName) => {
+    packagesToPublish.map(async (workspaceName) => {
       const npmTag = 'insiders'
-      return $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
+      await $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
     }),
   )
+
+  for (const packageName of packagesToPublish) {
+    if (process.env.GITHUB_ACTIONS) {
+      await $`echo "Published ${packageName}@${assignedVersionByPackageName[packageName]}" >> $GITHUB_STEP_SUMMARY`
+    } else {
+      await $`echo "Published ${packageName}@${assignedVersionByPackageName[packageName]}"`
+    }
+  }
 })()
