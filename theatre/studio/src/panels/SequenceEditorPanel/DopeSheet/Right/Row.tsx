@@ -46,8 +46,9 @@ const Children = styled.ul`
  * Note that we don't need to change {@link calculateSequenceEditorTree} to be list-based. It can
  * retain its hierarchy. It's just the DOM tree that should be list-based.
  */
+
 const RightRow: React.FC<{
-  leaf: SequenceEditorTree_Row<unknown>
+  leaf: SequenceEditorTree_Row<string>
   node: React.ReactElement
   isCollapsed: boolean
 }> = ({leaf, children, node, isCollapsed}) => {

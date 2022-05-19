@@ -7,7 +7,7 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
-import KeyframeEditor from './KeyframeEditor/KeyframeEditor'
+import SingleKeyframeEditor from './KeyframeEditor/SingleKeyframeEditor'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -57,7 +57,7 @@ const BasicKeyframedTrack: React.FC<BasicKeyframedTracksProps> = React.memo(
     )
 
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
-      <KeyframeEditor
+      <SingleKeyframeEditor
         keyframe={kf}
         index={index}
         trackData={trackData}
