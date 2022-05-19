@@ -9,13 +9,15 @@ import ProxyManager from './ProxyManager'
 import studio, {ToolbarIconButton} from '@theatre/studio'
 import {useVal} from '@theatre/react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
-import {IoCameraReverseOutline} from 'react-icons/io5'
 import type {ISheet} from '@theatre/core'
 import useSnapshotEditorCamera from './useSnapshotEditorCamera'
 import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
 import {DragDetectorProvider} from './DragDetector'
+import TooltipPortalProvider from './TooltipPortalProvider'
+import {FiRefreshCw} from 'react-icons/fi'
+import ReferenceWindow from './ReferenceWindow/ReferenceWindow'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -112,15 +114,25 @@ const Overlay = styled.div`
 
 const Tools = styled.div`
   position: absolute;
-  left: 8px;
-  top: 6px;
+  left: 12px;
+  top: 12px;
   pointer-events: auto;
+`
+
+const ReferenceWindowContainer = styled.div`
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  justify-content: center;
 `
 
 const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   const snapshotEditorSheet = getEditorSheet()
   const paneId = props.paneId
   const editorObject = getEditorSheetObject()
+
+  const showReferenceWindow =
+    useVal(editorObject?.props.viewport.showReferenceWindow) ?? true
 
   const [sceneSnapshot, createSnapshot] = useEditorStore(
     (state) => [state.sceneSnapshot, state.createSnapshot],
@@ -163,40 +175,46 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
       <StyleSheetManager disableVendorPrefixes>
         <>
           <GlobalStyle />
-          <Wrapper>
-            <Overlay>
-              <Tools>
-                <ToolbarIconButton
-                  title="Refresh Snapshot"
-                  onClick={createSnapshot}
-                >
-                  <IoCameraReverseOutline />
-                </ToolbarIconButton>
-              </Tools>
-            </Overlay>
-
-            {sceneSnapshot ? (
-              <>
-                <CanvasWrapper>
-                  <Canvas
-                    onCreated={({gl}) => {
-                      gl.setClearColor('white')
-                    }}
-                    shadows
-                    dpr={[1, 2]}
-                    frameloop="demand"
-                    onPointerMissed={onPointerMissed}
+          <TooltipPortalProvider>
+            <Wrapper>
+              <Overlay>
+                <Tools>
+                  <ToolbarIconButton
+                    title="Refresh Snapshot"
+                    onClick={createSnapshot}
                   >
-                    <EditorScene
-                      snapshotEditorSheet={snapshotEditorSheet}
-                      paneId={paneId}
-                    />
-                  </Canvas>
-                </CanvasWrapper>
-              </>
-            ) : null}
-          </Wrapper>
-          {/* </PortalContext.Provider> */}
+                    <FiRefreshCw />
+                  </ToolbarIconButton>
+                </Tools>
+                {showReferenceWindow && (
+                  <ReferenceWindowContainer>
+                    <ReferenceWindow height={120} />
+                  </ReferenceWindowContainer>
+                )}
+              </Overlay>
+
+              {sceneSnapshot ? (
+                <>
+                  <CanvasWrapper>
+                    <Canvas
+                      onCreated={({gl}) => {
+                        gl.setClearColor('white')
+                      }}
+                      shadows
+                      dpr={[1, 2]}
+                      frameloop="demand"
+                      onPointerMissed={onPointerMissed}
+                    >
+                      <EditorScene
+                        snapshotEditorSheet={snapshotEditorSheet}
+                        paneId={paneId}
+                      />
+                    </Canvas>
+                  </CanvasWrapper>
+                </>
+              ) : null}
+            </Wrapper>
+          </TooltipPortalProvider>
         </>
       </StyleSheetManager>
     </root.div>
