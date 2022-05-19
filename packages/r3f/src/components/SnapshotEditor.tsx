@@ -1,6 +1,6 @@
-import {useCallback, useLayoutEffect, useMemo} from 'react'
+import {useCallback, useEffect, useLayoutEffect, useMemo} from 'react'
 import React from 'react'
-import {Canvas} from '@react-three/fiber'
+import {Canvas, useThree} from '@react-three/fiber'
 import type {BaseSheetObjectType} from '../store'
 import {allRegisteredObjects, useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
@@ -42,12 +42,27 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
   snapshotEditorSheet,
   paneId,
 }) => {
+  const [gl, scene, camera] = useThree(
+    (store) => [store.gl, store.scene, store.camera] as const,
+    shallow,
+  )
+
   const [editorCamera, orbitControlsRef] = useSnapshotEditorCamera(
     snapshotEditorSheet,
     paneId,
   )
 
   const editorObject = getEditorSheetObject()
+
+  const viewportLighting =
+    useVal(editorObject?.props.viewport.lighting) ?? 'physical'
+
+  useEffect(() => {
+    if (gl && scene && camera) {
+      gl.physicallyCorrectLights = viewportLighting === 'physical'
+      gl.compile(scene, camera)
+    }
+  }, [gl, viewportLighting, scene, camera])
 
   const helpersRoot = useEditorStore((state) => state.helpersRoot, shallow)
 
@@ -182,14 +197,11 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                 <>
                   <CanvasWrapper>
                     <Canvas
-                      // @ts-ignore
-                      colorManagement
                       onCreated={({gl}) => {
                         gl.setClearColor('white')
                       }}
-                      shadowMap
+                      shadows
                       dpr={[1, 2]}
-                      fog={'red'}
                       frameloop="demand"
                       onPointerMissed={onPointerMissed}
                     >

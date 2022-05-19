@@ -1,5 +1,5 @@
-import type {ReactNode} from 'react';
-import React, { useState} from 'react'
+import type {ReactNode} from 'react'
+import React, {useState} from 'react'
 import {PortalContext} from 'reakit'
 import styled from 'styled-components'
 

@@ -25,6 +25,14 @@ const editorSheetObjectConfig = {
       showReferenceWindow: types.boolean(true, {
         label: 'Reference',
       }),
+      lighting: types.stringLiteral(
+        'physical',
+        {
+          physical: 'Physical',
+          legacy: 'Legacy',
+        },
+        {as: 'menu', label: 'Lighting'},
+      ),
     },
     {label: 'Viewport Config'},
   ),

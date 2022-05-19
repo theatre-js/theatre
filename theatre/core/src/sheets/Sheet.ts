@@ -21,8 +21,7 @@ type SheetObjectMap = StrictRecord<ObjectAddressKey, SheetObject>
 export type ObjectNativeObject = unknown
 
 export default class Sheet {
-  private readonly _objects: Atom<SheetObjectMap> =
-    new Atom<SheetObjectMap>({})
+  private readonly _objects: Atom<SheetObjectMap> = new Atom<SheetObjectMap>({})
   private _sequence: undefined | Sequence
   readonly address: SheetAddress
   readonly publicApi: TheatreSheet

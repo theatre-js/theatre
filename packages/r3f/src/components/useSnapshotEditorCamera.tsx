@@ -4,7 +4,7 @@ import type {MutableRefObject} from 'react'
 import {useLayoutEffect, useRef} from 'react'
 import React from 'react'
 import useRefAndState from './useRefAndState'
-import type {IScrub} from '@theatre/studio';
+import type {IScrub} from '@theatre/studio'
 import studio from '@theatre/studio'
 import type {PerspectiveCamera as PerspectiveCameraImpl} from 'three'
 import type {ISheet} from '@theatre/core'
