@@ -17,7 +17,7 @@ const SVGPath = styled.path`
 
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
-const GraphEditorNonScalarDash: React.FC<IProps> = (props) => {
+const GraphEditorNonScalarDash: React.VFC<IProps> = (props) => {
   const {index, trackData} = props
 
   const pathD = `M 0 0 L 1 1`

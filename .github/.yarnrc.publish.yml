@@ -1,0 +1,10 @@
+# Auth config for publishing to npm registry.
+# It's put in /.github so it's only picked up by
+# github actions.
+
+npmPublishRegistry: 'https://registry.npmjs.org'
+
+npmRegistries:
+  //registry.npmjs.org:
+    npmAlwaysAuth: true
+    npmAuthToken: ${NODE_AUTH_TOKEN}

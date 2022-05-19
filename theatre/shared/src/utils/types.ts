@@ -37,6 +37,8 @@ export type SerializableMap<
  *
  * However this wouldn't protect against other unserializable stuff, or nested
  * unserializable stuff, since using mapped types seem to break it for some reason.
+ *
+ * TODO: Consider renaming to `SerializableSimple` if this should be aligned with "simple props".
  */
 export type SerializablePrimitive =
   | string
@@ -44,6 +46,13 @@ export type SerializablePrimitive =
   | boolean
   | {r: number; g: number; b: number; a: number}
 
+/**
+ * This type represents all values that can be safely serialized.
+ * Also, it's notable that this type is compatible for dataverse pointer traversal (everything
+ * is path accessible [e.g. `a.b.c`]).
+ *
+ * One example usage is for keyframe values or static overrides such as `Rgba`, `string`, `number`, and "compound values".
+ */
 export type SerializableValue<
   Primitives extends SerializablePrimitive = SerializablePrimitive,
 > = Primitives | SerializableMap
@@ -57,15 +66,14 @@ export type DeepPartialOfSerializableValue<T extends SerializableValue> =
       }
     : T
 
-export type StrictRecord<Key extends string, V> = {[K in Key]?: V}
-
 /**
- * This is supposed to create an "opaque" or "nominal" type, but since typescript
- * doesn't allow generic index signatures, we're leaving it be.
+ * This is equivalent to `Partial<Record<Key, V>>` being used to describe a sort of Map
+ * where the keys might not have values.
  *
- * TODO fix this once https://github.com/microsoft/TypeScript/pull/26797 lands (likely typescript 4.4)
+ * We do not use `Map`s or `Set`s, because they add complexity with converting to
+ * `JSON.stringify` + pointer types.
  */
-export type Nominal<T, N extends string> = T
+export type StrictRecord<Key extends string, V> = {[K in Key]?: V}
 
 /**
  * TODO: We should deprecate this and just use `[start: number, end: number]`
@@ -81,4 +89,4 @@ export type $IntentionalAny = any
  * Represents the `x` or `y` value of getBoundingClientRect().
  * In other words, represents a distance from 0,0 in screen space.
  */
-export type PositionInScreenSpace = Nominal<number, 'ScreenSpaceDim'>
+export type PositionInScreenSpace = number

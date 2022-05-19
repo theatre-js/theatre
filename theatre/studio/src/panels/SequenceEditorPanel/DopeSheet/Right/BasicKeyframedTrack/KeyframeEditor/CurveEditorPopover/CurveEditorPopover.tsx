@@ -1,457 +1,456 @@
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
+import type {KeyboardEvent} from 'react'
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import styled from 'styled-components'
-import fuzzySort from 'fuzzysort'
+import fuzzy from 'fuzzy'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type KeyframeEditor from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/KeyframeEditor'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import CurveSegmentEditor from './CurveSegmentEditor'
+import EasingOption from './EasingOption'
+import type {CSSCubicBezierArgsString, CubicBezierHandles} from './shared'
+import {
+  cssCubicBezierArgsFromHandles,
+  handlesFromCssCubicBezierArgs,
+  EASING_PRESETS,
+  areEasingsSimilar,
+} from './shared'
+import {COLOR_BASE, COLOR_POPOVER_BACK} from './colors'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import {useUIOptionGrid, Outcome} from './useUIOptionGrid'
 
-const presets = [
-  {label: 'Linear', value: '0.5, 0.5, 0.5, 0.5'},
-  {label: 'Back In Out', value: '0.680, -0.550, 0.265, 1.550'},
-  {label: 'Back In', value: '0.600, -0.280, 0.735, 0.045'},
-  {label: 'Back Out', value: '0.175, 0.885, 0.320, 1.275'},
-  {label: 'Circ In Out', value: '0.785, 0.135, 0.150, 0.860'},
-  {label: 'Circ In', value: '0.600, 0.040, 0.980, 0.335'},
-  {label: 'Circ Out', value: '0.075, 0.820, 0.165, 1'},
-  {label: 'Cubic In Out', value: '0.645, 0.045, 0.355, 1'},
-  {label: 'Cubic In', value: '0.550, 0.055, 0.675, 0.190'},
-  {label: 'Cubic Out', value: '0.215, 0.610, 0.355, 1'},
-  {label: 'Ease Out In', value: '.42, 0, .58, 1'},
-  {label: 'Expo In Out', value: '1, 0, 0, 1'},
-  {label: 'Expo Out', value: '0.190, 1, 0.220, 1'},
-  {label: 'Quad In Out', value: '0.455, 0.030, 0.515, 0.955'},
-  {label: 'Quad In', value: '0.550, 0.085, 0.680, 0.530'},
-  {label: 'Quad Out', value: '0.250, 0.460, 0.450, 0.940'},
-  {label: 'Quart In Out', value: '0.770, 0, 0.175, 1'},
-  {label: 'Quart In', value: '0.895, 0.030, 0.685, 0.220'},
-  {label: 'Quart Out', value: '0.165, 0.840, 0.440, 1'},
-  {label: 'Quint In Out', value: '0.860, 0, 0.070, 1'},
-  {label: 'Quint In', value: '0.755, 0.050, 0.855, 0.060'},
-  {label: 'Quint Out', value: '0.230, 1, 0.320, 1'},
-  {label: 'Sine In Out', value: '0.445, 0.050, 0.550, 0.950'},
-  {label: 'Sine In', value: '0.470, 0, 0.745, 0.715'},
-  {label: 'Sine Out', value: '0.390, 0.575, 0.565, 1'},
-]
+const PRESET_COLUMNS = 3
+const PRESET_SIZE = 53
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 230px;
-`
+const APPROX_TOOLTIP_HEIGHT = 25
 
-const InputContainer = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: center;
+const Grid = styled.div`
+  background: ${COLOR_POPOVER_BACK};
+  display: grid;
+  grid-template-areas:
+    'search  tween'
+    'presets tween';
+  grid-template-rows: 32px 1fr;
+  grid-template-columns: ${PRESET_COLUMNS * PRESET_SIZE}px 120px;
+  gap: 1px;
+  height: 120px;
 `
 
 const OptionsContainer = styled.div`
   overflow: auto;
-  max-height: 130px;
+  grid-area: presets;
 
-  // Firefox doesn't let grids overflow their own element when the height is fixed so we need an extra inner div for the grid
-  & > div {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(${PRESET_COLUMNS}, 1fr);
+  grid-auto-rows: min-content;
+  gap: 1px;
+
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  &::-webkit-scrollbar {
+    /* WebKit */
+    width: 0;
+    height: 0;
   }
-`
-
-const EasingOption = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 4px;
-  overflow: hidden;
-
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.75);
-  border-radius: 4px;
-
-  // The candidate preset is going to be applied when enter is pressed
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgb(78, 134, 136);
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-
-  b {
-    text-decoration: underline;
-    // Default underline is too close to the text to be subtle
-    text-underline-offset: 2px;
-    text-decoration-color: rgba(255, 255, 255, 0.3);
-  }
-`
-
-const EasingCurveContainer = styled.div`
-  display: flex;
-  padding: 6px;
-  background: rgba(255, 255, 255, 0.1);
 `
 
 const SearchBox = styled.input.attrs({type: 'text'})`
-  background-color: #10101042;
+  background-color: ${COLOR_BASE};
   border: none;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
-  color: rgba(255, 255, 255, 0.9);
-  padding: 10px;
-  font: inherit;
+  border-radius: 2px;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 6px;
+  font-size: 12px;
   outline: none;
   cursor: text;
   text-align: left;
   width: 100%;
-  height: calc(100% - 4px);
+  height: 100%;
   box-sizing: border-box;
 
+  grid-area: search;
+
+  &:hover {
+    background-color: #212121;
+  }
+
   &:focus {
-    cursor: text;
+    background-color: rgba(16, 16, 16, 0.26);
+    outline: 1px solid rgba(0, 0, 0, 0.35);
   }
 `
 
-const CurveEditorPopover: React.FC<
-  {
-    layoutP: Pointer<SequenceEditorPanelLayout>
+const CurveEditorContainer = styled.div`
+  grid-area: tween;
+  background: ${COLOR_BASE};
+`
 
-    /**
-     * Called when user hits enter/escape
-     */
-    onRequestClose: () => void
-  } & Parameters<typeof KeyframeEditor>[0]
-> = (props) => {
-  const [filter, setFilter] = useState<string>('')
+const NoResultsFoundContainer = styled.div`
+  grid-column: 1 / 4;
+  padding: 6px;
+  color: #888888;
+`
+/**
+ * Tracking for what kinds of events are allowed to change the input's value.
+ */
+enum TextInputMode {
+  /**
+   * Initial mode, don't try to override the value.
+   */
+  init,
+  /**
+   * In `user` mode, the text input field does not update when the curve
+   * changes so that the user's search is preserved.
+   */
+  user,
+  /**
+   * In `auto` mode, the text input field is continually updated to
+   * a CSS cubic bezier args string to reflect the state of the curve.
+   */
+  auto,
+}
 
-  const presetSearchResults = useMemo(
+type IProps = {
+  layoutP: Pointer<SequenceEditorPanelLayout>
+
+  /**
+   * Called when user hits enter/escape
+   */
+  onRequestClose: (reason: string) => void
+} & Parameters<typeof KeyframeEditor>[0]
+
+const CurveEditorPopover: React.FC<IProps> = (props) => {
+  ////// `tempTransaction` //////
+  /*
+   * `tempTransaction` is used for all edits in this popover. The transaction
+   * is discared if the user presses escape, otherwise it is committed when the
+   * popover closes.
+   */
+  const tempTransaction = useRef<CommitOrDiscard | null>(null)
+  useEffect(
     () =>
-      fuzzySort.go(filter, presets, {
-        key: 'label',
-        allowTypo: false,
-      }),
-    [filter],
+      // Clean-up function, called when this React component unmounts.
+      // When it unmounts, we want to commit edits that are outstanding
+      () => {
+        tempTransaction.current?.commit()
+      },
+    [tempTransaction],
   )
 
-  // Whether to interpret the search box input as a search query
-  const useQuery = /^[A-Za-z]/.test(filter)
-  const optionsEmpty = useQuery && presetSearchResults.length === 0
-
-  const displayedPresets = useMemo(
-    () =>
-      useQuery ? presetSearchResults.map((result) => result.obj) : presets,
-    [presetSearchResults, useQuery],
-  )
-
-  const fns = useMemo(() => {
-    let tempTransaction: CommitOrDiscard | undefined
-
-    return {
-      temporarilySetValue(newCurve: string): void {
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
-        }
-
-        const args = cssCubicBezierArgsToHandles(newCurve)!
-        if (!args) {
-          return
-        }
-
-        tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          const {replaceKeyframes} =
-            stateEditors.coreByProject.historic.sheetsById.sequence
-
-          replaceKeyframes({
-            ...props.leaf.sheetObject.address,
-            snappingFunction: val(props.layoutP.sheet).getSequence()
-              .closestGridPosition,
-            trackId: props.leaf.trackId,
-            keyframes: [
-              {
-                ...cur,
-                handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
-              },
-              {
-                ...next,
-                handles: [args[2], args[3], next.handles[2], next.handles[3]],
-              },
-            ],
-          })
-        })
-      },
-      discardTemporaryValue(): void {
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
-        }
-      },
-      permenantlySetValue(newCurve: string): void {
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
-        }
-        const args =
-          cssCubicBezierArgsToHandles(newCurve) ??
-          cssCubicBezierArgsToHandles(presetSearchResults[0].obj.value)
-
-        if (!args) {
-          return
-        }
-
-        getStudio()!.transaction(({stateEditors}) => {
-          const {replaceKeyframes} =
-            stateEditors.coreByProject.historic.sheetsById.sequence
-
-          replaceKeyframes({
-            ...props.leaf.sheetObject.address,
-            snappingFunction: val(props.layoutP.sheet).getSequence()
-              .closestGridPosition,
-            trackId: props.leaf.trackId,
-            keyframes: [
-              {
-                ...cur,
-                handles: [cur.handles[0], cur.handles[1], args[0], args[1]],
-              },
-              {
-                ...next,
-                handles: [args[2], args[3], next.handles[2], next.handles[3]],
-              },
-            ],
-          })
-        })
-
-        props.onRequestClose()
-      },
-    }
-  }, [props.layoutP, props.index, presetSearchResults])
-
-  const inputRef = useRef<HTMLInputElement>(null)
-  useLayoutEffect(() => {
-    inputRef.current!.focus()
-  }, [])
-
+  ////// Keyframe and trackdata //////
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
+  const easing: CubicBezierHandles = [
+    trackData.keyframes[index].handles[2],
+    trackData.keyframes[index].handles[3],
+    trackData.keyframes[index + 1].handles[0],
+    trackData.keyframes[index + 1].handles[1],
+  ]
 
-  // Need some padding *inside* the SVG so that the handles and overshoots are not clipped
-  const svgPadding = 0.12
-  const svgCircleRadius = 0.08
-  const svgColor = '#b98b08'
+  ////// Text input data and reactivity //////
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Select the easing string on popover open for quick copy&paste
+  useLayoutEffect(() => {
+    inputRef.current?.select()
+    inputRef.current?.focus()
+  }, [inputRef.current])
+
+  const [inputValue, setInputValue] = useState<string>(
+    cssCubicBezierArgsFromHandles(easing),
+  )
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTextInputMode(TextInputMode.user)
+    setInputValue(e.target.value)
+
+    const maybeHandles = handlesFromCssCubicBezierArgs(e.target.value)
+    if (maybeHandles) setEdit(e.target.value)
+  }
+  const onSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    setTextInputMode(TextInputMode.user)
+    // Prevent scrolling on arrow key press
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') e.preventDefault()
+
+    if (e.key === 'ArrowDown') {
+      grid.focusFirstItem()
+      optionsRef.current[displayedPresets[0].label]?.current?.focus()
+    } else if (e.key === 'Escape') {
+      discardTempValue(tempTransaction)
+      props.onRequestClose('key Escape')
+    } else if (e.key === 'Enter') {
+      props.onRequestClose('key Enter')
+    }
+  }
+
+  const [textInputMode, setTextInputMode] = useState<TextInputMode>(
+    TextInputMode.init,
+  )
+  useEffect(() => {
+    if (textInputMode === TextInputMode.auto)
+      setInputValue(cssCubicBezierArgsFromHandles(easing))
+  }, [trackData])
+
+  // `edit` keeps track of the current edited state of the curve.
+  const [edit, setEdit] = useState<CSSCubicBezierArgsString | null>(
+    cssCubicBezierArgsFromHandles(easing),
+  )
+  // `preview` is used when hovering over a curve to preview it.
+  const [preview, setPreview] = useState<CSSCubicBezierArgsString | null>(null)
+
+  // When `preview` or `edit` change, use the `tempTransaction` to change the
+  // curve in Theate's data.
+  useMemo(
+    () =>
+      setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? ''),
+    [preview, edit],
+  )
+
+  //////  Curve editing reactivity //////
+  const onCurveChange = (newHandles: CubicBezierHandles) => {
+    setTextInputMode(TextInputMode.auto)
+    const value = cssCubicBezierArgsFromHandles(newHandles)
+    setInputValue(value)
+    setEdit(value)
+
+    // ensure that the text input is selected when curve is changing.
+    inputRef.current?.select()
+    inputRef.current?.focus()
+  }
+  const onCancelCurveChange = () => {}
+
+  ////// Preset reactivity //////
+  const displayedPresets = useMemo(() => {
+    const isInputValueAQuery = /^[A-Za-z]/.test(inputValue)
+
+    if (isInputValueAQuery) {
+      return fuzzy
+        .filter(inputValue, EASING_PRESETS, {
+          extract: (el) => el.label,
+        })
+        .map((result) => result.original)
+    } else {
+      return EASING_PRESETS
+    }
+  }, [inputValue])
+
+  // Use the first preset in the search when the displayed presets change
+  useEffect(() => {
+    if (textInputMode === TextInputMode.user && displayedPresets[0])
+      setEdit(displayedPresets[0].value)
+  }, [displayedPresets])
+
+  ////// Option grid specification and reactivity //////
+  const onEasingOptionKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
+      discardTempValue(tempTransaction)
+      props.onRequestClose('key Escape')
+      e.stopPropagation()
+    } else if (e.key === 'Enter') {
+      props.onRequestClose('key Enter')
+      e.stopPropagation()
+    }
+  }
+  const onEasingOptionMouseOver = (item: {label: string; value: string}) =>
+    setPreview(item.value)
+  const onEasingOptionMouseOut = () => setPreview(null)
+  const onSelectEasingOption = (item: {label: string; value: string}) => {
+    setTempValue(tempTransaction, props, cur, next, item.value)
+    props.onRequestClose('selected easing option')
+
+    return Outcome.Handled
+  }
 
   // A map to store all html elements corresponding to easing options
   const optionsRef = useRef(
-    presets.reduce((acc, curr) => {
+    EASING_PRESETS.reduce((acc, curr) => {
       acc[curr.label] = {current: null}
 
       return acc
     }, {} as {[key: string]: {current: HTMLDivElement | null}}),
   )
 
-  return (
-    <Container>
-      <InputContainer>
-        <SearchBox
-          value={filter}
-          placeholder="Search presets..."
-          onChange={(e) => {
-            setFilter(e.target.value)
-          }}
-          ref={inputRef}
-          onKeyDown={(e) => {
-            if (e.key === 'ArrowDown') {
-              // Prevent scrolling on arrow key press
-              e.preventDefault()
-              optionsRef.current[displayedPresets[0].label].current?.focus()
-            }
-            if (e.key === 'ArrowUp') {
-              // Prevent scrolling on arrow key press
-              e.preventDefault()
-              optionsRef.current[
-                displayedPresets[displayedPresets.length - 1].label
-              ].current?.focus()
-            }
-            if (e.key === 'Escape') {
-              props.onRequestClose()
-            }
-            if (e.key === 'Enter') {
-              fns.permenantlySetValue(filter)
-              props.onRequestClose()
-            }
-          }}
-        />
-      </InputContainer>
-      {!optionsEmpty && (
-        <OptionsContainer onKeyDown={(e) => e.preventDefault()}>
-          {/*Firefox doesn't let grids overflow their own element when the height is fixed so we need an extra inner div for the grid*/}
-          <div>
-            {displayedPresets.map((preset, index) => {
-              const easing = preset.value.split(', ').map((e) => Number(e))
+  const [optionsContainerRef, optionsContainer] =
+    useRefAndState<HTMLDivElement | null>(null)
+  // Keep track of option container scroll position
+  const [optionsScrollPosition, setOptionsScrollPosition] = useState(0)
+  useEffect(() => {
+    const listener = () => {
+      setOptionsScrollPosition(optionsContainer?.scrollTop ?? 0)
+    }
+    optionsContainer?.addEventListener('scroll', listener)
+    return () => optionsContainer?.removeEventListener('scroll', listener)
+  }, [optionsContainer])
 
-              return (
-                <EasingOption
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                      props.onRequestClose()
-                    } else if (e.key === 'Enter') {
-                      fns.permenantlySetValue(preset.value)
-                      props.onRequestClose()
-                    }
-                    if (e.key === 'ArrowRight') {
-                      optionsRef.current[
-                        displayedPresets[(index + 1) % displayedPresets.length]
-                          .label
-                      ].current!.focus()
-                    }
-                    if (e.key === 'ArrowLeft') {
-                      if (preset === displayedPresets[0]) {
-                        optionsRef.current[
-                          displayedPresets[displayedPresets.length - 1].label
-                        ].current?.focus()
-                      } else {
-                        optionsRef.current[
-                          displayedPresets[
-                            (index - 1) % displayedPresets.length
-                          ].label
-                        ].current?.focus()
-                      }
-                    }
-                    if (e.key === 'ArrowUp') {
-                      if (preset === displayedPresets[0]) {
-                        inputRef.current!.focus()
-                      } else if (preset === displayedPresets[1]) {
-                        optionsRef.current[
-                          displayedPresets[0].label
-                        ].current?.focus()
-                      } else {
-                        optionsRef.current[
-                          displayedPresets[index - 2].label
-                        ].current?.focus()
-                      }
-                    }
-                    if (e.key === 'ArrowDown') {
-                      if (
-                        preset === displayedPresets[displayedPresets.length - 1]
-                      ) {
-                        inputRef.current!.focus()
-                      } else if (
-                        preset === displayedPresets[displayedPresets.length - 2]
-                      ) {
-                        optionsRef.current[
-                          displayedPresets[displayedPresets.length - 1].label
-                        ].current?.focus()
-                      } else {
-                        optionsRef.current[
-                          displayedPresets[index + 2].label
-                        ].current?.focus()
-                      }
-                    }
-                  }}
-                  ref={optionsRef.current[preset.label]}
-                  key={preset.label}
-                  onClick={() => {
-                    fns.permenantlySetValue(preset.value)
-                    props.onRequestClose()
-                  }}
-                  // Temporarily apply on hover
-                  onMouseOver={() => {
-                    // When previewing with hover, we don't want to set the filter too
-                    fns.temporarilySetValue(preset.value)
-                  }}
-                  onMouseOut={() => {
-                    fns.discardTemporaryValue()
-                  }}
-                >
-                  <EasingCurveContainer>
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox={`0 0 ${1 + svgPadding * 2} ${
-                        1 + svgPadding * 2
-                      }`}
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d={`M${svgPadding} ${1 + svgPadding} C${
-                          easing[0] + svgPadding
-                        } ${1 - easing[1] + svgPadding} ${
-                          easing[2] + svgPadding
-                        } ${1 - easing[3] + svgPadding} ${
-                          1 + svgPadding
-                        } ${svgPadding}`}
-                        stroke={svgColor}
-                        strokeWidth="0.08"
-                      />
-                      <circle
-                        cx={svgPadding}
-                        cy={1 + svgPadding}
-                        r={svgCircleRadius}
-                        fill={svgColor}
-                      />
-                      <circle
-                        cx={1 + svgPadding}
-                        cy={svgPadding}
-                        r={svgCircleRadius}
-                        fill={svgColor}
-                      />
-                    </svg>
-                  </EasingCurveContainer>
-                  <span>
-                    {useQuery ? (
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: fuzzySort.highlight(
-                            presetSearchResults[index] as any,
-                          )!,
-                        }}
-                      />
-                    ) : (
-                      preset.label
-                    )}
-                  </span>
-                </EasingOption>
-              )
-            })}
-          </div>
-        </OptionsContainer>
-      )}
-    </Container>
+  const grid = useUIOptionGrid({
+    items: displayedPresets,
+    uiColumns: 3,
+    onSelectItem: onSelectEasingOption,
+    canVerticleExit(exitSide) {
+      if (exitSide === 'top') {
+        inputRef.current?.select()
+        inputRef.current?.focus()
+        return Outcome.Handled
+      }
+      return Outcome.Passthrough
+    },
+    renderItem: ({item: preset, select}) => (
+      <EasingOption
+        key={preset.label}
+        easing={preset}
+        tabIndex={0}
+        onKeyDown={onEasingOptionKeydown}
+        ref={optionsRef.current[preset.label]}
+        onMouseOver={() => onEasingOptionMouseOver(preset)}
+        onMouseOut={onEasingOptionMouseOut}
+        onClick={select}
+        tooltipPlacement={
+          (optionsRef.current[preset.label].current?.offsetTop ?? 0) -
+            (optionsScrollPosition ?? 0) <
+          PRESET_SIZE + APPROX_TOOLTIP_HEIGHT
+            ? 'bottom'
+            : 'top'
+        }
+        isSelected={areEasingsSimilar(
+          easing,
+          handlesFromCssCubicBezierArgs(preset.value),
+        )}
+      />
+    ),
+  })
+
+  // When the user navigates highlight between presets, focus the preset el and set the
+  // easing data to match the highlighted preset
+  useLayoutEffect(() => {
+    if (
+      grid.currentSelection !== null &&
+      document.activeElement !== inputRef.current // prevents taking focus away from input
+    ) {
+      const maybePresetEl =
+        optionsRef.current?.[grid.currentSelection.label]?.current
+      maybePresetEl?.focus()
+      setEdit(grid.currentSelection.value)
+      const isInputValueAQuery = /^[A-Za-z]/.test(inputValue)
+      if (!isInputValueAQuery) {
+        setInputValue(grid.currentSelection.value)
+      }
+    }
+  }, [grid.currentSelection])
+
+  return (
+    <Grid>
+      <SearchBox
+        value={inputValue}
+        placeholder="Search presets..."
+        onPaste={setTimeoutFunction(onInputChange)}
+        onChange={onInputChange}
+        ref={inputRef}
+        onKeyDown={onSearchKeyDown}
+      />
+      <OptionsContainer
+        ref={optionsContainerRef}
+        onKeyDown={(evt) => grid.onParentEltKeyDown(evt)}
+      >
+        {grid.gridItems}
+        {grid.gridItems.length === 0 ? (
+          <NoResultsFoundContainer>No results found</NoResultsFoundContainer>
+        ) : undefined}
+      </OptionsContainer>
+      <CurveEditorContainer onClick={() => inputRef.current?.focus()}>
+        <CurveSegmentEditor
+          {...props}
+          onCurveChange={onCurveChange}
+          onCancelCurveChange={onCancelCurveChange}
+        />
+      </CurveEditorContainer>
+    </Grid>
   )
 }
 
 export default CurveEditorPopover
 
-function cssCubicBezierArgsToHandles(
-  str: string,
-):
-  | undefined
-  | [
-      leftHandle2: number,
-      leftHandle3: number,
-      rightHandle0: number,
-      rightHandle1: number,
-    ] {
-  if (str.length > 128) {
-    // string too long
-    return undefined
-  }
-  const args = str.split(',')
-  if (args.length !== 4) return undefined
-  const nums = args.map((arg) => {
-    return Number(arg.trim())
+function setTempValue(
+  tempTransaction: React.MutableRefObject<CommitOrDiscard | null>,
+  props: IProps,
+  cur: Keyframe,
+  next: Keyframe,
+  newCurve: string,
+): void {
+  tempTransaction.current?.discard()
+  tempTransaction.current = null
+
+  const handles = handlesFromCssCubicBezierArgs(newCurve)
+  if (handles === null) return
+
+  tempTransaction.current = transactionSetCubicBezier(props, cur, next, handles)
+}
+
+function discardTempValue(
+  tempTransaction: React.MutableRefObject<CommitOrDiscard | null>,
+): void {
+  tempTransaction.current?.discard()
+  tempTransaction.current = null
+}
+
+function transactionSetCubicBezier(
+  props: IProps,
+  cur: Keyframe,
+  next: Keyframe,
+  newHandles: CubicBezierHandles,
+): CommitOrDiscard {
+  return getStudio().tempTransaction(({stateEditors}) => {
+    const {replaceKeyframes} =
+      stateEditors.coreByProject.historic.sheetsById.sequence
+
+    replaceKeyframes({
+      ...props.leaf.sheetObject.address,
+      snappingFunction: val(props.layoutP.sheet).getSequence()
+        .closestGridPosition,
+      trackId: props.leaf.trackId,
+      keyframes: [
+        {
+          ...cur,
+          handles: [
+            cur.handles[0],
+            cur.handles[1],
+            newHandles[0],
+            newHandles[1],
+          ],
+        },
+        {
+          ...next,
+          handles: [
+            newHandles[2],
+            newHandles[3],
+            next.handles[2],
+            next.handles[3],
+          ],
+        },
+      ],
+    })
   })
+}
 
-  if (!nums.every((v) => isFinite(v))) return undefined
+/**
+ * n mod m without negative results e.g. `mod(-1,5) = 4` contrasted with `-1 % 5 = -1`.
+ *
+ * ref: https://web.archive.org/web/20090717035140if_/javascript.about.com/od/problemsolving/a/modulobug.htm
+ */
+export function mod(n: number, m: number) {
+  return ((n % m) + m) % m
+}
 
-  if (nums[0] < 0 || nums[0] > 1 || nums[2] < 0 || nums[2] > 1) return undefined
-  return nums as $IntentionalAny
+function setTimeoutFunction(f: Function, timeout?: number) {
+  return () => setTimeout(f, timeout)
 }

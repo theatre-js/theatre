@@ -1,163 +1,118 @@
 import type {Object3D} from 'three'
-import {
-  BoxHelper,
-  CameraHelper,
-  DirectionalLightHelper,
-  PointLightHelper,
-  SpotLightHelper,
-} from 'three'
-import type {ReactElement, VFC} from 'react'
-import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
-import {useHelper, Sphere, Html} from '@react-three/drei'
-import type {EditableType} from '../store'
+import type {VFC} from 'react'
+import React, {useEffect, useLayoutEffect, useMemo, useState} from 'react'
+import {Sphere, Html} from '@react-three/drei'
 import {useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
-import {
-  BiSun,
-  BsCameraVideoFill,
-  BsFillCollectionFill,
-  GiCube,
-  GiLightBulb,
-  GiLightProjector,
-} from 'react-icons/all'
-import type {IconType} from 'react-icons'
 import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
 import {getEditorSheetObject} from './editorStuff'
+import type {IconID} from '../icons'
+import icons from '../icons'
+import type {Helper} from '../editableFactoryConfigUtils'
+import {invalidate, useFrame, useThree} from '@react-three/fiber'
+import {useDragDetector} from './DragDetector'
 
 export interface EditableProxyProps {
-  editableName: string
-  editableType: EditableType
+  storeKey: string
   object: Object3D
-  onChange?: () => void
 }
 
-const EditableProxy: VFC<EditableProxyProps> = ({
-  editableName: uniqueName,
-  editableType,
-  object,
-}) => {
+const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
   const editorObject = getEditorSheetObject()
-  const setSnapshotProxyObject = useEditorStore(
-    (state) => state.setSnapshotProxyObject,
+  const [setSnapshotProxyObject, editables] = useEditorStore(
+    (state) => [state.setSnapshotProxyObject, state.editables],
     shallow,
   )
+
+  const dragging = useDragDetector()
+
+  const editable = editables[storeKey]
 
   const selected = useSelected()
   const showOverlayIcons =
     useVal(editorObject?.props.viewport.showOverlayIcons) ?? false
 
   useEffect(() => {
-    setSnapshotProxyObject(object, uniqueName)
+    setSnapshotProxyObject(object, storeKey)
 
-    return () => setSnapshotProxyObject(null, uniqueName)
-  }, [uniqueName, object, setSnapshotProxyObject])
+    return () => setSnapshotProxyObject(null, storeKey)
+  }, [storeKey, object, setSnapshotProxyObject])
 
   useLayoutEffect(() => {
     const originalVisibility = object.visible
 
-    if (object.userData.__visibleOnlyInEditor) {
+    if (editable.visibleOnlyInEditor) {
       object.visible = true
     }
 
     return () => {
-      // this has absolutely no effect, __visibleOnlyInEditor of the snapshot never changes, I'm just doing it because it looks right 🤷‍️
       object.visible = originalVisibility
     }
-  }, [object.userData.__visibleOnlyInEditor, object.visible])
-
-  // set up helper
-  let Helper:
-    | typeof SpotLightHelper
-    | typeof DirectionalLightHelper
-    | typeof PointLightHelper
-    | typeof BoxHelper
-    | typeof CameraHelper
-
-  switch (editableType) {
-    case 'spotLight':
-      Helper = SpotLightHelper
-      break
-    case 'directionalLight':
-      Helper = DirectionalLightHelper
-      break
-    case 'pointLight':
-      Helper = PointLightHelper
-      break
-    case 'perspectiveCamera':
-    case 'orthographicCamera':
-      Helper = CameraHelper
-      break
-    case 'group':
-    case 'mesh':
-      Helper = BoxHelper
-  }
-
-  let helperArgs: [string] | [number, string] | []
-  const size = 1
-  const color = 'darkblue'
-
-  switch (editableType) {
-    case 'directionalLight':
-    case 'pointLight':
-      helperArgs = [size, color]
-      break
-    case 'group':
-    case 'mesh':
-    case 'spotLight':
-      helperArgs = [color]
-      break
-    case 'perspectiveCamera':
-    case 'orthographicCamera':
-      helperArgs = []
-  }
-
-  let icon: ReactElement<IconType>
-  switch (editableType) {
-    case 'group':
-      icon = <BsFillCollectionFill />
-      break
-    case 'mesh':
-      icon = <GiCube />
-      break
-    case 'pointLight':
-      icon = <GiLightBulb />
-      break
-    case 'spotLight':
-      icon = <GiLightProjector />
-      break
-    case 'directionalLight':
-      icon = <BiSun />
-      break
-    case 'perspectiveCamera':
-    case 'orthographicCamera':
-      icon = <BsCameraVideoFill />
-  }
-
-  const objectRef = useRef(object)
-
-  useLayoutEffect(() => {
-    objectRef.current = object
-  }, [object])
-
-  const dimensionless = [
-    'spotLight',
-    'pointLight',
-    'directionalLight',
-    'perspectiveCamera',
-    'orthographicCamera',
-  ]
+  }, [editable.visibleOnlyInEditor, object.visible])
 
   const [hovered, setHovered] = useState(false)
 
-  useHelper(
-    objectRef,
-    selected === uniqueName || dimensionless.includes(editableType) || hovered
-      ? Helper
-      : null,
-    ...helperArgs,
+  // Helpers
+  const scene = useThree((state) => state.scene)
+  const helper = useMemo<Helper | undefined>(
+    () => editable.objectConfig.createHelper?.(object),
+    [object],
   )
+  useEffect(() => {
+    if (helper == undefined) {
+      return
+    }
+
+    if (selected === storeKey || hovered) {
+      scene.add(helper)
+      invalidate()
+    }
+
+    return () => {
+      scene.remove(helper)
+      invalidate()
+    }
+  }, [selected, hovered, helper, scene])
+  useFrame(() => {
+    if (helper == undefined) {
+      return
+    }
+
+    if (helper.update) {
+      helper.update()
+    }
+  })
+  useEffect(() => {
+    if (dragging) {
+      setHovered(false)
+    }
+  }, [dragging])
+
+  // subscribe to external changes
+  useEffect(() => {
+    const sheetObject = editable.sheetObject
+    const objectConfig = editable.objectConfig
+
+    const setFromTheatre = (newValues: any) => {
+      // @ts-ignore
+      Object.entries(objectConfig.props).forEach(([key, value]) => {
+        // @ts-ignore
+        return value.apply(newValues[key], object)
+      })
+      objectConfig.updateObject?.(object)
+      invalidate()
+    }
+
+    setFromTheatre(sheetObject.value)
+
+    const untap = sheetObject.onValuesChange(setFromTheatre)
+
+    return () => {
+      untap()
+    }
+  }, [editable])
 
   return (
     <>
@@ -167,44 +122,57 @@ const EditableProxy: VFC<EditableProxyProps> = ({
             e.stopPropagation()
 
             const theatreObject =
-              useEditorStore.getState().sheetObjects[uniqueName]
+              useEditorStore.getState().editables[storeKey].sheetObject
 
             if (!theatreObject) {
-              console.log('no theatre object for', uniqueName)
+              console.log('no theatre object for', storeKey)
             } else {
               studio.setSelection([theatreObject])
             }
           }
         }}
-        onPointerOver={(e) => {
-          e.stopPropagation()
-          setHovered(true)
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation()
-          setHovered(false)
-        }}
+        onPointerOver={
+          !dragging
+            ? (e) => {
+                e.stopPropagation()
+                setHovered(true)
+              }
+            : undefined
+        }
+        onPointerOut={
+          !dragging
+            ? (e) => {
+                e.stopPropagation()
+                setHovered(false)
+              }
+            : undefined
+        }
       >
         <primitive object={object}>
-          {showOverlayIcons && (
+          {(showOverlayIcons ||
+            (editable.objectConfig.dimensionless && selected !== storeKey)) && (
             <Html
               center
-              className="pointer-events-none p-1 rounded bg-white bg-opacity-70 shadow text-gray-700"
+              style={{
+                pointerEvents: 'none',
+                transform: 'scale(2)',
+                opacity: hovered ? 0.3 : 1,
+              }}
             >
-              {icon}
+              <div>{icons[editable.objectConfig.icon as IconID]}</div>
             </Html>
           )}
-          {dimensionless.includes(editableType) && (
+          {editable.objectConfig.dimensionless && (
             <Sphere
               args={[2, 4, 2]}
               onClick={(e) => {
                 if (e.delta < 2) {
                   e.stopPropagation()
                   const theatreObject =
-                    useEditorStore.getState().sheetObjects[uniqueName]
+                    useEditorStore.getState().editables[storeKey].sheetObject
 
                   if (!theatreObject) {
-                    console.log('no theatre object for', uniqueName)
+                    console.log('no theatre object for', storeKey)
                   } else {
                     studio.setSelection([theatreObject])
                   }

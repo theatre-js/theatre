@@ -1,8 +1,9 @@
 import {Atom} from '@theatre/dataverse'
+import type {ProjectId} from '@theatre/shared/utils/ids'
 import type Project from './Project'
 
 interface State {
-  projects: Record<string, Project>
+  projects: Record<ProjectId, Project>
 }
 
 class ProjectsSingleton {
@@ -12,15 +13,15 @@ class ProjectsSingleton {
   /**
    * We're trusting here that each project id is unique
    */
-  add(id: string, project: Project) {
+  add(id: ProjectId, project: Project) {
     this.atom.reduceState(['projects', id], () => project)
   }
 
-  get(id: string): Project | undefined {
+  get(id: ProjectId): Project | undefined {
     return this.atom.getState().projects[id]
   }
 
-  has(id: string) {
+  has(id: ProjectId) {
     return !!this.get(id)
   }
 }

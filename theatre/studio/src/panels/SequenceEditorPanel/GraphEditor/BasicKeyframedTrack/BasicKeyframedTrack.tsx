@@ -11,8 +11,12 @@ import React, {useMemo, useRef, useState} from 'react'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import KeyframeEditor from './KeyframeEditor/KeyframeEditor'
-import {getPropConfigByPath, valueInProp} from '@theatre/shared/propTypes/utils'
-import type {PropTypeConfig} from '@theatre/core/propTypes'
+import {
+  getPropConfigByPath,
+  isPropConfigComposite,
+  valueInProp,
+} from '@theatre/shared/propTypes/utils'
+import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 
 export type ExtremumSpace = {
   fromValueSpace: (v: number) => number
@@ -21,7 +25,7 @@ export type ExtremumSpace = {
   lock(): VoidFn
 }
 
-const BasicKeyframedTrack: React.FC<{
+const BasicKeyframedTrack: React.VFC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
   sheetObject: SheetObject
   pathToProp: PathToProp
@@ -33,7 +37,12 @@ const BasicKeyframedTrack: React.FC<{
     const propConfig = getPropConfigByPath(
       sheetObject.template.config,
       pathToProp,
-    )!
+    )! as PropTypeConfig_AllSimples
+
+    if (isPropConfigComposite(propConfig)) {
+      console.error(`Composite prop types cannot be keyframed`)
+      return <></>
+    }
 
     const [areExtremumsLocked, setAreExtremumsLocked] = useState<boolean>(false)
     const lockExtremums = useMemo(() => {
@@ -55,7 +64,7 @@ const BasicKeyframedTrack: React.FC<{
 
     const extremumSpace: ExtremumSpace = useMemo(() => {
       const extremums =
-        propConfig.isScalar === true
+        propConfig.type === 'number'
           ? calculateScalarExtremums(trackData.keyframes, propConfig)
           : calculateNonScalarExtremums(trackData.keyframes)
 
@@ -92,8 +101,8 @@ const BasicKeyframedTrack: React.FC<{
         layoutP={layoutP}
         sheetObject={sheetObject}
         trackId={trackId}
-        isScalar={propConfig.isScalar === true}
-        key={'keyframe-' + kf.id}
+        isScalar={propConfig.type === 'number'}
+        key={kf.id}
         extremumSpace={cachedExtremumSpace.current}
         color={color}
       />
@@ -118,7 +127,7 @@ type Extremums = [min: number, max: number]
 
 function calculateScalarExtremums(
   keyframes: Keyframe[],
-  propConfig: PropTypeConfig,
+  propConfig: PropTypeConfig_AllSimples,
 ): Extremums {
   let min = Infinity,
     max = -Infinity

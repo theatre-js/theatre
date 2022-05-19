@@ -21,51 +21,44 @@ const PanelDragZone: React.FC<
   const [ref, node] = useRefAndState<HTMLDivElement>(null as $IntentionalAny)
 
   const dragOpts: Parameters<typeof useDrag>[1] = useMemo(() => {
-    let stuffBeforeDrag = panelStuffRef.current
-    let tempTransaction: CommitOrDiscard | undefined
-    let unlock: VoidFn | undefined
     return {
+      debugName: 'PanelDragZone',
       lockCursorTo: 'move',
       onDragStart() {
-        stuffBeforeDrag = panelStuffRef.current
-        if (unlock) {
-          const u = unlock
-          unlock = undefined
-          u()
-        }
-        unlock = panelStuff.addBoundsHighlightLock()
-      },
-      onDrag(dx, dy) {
-        const newDims: typeof panelStuff['dims'] = {
-          ...stuffBeforeDrag.dims,
-          top: stuffBeforeDrag.dims.top + dy,
-          left: stuffBeforeDrag.dims.left + dx,
-        }
-        const position = panelDimsToPanelPosition(newDims, {
-          width: window.innerWidth,
-          height: window.innerHeight,
-        })
+        const stuffBeforeDrag = panelStuffRef.current
+        let tempTransaction: CommitOrDiscard | undefined
 
-        tempTransaction?.discard()
-        tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          stateEditors.studio.historic.panelPositions.setPanelPosition({
-            position,
-            panelId: stuffBeforeDrag.panelId,
-          })
-        })
-      },
-      onDragEnd(dragHappened) {
-        if (unlock) {
-          const u = unlock
-          unlock = undefined
-          u()
+        const unlock = panelStuff.addBoundsHighlightLock()
+
+        return {
+          onDrag(dx, dy) {
+            const newDims: typeof panelStuff['dims'] = {
+              ...stuffBeforeDrag.dims,
+              top: stuffBeforeDrag.dims.top + dy,
+              left: stuffBeforeDrag.dims.left + dx,
+            }
+            const position = panelDimsToPanelPosition(newDims, {
+              width: window.innerWidth,
+              height: window.innerHeight,
+            })
+
+            tempTransaction?.discard()
+            tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+              stateEditors.studio.historic.panelPositions.setPanelPosition({
+                position,
+                panelId: stuffBeforeDrag.panelId,
+              })
+            })
+          },
+          onDragEnd(dragHappened) {
+            unlock()
+            if (dragHappened) {
+              tempTransaction?.commit()
+            } else {
+              tempTransaction?.discard()
+            }
+          },
         }
-        if (dragHappened) {
-          tempTransaction?.commit()
-        } else {
-          tempTransaction?.discard()
-        }
-        tempTransaction = undefined
       },
     }
   }, [])

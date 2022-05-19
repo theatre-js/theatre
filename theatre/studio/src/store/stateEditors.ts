@@ -1,4 +1,5 @@
 import type {
+  HistoricPositionalSequence,
   Keyframe,
   SheetState_Historic,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
@@ -11,7 +12,12 @@ import type {
   WithoutSheetInstance,
 } from '@theatre/shared/utils/addresses'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
-import type {KeyframeId} from '@theatre/shared/utils/ids'
+import type {
+  KeyframeId,
+  SequenceMarkerId,
+  SequenceTrackId,
+  UIPanelId,
+} from '@theatre/shared/utils/ids'
 import {
   generateKeyframeId,
   generateSequenceTrackId,
@@ -35,6 +41,7 @@ import type {
   OutlineSelectionState,
   PanelPosition,
   StudioAhistoricState,
+  StudioHistoricStateSequenceEditorMarker,
 } from './types'
 import {clamp, uniq} from 'lodash-es'
 import {
@@ -47,6 +54,7 @@ import {
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
+import {pointableSetUtil} from '@theatre/shared/utils/PointableSet'
 
 export const setDrafts__onlyMeantToBeCalledByTransaction = (
   drafts: undefined | Drafts,
@@ -58,7 +66,7 @@ export const setDrafts__onlyMeantToBeCalledByTransaction = (
 let currentDrafts: undefined | Drafts
 
 const drafts = (): Drafts => {
-  if (typeof currentDrafts === 'undefined') {
+  if (currentDrafts === undefined) {
     throw new Error(
       `Calling stateEditors outside of a transaction is not allowed.`,
     )
@@ -72,7 +80,7 @@ namespace stateEditors {
     export namespace historic {
       export namespace panelPositions {
         export function setPanelPosition(p: {
-          panelId: string
+          panelId: UIPanelId
           position: PanelPosition
         }) {
           const h = drafts().historic
@@ -244,6 +252,85 @@ namespace stateEditors {
                     path,
                   ])
                 }
+              }
+
+              function _ensureMarkers(sheetAddress: SheetAddress) {
+                const sequenceEditor =
+                  stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId._ensure(
+                    sheetAddress,
+                  ).sequenceEditor
+
+                if (!sequenceEditor.markerSet) {
+                  sequenceEditor.markerSet = pointableSetUtil.create()
+                }
+
+                return sequenceEditor.markerSet
+              }
+
+              export function replaceMarkers(p: {
+                sheetAddress: SheetAddress
+                markers: Array<StudioHistoricStateSequenceEditorMarker>
+                snappingFunction: (p: number) => number
+              }) {
+                const currentMarkerSet = _ensureMarkers(p.sheetAddress)
+
+                const sanitizedMarkers = p.markers
+                  .filter((marker) => {
+                    if (!isFinite(marker.position)) return false
+
+                    return true // marker looks valid
+                  })
+                  .map((marker) => ({
+                    ...marker,
+                    position: p.snappingFunction(marker.position),
+                  }))
+
+                const newMarkersById = keyBy(sanitizedMarkers, 'id')
+
+                /** Usually starts as the "unselected" markers */
+                let markersThatArentBeingReplaced = pointableSetUtil.filter(
+                  currentMarkerSet,
+                  (marker) => marker && !newMarkersById[marker.id],
+                )
+
+                const markersThatArentBeingReplacedByPosition = keyBy(
+                  Object.values(markersThatArentBeingReplaced.byId),
+                  'position',
+                )
+
+                // If the new transformed markers overlap with any existing markers,
+                // we remove the overlapped markers
+                sanitizedMarkers.forEach(({position}) => {
+                  const existingMarkerAtThisPosition =
+                    markersThatArentBeingReplacedByPosition[position]
+                  if (existingMarkerAtThisPosition) {
+                    markersThatArentBeingReplaced = pointableSetUtil.remove(
+                      markersThatArentBeingReplaced,
+                      existingMarkerAtThisPosition.id,
+                    )
+                  }
+                })
+
+                Object.assign(
+                  currentMarkerSet,
+                  pointableSetUtil.merge([
+                    markersThatArentBeingReplaced,
+                    pointableSetUtil.create(
+                      sanitizedMarkers.map((marker) => [marker.id, marker]),
+                    ),
+                  ]),
+                )
+              }
+
+              export function removeMarker(options: {
+                sheetAddress: SheetAddress
+                markerId: SequenceMarkerId
+              }) {
+                const currentMarkerSet = _ensureMarkers(options.sheetAddress)
+                Object.assign(
+                  currentMarkerSet,
+                  pointableSetUtil.remove(currentMarkerSet, options.markerId),
+                )
               }
             }
           }
@@ -429,7 +516,9 @@ namespace stateEditors {
         }
 
         export namespace sequence {
-          export function _ensure(p: WithoutSheetInstance<SheetAddress>) {
+          export function _ensure(
+            p: WithoutSheetInstance<SheetAddress>,
+          ): HistoricPositionalSequence {
             const s = stateEditors.coreByProject.historic.sheetsById._ensure(p)
             s.sequence ??= {
               subUnitsPerUnit: 30,
@@ -529,7 +618,9 @@ namespace stateEditors {
           }
 
           function _getTrack(
-            p: WithoutSheetInstance<SheetObjectAddress> & {trackId: string},
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+            },
           ) {
             return _ensureTracksOfObject(p).trackData[p.trackId]
           }
@@ -540,7 +631,7 @@ namespace stateEditors {
            */
           export function setKeyframeAtPosition<T>(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               position: number
               handles?: [number, number, number, number]
               value: T
@@ -565,6 +656,9 @@ namespace stateEditors {
             )
             if (indexOfLeftKeyframe === -1) {
               keyframes.unshift({
+                // generating the keyframe within the `setKeyframeAtPosition` makes it impossible for us
+                // to make this business logic deterministic, which is important to guarantee for collaborative
+                // editing.
                 id: generateKeyframeId(),
                 position,
                 connectedRight: true,
@@ -585,7 +679,7 @@ namespace stateEditors {
 
           export function unsetKeyframeAtPosition(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               position: number
             },
           ) {
@@ -604,7 +698,7 @@ namespace stateEditors {
 
           export function transformKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               keyframeIds: KeyframeId[]
               translate: number
               scale: number
@@ -633,7 +727,7 @@ namespace stateEditors {
 
           export function deleteKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               keyframeIds: KeyframeId[]
             },
           ) {
@@ -645,9 +739,12 @@ namespace stateEditors {
             )
           }
 
-          export function replaceKeyframes<T>(
+          // Future: consider whether a list of "partial" keyframes requiring `id` is possible to accept
+          //  * Consider how common this pattern is, as this sort of concept would best be encountered
+          //    a few times to start to see an opportunity for improved ergonomics / crdt.
+          export function replaceKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               keyframes: Array<Keyframe>
               snappingFunction: SnappingFunction
             },

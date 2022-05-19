@@ -27,6 +27,7 @@ import {
   TitleBar_Piece,
   TitleBar_Punctuation,
 } from '@theatre/studio/panels/BasePanel/common'
+import type {UIPanelId} from '@theatre/shared/utils/ids'
 
 const Container = styled(PanelWrapper)`
   z-index: ${panelZIndexes.sequenceEditorPanel};
@@ -52,13 +53,14 @@ export const zIndexes = (() => {
     lengthIndicatorStrip: 0,
     playhead: 0,
     currentFrameStamp: 0,
+    marker: 0,
     horizontalScrollbar: 0,
   }
 
   // sort the z-indexes
   let i = -1
   for (const key of Object.keys(s)) {
-    s[key as unknown as keyof typeof s] = i
+    s[key] = i
     i++
   }
 
@@ -83,10 +85,10 @@ const defaultPosition: PanelPosition = {
 
 const minDims = {width: 800, height: 200}
 
-const SequenceEditorPanel: React.FC<{}> = (props) => {
+const SequenceEditorPanel: React.VFC<{}> = (props) => {
   return (
     <BasePanel
-      panelId="sequenceEditor"
+      panelId={'sequenceEditor' as UIPanelId}
       defaultPosition={defaultPosition}
       minDims={minDims}
     >
@@ -95,7 +97,7 @@ const SequenceEditorPanel: React.FC<{}> = (props) => {
   )
 }
 
-const Content: React.FC<{}> = () => {
+const Content: React.VFC<{}> = () => {
   const {dims} = usePanel()
 
   return usePrism(() => {

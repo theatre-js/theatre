@@ -11,8 +11,8 @@ import styled from 'styled-components'
 
 const Container = styled.div`
   position: relative;
-  height: 24px;
-  border-radius: 4px;
+  height: 16px;
+  border-radius: 2px;
 
   background: linear-gradient(
     to right,

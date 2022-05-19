@@ -1,6 +1,6 @@
 import type {VFC} from 'react'
 import React from 'react'
-import {IoCameraOutline} from 'react-icons/all'
+import {IoCameraOutline} from 'react-icons/io5'
 import studio, {ToolbarIconButton} from '@theatre/studio'
 import {useVal} from '@theatre/react'
 import TransformControlsModeSelect from './TransformControlsModeSelect'

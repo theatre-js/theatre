@@ -1,7 +1,7 @@
 import type {VFC} from 'react'
 import React from 'react'
 import type {TransformControlsSpace} from '../../store'
-import {BiCube, BiGlobe} from 'react-icons/all'
+import {BiCube, BiGlobe} from 'react-icons/bi'
 import {ToolbarSwitchSelect} from '@theatre/studio'
 
 export interface TransformControlsSpaceSelectProps {

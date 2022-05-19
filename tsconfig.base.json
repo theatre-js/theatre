@@ -8,6 +8,7 @@
     "target": "ESNext",
     "lib": ["es2017", "dom", "ESNext"],
     "isolatedModules": true,
+    "importsNotUsedAsValues": "error",
     "noFallthroughCasesInSwitch": true,
     "jsx": "react",
     "skipLibCheck": true,

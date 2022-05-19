@@ -1,63 +1,142 @@
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
-import {usePrism} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
-import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
+import {
+  topStripHeight,
+  topStripTheme,
+} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {
+  lockedCursorCssVarName,
+  useCssCursorLock,
+} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
-import {focusRangeStripTheme} from './FocusRangeStrip'
+import {
+  includeLockFrameStampAttrs,
+  useLockFrameStampPosition,
+} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {focusRangeStripTheme, RangeStrip} from './FocusRangeStrip'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 
-const Handler = styled.div`
-  content: ' ';
-  width: ${focusRangeStripTheme.thumbWidth};
-  height: ${() => topStripHeight};
+const TheDiv = styled.div<{enabled: boolean; type: 'start' | 'end'}>`
   position: absolute;
-  ${pointerEventsAutoInNormalMode};
+  top: 0;
+  // the right handle has to be pulled back by its width since its right side indicates its position, not its left side
+  left: ${(props) =>
+    props.type === 'start' ? 0 : -focusRangeStripTheme.thumbWidth}px;
+  transform-origin: left top;
+  width: ${focusRangeStripTheme.thumbWidth}px;
+  height: ${() => topStripHeight - 1}px;
+  z-index: 3;
+
+  --bg: ${({enabled}) =>
+    enabled
+      ? focusRangeStripTheme.enabled.backgroundColor
+      : focusRangeStripTheme.disabled.backgroundColor};
+
   stroke: ${focusRangeStripTheme.enabled.stroke};
   user-select: none;
-  &:hover {
-    background: ${focusRangeStripTheme.highlight.backgroundColor} !important;
+
+  cursor: ${(props) => (props.type === 'start' ? 'w-resize' : 'e-resize')};
+
+  // no pointer events unless pointer-root is in normal mode _and_ the
+  // focus range is enabled
+  #pointer-root & {
+    pointer-events: none;
   }
-`
 
-const dims = (size: number) => `
-  left: ${-size / 2}px;
-  width: ${size}px;
-  height: ${size}px;
-`
+  #pointer-root.normal & {
+    pointer-events: auto;
+  }
 
-const HitZone = styled.div`
-  top: 0;
-  left: 0;
-  transform-origin: left top;
-  position: absolute;
-  z-index: 3;
-  ${dims(focusRangeStripTheme.hitZoneWidth)}
-`
+  #pointer-root.draggingPositionInSequenceEditor & {
+    pointer-events: auto;
+    cursor: var(${lockedCursorCssVarName});
+  }
 
-const Tooltip = styled.div`
-  font-size: 10px;
-  white-space: nowrap;
-  padding: 2px 8px;
-  border-radius: 2px;
-  ${pointerEventsAutoInNormalMode};
-  background-color: #0000004d;
-  display: none;
-  position: absolute;
-  top: -${() => topStripHeight + 2};
-  transform: translateX(-50%);
-  ${HitZone}:hover &, ${Handler}.dragging & {
+  &.dragging {
+    pointer-events: none !important;
+  }
+
+  // highlight the handle if it's hovered, or the whole strip is hovverd
+  ${() => RangeStrip}:hover ~ &, &:hover {
+    --bg: ${focusRangeStripTheme.hover.backgroundColor};
+    stroke: ${focusRangeStripTheme.hover.stroke};
+  }
+
+  // highlight the handle when it's being dragged or the whole strip is being dragged.
+  // using dragging.dragging to give this selector priority, as it seems to be overridden
+  // by the hover selector above
+  &.dragging,
+  ${() => RangeStrip}.dragging.dragging ~ & {
+    --bg: ${focusRangeStripTheme.dragging.backgroundColor};
+    stroke: ${focusRangeStripTheme.dragging.stroke};
+  }
+
+  #pointer-root.draggingPositionInSequenceEditor &:hover {
+    --bg: ${focusRangeStripTheme.dragging.backgroundColor};
+    stroke: #40aaa4;
+  }
+
+  background-color: var(--bg);
+
+  // a larger hit zone
+  &:before {
     display: block;
-    color: white;
-    background-color: '#000000';
+    content: ' ';
+    position: absolute;
+    inset: -8px;
   }
+`
+
+/**
+ * This acts as a bit of a horizontal shadow that covers the frame numbers that show up
+ * right next to the thumb, making the appearance of the focus range more tidy.
+ */
+const ColoredMargin = styled.div<{type: 'start' | 'end'; enabled: boolean}>`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+
+  background: linear-gradient(
+    ${(props) => (props.type === 'start' ? 90 : -90)}deg,
+    var(--bg) 0%,
+    #ffffff00 100%
+  );
+
+  width: 12px;
+  left: ${(props) =>
+    props.type === 'start'
+      ? focusRangeStripTheme.thumbWidth
+      : // pushing the right-side thumb's margin 1px to the right to make sure there is no space
+        // between it and the thumb
+        -focusRangeStripTheme.thumbWidth + 1}px;
+`
+
+const OuterColoredMargin = styled.div<{
+  type: 'start' | 'end'
+}>`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+
+  background: linear-gradient(
+    ${(props) => (props.type === 'start' ? -90 : 90)}deg,
+    ${() => topStripTheme.backgroundColor} 0%,
+    #ffffff00 100%
+  );
+
+  width: 12px;
+  left: ${(props) =>
+    props.type === 'start' ? -12 : focusRangeStripTheme.thumbWidth}px;
 `
 
 const FocusRangeThumb: React.FC<{
@@ -65,8 +144,6 @@ const FocusRangeThumb: React.FC<{
   thumbType: keyof IRange
 }> = ({layoutP, thumbType}) => {
   const [hitZoneRef, hitZoneNode] = useRefAndState<HTMLElement | null>(null)
-  const handlerRef = useRef<HTMLElement | null>(null)
-  const [isDragging, setIsDragging] = useState<boolean>(false)
 
   const existingRangeD = useMemo(
     () =>
@@ -81,146 +158,107 @@ const FocusRangeThumb: React.FC<{
     [layoutP],
   )
 
-  const sheet = val(layoutP.sheet)
-  const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-  let sequence = sheet.getSequence()
-
-  const focusRangeEnabled = existingRangeD.getValue()?.enabled || false
-
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    const defaultRange = {start: 0, end: sequence.length}
-    let range = existingRangeD.getValue()?.range || defaultRange
-    let focusRangeEnabled: boolean
-    let posBeforeDrag = range[thumbType]
-    let tempTransaction: CommitOrDiscard | undefined
-    let dragHappened = false
-    let originalBackground: string
-    let originalStroke: string
-    let minFocusRangeStripWidth: number
-
     return {
+      debugName: 'FocusRangeThumb',
       onDragStart() {
+        let tempTransaction: CommitOrDiscard | undefined
+        let range: IRange
+
+        const sheet = val(layoutP.sheet)
+        const sequence = sheet.getSequence()
+        const defaultRange = {start: 0, end: sequence.length}
         let existingRange = existingRangeD.getValue() || {
           range: defaultRange,
           enabled: false,
         }
-        focusRangeEnabled = existingRange.enabled
-        dragHappened = false
-        sequence = val(layoutP.sheet).getSequence()
-        posBeforeDrag = existingRange.range[thumbType]
-        minFocusRangeStripWidth = scaledSpaceToUnitSpace(
+        const focusRangeEnabled = existingRange.enabled
+
+        const posBeforeDrag = existingRange.range[thumbType]
+        const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+        const minFocusRangeStripWidth = scaledSpaceToUnitSpace(
           focusRangeStripTheme.rangeStripMinWidth,
         )
 
-        if (handlerRef.current) {
-          originalBackground = handlerRef.current.style.background
-          originalStroke = handlerRef.current.style.stroke
-          handlerRef.current.style.background =
-            focusRangeStripTheme.highlight.backgroundColor
-          handlerRef.current.style.stroke =
-            focusRangeStripTheme.highlight.stroke
-          handlerRef.current.style
-          handlerRef.current.classList.add('dragging')
-          setIsDragging(true)
+        return {
+          onDrag(dx, _, event) {
+            let newPosition: number
+            const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {
+              ignore: hitZoneNode,
+            })
+            if (snapPos != null) {
+              newPosition = snapPos
+            }
+
+            range = existingRangeD.getValue()?.range || defaultRange
+            const deltaPos = scaledSpaceToUnitSpace(dx)
+            const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
+            // Make sure that the focus range has a minimal width
+            if (thumbType === 'start') {
+              // Prevent the start thumb from going below 0
+              newPosition = Math.max(
+                Math.min(
+                  oldPosPlusDeltaPos,
+                  range['end'] - minFocusRangeStripWidth,
+                ),
+                0,
+              )
+            } else {
+              // Prevent the start thumb from going over the length of the sequence
+              newPosition = Math.min(
+                Math.max(
+                  oldPosPlusDeltaPos,
+                  range['start'] + minFocusRangeStripWidth,
+                ),
+                sheet.getSequence().length,
+              )
+            }
+
+            const newPositionInFrame = sheet
+              .getSequence()
+              .closestGridPosition(newPosition)
+
+            if (tempTransaction !== undefined) {
+              tempTransaction.discard()
+            }
+
+            tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
+              stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                {
+                  ...sheet.address,
+                  range: {...range, [thumbType]: newPositionInFrame},
+                  enabled: focusRangeEnabled,
+                },
+              )
+            })
+          },
+          onDragEnd(dragHappened) {
+            if (dragHappened) tempTransaction?.commit()
+            else tempTransaction?.discard()
+          },
         }
       },
-      onDrag(dx, _, event) {
-        dragHappened = true
-        range = existingRangeD.getValue()?.range || defaultRange
-
-        const deltaPos = scaledSpaceToUnitSpace(dx)
-        let newPosition: number
-        const oldPosPlusDeltaPos = posBeforeDrag + deltaPos
-
-        // Make sure that the focus range has a minimal width
-        if (thumbType === 'start') {
-          // Prevent the start thumb from going below 0
-          newPosition = Math.max(
-            Math.min(
-              oldPosPlusDeltaPos,
-              range['end'] - minFocusRangeStripWidth,
-            ),
-            0,
-          )
-        } else {
-          // Prevent the start thumb from going over the length of the sequence
-          newPosition = Math.min(
-            Math.max(
-              oldPosPlusDeltaPos,
-              range['start'] + minFocusRangeStripWidth,
-            ),
-            sequence.length,
-          )
-        }
-
-        // Enable snapping
-        const snapTarget = event
-          .composedPath()
-          .find(
-            (el): el is Element =>
-              el instanceof Element &&
-              el !== hitZoneNode &&
-              el.hasAttribute('data-pos'),
-          )
-
-        if (snapTarget) {
-          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
-
-          if (isFinite(snapPos)) {
-            newPosition = snapPos
-          }
-        }
-
-        const newPositionInFrame = sequence.closestGridPosition(newPosition)
-
-        if (tempTransaction !== undefined) {
-          tempTransaction.discard()
-        }
-
-        tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
-          stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-            {
-              ...sheet.address,
-              range: {...range, [thumbType]: newPositionInFrame},
-              enabled: focusRangeEnabled,
-            },
-          )
-        })
-      },
-      onDragEnd() {
-        if (handlerRef.current) {
-          handlerRef.current.classList.remove('dragging')
-          setIsDragging(false)
-
-          if (originalBackground) {
-            handlerRef.current.style.background = originalBackground
-          }
-          if (originalBackground) {
-            handlerRef.current.style.stroke = originalStroke
-          }
-        }
-        if (dragHappened && tempTransaction !== undefined) {
-          tempTransaction.commit()
-        } else if (tempTransaction) {
-          tempTransaction.discard()
-        }
-      },
-      lockCursorTo: thumbType === 'start' ? 'w-resize' : 'e-resize',
     }
-  }, [sheet, scaledSpaceToUnitSpace])
+  }, [layoutP])
 
-  useDrag(hitZoneNode, gestureHandlers)
+  const [isDragging] = useDrag(hitZoneNode, gestureHandlers)
 
-  useCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
+  useCssCursorLock(
+    isDragging,
+    'draggingPositionInSequenceEditor',
+    thumbType === 'start' ? 'w-resize' : 'e-resize',
+  )
+
+  const existingRange = useVal(existingRangeD)
+
+  useLockFrameStampPosition(isDragging, existingRange?.range[thumbType] ?? 0)
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()
-    const defaultRange = {
-      range: {start: 0, end: sequence.length},
-      enabled: false,
-    }
-    const position =
-      existingRange?.range[thumbType] || defaultRange.range[thumbType]
+    if (!existingRange) return null
+    const {enabled} = existingRange
+
+    const position = existingRange.range[thumbType]
 
     let posInClippedSpace: number = val(layoutP.clippedSpace.fromUnitSpace)(
       position,
@@ -230,54 +268,30 @@ const FocusRangeThumb: React.FC<{
       posInClippedSpace < 0 ||
       val(layoutP.clippedSpace.width) < posInClippedSpace
     ) {
-      posInClippedSpace = -1000
+      posInClippedSpace = -10000
     }
 
-    const pointerEvents = focusRangeEnabled ? 'auto' : 'none'
-
-    const background = focusRangeEnabled
-      ? focusRangeStripTheme.disabled.backgroundColor
-      : focusRangeStripTheme.enabled.backgroundColor
-
-    const startHandlerOffset = focusRangeStripTheme.hitZoneWidth / 2
-    const endHandlerOffset =
-      startHandlerOffset - focusRangeStripTheme.thumbWidth
-
-    return existingRange !== undefined ? (
-      <>
-        <HitZone
-          ref={hitZoneRef as $IntentionalAny}
-          data-pos={position.toFixed(3)}
-          style={{
-            transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
-            cursor: thumbType === 'start' ? 'w-resize' : 'e-resize',
-            pointerEvents,
-          }}
-        >
-          <Handler
-            ref={handlerRef as $IntentionalAny}
-            style={{
-              background,
-              left: `${
-                thumbType === 'start' ? startHandlerOffset : endHandlerOffset
-              }px`,
-              pointerEvents,
-            }}
-          >
-            <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
-              <line x1="4" y1="6" x2="4" y2="12" />
-              <line x1="6" y1="6" x2="6" y2="12" />
-            </svg>
-            <Tooltip>
-              {sequence.positionFormatter.formatBasic(sequence.length)}
-            </Tooltip>
-          </Handler>
-        </HitZone>
-      </>
-    ) : (
-      <></>
+    return (
+      <TheDiv
+        ref={hitZoneRef as $IntentionalAny}
+        {...DopeSnap.includePositionSnapAttrs(position)}
+        {...includeLockFrameStampAttrs(position)}
+        className={`${isDragging && 'dragging'} ${enabled && 'enabled'}`}
+        enabled={enabled}
+        type={thumbType}
+        style={{
+          transform: `translate3d(${posInClippedSpace}px, 0, 0)`,
+        }}
+      >
+        <ColoredMargin type={thumbType} enabled={enabled} />
+        <OuterColoredMargin type={thumbType} />
+        <svg viewBox="0 0 9 18" xmlns="http://www.w3.org/2000/svg">
+          <line x1="4" y1="6" x2="4" y2="12" />
+          <line x1="6" y1="6" x2="6" y2="12" />
+        </svg>
+      </TheDiv>
     )
-  }, [layoutP, hitZoneRef, existingRangeD, focusRangeEnabled])
+  }, [layoutP, hitZoneRef, existingRangeD, isDragging])
 }
 
 export default FocusRangeThumb

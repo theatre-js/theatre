@@ -4,6 +4,7 @@
 import {setupTestSheet} from '@theatre/shared/testUtils'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
 import {asSequenceTrackId} from '@theatre/shared/utils/ids'
+import type {ObjectAddressKey, SequenceTrackId} from '@theatre/shared/utils/ids'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {iterateOver} from '@theatre/dataverse'
 
@@ -19,15 +20,15 @@ describe(`SheetObjectTemplate`, () => {
           subUnitsPerUnit: 30,
           length: 10,
           tracksByObject: {
-            obj: {
+            ['obj' as ObjectAddressKey]: {
               trackIdByPropPath: {
                 [encodePathToProp(['position', 'x'])]: asSequenceTrackId('x'),
                 [encodePathToProp(['position', 'invalid'])]:
                   asSequenceTrackId('invalidTrack'),
               },
               trackData: {
-                x: null as $IntentionalAny,
-                invalid: null as $IntentionalAny,
+                ['x' as SequenceTrackId]: null as $IntentionalAny,
+                ['invalid' as SequenceTrackId]: null as $IntentionalAny,
               },
             },
           },
@@ -74,15 +75,15 @@ describe(`SheetObjectTemplate`, () => {
           subUnitsPerUnit: 30,
           length: 10,
           tracksByObject: {
-            obj: {
+            ['obj' as ObjectAddressKey]: {
               trackIdByPropPath: {
                 [encodePathToProp(['position', 'x'])]: asSequenceTrackId('x'),
                 [encodePathToProp(['position', 'invalid'])]:
                   asSequenceTrackId('invalidTrack'),
               },
               trackData: {
-                x: null as $IntentionalAny,
-                invalid: null as $IntentionalAny,
+                ['x' as SequenceTrackId]: null as $IntentionalAny,
+                ['invalid' as SequenceTrackId]: null as $IntentionalAny,
               },
             },
           },

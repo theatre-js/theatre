@@ -105,7 +105,7 @@ const BasicNumberInput: React.FC<{
   value: number
   temporarilySetValue: (v: number) => void
   discardTemporaryValue: () => void
-  permenantlySetValue: (v: number) => void
+  permanentlySetValue: (v: number) => void
   className?: string
   range?: [min: number, max: number]
   isValid?: (v: number) => boolean
@@ -167,7 +167,7 @@ const BasicNumberInput: React.FC<{
         if (curState.valueBeforeEditing === value) {
           propsRef.current.discardTemporaryValue()
         } else {
-          propsRef.current.permenantlySetValue(value)
+          propsRef.current.permanentlySetValue(value)
         }
       }
     }
@@ -243,7 +243,7 @@ const BasicNumberInput: React.FC<{
         if (curState.valueBeforeDragging === value) {
           propsRef.current.discardTemporaryValue()
         } else {
-          propsRef.current.permenantlySetValue(value)
+          propsRef.current.permanentlySetValue(value)
         }
         stateRef.current = {mode: 'noFocus'}
       }

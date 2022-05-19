@@ -12,6 +12,7 @@ export type {
 export type {ISequence} from '@theatre/core/sequences/TheatreSequence'
 export type {ISheetObject} from '@theatre/core/sheetObjects/TheatreSheetObject'
 export type {ISheet} from '@theatre/core/sheets/TheatreSheet'
+export type {UnknownShorthandCompoundProps} from '@theatre/core/propTypes'
 import * as globalVariableNames from '@theatre/shared/globalVariableNames'
 import type StudioBundle from '@theatre/studio/StudioBundle'
 import CoreBundle from './CoreBundle'

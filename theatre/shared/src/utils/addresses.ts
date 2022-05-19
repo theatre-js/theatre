@@ -3,12 +3,13 @@ import type {
   SerializableMap,
   SerializableValue,
 } from '@theatre/shared/utils/types'
+import type {ObjectAddressKey, ProjectId, SheetId, SheetInstanceId} from './ids'
 
 /**
  * Represents the address to a project
  */
 export interface ProjectAddress {
-  projectId: string
+  projectId: ProjectId
 }
 
 /**
@@ -22,8 +23,8 @@ export interface ProjectAddress {
  * ```
  */
 export interface SheetAddress extends ProjectAddress {
-  sheetId: string
-  sheetInstanceId: string
+  sheetId: SheetId
+  sheetInstanceId: SheetInstanceId
 }
 
 /**
@@ -36,7 +37,7 @@ export type WithoutSheetInstance<T extends SheetAddress> = Omit<
 >
 
 export type SheetInstanceOptional<T extends SheetAddress> =
-  WithoutSheetInstance<T> & {sheetInstanceId?: string | undefined}
+  WithoutSheetInstance<T> & {sheetInstanceId?: SheetInstanceId | undefined}
 
 /**
  * Represents the address to a Sheet's Object
@@ -51,7 +52,7 @@ export interface SheetObjectAddress extends SheetAddress {
    * obj.address.objectKey === 'foo'
    * ```
    */
-  objectKey: string
+  objectKey: ObjectAddressKey
 }
 
 export type PathToProp = Array<string | number>

@@ -1,7 +1,7 @@
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
-import {usePrism} from '@theatre/react'
-import type {$IntentionalAny, IRange} from '@theatre/shared/utils/types'
+import {usePrism, useVal} from '@theatre/react'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
@@ -19,17 +19,16 @@ export const focusRangeStripTheme = {
     stroke: '#646568',
   },
   disabled: {
-    backgroundColor: '#282A2C',
+    backgroundColor: '#282a2cc5',
+    stroke: '#595a5d',
   },
-  playing: {
-    backgroundColor: 'red',
-  },
-  highlight: {
+  hover: {
     backgroundColor: '#34373D',
     stroke: '#C8CAC0',
   },
   dragging: {
     backgroundColor: '#3F444A',
+    stroke: '#C8CAC0',
   },
   thumbWidth: 9,
   hitZoneWidth: 26,
@@ -38,22 +37,42 @@ export const focusRangeStripTheme = {
 
 const stripWidth = 1000
 
-const RangeStrip = styled.div`
+export const RangeStrip = styled.div<{enabled: boolean}>`
   position: absolute;
-  height: ${() => topStripHeight};
-  background-color: ${focusRangeStripTheme.enabled.backgroundColor};
+  height: ${() => topStripHeight - 1}px;
+  background-color: ${(props) =>
+    props.enabled
+      ? focusRangeStripTheme.enabled.backgroundColor
+      : focusRangeStripTheme.disabled.backgroundColor};
+  cursor: grab;
   top: 0;
   left: 0;
   width: ${stripWidth}px;
   transform-origin: left top;
   &:hover {
-    background-color: ${focusRangeStripTheme.highlight.backgroundColor};
+    background-color: ${focusRangeStripTheme.hover.backgroundColor};
   }
   &.dragging {
     background-color: ${focusRangeStripTheme.dragging.backgroundColor};
     cursor: grabbing !important;
   }
   ${pointerEventsAutoInNormalMode};
+
+  /* covers the one pixel space between the focus range strip and the top strip
+  of the sequence editor panel, which would have caused that one pixel to act
+  like a panel drag zone */
+  &:after {
+    display: block;
+    content: ' ';
+    position: absolute;
+    bottom: -1px;
+    height: 1px;
+    left: 0;
+    right: 0;
+    background: transparent;
+    pointer-events: normal;
+    z-index: -1;
+  }
 `
 
 /**
@@ -108,14 +127,13 @@ const FocusRangeStrip: React.FC<{
     [layoutP],
   )
 
-  const sheet = val(layoutP.sheet)
-
   const [rangeStripRef, rangeStripNode] = useRefAndState<HTMLElement | null>(
     null,
   )
 
   const [contextMenu] = useContextMenu(rangeStripNode, {
-    items: () => {
+    menuItems: () => {
+      const sheet = val(layoutP.sheet)
       const existingRange = existingRangeD.getValue()
       return [
         {
@@ -156,81 +174,78 @@ const FocusRangeStrip: React.FC<{
     },
   })
 
-  const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+  const scaledSpaceToUnitSpace = useVal(layoutP.scaledSpace.toUnitSpace)
+  const [isDraggingRef, isDragging] = useRefAndState(false)
+  const sheet = useVal(layoutP.sheet)
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    let sequence = sheet.getSequence()
-    let startPosBeforeDrag: number,
-      endPosBeforeDrag: number,
-      tempTransaction: CommitOrDiscard | undefined
-    let dragHappened = false
-    let existingRange: {enabled: boolean; range: IRange<number>} | undefined
-    let target: HTMLDivElement | undefined
     let newStartPosition: number, newEndPosition: number
 
     return {
+      debugName: 'FocusRangeStrip',
       onDragStart(event) {
-        existingRange = existingRangeD.getValue()
+        let tempTransaction: CommitOrDiscard | undefined
+        let existingRange = existingRangeD.getValue()
+        if (!existingRange) return false
 
-        if (existingRange?.enabled === true) {
-          startPosBeforeDrag = existingRange.range.start
-          endPosBeforeDrag = existingRange.range.end
-          dragHappened = false
-          sequence = val(layoutP.sheet).getSequence()
-          target = event.target as HTMLDivElement
-          target.classList.add('dragging')
-        }
-      },
-      onDrag(dx) {
-        existingRange = existingRangeD.getValue()
-        if (existingRange?.enabled) {
-          dragHappened = true
-          const deltaPos = scaledSpaceToUnitSpace(dx)
+        const startPosBeforeDrag = existingRange.range.start
+        const endPosBeforeDrag = existingRange.range.end
+        let dragHappened = false
+        const sequence = val(layoutP.sheet).getSequence()
+        isDraggingRef.current = true
 
-          const start = startPosBeforeDrag + deltaPos
-          let end = endPosBeforeDrag + deltaPos
+        return {
+          onDrag(dx) {
+            existingRange = existingRangeD.getValue()
+            if (existingRange) {
+              dragHappened = true
+              const deltaPos = scaledSpaceToUnitSpace(dx)
 
-          if (end < start) {
-            end = start
-          }
+              const start = startPosBeforeDrag + deltaPos
+              let end = endPosBeforeDrag + deltaPos
 
-          ;[newStartPosition, newEndPosition] = clampRange(
-            [start, end],
-            [0, sequence.length],
-          ).map((pos) => sequence.closestGridPosition(pos))
+              if (end < start) {
+                end = start
+              }
 
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
+              ;[newStartPosition, newEndPosition] = clampRange(
+                [start, end],
+                [0, sequence.length],
+              ).map((pos) => sequence.closestGridPosition(pos))
 
-          tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
-            stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
-              {
-                ...sheet.address,
-                range: {
-                  start: newStartPosition,
-                  end: newEndPosition,
+              if (tempTransaction) {
+                tempTransaction.discard()
+              }
+
+              tempTransaction = getStudio().tempTransaction(
+                ({stateEditors}) => {
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                    {
+                      ...sheet.address,
+                      range: {
+                        start: newStartPosition,
+                        end: newEndPosition,
+                      },
+                      enabled: existingRange?.enabled ?? true,
+                    },
+                  )
                 },
-                enabled: existingRange?.enabled || true,
-              },
-            )
-          })
+              )
+            }
+          },
+          onDragEnd() {
+            isDraggingRef.current = false
+            if (existingRange) {
+              if (dragHappened && tempTransaction !== undefined) {
+                tempTransaction.commit()
+              } else if (tempTransaction) {
+                tempTransaction.discard()
+              }
+            }
+          },
         }
       },
-      onDragEnd() {
-        if (existingRange?.enabled) {
-          if (dragHappened && tempTransaction !== undefined) {
-            tempTransaction.commit()
-          } else if (tempTransaction) {
-            tempTransaction.discard()
-          }
-          tempTransaction = undefined
-        }
-        if (target !== undefined) {
-          target.classList.remove('dragging')
-          target = undefined
-        }
-      },
+
       lockCursorTo: 'grabbing',
     }
   }, [sheet, scaledSpaceToUnitSpace])
@@ -261,37 +276,25 @@ const FocusRangeStrip: React.FC<{
       scaleX = (endX - startX) / stripWidth
     }
 
-    let conditionalStyleProps: {
-      background?: string
-      cursor?: string
-    } = {}
+    if (!existingRange) return <></>
 
-    if (existingRange !== undefined) {
-      if (existingRange.enabled === false) {
-        conditionalStyleProps.background =
-          focusRangeStripTheme.disabled.backgroundColor
-        conditionalStyleProps.cursor = 'default'
-      } else {
-        conditionalStyleProps.cursor = 'grab'
-      }
-    }
-
-    return existingRange === undefined ? (
-      <></>
-    ) : (
+    return (
       <>
         {contextMenu}
         <RangeStrip
           id="range-strip"
+          enabled={existingRange.enabled}
+          className={`${isDragging ? 'dragging' : ''} ${
+            existingRange.enabled ? 'enabled' : ''
+          }`}
           ref={rangeStripRef as $IntentionalAny}
           style={{
             transform: `translateX(${translateX}px) scale(${scaleX}, 1)`,
-            ...conditionalStyleProps,
           }}
         />
       </>
     )
-  }, [layoutP, rangeStripRef, existingRangeD, contextMenu])
+  }, [layoutP, rangeStripRef, existingRangeD, contextMenu, isDragging])
 }
 
 export default FocusRangeStrip

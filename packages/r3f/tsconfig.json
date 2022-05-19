@@ -5,7 +5,6 @@
     "lib": ["ESNext", "DOM"],
     "rootDir": "src",
     "types": ["jest", "node"],
-    "emitDeclarationOnly": true,
     "composite": true
   },
   "references": [{"path": "../../theatre"}],

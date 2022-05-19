@@ -25,6 +25,8 @@ enum ValueTypes {
 export interface IdentityDerivationProvider {
   /**
    * @internal
+   * Future: We could consider using a `Symbol.for("dataverse/IdentityDerivationProvider")` as a key here, similar to
+   * how {@link Iterable} works for `of`.
    */
   readonly $$isIdentityDerivationProvider: true
   /**
@@ -266,7 +268,7 @@ export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
   let derivation = identityDerivationWeakMap.get(meta)
   if (!derivation) {
     const root = meta.root
-    if (!isIdentityChangeProvider(root)) {
+    if (!isIdentityDerivationProvider(root)) {
       throw new Error(
         `Cannot run valueDerivation() on a pointer whose root is not an IdentityChangeProvider`,
       )
@@ -278,8 +280,7 @@ export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
   return derivation as $IntentionalAny
 }
 
-// TODO: Rename it to isIdentityDerivationProvider
-function isIdentityChangeProvider(
+function isIdentityDerivationProvider(
   val: unknown,
 ): val is IdentityDerivationProvider {
   return (
@@ -297,10 +298,16 @@ function isIdentityChangeProvider(
  * For pointers, the value is returned by first creating a derivation, so it is
  * reactive e.g. when used in a `prism`.
  *
- * @param pointerOrDerivationOrPlainValue - The argument to return a value from.
+ * @param input - The argument to return a value from.
  */
-export const val = <P>(
-  pointerOrDerivationOrPlainValue: P,
+export const val = <
+  P extends
+    | PointerType<$IntentionalAny>
+    | IDerivation<$IntentionalAny>
+    | undefined
+    | null,
+>(
+  input: P,
 ): P extends PointerType<infer T>
   ? T
   : P extends IDerivation<infer T>
@@ -308,13 +315,11 @@ export const val = <P>(
   : P extends undefined | null
   ? P
   : unknown => {
-  if (isPointer(pointerOrDerivationOrPlainValue)) {
-    return valueDerivation(
-      pointerOrDerivationOrPlainValue,
-    ).getValue() as $IntentionalAny
-  } else if (isDerivation(pointerOrDerivationOrPlainValue)) {
-    return pointerOrDerivationOrPlainValue.getValue() as $IntentionalAny
+  if (isPointer(input)) {
+    return valueDerivation(input).getValue() as $IntentionalAny
+  } else if (isDerivation(input)) {
+    return input.getValue() as $IntentionalAny
   } else {
-    return pointerOrDerivationOrPlainValue as $IntentionalAny
+    return input as $IntentionalAny
   }
 }

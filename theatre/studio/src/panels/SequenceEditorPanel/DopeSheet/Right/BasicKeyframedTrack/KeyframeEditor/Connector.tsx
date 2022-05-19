@@ -8,47 +8,52 @@ import {lighten} from 'polished'
 import React from 'react'
 import {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import type {
-  SequenceEditorPanelLayout,
-  DopeSheetSelection,
-} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import {dotSize} from './Dot'
+import {DOT_SIZE_PX} from './KeyframeDot'
 import type KeyframeEditor from './KeyframeEditor'
-import type Sequence from '@theatre/core/sequences/Sequence'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
+import {COLOR_POPOVER_BACK} from './CurveEditorPopover/colors'
 
-const connectorHeight = dotSize / 2 + 1
-const connectorWidthUnscaled = 1000
+const CONNECTOR_HEIGHT = DOT_SIZE_PX / 2 + 1
+const CONNECTOR_WIDTH_UNSCALED = 1000
 
-export const connectorTheme = {
-  normalColor: `#365b59`,
-  get hoverColor() {
-    return lighten(0.1, connectorTheme.normalColor)
+const POPOVER_MARGIN = 5
+
+type IConnectorThemeValues = {
+  isPopoverOpen: boolean
+  isSelected: boolean
+}
+
+export const CONNECTOR_THEME = {
+  normalColor: `#365b59`, // (greenish-blueish)ish
+  popoverOpenColor: `#817720`, // orangey yellowish
+  barColor: (values: IConnectorThemeValues) => {
+    const base = values.isPopoverOpen
+      ? CONNECTOR_THEME.popoverOpenColor
+      : CONNECTOR_THEME.normalColor
+    return values.isSelected ? lighten(0.2, base) : base
   },
-  get selectedColor() {
-    return lighten(0.2, connectorTheme.normalColor)
-  },
-  get selectedHoverColor() {
-    return lighten(0.4, connectorTheme.normalColor)
+  hoverColor: (values: IConnectorThemeValues) => {
+    const base = values.isPopoverOpen
+      ? CONNECTOR_THEME.popoverOpenColor
+      : CONNECTOR_THEME.normalColor
+    return values.isSelected ? lighten(0.4, base) : lighten(0.1, base)
   },
 }
 
-const Container = styled.div<{isSelected: boolean}>`
+const Container = styled.div<IConnectorThemeValues>`
   position: absolute;
-  background: ${(props) =>
-    props.isSelected
-      ? connectorTheme.selectedColor
-      : connectorTheme.normalColor};
-  height: ${connectorHeight}px;
-  width: ${connectorWidthUnscaled}px;
+  background: ${CONNECTOR_THEME.barColor};
+  height: ${CONNECTOR_HEIGHT}px;
+  width: ${CONNECTOR_WIDTH_UNSCALED}px;
 
   left: 0;
-  top: -${connectorHeight / 2}px;
+  top: -${CONNECTOR_HEIGHT / 2}px;
   transform-origin: top left;
   z-index: 0;
   cursor: ew-resize;
@@ -64,12 +69,15 @@ const Container = styled.div<{isSelected: boolean}>`
   }
 
   &:hover {
-    background: ${(props) =>
-      props.isSelected
-        ? connectorTheme.selectedHoverColor
-        : connectorTheme.hoverColor};
+    background: ${CONNECTOR_THEME.hoverColor};
   }
 `
+
+const EasingPopover = styled(BasicPopover)`
+  --popover-outer-stroke: transparent;
+  --popover-inner-stroke: ${COLOR_POPOVER_BACK};
+`
+
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
 const Connector: React.FC<IProps> = (props) => {
@@ -77,17 +85,27 @@ const Connector: React.FC<IProps> = (props) => {
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
 
-  const connectorLengthInUnitSpace = next.position - cur.position
-
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
 
+  const {isPointerBeingCaptured} = usePointerCapturing(
+    'KeyframeEditor Connector',
+  )
+
+  const rightDims = val(props.layoutP.rightDims)
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
-    {},
+    {
+      debugName: 'Connector',
+      closeWhenPointerIsDistant: !isPointerBeingCaptured(),
+      constraints: {
+        minX: rightDims.screenX + POPOVER_MARGIN,
+        maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN,
+      },
+    },
     () => {
       return (
-        <BasicPopover>
+        <EasingPopover showPopoverEdgeTriangle={false}>
           <CurveEditorPopover {...props} onRequestClose={closePopover} />
-        </BasicPopover>
+        </EasingPopover>
       )
     },
   )
@@ -101,14 +119,25 @@ const Connector: React.FC<IProps> = (props) => {
   )
   useDragKeyframe(node, props)
 
+  const connectorLengthInUnitSpace = next.position - cur.position
+
+  const themeValues: IConnectorThemeValues = {
+    isPopoverOpen,
+    isSelected: !!props.selection,
+  }
+
   return (
     <Container
-      isSelected={!!props.selection}
+      {...themeValues}
       ref={nodeRef}
       style={{
-        transform: `scale3d(calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
-          connectorLengthInUnitSpace / connectorWidthUnscaled
-        }), 1, 1)`,
+        // Previously we used scale3d, which had weird fuzzy rendering look in both FF & Chrome
+        transform: `scaleX(calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
+          connectorLengthInUnitSpace / CONNECTOR_WIDTH_UNSCALED
+        }))`,
+      }}
+      onClick={(e) => {
+        if (node) openPopover(e, node)
       }}
     >
       {popoverNode}
@@ -124,83 +153,74 @@ function useDragKeyframe(node: HTMLDivElement | null, props: IProps) {
   propsRef.current = props
 
   const gestureHandlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
-    let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
-    let tempTransaction: CommitOrDiscard | undefined
-    let propsAtStartOfDrag: IProps
-    let selectionDragHandlers:
-      | ReturnType<DopeSheetSelection['getDragHandlers']>
-      | undefined
-    let sequence: Sequence
     return {
+      debugName: 'useDragKeyframe',
       lockCursorTo: 'ew-resize',
       onDragStart(event) {
         const props = propsRef.current
+        let tempTransaction: CommitOrDiscard | undefined
+
         if (props.selection) {
           const {selection, leaf} = props
           const {sheetObject} = leaf
-          selectionDragHandlers = selection.getDragHandlers({
-            ...sheetObject.address,
-            pathToProp: leaf.pathToProp,
-            trackId: leaf.trackId,
-            keyframeId: props.keyframe.id,
-            domNode: node!,
-            positionAtStartOfDrag:
-              props.trackData.keyframes[props.index].position,
-          })
-          selectionDragHandlers.onDragStart?.(event)
-          return
+          return selection
+            .getDragHandlers({
+              ...sheetObject.address,
+              pathToProp: leaf.pathToProp,
+              trackId: leaf.trackId,
+              keyframeId: props.keyframe.id,
+              domNode: node!,
+              positionAtStartOfDrag:
+                props.trackData.keyframes[props.index].position,
+            })
+            .onDragStart(event)
         }
 
-        propsAtStartOfDrag = props
-        sequence = val(propsAtStartOfDrag.layoutP.sheet).getSequence()
+        const propsAtStartOfDrag = props
+        const sequence = val(propsAtStartOfDrag.layoutP.sheet).getSequence()
 
-        toUnitSpace = val(propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace)
-      },
-      onDrag(dx, dy, event) {
-        if (selectionDragHandlers) {
-          selectionDragHandlers.onDrag(dx, dy, event)
-          return
-        }
-        const delta = toUnitSpace(dx)
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
-        }
-        tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          stateEditors.coreByProject.historic.sheetsById.sequence.transformKeyframes(
-            {
-              ...propsAtStartOfDrag.leaf.sheetObject.address,
-              trackId: propsAtStartOfDrag.leaf.trackId,
-              keyframeIds: [
-                propsAtStartOfDrag.keyframe.id,
-                propsAtStartOfDrag.trackData.keyframes[
-                  propsAtStartOfDrag.index + 1
-                ].id,
-              ],
-              translate: delta,
-              scale: 1,
-              origin: 0,
-              snappingFunction: sequence.closestGridPosition,
-            },
-          )
-        })
-      },
-      onDragEnd(dragHappened) {
-        if (selectionDragHandlers) {
-          selectionDragHandlers.onDragEnd?.(dragHappened)
+        const toUnitSpace = val(
+          propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace,
+        )
 
-          selectionDragHandlers = undefined
+        return {
+          onDrag(dx, dy, event) {
+            const delta = toUnitSpace(dx)
+            if (tempTransaction) {
+              tempTransaction.discard()
+              tempTransaction = undefined
+            }
+            tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+              stateEditors.coreByProject.historic.sheetsById.sequence.transformKeyframes(
+                {
+                  ...propsAtStartOfDrag.leaf.sheetObject.address,
+                  trackId: propsAtStartOfDrag.leaf.trackId,
+                  keyframeIds: [
+                    propsAtStartOfDrag.keyframe.id,
+                    propsAtStartOfDrag.trackData.keyframes[
+                      propsAtStartOfDrag.index + 1
+                    ].id,
+                  ],
+                  translate: delta,
+                  scale: 1,
+                  origin: 0,
+                  snappingFunction: sequence.closestGridPosition,
+                },
+              )
+            })
+          },
+          onDragEnd(dragHappened) {
+            if (dragHappened) {
+              if (tempTransaction) {
+                tempTransaction.commit()
+              }
+            } else {
+              if (tempTransaction) {
+                tempTransaction.discard()
+              }
+            }
+          },
         }
-        if (dragHappened) {
-          if (tempTransaction) {
-            tempTransaction.commit()
-          }
-        } else {
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
-        }
-        tempTransaction = undefined
       },
     }
   }, [])
@@ -217,7 +237,7 @@ function useConnectorContextMenu(
 ) {
   const maybeKeyframeIds = selectedKeyframeIdsIfInSingleTrack(props.selection)
   return useContextMenu(node, {
-    items: () => {
+    menuItems: () => {
       return [
         {
           label: maybeKeyframeIds ? 'Copy Selection' : 'Copy both Keyframes',

@@ -10,7 +10,13 @@ import {PortalContext} from 'reakit'
 import noop from '@theatre/shared/utils/noop'
 
 export default function useTooltip(
-  opts: {enabled?: boolean; enterDelay?: number; exitDelay?: number},
+  opts: {
+    enabled?: boolean
+    enterDelay?: number
+    exitDelay?: number
+    verticalPlacement?: 'top' | 'bottom' | 'overlay'
+    verticalGap?: number
+  },
   render: () => React.ReactElement,
 ): [
   node: React.ReactNode,
@@ -53,6 +59,8 @@ export default function useTooltip(
           children={render}
           target={targetNode}
           onClickOutside={noop}
+          verticalPlacement={opts.verticalPlacement}
+          verticalGap={opts.verticalGap}
         />,
         portalLayer!,
       )

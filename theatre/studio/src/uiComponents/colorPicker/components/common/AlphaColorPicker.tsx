@@ -15,7 +15,7 @@ import styled from 'styled-components'
 const Container = styled.div`
   position: relative;
   display: flex;
-  gap: 8px;
+  gap: 4px;
   flex-direction: column;
   width: 200px;
   height: 200px;

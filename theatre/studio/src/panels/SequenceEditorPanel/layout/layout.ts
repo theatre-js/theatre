@@ -14,6 +14,11 @@ import {Atom, prism, val} from '@theatre/dataverse'
 import type {SequenceEditorTree} from './tree'
 import {calculateSequenceEditorTree} from './tree'
 import {clamp} from 'lodash-es'
+import type {
+  KeyframeId,
+  ObjectAddressKey,
+  SequenceTrackId,
+} from '@theatre/shared/utils/ids'
 
 // A Side is either the left side of the panel or the right side
 type DimsOfPanelPart = {
@@ -41,20 +46,20 @@ export type PanelDims = {
 export type DopeSheetSelection = {
   type: 'DopeSheetSelection'
   byObjectKey: StrictRecord<
-    string,
+    ObjectAddressKey,
     {
       byTrackId: StrictRecord<
-        string,
+        SequenceTrackId,
         {
-          byKeyframeId: StrictRecord<string, true>
+          byKeyframeId: StrictRecord<KeyframeId, true>
         }
       >
     }
   >
   getDragHandlers(
     origin: PropAddress & {
-      trackId: string
-      keyframeId: string
+      trackId: SequenceTrackId
+      keyframeId: KeyframeId
       positionAtStartOfDrag: number
       domNode: Element
     },
@@ -156,8 +161,8 @@ export type SequenceEditorPanelLayout = {
   selectionAtom: Atom<{current?: DopeSheetSelection}>
 }
 
-// type UnitSpaceProression = Nominal<number, 'unitSpaceProgression'>
-// type ClippedSpaceProgression = Nominal<number, 'ClippedSpaceProgression'>
+// type UnitSpaceProression = number
+// type ClippedSpaceProgression = number
 
 /**
  * This means the left side of the panel is 20% of its width, and the

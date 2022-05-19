@@ -1,7 +1,6 @@
-import type {SheetObjectConfig} from '@theatre/core/sheets/TheatreSheet'
+import type {SheetObjectPropTypeConfig} from '@theatre/core/sheets/TheatreSheet'
 import type {
   $FixMe,
-  $IntentionalAny,
   SerializableMap,
   SerializableValue,
 } from '@theatre/shared/utils/types'
@@ -17,9 +16,9 @@ const cachedDefaults = new WeakMap<PropTypeConfig, SerializableValue>()
  * Generates and caches a default value for the config of a SheetObject.
  */
 export default function getPropDefaultsOfSheetObject(
-  config: SheetObjectConfig<$IntentionalAny>,
+  config: SheetObjectPropTypeConfig,
 ): SerializableMap {
-  return getDefaultsOfPropTypeConfig(config) as $IntentionalAny
+  return getDefaultsOfPropTypeConfig(config) as SerializableMap // sheet objects result in non-primitive objects
 }
 
 function getDefaultsOfPropTypeConfig(

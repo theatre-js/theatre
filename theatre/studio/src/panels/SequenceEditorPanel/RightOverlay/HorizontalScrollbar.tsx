@@ -9,7 +9,7 @@ import {position} from 'polished'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
-import {attributeNameThatLocksFramestamp} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {includeLockFrameStampAttrs} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const Container = styled.div`
@@ -21,8 +21,8 @@ const Container = styled.div`
   width: 100%;
   left: 12px;
   /* bottom: 8px; */
-  ${pointerEventsAutoInNormalMode};
   z-index: ${() => zIndexes.horizontalScrollbar};
+  ${pointerEventsAutoInNormalMode}
 `
 
 const TimeThread = styled.div`
@@ -241,7 +241,7 @@ const HorizontalScrollbar: React.FC<{
   return (
     <Container
       style={{bottom: bottom + 8 + 'px'}}
-      {...{[attributeNameThatLocksFramestamp]: 'hide'}}
+      {...includeLockFrameStampAttrs('hide')}
     >
       <TimeThread>
         <DraggableArea

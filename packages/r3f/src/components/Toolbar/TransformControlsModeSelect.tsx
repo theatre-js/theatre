@@ -1,7 +1,7 @@
 import {ToolbarSwitchSelect} from '@theatre/studio'
 import type {VFC} from 'react'
 import React from 'react'
-import {GiClockwiseRotation, GiMove, GiResize} from 'react-icons/all'
+import {GiClockwiseRotation, GiMove, GiResize} from 'react-icons/gi'
 import type {TransformControlsMode} from '../../store'
 
 export interface TransformControlsModeSelectProps {

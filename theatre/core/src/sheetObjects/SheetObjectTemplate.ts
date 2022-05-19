@@ -1,7 +1,7 @@
 import type Project from '@theatre/core/projects/Project'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
-import type {SheetObjectConfig} from '@theatre/core/sheets/TheatreSheet'
+import type {SheetObjectPropTypeConfig} from '@theatre/core/sheets/TheatreSheet'
 import {emptyArray} from '@theatre/shared/utils'
 import type {
   PathToProp,
@@ -9,7 +9,7 @@ import type {
   WithoutSheetInstance,
 } from '@theatre/shared/utils/addresses'
 import getDeep from '@theatre/shared/utils/getDeep'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import type {ObjectAddressKey, SequenceTrackId} from '@theatre/shared/utils/ids'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {
   $FixMe,
@@ -23,20 +23,25 @@ import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
 import SheetObject from './SheetObject'
 import logger from '@theatre/shared/logger'
-import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
-import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
+import {
+  getPropConfigByPath,
+  isPropConfSequencable,
+} from '@theatre/shared/propTypes/utils'
 import getOrderingOfPropTypeConfig from './getOrderingOfPropTypeConfig'
 
 export type IPropPathToTrackIdTree = {
   [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
 }
 
+/**
+ * TODO: Add documentation, and share examples of sheet objects.
+ *
+ * See {@link SheetObject} for more information.
+ */
 export default class SheetObjectTemplate {
   readonly address: WithoutSheetInstance<SheetObjectAddress>
   readonly type: 'Theatre_SheetObjectTemplate' = 'Theatre_SheetObjectTemplate'
-  protected _config: Atom<
-    SheetObjectConfig<PropTypeConfig_Compound<$IntentionalAny>>
-  >
+  protected _config: Atom<SheetObjectPropTypeConfig>
   readonly _cache = new SimpleCache()
   readonly project: Project
 
@@ -46,9 +51,9 @@ export default class SheetObjectTemplate {
 
   constructor(
     readonly sheetTemplate: SheetTemplate,
-    objectKey: string,
+    objectKey: ObjectAddressKey,
     nativeObject: unknown,
-    config: SheetObjectConfig<$IntentionalAny>,
+    config: SheetObjectPropTypeConfig,
   ) {
     this.address = {...sheetTemplate.address, objectKey}
     this._config = new Atom(config)
@@ -58,13 +63,13 @@ export default class SheetObjectTemplate {
   createInstance(
     sheet: Sheet,
     nativeObject: unknown,
-    config: SheetObjectConfig<$IntentionalAny>,
+    config: SheetObjectPropTypeConfig,
   ): SheetObject {
     this._config.setState(config)
     return new SheetObject(sheet, this, nativeObject)
   }
 
-  overrideConfig(config: SheetObjectConfig<$IntentionalAny>) {
+  overrideConfig(config: SheetObjectPropTypeConfig) {
     this._config.setState(config)
   }
 
@@ -91,14 +96,16 @@ export default class SheetObjectTemplate {
             this.address.sheetId
           ]
 
-        const value =
+        const json =
           val(
             pointerToSheetState.staticOverrides.byObject[
               this.address.objectKey
             ],
-          ) || {}
+          ) ?? {}
 
-        return value
+        const config = val(this._config.pointer)
+        const deserialized = config.deserializeAndSanitize(json) || {}
+        return deserialized
       }),
     )
   }
@@ -138,8 +145,9 @@ export default class SheetObjectTemplate {
 
           const propConfig = getPropConfigByPath(this.config, pathToProp)
 
-          if (!propConfig || !propConfig?.sanitize || !propConfig.interpolate)
-            continue
+          const isSequencable = propConfig && isPropConfSequencable(propConfig)
+
+          if (!isSequencable) continue
 
           arrayOfIds.push({pathToProp, trackId: trackId!})
         }

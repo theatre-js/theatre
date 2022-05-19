@@ -9,15 +9,18 @@ import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SheetAddress} from '@theatre/shared/utils/addresses'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/shared/utils/slashedPaths'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import deepEqual from 'fast-deep-equal'
-import type {IShorthandCompoundProps} from '@theatre/core/propTypes/internals'
+import type {
+  UnknownShorthandCompoundProps,
+  UnknownValidCompoundProps,
+} from '@theatre/core/propTypes/internals'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import type {ObjectAddressKey} from '@theatre/shared/utils/ids'
 
-export type SheetObjectConfig<
-  Props extends PropTypeConfig_Compound<$IntentionalAny>,
-> = Props
+export type SheetObjectPropTypeConfig =
+  PropTypeConfig_Compound<UnknownValidCompoundProps>
 
 export interface ISheet {
   /**
@@ -62,7 +65,7 @@ export interface ISheet {
    * obj.value.position // {x: 0, y: 0}
    * ```
    */
-  object<Props extends IShorthandCompoundProps>(
+  object<Props extends UnknownShorthandCompoundProps>(
     key: string,
     props: Props,
   ): ISheetObject<Props>
@@ -75,7 +78,7 @@ export interface ISheet {
 
 const weakMapOfUnsanitizedProps = new WeakMap<
   SheetObject,
-  IShorthandCompoundProps
+  UnknownShorthandCompoundProps
 >()
 
 export default class TheatreSheet implements ISheet {
@@ -89,7 +92,7 @@ export default class TheatreSheet implements ISheet {
     setPrivateAPI(this, sheet)
   }
 
-  object<Props extends IShorthandCompoundProps>(
+  object<Props extends UnknownShorthandCompoundProps>(
     key: string,
     config: Props,
   ): ISheetObject<Props> {
@@ -99,8 +102,15 @@ export default class TheatreSheet implements ISheet {
       `sheet.object("${key}", ...)`,
     )
 
-    const existingObject = internal.getObject(sanitizedPath)
+    const existingObject = internal.getObject(sanitizedPath as ObjectAddressKey)
 
+    /**
+     * Future: `nativeObject` Idea is to potentially allow the user to provide their own
+     * object in to the object call as a way to keep a handle to an underlying object via
+     * the {@link ISheetObject}.
+     *
+     * For example, a THREEjs object or an HTMLElement is passed in.
+     */
     const nativeObject = null
 
     if (existingObject) {
@@ -121,12 +131,12 @@ export default class TheatreSheet implements ISheet {
     } else {
       const sanitizedConfig = compound(config)
       const object = internal.createObject(
-        sanitizedPath,
+        sanitizedPath as ObjectAddressKey,
         nativeObject,
         sanitizedConfig,
       )
       if (process.env.NODE_ENV !== 'production') {
-        weakMapOfUnsanitizedProps.set(object, config)
+        weakMapOfUnsanitizedProps.set(object as $FixMe, config)
       }
       return object.publicApi as $IntentionalAny
     }

@@ -13,11 +13,13 @@ import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import type SheetObject from './SheetObject'
 import type {
-  IShorthandCompoundProps,
-  ShorthandPropToLonghandProp,
+  UnknownShorthandCompoundProps,
+  PropsValue,
 } from '@theatre/core/propTypes/internals'
 
-export interface ISheetObject<Props extends IShorthandCompoundProps = {}> {
+export interface ISheetObject<
+  Props extends UnknownShorthandCompoundProps = UnknownShorthandCompoundProps,
+> {
   /**
    * All Objects will have `object.type === 'Theatre_SheetObject_PublicAPI'`
    */
@@ -32,8 +34,14 @@ export interface ISheetObject<Props extends IShorthandCompoundProps = {}> {
    * const obj = sheet.object("obj", {x: 0})
    * console.log(obj.value.x) // prints 0 or the current numeric value
    * ```
+   *
+   * Future: Notice that if the user actually changes the Props config for one of the
+   * properties, then this type can't be guaranteed accurrate.
+   *  * Right now the user can't change prop configs, but we'll probably enable that
+   *    functionality later via (`object.overrideConfig()`). We need to educate the
+   *    user that they can't rely on static types to know the type of object.value.
    */
-  readonly value: ShorthandPropToLonghandProp<Props>['valueType']
+  readonly value: PropsValue<Props>
 
   /**
    * A Pointer to the props of the object.
@@ -100,7 +108,7 @@ export interface ISheetObject<Props extends IShorthandCompoundProps = {}> {
 }
 
 export default class TheatreSheetObject<
-  Props extends IShorthandCompoundProps = {},
+  Props extends UnknownShorthandCompoundProps = UnknownShorthandCompoundProps,
 > implements ISheetObject<Props>
 {
   get type(): 'Theatre_SheetObject_PublicAPI' {
@@ -134,7 +142,7 @@ export default class TheatreSheetObject<
   private _valuesDerivation(): IDerivation<this['value']> {
     return this._cache.get('onValuesChangeDerivation', () => {
       const sheetObject = privateAPI(this)
-      const d: IDerivation<Props> = prism(() => {
+      const d: IDerivation<PropsValue<Props>> = prism(() => {
         return val(sheetObject.getValues().getValue()) as $FixMe
       })
       return d
@@ -145,7 +153,7 @@ export default class TheatreSheetObject<
     return this._valuesDerivation().tapImmediate(coreTicker, fn)
   }
 
-  get value(): ShorthandPropToLonghandProp<Props>['valueType'] {
+  get value(): PropsValue<Props> {
     return this._valuesDerivation().getValue()
   }
 

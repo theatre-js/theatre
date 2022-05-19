@@ -10,6 +10,8 @@ import FrameStamp from './FrameStamp'
 import HorizontalScrollbar from './HorizontalScrollbar'
 import Playhead from './Playhead'
 import TopStrip from './TopStrip'
+import FocusRangeCurtains from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/FocusRangeCurtains'
+import Markers from './Markers'
 
 const Container = styled.div`
   position: absolute;
@@ -33,7 +35,9 @@ const RightOverlay: React.FC<{
         <HorizontalScrollbar layoutP={layoutP} />
         <FrameStamp layoutP={layoutP} />
         <TopStrip layoutP={layoutP} />
+        <Markers layoutP={layoutP} />
         <LengthIndicator layoutP={layoutP} />
+        <FocusRangeCurtains layoutP={layoutP} />
       </Container>
     )
   }, [layoutP])

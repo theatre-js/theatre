@@ -1,10 +1,8 @@
-import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {VoidFn} from '@theatre/shared/utils/types'
 import {val} from '@theatre/dataverse'
 import {clamp} from 'lodash-es'
 import React, {useMemo, useRef} from 'react'
@@ -49,7 +47,7 @@ type Which = 'left' | 'right'
 
 type IProps = Parameters<typeof KeyframeEditor>[0] & {which: Which}
 
-const CurveHandle: React.FC<IProps> = (props) => {
+const CurveHandle: React.VFC<IProps> = (props) => {
   const [ref, node] = useRefAndState<SVGCircleElement | null>(null)
 
   const {index, trackData} = props
@@ -125,114 +123,130 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
   propsRef.current = props
 
   const handlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
-    let scaledToUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
-    let verticalToExtremumSpace: SequenceEditorPanelLayout['graphEditorVerticalSpace']['toExtremumSpace']
-    let propsAtStartOfDrag: IProps
-    let tempTransaction: CommitOrDiscard | undefined
-    let unlockExtremums: VoidFn | undefined
     return {
+      debugName: 'CurveHandler/useOurDrags',
       lockCursorTo: 'move',
       onDragStart() {
-        propsAtStartOfDrag = propsRef.current
+        let tempTransaction: CommitOrDiscard | undefined
 
-        scaledToUnitSpace = val(
+        const propsAtStartOfDrag = propsRef.current
+
+        const scaledToUnitSpace = val(
           propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace,
         )
-        verticalToExtremumSpace = val(
+        const verticalToExtremumSpace = val(
           propsAtStartOfDrag.layoutP.graphEditorVerticalSpace.toExtremumSpace,
         )
 
-        unlockExtremums = propsAtStartOfDrag.extremumSpace.lock()
-      },
-      onDrag(dxInScaledSpace, dy) {
-        if (tempTransaction) {
-          tempTransaction.discard()
-          tempTransaction = undefined
+        const unlockExtremums = propsAtStartOfDrag.extremumSpace.lock()
+
+        return {
+          onDrag(dxInScaledSpace, dy) {
+            if (tempTransaction) {
+              tempTransaction.discard()
+              tempTransaction = undefined
+            }
+
+            const {index, trackData} = propsAtStartOfDrag
+            const cur = trackData.keyframes[index]
+            const next = trackData.keyframes[index + 1]
+
+            const dPosInUnitSpace = scaledToUnitSpace(dxInScaledSpace)
+            let dPosInKeyframeDiffSpace =
+              dPosInUnitSpace / (next.position - cur.position)
+
+            const dyInVerticalSpace = -dy
+            const dYInExtremumSpace = verticalToExtremumSpace(dyInVerticalSpace)
+
+            const dYInValueSpace =
+              propsAtStartOfDrag.extremumSpace.deltaToValueSpace(
+                dYInExtremumSpace,
+              )
+
+            const curValue = props.isScalar ? (cur.value as number) : 0
+            const nextValue = props.isScalar ? (next.value as number) : 1
+            const dyInKeyframeDiffSpace =
+              dYInValueSpace / (nextValue - curValue)
+
+            if (propsAtStartOfDrag.which === 'left') {
+              const handleX = clamp(
+                cur.handles[2] + dPosInKeyframeDiffSpace,
+                0,
+                1,
+              )
+              const handleY = cur.handles[3] + dyInKeyframeDiffSpace
+
+              tempTransaction = getStudio()!.tempTransaction(
+                ({stateEditors}) => {
+                  stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
+                    {
+                      ...propsAtStartOfDrag.sheetObject.address,
+                      snappingFunction: val(
+                        propsAtStartOfDrag.layoutP.sheet,
+                      ).getSequence().closestGridPosition,
+                      trackId: propsAtStartOfDrag.trackId,
+                      keyframes: [
+                        {
+                          ...cur,
+                          handles: [
+                            cur.handles[0],
+                            cur.handles[1],
+                            handleX,
+                            handleY,
+                          ],
+                        },
+                      ],
+                    },
+                  )
+                },
+              )
+            } else {
+              const handleX = clamp(
+                next.handles[0] + dPosInKeyframeDiffSpace,
+                0,
+                1,
+              )
+              const handleY = next.handles[1] + dyInKeyframeDiffSpace
+
+              tempTransaction = getStudio()!.tempTransaction(
+                ({stateEditors}) => {
+                  stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
+                    {
+                      ...propsAtStartOfDrag.sheetObject.address,
+                      trackId: propsAtStartOfDrag.trackId,
+                      snappingFunction: val(
+                        propsAtStartOfDrag.layoutP.sheet,
+                      ).getSequence().closestGridPosition,
+                      keyframes: [
+                        {
+                          ...next,
+                          handles: [
+                            handleX,
+                            handleY,
+                            next.handles[2],
+                            next.handles[3],
+                          ],
+                        },
+                      ],
+                    },
+                  )
+                },
+              )
+            }
+          },
+          onDragEnd(dragHappened) {
+            unlockExtremums()
+            if (dragHappened) {
+              if (tempTransaction) {
+                tempTransaction.commit()
+              }
+            } else {
+              if (tempTransaction) {
+                tempTransaction.discard()
+              }
+            }
+          },
         }
-
-        const {index, trackData} = propsAtStartOfDrag
-        const cur = trackData.keyframes[index]
-        const next = trackData.keyframes[index + 1]
-
-        const dPosInUnitSpace = scaledToUnitSpace(dxInScaledSpace)
-        let dPosInKeyframeDiffSpace =
-          dPosInUnitSpace / (next.position - cur.position)
-
-        const dyInVerticalSpace = -dy
-        const dYInExtremumSpace = verticalToExtremumSpace(dyInVerticalSpace)
-
-        const dYInValueSpace =
-          propsAtStartOfDrag.extremumSpace.deltaToValueSpace(dYInExtremumSpace)
-
-        const curValue = props.isScalar ? (cur.value as number) : 0
-        const nextValue = props.isScalar ? (next.value as number) : 1
-        const dyInKeyframeDiffSpace = dYInValueSpace / (nextValue - curValue)
-
-        if (propsAtStartOfDrag.which === 'left') {
-          const handleX = clamp(cur.handles[2] + dPosInKeyframeDiffSpace, 0, 1)
-          const handleY = cur.handles[3] + dyInKeyframeDiffSpace
-
-          tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-            stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
-              {
-                ...propsAtStartOfDrag.sheetObject.address,
-                snappingFunction: val(
-                  propsAtStartOfDrag.layoutP.sheet,
-                ).getSequence().closestGridPosition,
-                trackId: propsAtStartOfDrag.trackId,
-                keyframes: [
-                  {
-                    ...cur,
-                    handles: [cur.handles[0], cur.handles[1], handleX, handleY],
-                  },
-                ],
-              },
-            )
-          })
-        } else {
-          const handleX = clamp(next.handles[0] + dPosInKeyframeDiffSpace, 0, 1)
-          const handleY = next.handles[1] + dyInKeyframeDiffSpace
-
-          tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-            stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
-              {
-                ...propsAtStartOfDrag.sheetObject.address,
-                trackId: propsAtStartOfDrag.trackId,
-                snappingFunction: val(
-                  propsAtStartOfDrag.layoutP.sheet,
-                ).getSequence().closestGridPosition,
-                keyframes: [
-                  {
-                    ...next,
-                    handles: [
-                      handleX,
-                      handleY,
-                      next.handles[2],
-                      next.handles[3],
-                    ],
-                  },
-                ],
-              },
-            )
-          })
-        }
-      },
-      onDragEnd(dragHappened) {
-        if (unlockExtremums) {
-          const unlock = unlockExtremums
-          unlockExtremums = undefined
-          unlock()
-        }
-        if (dragHappened) {
-          if (tempTransaction) {
-            tempTransaction.commit()
-          }
-        } else {
-          if (tempTransaction) {
-            tempTransaction.discard()
-          }
-        }
-        tempTransaction = undefined
       },
     }
   }, [])
@@ -242,7 +256,7 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
 
 function useOurContextMenu(node: SVGCircleElement | null, props: IProps) {
   return useContextMenu(node, {
-    items: () => {
+    menuItems: () => {
       return [
         {
           label: 'Delete',

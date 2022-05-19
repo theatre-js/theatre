@@ -15,7 +15,7 @@ import CurveHandle from './CurveHandle'
 import GraphEditorDotScalar from './GraphEditorDotScalar'
 import GraphEditorDotNonScalar from './GraphEditorDotNonScalar'
 import GraphEditorNonScalarDash from './GraphEditorNonScalarDash'
-import type {PropTypeConfig} from '@theatre/core/propTypes'
+import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 
 const Container = styled.g`
   /* position: absolute; */
@@ -23,7 +23,7 @@ const Container = styled.g`
 
 const noConnector = <></>
 
-const KeyframeEditor: React.FC<{
+type IKeyframeEditorProps = {
   index: number
   keyframe: Keyframe
   trackData: TrackData
@@ -33,8 +33,10 @@ const KeyframeEditor: React.FC<{
   extremumSpace: ExtremumSpace
   isScalar: boolean
   color: keyof typeof graphEditorColors
-  propConfig: PropTypeConfig
-}> = (props) => {
+  propConfig: PropTypeConfig_AllSimples
+}
+
+const KeyframeEditor: React.VFC<IKeyframeEditorProps> = (props) => {
   const {index, trackData, isScalar} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]

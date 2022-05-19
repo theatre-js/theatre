@@ -9,12 +9,13 @@ import ProxyManager from './ProxyManager'
 import studio, {ToolbarIconButton} from '@theatre/studio'
 import {useVal} from '@theatre/react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
-import {IoCameraReverseOutline} from 'react-icons/all'
+import {IoCameraReverseOutline} from 'react-icons/io5'
 import type {ISheet} from '@theatre/core'
 import useSnapshotEditorCamera from './useSnapshotEditorCamera'
 import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
+import {DragDetectorProvider} from './DragDetector'
 import type {Camera, Scene, WebGLRenderer} from 'three'
 
 const GlobalStyle = createGlobalStyle`
@@ -55,7 +56,7 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
   const grid = useMemo(() => new InfiniteGridHelper(), [])
 
   return (
-    <>
+    <DragDetectorProvider>
       {showGrid && <primitive object={grid} />}
       {showAxes && <axesHelper args={[500]} />}
       {editorCamera}
@@ -63,7 +64,7 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
       <primitive object={helpersRoot}></primitive>
       <ProxyManager orbitControlsRef={orbitControlsRef} />
       <color attach="background" args={[0.24, 0.24, 0.24]} />
-    </>
+    </DragDetectorProvider>
   )
 }
 

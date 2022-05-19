@@ -15,7 +15,7 @@ const SVGPath = styled.path`
 
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
-const Curve: React.FC<IProps> = (props) => {
+const Curve: React.VFC<IProps> = (props) => {
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
@@ -109,7 +109,7 @@ function useConnectorContextMenu(node: SVGElement | null, props: IProps) {
   const next = trackData.keyframes[index + 1]
 
   return useContextMenu(node, {
-    items: () => {
+    menuItems: () => {
       return [
         {
           label: 'Delete',

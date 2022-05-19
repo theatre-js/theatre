@@ -1,11 +1,11 @@
 import React, {useEffect} from 'react'
-import useRefreshSnapshot from './useRefreshSnapshot'
+import {refreshSnapshot} from '../utils'
 
 /**
  * Putting this element in a suspense tree makes sure the snapshot editor
  * gets refreshed once the tree renders.
  *
- * Alternatively you can use {@link useRefreshSnapshot}
+ * Alternatively you can use {@link refreshSnapshot}
  *
  * @example
  * Usage
@@ -16,10 +16,11 @@ import useRefreshSnapshot from './useRefreshSnapshot'
  * </Suspense>
  * ```
  */
-const RefreshSnapshot: React.FC<{}> = (props) => {
-  const refreshSnapshot = useRefreshSnapshot()
+const RefreshSnapshot: React.FC<{}> = () => {
   useEffect(() => {
-    refreshSnapshot()
+    setTimeout(() => {
+      refreshSnapshot()
+    })
   }, [])
   return <></>
 }

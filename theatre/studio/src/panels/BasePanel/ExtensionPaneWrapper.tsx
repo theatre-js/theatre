@@ -11,6 +11,7 @@ import {ErrorBoundary} from 'react-error-boundary'
 import {IoClose} from 'react-icons/all'
 import getStudio from '@theatre/studio/getStudio'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
+import type {PaneInstanceId, UIPanelId} from '@theatre/shared/utils/ids'
 
 const defaultPosition: PanelPosition = {
   edges: {
@@ -28,7 +29,7 @@ const ExtensionPaneWrapper: React.FC<{
 }> = ({paneInstance}) => {
   return (
     <BasePanel
-      panelId={`pane-${paneInstance.instanceId}`}
+      panelId={`pane-${paneInstance.instanceId}` as UIPanelId}
       defaultPosition={defaultPosition}
       minDims={minDims}
     >
@@ -137,7 +138,9 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
 }) => {
   const Comp = paneInstance.definition.component
   const closePane = useCallback(() => {
-    getStudio().paneManager.destroyPane(paneInstance.instanceId)
+    getStudio().paneManager.destroyPane(
+      paneInstance.instanceId as PaneInstanceId,
+    )
   }, [paneInstance])
 
   return (
