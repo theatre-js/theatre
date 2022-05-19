@@ -150,15 +150,17 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
   await Promise.all(
     packagesToPublish.map(async (workspaceName) => {
       const npmTag = 'insiders'
-      await $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
+      if (process.env.GITHUB_ACTIONS) {
+        await $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
+      }
     }),
   )
 
   for (const packageName of packagesToPublish) {
     if (process.env.GITHUB_ACTIONS) {
-      await $`echo "Published ${packageName}@${assignedVersionByPackageName[packageName]}" >> $GITHUB_STEP_SUMMARY`
+      await $`echo ${`Published ${packageName}@${assignedVersionByPackageName[packageName]}`} >> $GITHUB_STEP_SUMMARY`
     } else {
-      await $`echo "Published ${packageName}@${assignedVersionByPackageName[packageName]}"`
+      await $`echo ${`Published ${packageName}@${assignedVersionByPackageName[packageName]}`}`
     }
   }
 })()
