@@ -28,7 +28,9 @@ export const PATH_TO_YARNRC = path.join(MONOREPO_ROOT, '.yarnrc.yml')
  * registry config to its original state, but that's not guaranteed.
  */
 export async function startRegistry() {
-  const npmOriginalRegistry = (await $`npm get registry`).stdout.trim()
+  const npmOriginalRegistry = (
+    await $`npm config get registry --location=global`
+  ).stdout.trim()
   onCleanup((exitCode, signal) => {
     onCleanup.uninstall()
     $`npm set registry ${npmOriginalRegistry}`.then(() => {
@@ -38,7 +40,7 @@ export async function startRegistry() {
   })
 
   await $`echo "Setting npm registry url to verdaccio's"`
-  await $`npm set registry ${VERDACCIO_URL}`
+  await $`npm config set registry ${VERDACCIO_URL} --location=global`
 
   await $`echo Running verdaccio on ${VERDACCIO_URL}`
   const verdaccioServer = await startVerdaccio(VERDACCIO_PORT)

@@ -40,10 +40,10 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - run: yarn install
-      - run: yarn typecheck
-      - run: yarn lint:all --max-warnings 0
-      - run: yarn test
-      - run: yarn build
+      # - run: yarn typecheck
+      # - run: yarn lint:all --max-warnings 0
+      # - run: yarn test
+      # - run: yarn build
       - run: yarn test:compatibility:ci
       - name: Download playwright
         run: yarn workspace playground run playwright install

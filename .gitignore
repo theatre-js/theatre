@@ -23,8 +23,5 @@
 # compatibility tests
 .parcel-cache
 
-yalc.lock
-
-/compatibility-tests/*/.yalc
 /compatibility-tests/*/.yarn
 /compatibility-tests/*/build
