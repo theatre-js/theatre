@@ -33,9 +33,11 @@ export async function startRegistry() {
   ).stdout.trim()
   onCleanup((exitCode, signal) => {
     onCleanup.uninstall()
-    $`npm set registry ${npmOriginalRegistry}`.then(() => {
-      process.kill(process.pid, signal)
-    })
+    $`npm config set registry ${npmOriginalRegistry} --location=global`.then(
+      () => {
+        process.kill(process.pid, signal)
+      },
+    )
     return false
   })
 
