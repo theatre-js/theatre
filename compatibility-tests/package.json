@@ -1,0 +1,13 @@
+{
+  "name": "@theatre/compatibility-tests",
+  "private": true,
+  "scripts": {
+    "verdaccio:start": "verdaccio -c ./verdaccio.yml"
+  },
+  "dependencies": {
+    "verdaccio": "^5.10.2",
+    "verdaccio-auth-memory": "^10.2.0",
+    "verdaccio-memory": "^10.2.0",
+    "zx": "^6.1.0"
+  }
+}

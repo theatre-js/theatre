@@ -5,7 +5,8 @@
   "workspaces": [
     "packages/*",
     "examples/*",
-    "theatre"
+    "theatre",
+    "compatibility-tests"
   ],
   "scripts": {
     "playground": "yarn workspace playground run serve",

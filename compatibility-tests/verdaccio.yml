@@ -1,0 +1,23 @@
+store:
+  memory:
+    limit: 1000
+auth:
+  auth-memory:
+    users:
+      foo:
+        name: test
+        password: test
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+packages:
+  '@theatre/*':
+    access: $all
+    publish: $all
+  '@*/*':
+    access: $all
+    publish: $all
+    proxy: npmjs
+  '**':
+    proxy: npmjs
+log: {type: stdout, format: pretty, level: http}

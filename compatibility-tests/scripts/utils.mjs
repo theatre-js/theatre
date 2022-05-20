@@ -36,9 +36,10 @@ export function getCompatibilityTestSetups(root) {
   }
   const setupsAbsPaths = []
 
-  // NOTE: We assume that every directory in `compatibility-tests` is
-  // a compatibility test setup!
+  // NOTE: We assume that every directory matching `compatibility-tests/test-*` is
+  // a test package
   for (const entry of buildTestsDirEntries) {
+    if (!entry.startsWith('test-')) continue
     const entryAbsPath = path.join(buildTestsDir, entry)
     if (fs.lstatSync(entryAbsPath).isDirectory()) {
       setupsAbsPaths.push(entryAbsPath)
