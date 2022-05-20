@@ -132,8 +132,6 @@ async function assignVersions(workspacesListObjects, hash) {
     })
 
     let {dependencies, peerDependencies, devDependencies} = originalJson
-    // The @theatre/r3f package curently doesn't track the same version number of the other packages like @theatre/core,
-    // so we need to generate version numbers independently for each package
     const version = hash
 
     // Normally we don't have to override the package versions in dependencies because yarn would already convert
@@ -198,7 +196,7 @@ async function releaseToVerdaccio() {
 
   await Promise.all(
     packagesToPublish.map(async (workspaceName) => {
-      const npmTag = 'compatibility'
+      const npmTag = 'compat'
       await $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
     }),
   )
