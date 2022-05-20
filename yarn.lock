@@ -6548,6 +6548,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@theatre/compatibility-tests@workspace:compatibility-tests"
   dependencies:
+    prettier: ^2.6.2
     verdaccio: ^5.10.2
     verdaccio-auth-memory: ^10.2.0
     verdaccio-memory: ^10.2.0
@@ -24623,6 +24624,15 @@ fsevents@^1.2.7:
   bin:
     prettier: bin-prettier.js
   checksum: 17ce5784ac67621c292df58e2da60b2ee150c2d6aebea22a6ad9e52fcd6a5e66c349d0a8436ea3bd8ff9d778920a5f68000d7625b74f43558718a49755aa5259
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^2.6.2":
+  version: 2.6.2
+  resolution: "prettier@npm:2.6.2"
+  bin:
+    prettier: bin-prettier.js
+  checksum: 48d08dde8e9fb1f5bccdd205baa7f192e9fc8bc98f86e1b97d919de804e28c806b0e6cc685e4a88211aa7987fa9668f30baae19580d87ced3ed0f2ec6572106f
   languageName: node
   linkType: hard
 

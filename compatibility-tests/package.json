@@ -2,9 +2,11 @@
   "name": "@theatre/compatibility-tests",
   "private": true,
   "scripts": {
-    "verdaccio:start": "verdaccio -c ./verdaccio.yml"
+    "registry:start": "zx ./scripts/start-registry.mjs",
+    "registry:publish": "zx ./scripts/release-to-verdaccio.mjs"
   },
   "dependencies": {
+    "prettier": "^2.6.2",
     "verdaccio": "^5.10.2",
     "verdaccio-auth-memory": "^10.2.0",
     "verdaccio-memory": "^10.2.0",

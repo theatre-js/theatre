@@ -5,17 +5,11 @@
 import fs from 'fs'
 import path from 'path'
 
-/**
- * Colorize a message
- */
-export const colorize = {
-  /** @param {string} message */
-  red: (message) => '\x1b[31m' + message + '\x1b[0m',
-  /** @param {string} message */
-  green: (message) => '\x1b[32m' + message + '\x1b[0m',
-  /** @param {string} message */
-  yellow: (message) => '\x1b[33m' + message + '\x1b[0m',
-}
+export const VERDACCIO_PORT = 4823
+export const VERDACCIO_HOST = `localhost`
+export const VERDACCIO_URL = `http://${VERDACCIO_HOST}:${VERDACCIO_PORT}/`
+export const MONOREPO_ROOT = path.join(__dirname, '../..')
+export const PATH_TO_YARNRC = path.join(MONOREPO_ROOT, '.yarnrc.yml')
 
 /**
  * Get all the setups from `./compatibility-tests/`
