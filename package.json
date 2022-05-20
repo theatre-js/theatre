@@ -11,7 +11,7 @@
     "playground": "yarn workspace playground run serve",
     "test:e2e": "yarn workspace playground run test",
     "test:e2e:ci": "yarn workspace playground run test:ci",
-    "test:ecosystem": "zx scripts/ecosystem-tests/ci.mjs",
+    "test:compatibility": "zx scripts/compatibility-tests/ci.mjs",
     "typecheck": "yarn run build:ts",
     "build": "zx scripts/build.mjs",
     "clean": "zx scripts/clean.mjs",

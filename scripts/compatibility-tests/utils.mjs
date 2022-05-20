@@ -1,5 +1,5 @@
 /**
- * Utility functions for the ecosystem tests
+ * Utility functions for the compatibility tests
  */
 
 import fs from 'fs'
@@ -18,13 +18,13 @@ export const colorize = {
 }
 
 /**
- * Get all the setups from `./ecosystem-tests/`
+ * Get all the setups from `./compatibility-tests/`
  *
  * @param {string} root - Absolute path to the theatre monorepo
- * @returns An array containing the absolute paths to the ecosystem test setups
+ * @returns An array containing the absolute paths to the compatibility test setups
  */
-export function getEcosystemTestSetups(root) {
-  const buildTestsDir = path.join(root, 'ecosystem-tests')
+export function getCompatibilityTestSetups(root) {
+  const buildTestsDir = path.join(root, 'compatibility-tests')
   let buildTestsDirEntries
 
   try {
@@ -36,8 +36,8 @@ export function getEcosystemTestSetups(root) {
   }
   const setupsAbsPaths = []
 
-  // NOTE: We assume that every directory in `ecosystem-tests` is
-  // an ecosystem test setup!
+  // NOTE: We assume that every directory in `compatibility-tests` is
+  // a compatibility test setup!
   for (const entry of buildTestsDirEntries) {
     const entryAbsPath = path.join(buildTestsDir, entry)
     if (fs.lstatSync(entryAbsPath).isDirectory()) {

@@ -3,16 +3,16 @@
  */
 
 import path from 'path'
-import {colorize, getEcosystemTestSetups} from './utils.mjs'
+import {colorize, getCompatibilityTestSetups} from './utils.mjs'
 
 const root = path.resolve(__dirname, '../..')
-const absPathOfEcosystemTestSetups = getEcosystemTestSetups(root)
+const absPathOfCompatibilityTestSetups = getCompatibilityTestSetups(root)
 
 const setupsWithErros = []
 
 // Try building the setups
 ;(async function () {
-  for (const setupDir of absPathOfEcosystemTestSetups) {
+  for (const setupDir of absPathOfCompatibilityTestSetups) {
     try {
       cd(setupDir)
       await $`yarn build`

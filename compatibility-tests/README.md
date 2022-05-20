@@ -1,16 +1,16 @@
-# Ecosystem tests
+# Compatibility tests
 
 Inspired by the
 [#help channel on our Discord](https://discord.com/channels/870988717190426644/870988717190426647)
 we collect examples for including `Theatre.js` in project that use different
 tools (`parcel`, `Next.js`, `vanilla Rollup`, etc...) to build them in the CI
-(these are the _ecosystem tests_).
+(these are the _compatibility tests_).
 
 ## The currently tested setups
 
 | setup                        | tools                               | `package.json`                        |
 | ---------------------------- | ----------------------------------- | ------------------------------------- |
-| ecosystem-tests/create-react-app | `create-react-app`, `r3f extension` | [link](create-react-app/package.json) |
+| compatibility-tests/create-react-app | `create-react-app`, `r3f extension` | [link](create-react-app/package.json) |
 
 ## Testing the configurations locally
 
@@ -18,13 +18,13 @@ tools (`parcel`, `Next.js`, `vanilla Rollup`, etc...) to build them in the CI
 # clean existing build artifacts
 yarn clean
 # this will build all packages, publish them to yalc, link them to each setup, and run the `yarn build` command on that setup
-yarn test:ecosystem
+yarn test:compatibility
 ```
 
 After running the above, you can also start the dev server of each setup to try it manually:
 
 ```sh
-cd ecosystem-tests/[setup-name]
+cd compatibility-tests/[setup-name]
 yarn start
 ```
 
@@ -107,4 +107,4 @@ do it:
 > Some bundlers like webpack are not configured to work well with yarn workspaces by default. For example, the webpack config of create-react-app, tries to look up the node_modules chain to find missing dependencies, which is not a behavior that we want in build-tests setups. So if a setup doesn't work, try running it outside the monorepo to see if being in the monorepo is what's causing it to fail.
 
 Feel free to check out [the existing setups](#the-currently-tested-setups) in
-`ecosystem-tests` if you get stuck.
+`compatibility-tests` if you get stuck.

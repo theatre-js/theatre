@@ -1,5 +1,5 @@
 /**
- * Publish the theatre packages to a local registry with yalc for the ecosystem tests.
+ * Publish the theatre packages to a local registry with yalc for the compatibility tests.
  */
 import path from 'path'
 

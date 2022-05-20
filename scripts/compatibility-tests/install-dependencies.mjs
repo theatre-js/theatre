@@ -1,13 +1,13 @@
 /**
- * Install the dependencies of the ecosystem test setups
+ * Install the dependencies of the compatibility test setups
  */
 
 import path from 'path'
-import {colorize, getEcosystemTestSetups} from './utils.mjs'
+import {colorize, getCompatibilityTestSetups} from './utils.mjs'
 
 const root = path.resolve(__dirname, '../..')
 
-const absPathOfTestSetups = getEcosystemTestSetups(root)
+const absPathOfTestSetups = getCompatibilityTestSetups(root)
 
 const setupsWithErrors = []
 

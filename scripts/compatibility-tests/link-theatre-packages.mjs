@@ -1,12 +1,12 @@
 /**
- * Add the theatre packages to the ecosystem test setups with `yalc link`
+ * Add the theatre packages to the compatibility test setups with `yalc link`
  */
 
 import path from 'path'
-import {colorize, getEcosystemTestSetups} from './utils.mjs'
+import {colorize, getCompatibilityTestSetups} from './utils.mjs'
 
 const root = path.resolve(__dirname, '../..')
-const absPathsOfSetups = getEcosystemTestSetups(root)
+const absPathsOfSetups = getCompatibilityTestSetups(root)
 
 // The packages that should be linked with `yalc`
 const packagesToLink = [
