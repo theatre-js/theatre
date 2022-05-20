@@ -116,11 +116,12 @@ namespace utils {
     [K in SequenceEditorTree_AllRowTypes['type']]?: (
       layoutP: Pointer<SequenceEditorPanelLayout>,
       leaf: Extract<SequenceEditorTree_AllRowTypes, {type: K}>,
-      bounds: Exclude<SelectionBounds, null>,
-      selection: DopeSheetSelection,
+      bounds: SelectionBounds,
+      selectionByObjectKey: DopeSheetSelection['byObjectKey'],
     ) => void
   } = {
-    primitiveProp(layoutP, leaf, bounds, selection) {
+    propWithChildren(layoutP, leaf, bounds, selection) {},
+    primitiveProp(layoutP, leaf, bounds, selectionByObjectKey) {
       const {sheetObject, trackId} = leaf
       const trackData = val(
         getStudio().atomP.historic.coreByProject[sheetObject.address.projectId]
@@ -134,10 +135,13 @@ namespace utils {
         if (kf.position >= bounds.positions[1]) break
 
         mutableSetDeep(
-          selection,
-          (p) =>
-            p.byObjectKey[sheetObject.address.objectKey].byTrackId[trackId]
-              .byKeyframeId[kf.id],
+          selectionByObjectKey,
+          (selectionByObjectKeyP) =>
+            // convenience for accessing a deep path which might not actually exist
+            // through the use of pointer proxy (so we don't have to deal with undeifned )
+            selectionByObjectKeyP[sheetObject.address.objectKey].byTrackId[
+              trackId
+            ].byKeyframeId[kf.id],
           true,
         )
       }
@@ -147,12 +151,12 @@ namespace utils {
   const collectChildren = (
     layoutP: Pointer<SequenceEditorPanelLayout>,
     leaf: SequenceEditorTree_AllRowTypes,
-    bounds: Exclude<SelectionBounds, null>,
-    selection: DopeSheetSelection,
+    bounds: SelectionBounds,
+    selectionByObjectKey: DopeSheetSelection['byObjectKey'],
   ) => {
     if ('children' in leaf) {
       for (const sub of leaf.children) {
-        collectFromAnyLeaf(layoutP, sub, bounds, selection)
+        collectFromAnyLeaf(layoutP, sub, bounds, selectionByObjectKey)
       }
     }
   }
@@ -160,8 +164,8 @@ namespace utils {
   function collectFromAnyLeaf(
     layoutP: Pointer<SequenceEditorPanelLayout>,
     leaf: SequenceEditorTree_AllRowTypes,
-    bounds: Exclude<SelectionBounds, null>,
-    selection: DopeSheetSelection,
+    bounds: SelectionBounds,
+    selectionByObjectKey: DopeSheetSelection['byObjectKey'],
   ) {
     if (
       bounds.ys[0] > leaf.top + leaf.heightIncludingChildren ||
@@ -171,20 +175,26 @@ namespace utils {
     }
     const collector = collectorByLeafType[leaf.type]
     if (collector) {
-      collector(layoutP, leaf as $IntentionalAny, bounds, selection)
+      collector(layoutP, leaf as $IntentionalAny, bounds, selectionByObjectKey)
     } else {
-      collectChildren(layoutP, leaf, bounds, selection)
+      collectChildren(layoutP, leaf, bounds, selectionByObjectKey)
     }
   }
 
   export function boundsToSelection(
     layoutP: Pointer<SequenceEditorPanelLayout>,
-    bounds: Exclude<SelectionBounds, null>,
+    bounds: SelectionBounds,
   ): DopeSheetSelection {
+    const selectionByObjectKey: DopeSheetSelection['byObjectKey'] = {}
+    bounds = sortBounds(bounds)
+
+    const tree = val(layoutP.tree)
+    collectFromAnyLeaf(layoutP, tree, bounds, selectionByObjectKey)
+
     const sheet = val(layoutP.tree.sheet)
-    const selection: DopeSheetSelection = {
+    return {
       type: 'DopeSheetSelection',
-      byObjectKey: {},
+      byObjectKey: selectionByObjectKey,
       getDragHandlers(origin) {
         return {
           debugName: 'DopeSheetSelectionView/boundsToSelection',
@@ -204,23 +214,19 @@ namespace utils {
                   ignore: origin.domNode,
                 })
 
-                let delta: number
-                if (snapPos != null) {
-                  delta = snapPos - origin.positionAtStartOfDrag
-                } else {
-                  delta = toUnitSpace(dx)
-                }
+                const delta =
+                  snapPos != null
+                    ? snapPos - origin.positionAtStartOfDrag
+                    : toUnitSpace(dx)
 
-                tempTransaction = getStudio()!.tempTransaction(
+                tempTransaction = getStudio().tempTransaction(
                   ({stateEditors}) => {
                     const transformKeyframes =
                       stateEditors.coreByProject.historic.sheetsById.sequence
                         .transformKeyframes
 
-                    for (const objectKey of Object.keys(
-                      selection.byObjectKey,
-                    )) {
-                      const {byTrackId} = selection.byObjectKey[objectKey]!
+                    for (const objectKey of Object.keys(selectionByObjectKey)) {
+                      const {byTrackId} = selectionByObjectKey[objectKey]!
                       for (const trackId of Object.keys(byTrackId)) {
                         const {byKeyframeId} = byTrackId[trackId]!
                         transformKeyframes({
@@ -249,13 +255,13 @@ namespace utils {
         }
       },
       delete() {
-        getStudio()!.transaction(({stateEditors}) => {
+        getStudio().transaction(({stateEditors}) => {
           const deleteKeyframes =
             stateEditors.coreByProject.historic.sheetsById.sequence
               .deleteKeyframes
 
-          for (const objectKey of Object.keys(selection.byObjectKey)) {
-            const {byTrackId} = selection.byObjectKey[objectKey]!
+          for (const objectKey of Object.keys(selectionByObjectKey)) {
+            const {byTrackId} = selectionByObjectKey[objectKey]!
             for (const trackId of Object.keys(byTrackId)) {
               const {byKeyframeId} = byTrackId[trackId]!
               deleteKeyframes({
@@ -269,13 +275,6 @@ namespace utils {
         })
       },
     }
-
-    bounds = sortBounds(bounds)
-
-    const tree = val(layoutP.tree)
-    collectFromAnyLeaf(layoutP, tree, bounds, selection)
-
-    return selection
   }
 }
 
@@ -295,8 +294,8 @@ const sortBounds = (b: SelectionBounds): SelectionBounds => {
   }
 }
 
-const SelectionRectangle: React.FC<{
-  state: Exclude<SelectionBounds, null>
+const SelectionRectangle: React.VFC<{
+  state: SelectionBounds
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({state, layoutP}) => {
   const atom = useValToAtom(state)
