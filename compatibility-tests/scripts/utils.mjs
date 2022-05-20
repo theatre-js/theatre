@@ -221,6 +221,7 @@ function patchYarnRcToUseVerdaccio() {
     ...YAML.parse(originalYarnrcContent),
     unsafeHttpWhitelist: [VERDACCIO_HOST],
     npmPublishRegistry: VERDACCIO_URL,
+    npmAuthIdent: 'test:test',
   })
 
   fs.writeFileSync(PATH_TO_YARNRC, newYarnRcContent, {encoding: 'utf-8'})
