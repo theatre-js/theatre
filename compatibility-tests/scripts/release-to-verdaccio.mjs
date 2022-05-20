@@ -106,7 +106,7 @@ async function assignVersions(workspacesListObjects, hash) {
 
 ;(async function () {
   const version = '0.0.1-COMPATIBILITY.' + Math.floor(Math.random() * 1000000)
-  await $`cd ${MONOREPO_ROOT}`
+  cd(MONOREPO_ROOT)
 
   // @ts-ignore ignore
   process.env.THEATRE_IS_PUBLISHING = true
@@ -128,12 +128,15 @@ async function assignVersions(workspacesListObjects, hash) {
   // set verdaccio as the publish registry, and add it to the whitelist
   const restoreYarnRc = patchYarnRcToUseVerdaccio()
 
-  // await Promise.all(
-  //   packagesToPublish.map(async (workspaceName) => {
-  //     const npmTag = 'compatibility'
-  //     await $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
-  //   }),
-  // )
+  await $`yarn clean`
+  await $`yarn build`
+
+  await Promise.all(
+    packagesToPublish.map(async (workspaceName) => {
+      const npmTag = 'compatibility'
+      await $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
+    }),
+  )
 
   restorePackages()
   restoreYarnRc()
