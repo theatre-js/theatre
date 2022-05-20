@@ -17,7 +17,7 @@
     "@theatre/studio": "^0.0.1-COMPATIBILITY.1",
     "@theatre/r3f": "^0.0.1-COMPATIBILITY.1",
     "react-scripts": "^5.0.1",
-    "three": ">0.130.1",
+    "three": ">0.132.0",
     "web-vitals": "^1.0.1"
   },
   "eslintConfig": {

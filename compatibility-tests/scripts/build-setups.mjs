@@ -15,7 +15,12 @@ const setupsWithErros = []
   for (const setupDir of absPathOfCompatibilityTestSetups) {
     try {
       cd(setupDir)
-      await $`yarn build`
+      const pathToSetup = path.join(absPathOfCompatibilityTestSetups, setupDir)
+      fs.removeSync(path.join(pathToSetup, 'node_modules'))
+      fs.removeSync(path.join(pathToSetup, 'package-lock.json'))
+      fs.removeSync(path.join(pathToSetup, 'yarn.lock'))
+      await $`npm install`
+      await $`npm run build`
     } catch (err) {
       console.error(err)
       setupsWithErros.push(setupDir)

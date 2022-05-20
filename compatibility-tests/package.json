@@ -2,7 +2,8 @@
   "name": "@theatre/compatibility-tests",
   "private": true,
   "scripts": {
-    "registry:start": "zx ./scripts/start-registry.mjs"
+    "registry:start": "zx ./scripts/start-registry.mjs",
+    "test:ci": "zx ./scripts/ci.mjs"
   },
   "dependencies": {
     "node-cleanup": "^2.1.2",
