@@ -131,7 +131,9 @@ export const calculateSequenceEditorTree = (
     }
     arrayOfChildren.push(row)
     nSoFar += 1
-    topSoFar += HEIGHT_OF_ANY_TITLE
+    // As we add rows to the tree, top to bottom, we accumulate the pixel
+    // distance to the top of the tree from the bottom of the current row:
+    topSoFar += row.nodeHeight
     if (!isCollapsed) {
       addProps(
         sheetObject,
@@ -235,7 +237,7 @@ export const calculateSequenceEditorTree = (
       n: nSoFar,
     }
     arrayOfChildren.push(row)
-    topSoFar += HEIGHT_OF_ANY_TITLE
+    topSoFar += row.nodeHeight
     if (!isCollapsed) {
       nSoFar += 1
 
@@ -275,7 +277,7 @@ export const calculateSequenceEditorTree = (
     }
     arrayOfChildren.push(row)
     nSoFar += 1
-    topSoFar += HEIGHT_OF_ANY_TITLE
+    topSoFar += row.nodeHeight
   }
 
   return tree
