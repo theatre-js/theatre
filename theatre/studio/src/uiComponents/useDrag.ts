@@ -5,6 +5,7 @@ import type {CapturedPointer} from '@theatre/studio/UIRoot/PointerCapturing'
 import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
 import noop from '@theatre/shared/utils/noop'
 import {isSafari} from './isSafari'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
 
 export enum MouseButton {
   Left = 0,
@@ -172,8 +173,18 @@ export default function useDrag(
   }>({onDrag: noop, onDragEnd: noop})
 
   const capturedPointerRef = useRef<undefined | CapturedPointer>()
+  // needed to have a state on the react lifecycle which can be updated
+  // via a ref (e.g. via the below layout effect).
+  const [isDraggingRef, isDragging] = useRefAndState(false)
   useLayoutEffect(() => {
     if (!target) return
+    const ensureIsDraggingUpToDateForReactLifecycle = () => {
+      const isDragging =
+        stateRef.current.domDragStarted && stateRef.current.detection.detected
+      if (isDraggingRef.current !== isDragging) {
+        isDraggingRef.current = isDragging
+      }
+    }
 
     const dragHandler = (event: MouseEvent) => {
       if (!stateRef.current.domDragStarted) return
@@ -199,6 +210,7 @@ export default function useDrag(
             dragMovement: {x: 0, y: 0},
             dragEventCount: 0,
           }
+          ensureIsDraggingUpToDateForReactLifecycle()
         }
       }
 
@@ -234,6 +246,7 @@ export default function useDrag(
       stateRef.current = {domDragStarted: false}
       if (opts.shouldPointerLock && !isSafari) document.exitPointerLock()
       callbacksRef.current.onDragEnd(dragHappened)
+      ensureIsDraggingUpToDateForReactLifecycle()
     }
 
     const addDragListeners = () => {
@@ -259,6 +272,7 @@ export default function useDrag(
           detected: false,
           totalDistanceMoved: 0,
         }
+        ensureIsDraggingUpToDateForReactLifecycle()
       }
     }
 
@@ -299,6 +313,7 @@ export default function useDrag(
           totalDistanceMoved: 0,
         },
       }
+      ensureIsDraggingUpToDateForReactLifecycle()
 
       addDragListeners()
     }
@@ -319,11 +334,9 @@ export default function useDrag(
         callbacksRef.current.onDragEnd?.(stateRef.current.detection.detected)
       }
       stateRef.current = {domDragStarted: false}
+      ensureIsDraggingUpToDateForReactLifecycle()
     }
   }, [target])
-
-  const isDragging =
-    stateRef.current.domDragStarted && stateRef.current.detection.detected
 
   useCssCursorLock(
     isDragging && !!opts.lockCSSCursorTo,
