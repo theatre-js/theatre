@@ -6548,6 +6548,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@theatre/compatibility-tests@workspace:compatibility-tests"
   dependencies:
+    node-cleanup: ^2.1.2
     prettier: ^2.6.2
     verdaccio: ^5.10.2
     verdaccio-auth-memory: ^10.2.0
@@ -6616,12 +6617,12 @@ __metadata:
     typescript: ^4.4.2
     zustand: ^3.5.1
   peerDependencies:
-    "@react-three/fiber": ^7.0.6
+    "@react-three/fiber": ">7.0.6"
     "@theatre/core": "*"
     "@theatre/studio": "*"
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    three: ^0.131.3
+    react: ">17.0.2"
+    react-dom: ">17.0.2"
+    three: ">0.131.3"
   languageName: unknown
   linkType: soft
 
@@ -21238,6 +21239,13 @@ fsevents@^1.2.7:
   dependencies:
     node-gyp: latest
   checksum: 938922b3d7cb34ee137c5ec39df6289a3965e8cab9061c6848863324c21a778a81ae3bc955554c56b6b86962f6ccab2043dd5fa3f33deab633636bd28039333f
+  languageName: node
+  linkType: hard
+
+"node-cleanup@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "node-cleanup@npm:2.1.2"
+  checksum: 584cdc3e42560a998b4579f91ed8f936b27011628f3102e5a1093205f0691cdf8d899287d1f2e4d2071ea4ab1d615810bad6dbe2b988ef173a1cbaa76d8165b3
   languageName: node
   linkType: hard
 

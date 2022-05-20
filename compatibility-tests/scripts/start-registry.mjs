@@ -6,6 +6,12 @@ import {
   VERDACCIO_URL,
   VERDACCIO_PORT,
 } from './utils.mjs'
+import onCleanup from 'node-cleanup'
+import * as verdaccioPackage from 'verdaccio'
+import {releaseToVerdaccio} from './release-to-verdaccio.mjs'
+
+// 'verdaccio' is not an es module so we have to do this:
+const startVerdaccioServer = verdaccioPackage.default.default
 
 /**
  * This script will:
@@ -19,14 +25,57 @@ import {
  */
 ;(async function () {
   const npmOriginalRegistry = (await $`npm get registry`).stdout.trim()
-  process.on('SIGINT', async function cleanup(a) {
-    await $`npm set registry ${npmOriginalRegistry}`
-    process.exit(0)
+  onCleanup((exitCode, signal) => {
+    onCleanup.uninstall()
+    $`npm set registry ${npmOriginalRegistry}`.then(() => {
+      process.kill(process.pid, signal)
+    })
+    return false
   })
 
   await $`echo "Setting npm registry url to verdaccio's"`
   await $`npm set registry ${VERDACCIO_URL}`
 
   await $`echo Running verdaccio on ${VERDACCIO_URL}`
-  await $`yarn verdaccio -l ${VERDACCIO_PORT} -c ./verdaccio.yml`
+  const verdaccioServer = await startVerdaccio(VERDACCIO_PORT)
+
+  await releaseToVerdaccio()
 })()
+
+// credit: https://github.com/storybookjs/storybook/blob/92b23c080d03433765cbc7a60553d036a612a501/scripts/run-registry.ts
+const startVerdaccio = (port) => {
+  let resolved = false
+  return Promise.race([
+    new Promise((resolve) => {
+      const config = {
+        ...YAML.parse(
+          fs.readFileSync(path.join(__dirname, '../verdaccio.yml'), 'utf8'),
+        ),
+      }
+
+      const onReady = (webServer) => {
+        webServer.listen(port, () => {
+          resolved = true
+          resolve(webServer)
+        })
+      }
+
+      startVerdaccioServer(
+        config,
+        6000,
+        undefined,
+        '1.0.0',
+        'verdaccio',
+        onReady,
+      )
+    }),
+    new Promise((_, rej) => {
+      setTimeout(() => {
+        if (!resolved) {
+          resolved = true
+          rej(new Error(`TIMEOUT - verdaccio didn't start within 10s`))
+        }
+      }, 10000)
+    }),
+  ])
+}

@@ -18,30 +18,6 @@ const packagesToPublish = [
 ]
 
 /**
- * Receives a version number and returns it without the tags, if there are any
- *
- * @param {string} version - Version number
- * @returns Version number without the tags
- *
- * @example
- * ```javascript
- * const version_1 = '0.4.8-dev3-ec175817'
- * const version_2 = '0.4.8'
- *
- * stripTag(version_1) === stripTag(version_2) === '0.4.8' // returns `true`
- * ```
- */
-function stripTag(version) {
-  const regExp = /^[0-9]+\.[0-9]+\.[0-9]+/g
-  const matches = version.match(regExp)
-  if (!matches) {
-    throw new Error(`Version number not found in "${version}"`)
-  }
-
-  return matches[0]
-}
-
-/**
  * Assigns the new versions to the packages
  *
  * @param {{name: string, location: string}[]} workspacesListObjects - An Array of objects containing information about the workspaces
@@ -104,8 +80,8 @@ async function assignVersions(workspacesListObjects, hash) {
     })
 }
 
-;(async function () {
-  const version = '0.0.1-COMPATIBILITY.' + Math.floor(Math.random() * 1000000)
+export async function releaseToVerdaccio() {
+  const version = '0.0.1-COMPATIBILITY.' + '1' //Math.floor(Math.random() * 1000000)
   cd(MONOREPO_ROOT)
 
   // @ts-ignore ignore
@@ -140,7 +116,7 @@ async function assignVersions(workspacesListObjects, hash) {
 
   restorePackages()
   restoreYarnRc()
-})()
+}
 
 function patchYarnRcToUseVerdaccio() {
   const originalYarnrcContent = fs.readFileSync(PATH_TO_YARNRC, {

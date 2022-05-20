@@ -14,11 +14,10 @@ export const PATH_TO_YARNRC = path.join(MONOREPO_ROOT, '.yarnrc.yml')
 /**
  * Get all the setups from `./compatibility-tests/`
  *
- * @param {string} root - Absolute path to the theatre monorepo
- * @returns An array containing the absolute paths to the compatibility test setups
+ * @returns {Array<string>} An array containing the absolute paths to the compatibility test setups
  */
-export function getCompatibilityTestSetups(root) {
-  const buildTestsDir = path.join(root, 'compatibility-tests')
+export function getCompatibilityTestSetups() {
+  const buildTestsDir = path.join(MONOREPO_ROOT, 'compatibility-tests')
   let buildTestsDirEntries
 
   try {
