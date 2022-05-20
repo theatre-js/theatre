@@ -323,7 +323,7 @@ const SelectionRectangle: React.FC<{
           left: left + 'px',
           width: width + 'px',
         }}
-      ></SelectionRectangleDiv>
+      />
     )
   }, [layoutP, atom])
 }

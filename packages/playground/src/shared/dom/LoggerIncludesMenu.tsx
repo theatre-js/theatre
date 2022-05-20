@@ -1,6 +1,14 @@
-import type {IDerivation, Ticker} from '@theatre/dataverse'
+import type {
+  IBox,
+  IDerivation,
+  Ticker} from '@theatre/dataverse';
+import {
+  isDerivation,
+  prism,
+  val,
+} from '@theatre/dataverse'
 import {Box} from '@theatre/dataverse'
-import {useVal} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import {TheatreLoggerLevel} from '@theatre/shared/logger'
 import type {
   ITheatreLogIncludes,
@@ -8,6 +16,7 @@ import type {
 } from '@theatre/shared/_logger/_archive.cldev/logger.cldev'
 
 import React, {useContext} from 'react'
+import styled from './styled'
 
 export function LoggerIncludesMenu({state}: {state: LoggerIncludeState}) {
   return (
@@ -21,10 +30,16 @@ const context = React.createContext<LoggerIncludeState>(null!)
 const useMenuState = () => useContext(context)
 export type LoggerIncludeState = ReturnType<typeof createLoggerIncludeState>
 
+const LoggerMenuUIContainer = styled.div`
+  position: fixed;
+  top: 20px;
+  right: 20px;
+`
+
 const LoggerMenuUI = React.memo(() => {
   return (
     <>
-      <div
+      <LoggerMenuUIContainer
         style={{
           position: 'fixed',
           top: 20,
@@ -36,14 +51,41 @@ const LoggerMenuUI = React.memo(() => {
       >
         <MenuSearchInput />
         <MenuSearchResults />
-      </div>
+      </LoggerMenuUIContainer>
     </>
   )
 })
 
+const Hmm = styled.div``
+
+function styledRx() {}
+
+const SearchInput = styled.input``
+
 const MenuSearchInput = React.memo(() => {
   const menu = useMenuState()
-  const val = useVal(menu.search.searchValueD)
+  // const val = useVal(menu.search.searchValue$.derivation)
+  return (
+    <>
+      <label htmlFor="logger-menu-ui">Search</label>
+      <menu.search.searchValue$.react
+        render={(value) => (
+          <SearchInput
+            type="text"
+            id="logger-menu-ui"
+            value={value}
+            onChange={(event) =>
+              menu.search.setSearchValue(event.currentTarget.value)
+            }
+          />
+        )}
+      />
+    </>
+  )
+})
+const MenuSearchInputBkup = React.memo(() => {
+  const menu = useMenuState()
+  const val = useVal(menu.search.searchValue$.derivation)
   return (
     <>
       <label htmlFor="logger-menu-ui">Search</label>
@@ -61,26 +103,72 @@ const MenuSearchInput = React.memo(() => {
 
 const MenuSearchResults = React.memo(() => {
   const menu = useMenuState()
-  const valElt = deriveElement(menu.search.searchValueD, (value) => value)
-  const listElt = deriveElement(menu.shownKeysD, (list) =>
-    list.map((source) => (
-      <MenuItem
-        config={source.config}
-        label={source.label}
-        key={source.label}
-      />
-    )),
+  const searchUpperCaseElt = deriveReact(
+    menu.search.searchValue$.map((str) => str.toUpperCase()),
+    (value) => <h1>{value}</h1>,
   )
+
   return (
     <>
-      <label>{valElt}</label>
-      <div style={{display: 'flex', flexDirection: 'column'}}>{listElt}</div>
+      {searchUpperCaseElt}
+      <div style={{display: 'flex', flexDirection: 'column'}}>
+        {deriveReact(deriveObjD({shownKeys: menu.shownKeysD}), ({shownKeys}) =>
+          shownKeys.map((source) => (
+            <MenuItem
+              config={source.config}
+              label={source.label}
+              key={source.label}
+            />
+          )),
+        )}
+      </div>
       <button onClick={() => menu.save()}>Save</button>
     </>
   )
 })
 
-function deriveElement<T>(
+class Behavior<T> {
+  public readonly derivation: IDerivation<T>
+  constructor(inner: IDerivation<T> | IBox<T>) {
+    this.derivation = isDerivation(inner) ? inner : inner.derivation
+  }
+  react(props: {render(value: T): JSX.Element}): JSX.Element {
+    return DeriveElement({der: this.derivation, render: props.render})
+  }
+}
+
+class BehaviorSubject<T> extends Behavior<T> {
+  public readonly box: IBox<T>
+  set(value: T) {
+    this.box.set(value)
+  }
+  get() {
+    return this.box.get()
+  }
+  constructor(initial: T) {
+    const box = new Box(initial)
+    super(box.derivation)
+    this.box = box
+  }
+}
+
+type CombineLatestOf<T extends Record<string, IDerivation<any>>> = IDerivation<
+  {
+    [P in keyof T]: T[P] extends IDerivation<infer R> ? R : never
+  }
+>
+
+function deriveObjD<T extends Record<string, IDerivation<any>>>(
+  obj: T,
+): CombineLatestOf<T> {
+  const value = prism(() =>
+    objMap(obj, ([_key, derivation]) => val(derivation)),
+  )
+
+  return value as CombineLatestOf<T>
+}
+
+function deriveReact<T>(
   der: IDerivation<T>,
   render: (value: T) => React.ReactChild | JSX.Element | JSX.Element[],
 ) {
@@ -90,7 +178,7 @@ function DeriveElement<T>(props: {
   der: IDerivation<T>
   render: (value: T) => React.ReactChild | JSX.Element | JSX.Element[]
 }) {
-  const value = useVal(props.der)
+  const value = usePrism(() => val(props.der), [props.der])
   return <>{props.render(value)}</>
 }
 
@@ -101,10 +189,10 @@ const MenuItem = (props: {label: string; config: IncludesConfigBox}) => {
       props.config.set({...props.config.get(), min})
     },
   }
-  const setMin = (min: number | undefined) =>
-    props.config.set({...props.config.get(), min})
+
   return (
     <div style={{display: 'flex', flexDirection: 'row'}}>
+      R
       <LogLevelTile color="gray" value={undefined} {...tileProps} />
       <LogLevelTile
         color="orangered"
@@ -137,14 +225,38 @@ const LogLevelTile = (props: {
   value: TheatreLoggerLevel | undefined
   setValue: (value: TheatreLoggerLevel | undefined) => void
 }) => {
-  return deriveElement(
-    // how do I get distinct values?
-    props.currentValueD.map(
-      (c) =>
-        c === props.value ||
-        (c != null && props.value != null && c <= props.value),
-    ),
-    (isSelected) => (
+  // const element = usePrism(() => {
+  //   const currentValue = val(props.currentValueD)
+
+  //   const isSelected =
+  //     currentValue === props.value ||
+  //     (currentValue != null &&
+  //       props.value != null &&
+  //       currentValue <= props.value)
+  //   return <span>T{innerTile(isSelected)}</span>
+  // }, [props.color, props.value, props.setValue])
+
+  // console.error("here")
+
+  return (
+    <span>
+      T
+      {deriveReact(
+        // how do I get distinct values?
+        props.currentValueD.map(
+          (currentValue) =>
+            currentValue === props.value ||
+            (currentValue != null &&
+              props.value != null &&
+              currentValue <= props.value),
+        ),
+        innerTile,
+      )}
+    </span>
+  )
+
+  function innerTile(isSelected: boolean) {
+    return (
       <div
         style={{
           width: '1em',
@@ -161,8 +273,8 @@ const LogLevelTile = (props: {
         }
         onClick={() => props.setValue(props.value)}
       />
-    ),
-  )
+    )
+  }
 }
 
 export type LoggerIncludePersistedState = {
@@ -175,9 +287,9 @@ export function createLoggerIncludeState(
   ticker: Ticker,
   initialState: LoggerIncludePersistedState = {input: '', sources: []},
 ) {
-  const stateB = new Box<LoggerIncludePersistedState>(initialState)
+  const stateB = new BehaviorSubject(initialState)
 
-  const inputValue = new Box(initialState.input)
+  const inputValue = new BehaviorSubject(initialState.input)
 
   inputValue.derivation.changes(ticker).tap((value) => {
     console.log('update state', {value})
@@ -208,7 +320,7 @@ export function createLoggerIncludeState(
 
   return {
     search: {
-      searchValueD: inputValue.derivation,
+      searchValue$: inputValue,
       setSearchValue(value: string) {
         inputValue.set(value)
       },
@@ -257,4 +369,17 @@ class IncludesMapEmitter<K, V> {
     }
     return existing
   }
+}
+
+function objMap<T, U>(
+  template: T,
+  eachEntry: <P extends keyof T>(entry: [name: P, value: T[P]]) => U,
+): {[P in keyof T]: U} {
+  // @ts-ignore
+  return Object.fromEntries(
+    Object.entries(template).map((entry) => {
+      // @ts-ignore
+      return [entry[0], eachEntry(entry)]
+    }),
+  )
 }
