@@ -48,7 +48,11 @@ export async function startRegistry() {
   await releaseToVerdaccio()
 }
 
-// credit: https://github.com/storybookjs/storybook/blob/92b23c080d03433765cbc7a60553d036a612a501/scripts/run-registry.ts
+/**
+ * Starts the verdaccio server and returns a promise that resolves when the serve is up and ready
+ *
+ * Credid: https://github.com/storybookjs/storybook/blob/92b23c080d03433765cbc7a60553d036a612a501/scripts/run-registry.ts
+ */
 const startVerdaccio = (port) => {
   let resolved = false
   return Promise.race([
@@ -96,7 +100,8 @@ const packagesToPublish = [
 ]
 
 /**
- * Assigns the new versions to the packages
+ * Assigns a new version to each of @theatre/* packages. If there a package depends on another package in this monorepo,
+ * this function makes sure the dependency version is fixed at "hash"
  *
  * @param {{name: string, location: string}[]} workspacesListObjects - An Array of objects containing information about the workspaces
  * @param {string} hash - Hash of the latest commit (or any other string)
@@ -158,8 +163,12 @@ async function assignVersions(workspacesListObjects, hash) {
     })
 }
 
+/**
+ * Builds all the @theatre/* packages with version number 0.0.1-COMPAT.1 and publishes
+ * them all to the verdaccio registry
+ */
 async function releaseToVerdaccio() {
-  const version = '0.0.1-COMPATIBILITY.' + '1' //Math.floor(Math.random() * 1000000)
+  const version = '0.0.1-COMPAT.1'
   cd(MONOREPO_ROOT)
 
   // @ts-ignore ignore
@@ -196,6 +205,11 @@ async function releaseToVerdaccio() {
   restoreYarnRc()
 }
 
+/**
+ * Temporarily patches the yarnrc file to sue verdaccio as its publish registry.
+ *
+ * Restores yarnrc to the old version when restoreYarnRc() is called.
+ */
 function patchYarnRcToUseVerdaccio() {
   const originalYarnrcContent = fs.readFileSync(PATH_TO_YARNRC, {
     encoding: 'utf-8',
