@@ -4,7 +4,7 @@ store:
 auth:
   auth-memory:
     users:
-      foo:
+      test:
         name: test
         password: test
 uplinks:
