@@ -44,7 +44,7 @@ jobs:
       - run: yarn lint:all --max-warnings 0
       - run: yarn test
       - run: yarn build
-      - run: yarn test:compatibility
+      - run: yarn test:compatibility:ci
       - name: Download playwright
         run: yarn workspace playground run playwright install
       - name: Run e2e tests with percy
