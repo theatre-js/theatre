@@ -14,7 +14,9 @@ import PointerEventsHandler from '@theatre/studio/uiComponents/PointerEventsHand
 import TooltipContext from '@theatre/studio/uiComponents/Popover/TooltipContext'
 import {ProvidePointerCapturing} from './PointerCapturing'
 
-const GlobalStyle = createGlobalStyle`
+const GlobalStyle =
+  typeof window !== 'undefined'
+    ? createGlobalStyle`
   :host {
     all: initial;
     contain: strict;
@@ -32,6 +34,7 @@ const GlobalStyle = createGlobalStyle`
     list-style: none;
   }
 `
+    : ({} as ReturnType<typeof createGlobalStyle>)
 
 const Container = styled(PointerEventsHandler)`
   z-index: 50;

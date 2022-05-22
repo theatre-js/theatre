@@ -52,7 +52,7 @@ export class Studio {
     this.address = {studioId: nanoid(10)}
     this.publicApi = new TheatreStudio(this)
 
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
       this.ui = new UI(this)
     }
 

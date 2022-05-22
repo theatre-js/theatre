@@ -28,3 +28,9 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
+# these lock files include checksums of the @theatre/*@compat packages, which
+# would change after every edit to their source, so we better not keep them
+# in the repo
+*/package-lock.json
+*/yarn.lock
