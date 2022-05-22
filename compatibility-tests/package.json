@@ -13,5 +13,6 @@
     "verdaccio-auth-memory": "^10.2.0",
     "verdaccio-memory": "^10.2.0",
     "zx": "^6.1.0"
-  }
+  },
+  "version": "0.0.1-COMPAT.1"
 }

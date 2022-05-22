@@ -2,7 +2,8 @@ import path from 'path'
 import {build} from 'esbuild'
 
 export const definedGlobals = {
-  global: 'window',
+  global: 'window_shim',
+  window: 'window_shim',
   'process.env.version': JSON.stringify(
     require('../studio/package.json').version,
   ),
@@ -18,6 +19,7 @@ export function createBundles(watch: boolean) {
       bundle: true,
       sourcemap: true,
       define: {...definedGlobals, __IS_VISUAL_REGRESSION_TESTING: 'false'},
+      inject: [path.join(__dirname, './windowShim.js')],
       watch,
       external: [
         '@theatre/dataverse',
