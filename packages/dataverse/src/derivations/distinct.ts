@@ -24,30 +24,27 @@ const makeDistinctDerivationClass = () =>
     protected _reactToDependencyBecomingStale(
       which: IDerivation<unknown>,
     ): void {
-      if (this._lastValCompare === UNDETERMINED) {
-        this._lastValCompare = this._dep.getValue()
-        console.log('_reactToDependencyBecomingStale determined')
-        return
-      }
-
-      if (which === this._dep) {
-        const newValue = this._dep.getValue()
-        const lastValue = this._lastValue
-
-        if (
-          this._eq?.(newValue, this._lastValCompare) ??
-          newValue === this._lastValue
-        ) {
-          this._didMarkDependentsAsStale = true
-          // console.log('_reactToDependencyBecomingStale', newValue, lastValue, {
-          //   _didMarkDependentsAsStale: this._didMarkDependentsAsStale,
-          // })
-        } else {
-          this._lastValue = newValue
-        }
-
-        this._lastValCompare = newValue
-      }
+      // if (this._lastValCompare === UNDETERMINED) {
+      //   this._lastValCompare = this._dep.getValue()
+      //   console.log('_reactToDependencyBecomingStale determined')
+      //   return
+      // }
+      // if (which === this._dep) {
+      //   const newValue = this._dep.getValue()
+      //   const lastValue = this._lastValue
+      //   if (
+      //     this._eq?.(newValue, this._lastValCompare) ??
+      //     newValue === this._lastValCompare
+      //   ) {
+      //     this._didMarkDependentsAsStale = true
+      //     // console.log('_reactToDependencyBecomingStale', newValue, lastValue, {
+      //     //   _didMarkDependentsAsStale: this._didMarkDependentsAsStale,
+      //     // })
+      //   } else {
+      //     this._lastValue = newValue
+      //   }
+      //   this._lastValCompare = newValue
+      // }
     }
 
     /**
@@ -71,9 +68,9 @@ function distinctTappable<T>(
   from: Tappable<T>,
   eq?: (a: T, b: T) => boolean,
 ): Tappable<T> {
-  let lastValue: T | typeof UNDETERMINED = UNDETERMINED
   return new Tappable({
     tapToSource(cb) {
+      let lastValue: T | typeof UNDETERMINED = UNDETERMINED
       return from.tap((value) => {
         if (
           lastValue !== UNDETERMINED &&

@@ -107,7 +107,7 @@ const MenuItem = (props: {label: string; config: IncludesConfigBox}) => {
     <div style={{display: 'flex', flexDirection: 'row'}}>
       R
       <LogLevelTile color="gray" value={undefined} {...tileProps} />
-      {/* <LogLevelTile
+      <LogLevelTile
         color="orangered"
         value={TheatreLoggerLevel.ERROR}
         {...tileProps}
@@ -121,7 +121,7 @@ const MenuItem = (props: {label: string; config: IncludesConfigBox}) => {
         color="lawngreen"
         value={TheatreLoggerLevel.DEBUG}
         {...tileProps}
-      /> */}
+      />
       <LogLevelTile
         color="dodgerblue"
         value={TheatreLoggerLevel.TRACE}
@@ -141,29 +141,46 @@ const LogLevelTileInnerTile = styleD.div<{color: string}>`
   cursor: pointer;
 `
 
+let _i = 0
+const uniq = (name: string) => {
+  let last: string = name
+  return {
+    last(iam: string) {
+      return last + ` (${iam})`
+    },
+    gen: (iam: string) => {
+      last = (++_i).toString(16).replace(/^(.*)(.)$/, `${name} $2$1`)
+      return last + ` (${iam})`
+    },
+  }
+}
+
 const LogLevelTile = (props: {
   color: string
   currentValueD: IDerivation<TheatreLoggerLevel | undefined>
   value: TheatreLoggerLevel | undefined
   setValue: (value: TheatreLoggerLevel | undefined) => void
 }) => {
+  let hmm = uniq(`LogLevelTile "${props.color}"`)
   return (
     <span>
       T
       <LogLevelTileInnerTile
         color={props.color}
         style={props.currentValueD
-          .map(
-            (currentValue) =>
+          .map((currentValue) => {
+            console.log(hmm.gen('map 1 currentValueD'), currentValue)
+            return (
               currentValue === props.value ||
               (currentValue != null &&
                 props.value != null &&
-                currentValue <= props.value),
-          )
+                currentValue <= props.value)
+            )
+          })
           .distinct()
           // inline distinct?
           .map((isSelected) => {
-            console.log(isSelected, props)
+            console.log(hmm.last('map 2 isSelected'), isSelected)
             return {
               opacity: isSelected ? 1 : 0.6,
               background: isSelected ? props.color : 'transparent',

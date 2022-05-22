@@ -171,7 +171,6 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
     this._didMarkDependentsAsStale = true
     this._isFresh = false
 
-    console.log('deps', ...this._dependents)
     this._dependents.forEach((dependent) => {
       dependent(this)
     })
