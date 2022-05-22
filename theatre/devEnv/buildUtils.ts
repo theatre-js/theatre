@@ -38,9 +38,9 @@ export function createBundles(watch: boolean) {
          * It's probably possible to bundle our own react version and somehow share it
          * with the plugins, but that's not urgent atm.
          */
-        'react',
-        'react-dom',
-        'styled-components',
+        // 'react',
+        // 'react-dom',
+        // 'styled-components',
       ],
     }
 
