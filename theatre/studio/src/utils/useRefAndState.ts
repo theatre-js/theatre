@@ -1,6 +1,8 @@
 import type {MutableRefObject} from 'react'
 import {useMemo, useState} from 'react'
 
+const notComputed = Symbol()
+
 /**
  * Combines useRef() and useState().
  *
@@ -17,12 +19,14 @@ import {useMemo, useState} from 'react'
  * ```
  */
 export default function useRefAndState<T>(
-  initialValue: T,
+  initialValue: (() => T) | T,
 ): [ref: MutableRefObject<T>, state: T] {
   const ref = useMemo(() => {
-    let current = initialValue
+    let current =
+      typeof initialValue === 'function' ? notComputed : initialValue
     return {
       get current() {
+        if (current === notComputed) current = (initialValue as () => T)()
         return current
       },
       set current(v: T) {
@@ -32,7 +36,7 @@ export default function useRefAndState<T>(
     }
   }, [])
 
-  const [state, setState] = useState<T>(() => initialValue)
+  const [state, setState] = useState<T>(() => ref.current)
 
   return [ref, state]
 }

@@ -71,6 +71,11 @@ export interface IDerivation<V> {
   getValue(): V
 
   /**
+   * Gets a derivation which only actually reports changes on change based on equality.
+   */
+  distinct(eq?: (a: V, b: V) => boolean): IDerivation<V>
+
+  /**
    * Creates a new derivation from this derivation using the provided mapping function. The new derivation's value will be
    * `fn(thisDerivation.getValue())`.
    *

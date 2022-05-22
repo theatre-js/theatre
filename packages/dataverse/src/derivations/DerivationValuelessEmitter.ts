@@ -13,10 +13,7 @@ export default class DerivationValuelessEmitter<V> {
   _emitter: Emitter<void>
   _hadTappers: boolean
 
-  constructor(
-    derivation: IDerivation<V>,
-    readonly dontEmitValues: boolean = false,
-  ) {
+  constructor(derivation: IDerivation<V>) {
     this._derivation = derivation
     this._emitter = new Emitter()
     this._emitter.onNumberOfTappersChange(() => {

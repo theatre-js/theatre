@@ -3,6 +3,7 @@ import type {$IntentionalAny, VoidFn} from '../types'
 import type Tappable from '../utils/Tappable'
 import DerivationEmitter from './DerivationEmitter'
 import DerivationValuelessEmitter from './DerivationValuelessEmitter'
+import distinct from './distinct'
 import flatMap from './flatMap'
 import type {IDerivation} from './IDerivation'
 import map from './map'
@@ -21,7 +22,7 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
    * Whether the object is a derivation.
    */
   readonly isDerivation: true = true
-  private _didMarkDependentsAsStale: boolean = false
+  protected _didMarkDependentsAsStale: boolean = false
   private _isHot: boolean = false
 
   private _isFresh: boolean = false
@@ -170,6 +171,7 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
     this._didMarkDependentsAsStale = true
     this._isFresh = false
 
+    console.log('deps', ...this._dependents)
     this._dependents.forEach((dependent) => {
       dependent(this)
     })
@@ -233,6 +235,13 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
    */
   map<T>(fn: (v: V) => T): IDerivation<T> {
     return map(this, fn)
+  }
+
+  /**
+   *
+   */
+  distinct(eq?: (a: V, b: V) => boolean): IDerivation<V> {
+    return distinct(this, eq)
   }
 
   /**

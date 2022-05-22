@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom'
 import studio from '@theatre/studio'
 import {getProject} from '@theatre/core'
@@ -10,7 +9,8 @@ import {
   LoggerIncludesMenu,
 } from './LoggerIncludesMenu'
 import {keyStorage} from './keyStorage'
-import {Ticker} from '@theatre/dataverse'
+import {RAFTicker} from './RAFTicker'
+import React from 'react'
 /**
  * This is a basic example of using Theatre for manipulating the DOM.
  *
@@ -26,23 +26,7 @@ const persisted = keyStorage(
   (prev) => prev as LoggerIncludePersistedState,
 )
 
-const ticker = new Ticker()
-function windItUp(ticker: Ticker) {
-  const controls = {cancelled: false}
-  function loop() {
-    requestAnimationFrame(() => {
-      ticker.tick()
-      if (!controls.cancelled) {
-        loop()
-      }
-    })
-  }
-
-  loop()
-  return controls
-}
-
-windItUp(ticker)
+const ticker = RAFTicker.DEFAULT
 
 const loggerState = createLoggerIncludeState(ticker, persisted.getItem())
 loggerState.stateD.changes(ticker).tap((a) => persisted.setItem(a))

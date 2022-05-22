@@ -10,10 +10,14 @@ export default class Ticker {
   private _timeAtCurrentTick: number
   private _ticking: boolean = false
 
-  constructor() {
+  constructor(private readonly schedule?: () => void) {
     this._scheduledForThisOrNextTick = new Set()
     this._scheduledForNextTick = new Set()
     this._timeAtCurrentTick = 0
+  }
+
+  _schedule() {
+    if (!this._ticking) this.schedule?.()
   }
 
   /**
@@ -32,6 +36,7 @@ export default class Ticker {
    */
   onThisOrNextTick(fn: ICallback) {
     this._scheduledForThisOrNextTick.add(fn)
+    this._schedule()
   }
 
   /**
@@ -44,6 +49,7 @@ export default class Ticker {
    */
   onNextTick(fn: ICallback) {
     this._scheduledForNextTick.add(fn)
+    this._schedule()
   }
 
   /**
@@ -87,6 +93,13 @@ export default class Ticker {
    * @see onNextTick
    */
   tick(t: number = performance.now()) {
+    if (
+      this._scheduledForNextTick.size === 0 &&
+      this._scheduledForThisOrNextTick.size === 0
+    ) {
+      return
+    }
+
     this._ticking = true
     this._timeAtCurrentTick = t
     this._scheduledForNextTick.forEach((v) =>
@@ -95,6 +108,7 @@ export default class Ticker {
     this._scheduledForNextTick.clear()
     this._tick(0)
     this._ticking = false
+    this._schedule()
   }
 
   private _tick(iterationNumber: number): void {

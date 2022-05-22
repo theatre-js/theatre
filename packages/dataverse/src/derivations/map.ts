@@ -21,7 +21,7 @@ const makeMapDerivationClass = () =>
 
 let cls: ReturnType<typeof makeMapDerivationClass> | undefined = undefined
 
-export default function flatMap<V, R>(
+export default function map<V, R>(
   dep: IDerivation<V>,
   fn: (v: V) => R,
 ): IDerivation<R> {

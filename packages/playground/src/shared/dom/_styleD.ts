@@ -15,12 +15,15 @@
 
 import type * as CSS from 'csstype'
 import type * as hoistNonReactStatics from 'hoist-non-react-statics'
-import type {IDerivation} from '@theatre/dataverse';
-import { isDerivation} from '@theatre/dataverse'
+import type {IDerivation} from '@theatre/dataverse'
+import {isDerivation} from '@theatre/dataverse'
 
 import type * as styledTypes from 'styled-components'
+
 import styledOriginal from 'styled-components'
-import React from 'react'
+import React, {useMemo, useRef} from 'react'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import {usePrism} from './derive-utils'
 
 export type CSSProperties = CSS.Properties<string | number>
 
@@ -326,7 +329,7 @@ export interface ThemedBaseStyledInterface<T extends object>
   ): ThemedStyledFunction<C, T>
 }
 
-export type StyledInterface = ThemedStyledComponentFactories<DefaultTheme>
+export type StyleDInterface = ThemedStyledComponentFactories<DefaultTheme>
 
 export interface BaseThemedCssFunction<T extends object> {
   (
@@ -361,7 +364,7 @@ type WithOptionalTheme<P extends {theme?: T}, T> = Omit<P, 'theme'> & {
 type AnyIfEmpty<T extends object> = keyof T extends never ? any : T
 
 export interface ThemedStyledComponentsModule<T extends object> {
-  default: ThemedStyledInterface<T>
+  default: styledTypes.ThemedStyledInterface<T>
 
   css: ThemedCssFunction<T>
 
@@ -381,31 +384,56 @@ export interface ThemedStyledComponentsModule<T extends object> {
   useTheme(): T
 }
 
-const styledHandler = {
-  get(styled: styledTypes.StyledInterface, tag: string): $IntentionalAny {
-    return (...args) => {
+type $TsSpeedAny = $IntentionalAny
+
+const styledHandler: $TsSpeedAny = {
+  get(styledOriginal: $TsSpeedAny, tag: string): $TsSpeedAny {
+    return (...args: $IntentionalAny[]) => {
       // const XUI = style.div`...args ${arg1} ${arg2}`
-      const StyledComponent = styled[tag /* e.g. "div" */](...args)
+      const StyledComponent = styledOriginal[tag /* e.g. "div" */](...args)
       return React.forwardRef(function DerivedStyleComponent(
         props: $IntentionalAny,
         ref: React.ForwardedRef<unknown>,
       ) {
-        // const props = useState()
+        const propsRef = useRef(props)
+        propsRef.current = props
+        const derivationKeys: string[] = []
         for (const key in props) {
           if (isDerivation(props[key])) {
-            props[key]
+            derivationKeys.push(key)
           }
         }
 
-        debugger
+        const len = derivationKeys.length
+        const derivations = useMemo(() => {
+          const derivations = new Array<IDerivation<any>>(len)
+          for (let i = 0; i < len; i++) {
+            const key = derivationKeys[i]
+            derivations[i] = props[key]
+          }
+          return derivations
+        }, derivationKeys)
 
-        return StyledComponent.render({...props, ref})
+        const propVals = usePrism(() => {
+          const propVals = {} as any
+          for (let i = 0; i < len; i++) {
+            propVals[derivationKeys[i]] = derivations[i].getValue()
+          }
+          return propVals
+        }, derivations)
+
+        return StyledComponent.render({...props, ...propVals, ref})
       })
     }
   },
 }
-const styled: StyledInterface = new Proxy(styledOriginal, styledHandler)
-export {styled}
+
+// I'm not sure about this, but I'm casting everything to any to speed up TypeScript from having to double check everything
+const styleD: StyleDInterface = new Proxy(
+  styledOriginal as $TsSpeedAny,
+  styledHandler as $TsSpeedAny,
+)
+export {styleD as styled}
 
 /**
  * This interface can be augmented by users to add types to `styled-components`' default theme
@@ -475,4 +503,4 @@ export type CSSProp<T = AnyIfEmpty<DefaultTheme>> =
   | CSSObject
   | FlattenInterpolation<ThemeProps<T>>
 
-export default styled
+export default styleD
