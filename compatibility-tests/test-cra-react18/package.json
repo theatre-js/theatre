@@ -1,5 +1,5 @@
 {
-  "name": "@theatre-build-tests/react-app",
+  "name": "@compat/cra-react18",
   "version": "0.1.0",
   "private": true,
   "scripts": {

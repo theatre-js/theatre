@@ -1,5 +1,5 @@
 {
-  "name": "test-vite-react18",
+  "name": "@compat/vite-react18",
   "private": true,
   "version": "0.0.0",
   "scripts": {

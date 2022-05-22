@@ -1,5 +1,5 @@
 {
-  "name": "@examples/basic-dom",
+  "name": "@compat/parcel1-react18",
   "scripts": {
     "dev": "parcel serve ./index.html"
   },
