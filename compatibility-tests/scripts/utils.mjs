@@ -2,9 +2,8 @@
  * Utility functions for the compatibility tests
  */
 
-import fs from 'fs'
 import path from 'path'
-import {YAML} from 'zx'
+import {globby, YAML} from 'zx'
 import onCleanup from 'node-cleanup'
 import * as verdaccioPackage from 'verdaccio'
 
@@ -14,6 +13,7 @@ const startVerdaccioServer = verdaccioPackage.default.default
 export const VERDACCIO_PORT = 4823
 export const VERDACCIO_HOST = `localhost`
 export const VERDACCIO_URL = `http://${VERDACCIO_HOST}:${VERDACCIO_PORT}/`
+export const PATH_TO_COMPAT_TESTS_ROOT = path.join(__dirname, '..')
 export const MONOREPO_ROOT = path.join(__dirname, '../..')
 export const PATH_TO_YARNRC = path.join(MONOREPO_ROOT, '.yarnrc.yml')
 
@@ -258,4 +258,24 @@ export function getCompatibilityTestSetups() {
   }
 
   return setupsAbsPaths
+}
+
+/**
+ * Deletes ../test-*\/(node_modules|package-lock.json|yarn.lock)
+ */
+export async function clean() {
+  const toDelete = await globby(
+    './test-*/(node_modules|yarn.lock|package-lock.json)',
+    {
+      cwd: PATH_TO_COMPAT_TESTS_ROOT,
+      // node_modules et al are gitignored, but we still want to clean them
+      gitignore: false,
+      // include directories too
+      onlyFiles: false,
+    },
+  )
+  toDelete.forEach((fileOrDir) => {
+    console.log('deleting', fileOrDir)
+    fs.removeSync(path.join(PATH_TO_COMPAT_TESTS_ROOT, fileOrDir))
+  })
 }
