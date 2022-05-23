@@ -1,6 +1,6 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
-import {usePrism} from '@theatre/react'
-import React from 'react'
+import {usePrism, useVal} from '@theatre/react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
 import {
@@ -11,41 +11,19 @@ import {
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import ObjectDetails from './ObjectDetails'
 import ProjectDetails from './ProjectDetails'
+import getStudio from '@theatre/studio/getStudio'
 
-const Container = styled.div`
+const Container = styled.div<{pin: boolean}>`
   background-color: transparent;
   pointer-events: none;
   position: fixed;
-  left: 0;
   right: 0;
-  top: 12px;
+  top: 50px;
   bottom: 0px;
+  width: 260px;
   z-index: ${panelZIndexes.propsPanel};
 
-  &:before {
-    display: block;
-    content: ' ';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    width: 20px;
-    ${pointerEventsAutoInNormalMode};
-  }
-`
-
-const Content = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 260px;
-  bottom: 0;
-  /* transform: translateX(100%); */
-  /* pointer-events: none; */
-
-  ${Container}:hover & {
-    transform: translateX(0);
-  }
+  display: ${({pin}) => (pin ? 'block' : 'none')};
 `
 
 const Title = styled.div`
@@ -102,56 +80,72 @@ const Body = styled.div`
 `
 
 const DetailPanel: React.FC<{}> = (props) => {
+  const pin = useVal(getStudio().atomP.ahistoric.pinDetails)
+
+  const [hovering, setHovering] = useState(false)
+
+  useEffect(() => {
+    const listener = (e: MouseEvent) => {
+      const threshold = hovering ? 200 : 50
+      if (e.x > window.innerWidth - threshold) {
+        setHovering(true)
+      } else {
+        setHovering(false)
+      }
+    }
+    document.addEventListener('mousemove', listener)
+
+    return () => document.removeEventListener('mousemove', listener)
+  }, [hovering])
+
+  console.log(hovering)
+
   return usePrism(() => {
     const selection = getOutlineSelection()
 
     const obj = selection.find(isSheetObject)
     if (obj) {
       return (
-        <Container>
-          <Content data-testid="DetailPanel-Object">
-            <Header>
-              <Title
-                title={`${obj.sheet.address.sheetId}: ${obj.sheet.address.sheetInstanceId} > ${obj.address.objectKey}`}
-              >
-                <TitleBar_Piece>{obj.sheet.address.sheetId} </TitleBar_Piece>
+        <Container pin={pin || hovering}>
+          <Header>
+            <Title
+              title={`${obj.sheet.address.sheetId}: ${obj.sheet.address.sheetInstanceId} > ${obj.address.objectKey}`}
+            >
+              <TitleBar_Piece>{obj.sheet.address.sheetId} </TitleBar_Piece>
 
-                <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
-                <TitleBar_Piece>
-                  {obj.sheet.address.sheetInstanceId}{' '}
-                </TitleBar_Piece>
+              <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
+              <TitleBar_Piece>
+                {obj.sheet.address.sheetInstanceId}{' '}
+              </TitleBar_Piece>
 
-                <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
-                <TitleBar_Piece>{obj.address.objectKey}</TitleBar_Piece>
-              </Title>
-            </Header>
-            <Body>
-              <ObjectDetails objects={[obj]} />
-            </Body>
-          </Content>
+              <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
+              <TitleBar_Piece>{obj.address.objectKey}</TitleBar_Piece>
+            </Title>
+          </Header>
+          <Body>
+            <ObjectDetails objects={[obj]} />
+          </Body>
         </Container>
       )
     }
     const project = selection.find(isProject)
     if (project) {
       return (
-        <Container>
-          <Content>
-            <Header>
-              <Title title={`${project.address.projectId}`}>
-                <TitleBar_Piece>{project.address.projectId} </TitleBar_Piece>
-              </Title>
-            </Header>
-            <Body>
-              <ProjectDetails projects={[project]} />
-            </Body>
-          </Content>
+        <Container pin={pin || hovering}>
+          <Header>
+            <Title title={`${project.address.projectId}`}>
+              <TitleBar_Piece>{project.address.projectId} </TitleBar_Piece>
+            </Title>
+          </Header>
+          <Body>
+            <ProjectDetails projects={[project]} />
+          </Body>
         </Container>
       )
     }
 
     return <></>
-  }, [])
+  }, [pin, hovering])
 }
 
 export default DetailPanel

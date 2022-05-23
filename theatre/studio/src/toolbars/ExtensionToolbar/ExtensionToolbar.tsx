@@ -12,7 +12,7 @@ const Container = styled.div`
   justify-content: center;
 `
 
-const GlobalToolbar: React.FC = () => {
+const ExtensionToolbar: React.FC = () => {
   const groups: Array<React.ReactNode> = []
   const extensionsById = useVal(getStudio().atomP.ephemeral.extensions.byId)
 
@@ -32,4 +32,4 @@ const GlobalToolbar: React.FC = () => {
   return <Container>{groups}</Container>
 }
 
-export default GlobalToolbar
+export default ExtensionToolbar

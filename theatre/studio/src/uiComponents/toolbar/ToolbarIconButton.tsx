@@ -5,7 +5,7 @@ import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import mergeRefs from 'react-merge-refs'
 import MinimalTooltip from '@theatre/studio/uiComponents/Popover/MinimalTooltip'
-import {ToolbarSwitchSelectContainer} from './ToolbarSwitchSelect'
+import ToolbarSwitchSelectContainer from './ToolbarSwitchSelectContainer'
 
 const Container = styled.button`
   ${pointerEventsAutoInNormalMode};

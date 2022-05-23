@@ -1,9 +1,9 @@
 import type {ReactElement} from 'react'
 import React from 'react'
 import type {IconType} from 'react-icons'
-import {Group, Button} from 'reakit'
-import styled from 'styled-components'
+import {Button} from 'reakit'
 import ButtonImpl from './ToolbarIconButton'
+import Container from './ToolbarSwitchSelectContainer'
 
 function OptionButton<T>({
   value,
@@ -42,15 +42,6 @@ interface Props<Option> {
     icon: ReactElement<IconType>
   }[]
 }
-
-const Container = styled(Group)`
-  display: flex;
-  height: fit-content;
-  backdrop-filter: blur(14px);
-  border-radius: 2px;
-`
-
-export {Container as ToolbarSwitchSelectContainer}
 
 const ToolbarSwitchSelect = <Option extends string | number>({
   value: valueOfSwitch,
