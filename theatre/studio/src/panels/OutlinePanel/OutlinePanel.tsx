@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import ProjectsList from './ProjectsList/ProjectsList'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
+import useHotspot from '@theatre/studio/uiComponents/useHotspot'
 
 const Container = styled.div<{pin: boolean}>`
   background-color: transparent;
@@ -41,24 +42,10 @@ const Body = styled.div`
 const OutlinePanel: React.FC<{}> = (props) => {
   const pin = useVal(getStudio().atomP.ahistoric.pinOutline)
 
-  const [hovering, setHovering] = useState(false)
-
-  useEffect(() => {
-    const listener = (e: MouseEvent) => {
-      const threshold = hovering ? 200 : 50
-      if (e.x < threshold) {
-        setHovering(true)
-      } else {
-        setHovering(false)
-      }
-    }
-    document.addEventListener('mousemove', listener)
-
-    return () => document.removeEventListener('mousemove', listener)
-  }, [hovering])
+  const active = useHotspot('left')
 
   return (
-    <Container pin={pin || hovering}>
+    <Container pin={pin || active}>
       <Body data-testid="OutlinePanel-Content">
         <ProjectsList />
       </Body>

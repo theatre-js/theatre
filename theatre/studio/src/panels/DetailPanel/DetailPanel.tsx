@@ -1,6 +1,6 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
 import {usePrism, useVal} from '@theatre/react'
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
 import {
@@ -12,6 +12,7 @@ import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import ObjectDetails from './ObjectDetails'
 import ProjectDetails from './ProjectDetails'
 import getStudio from '@theatre/studio/getStudio'
+import useHotspot from '@theatre/studio/uiComponents/useHotspot'
 
 const Container = styled.div<{pin: boolean}>`
   background-color: rgba(40, 43, 47, 0.8);
@@ -68,23 +69,7 @@ const Body = styled.div`
 const DetailPanel: React.FC<{}> = (props) => {
   const pin = useVal(getStudio().atomP.ahistoric.pinDetails)
 
-  const [hovering, setHovering] = useState(false)
-
-  useEffect(() => {
-    const listener = (e: MouseEvent) => {
-      const threshold = hovering ? 200 : 50
-      if (e.x > window.innerWidth - threshold) {
-        setHovering(true)
-      } else {
-        setHovering(false)
-      }
-    }
-    document.addEventListener('mousemove', listener)
-
-    return () => document.removeEventListener('mousemove', listener)
-  }, [hovering])
-
-  console.log(hovering)
+  const active = useHotspot('right')
 
   return usePrism(() => {
     const selection = getOutlineSelection()
@@ -92,7 +77,7 @@ const DetailPanel: React.FC<{}> = (props) => {
     const obj = selection.find(isSheetObject)
     if (obj) {
       return (
-        <Container pin={pin || hovering}>
+        <Container pin={pin || active}>
           <Header>
             <Title
               title={`${obj.sheet.address.sheetId}: ${obj.sheet.address.sheetInstanceId} > ${obj.address.objectKey}`}
@@ -117,7 +102,7 @@ const DetailPanel: React.FC<{}> = (props) => {
     const project = selection.find(isProject)
     if (project) {
       return (
-        <Container pin={pin || hovering}>
+        <Container pin={pin || active}>
           <Header>
             <Title title={`${project.address.projectId}`}>
               <TitleBar_Piece>{project.address.projectId} </TitleBar_Piece>
@@ -131,7 +116,7 @@ const DetailPanel: React.FC<{}> = (props) => {
     }
 
     return <></>
-  }, [pin, hovering])
+  }, [pin, active])
 }
 
 export default DetailPanel
