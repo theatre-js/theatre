@@ -1,7 +1,6 @@
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import {useVal} from '@theatre/react'
-import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import {
   lockedCursorCssVarName,
@@ -11,33 +10,23 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import {
-  includeLockFrameStampAttrs,
-  useLockFrameStampPosition,
-} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {SequenceMarkerId} from '@theatre/shared/utils/ids'
 import type {SheetAddress} from '@theatre/shared/utils/addresses'
-import SnapCursor from './SnapCursor.svg'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type {StudioHistoricStateSequenceEditorMarker} from '@theatre/studio/store/types'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import DopeSnap from './DopeSnap'
+import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
+import {DopeSnapHitZoneUI} from './DopeSnapHitZoneUI'
 
 const MARKER_SIZE_W_PX = 12
 const MARKER_SIZE_H_PX = 12
-const HIT_ZONE_SIZE_PX = 12
-const SNAP_CURSOR_SIZE_PX = 34
 const MARKER_HOVER_SIZE_W_PX = MARKER_SIZE_W_PX * 2
 const MARKER_HOVER_SIZE_H_PX = MARKER_SIZE_H_PX * 2
-const dims = (w: number, h = w) => `
-  left: ${w * -0.5}px;
-  top: ${h * -0.5}px;
-  width: ${w}px;
-  height: ${h}px;
-`
 
 const MarkerDotContainer = styled.div`
   position: absolute;
@@ -48,7 +37,7 @@ const MarkerDotContainer = styled.div`
 
 const MarkerVisualDotSVGContainer = styled.div`
   position: absolute;
-  ${dims(MARKER_SIZE_W_PX, MARKER_SIZE_H_PX)}
+  ${absoluteDims(MARKER_SIZE_W_PX, MARKER_SIZE_H_PX)}
   pointer-events: none;
 `
 
@@ -73,53 +62,35 @@ const MarkerVisualDot = React.memo(() => (
 ))
 
 const HitZone = styled.div`
-  position: absolute;
-  ${dims(HIT_ZONE_SIZE_PX)};
   z-index: 1;
-
   cursor: ew-resize;
 
-  ${pointerEventsAutoInNormalMode};
+  ${DopeSnapHitZoneUI.CSS}
+
+  // :not dragging marker to ensure that markers don't snap to other markers
+  // this works because only one marker track (so this technique is not used by keyframes...)
+  #pointer-root.draggingPositionInSequenceEditor:not(.draggingMarker) & {
+    ${DopeSnapHitZoneUI.CSS_WHEN_SOMETHING_DRAGGING}
+  }
 
   // "All instances of this component <Mark/> inside #pointer-root when it has the .draggingPositionInSequenceEditor class"
   // ref: https://styled-components.com/docs/basics#pseudoelements-pseudoselectors-and-nesting
   #pointer-root.draggingPositionInSequenceEditor:not(.draggingMarker) &,
-  #pointer-root.draggingPositionInSequenceEditor &.beingDragged {
+  #pointer-root.draggingPositionInSequenceEditor
+    &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS} {
     pointer-events: auto;
     cursor: var(${lockedCursorCssVarName});
-  }
-
-  #pointer-root.draggingPositionInSequenceEditor:not(.draggingMarker) & {
-    pointer-events: auto;
-    cursor: var(${lockedCursorCssVarName});
-
-    // ⸢⸤⸣⸥ thing
-    // This box extends the hitzone so the user does not
-    // accidentally leave the hitzone
-    &:hover:after {
-      position: absolute;
-      top: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
-      left: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
-      width: ${SNAP_CURSOR_SIZE_PX}px;
-      height: ${SNAP_CURSOR_SIZE_PX}px;
-      display: block;
-      content: ' ';
-      background: url(${SnapCursor}) no-repeat 100% 100%;
-      // This icon might also fit: GiConvergenceTarget
-    }
-  }
-
-  &.beingDragged {
-    pointer-events: none !important;
   }
 
   &:hover
     + ${MarkerVisualDotSVGContainer},
-    &.beingDragged
+    // notice , "or" in CSS
+    &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS}
     + ${MarkerVisualDotSVGContainer} {
-    ${dims(MARKER_HOVER_SIZE_W_PX, MARKER_HOVER_SIZE_H_PX)}
+    ${absoluteDims(MARKER_HOVER_SIZE_W_PX, MARKER_HOVER_SIZE_H_PX)}
   }
 `
+
 type IMarkerDotProps = {
   layoutP: Pointer<SequenceEditorPanelLayout>
   markerId: SequenceMarkerId
@@ -194,14 +165,10 @@ const MarkerDotVisible: React.VFC<IMarkerDotVisibleProps> = ({
       {contextMenu}
       <HitZone
         ref={markRef}
-        // `data-pos` and `includeLockFrameStampAttrs` are used by FrameStampPositionProvider
-        // in order to handle snapping the playhead. Adding these props effectively
-        // causes the playhead to "snap" to the marker on mouse over.
-        // `pointerEventsAutoInNormalMode` and `lockedCursorCssVarName` in the CSS above are also
-        // used to make this behave correctly.
-        {...includeLockFrameStampAttrs(marker.position)}
-        {...DopeSnap.includePositionSnapAttrs(marker.position)}
-        className={isDragging ? 'beingDragged' : ''}
+        {...DopeSnapHitZoneUI.reactProps({
+          isDragging,
+          position: marker.position,
+        })}
       />
       <MarkerVisualDot />
     </>

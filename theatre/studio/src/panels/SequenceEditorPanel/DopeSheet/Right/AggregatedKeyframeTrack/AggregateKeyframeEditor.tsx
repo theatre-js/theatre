@@ -13,12 +13,10 @@ import React from 'react'
 import styled from 'styled-components'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
-import {lockedCursorCssVarName} from '@theatre/studio/uiComponents/PointerEventsHandler'
-import {SNAP_CURSOR_SVG_URL} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/SNAP_CURSOR_SVG_URL'
-import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
-import {includeLockFrameStampAttrs} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {AggregateKeyframePositionIsSelected} from './AggregatedKeyframeTrack'
 import type {AggregateKeyframe} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
+import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
+import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 
 const AggregateKeyframeEditorContainer = styled.div`
   position: absolute;
@@ -93,58 +91,29 @@ const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
 }
 
 const DOT_SIZE_PX = 16
-const HIT_ZONE_SIZE_PX = 12
-const SNAP_CURSOR_SIZE_PX = 34
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
-
-const dims = (size: number) => `
-  left: ${-size / 2}px;
-  top: ${-size / 2}px;
-  width: ${size}px;
-  height: ${size}px;
-`
 
 /** The keyframe diamond ◆ */
 const DotContainer = styled.div`
   position: absolute;
-  ${dims(DOT_SIZE_PX)}
+  ${absoluteDims(DOT_SIZE_PX)}
   z-index: 1;
 `
 
 const HitZone = styled.div`
-  position: absolute;
-  ${dims(HIT_ZONE_SIZE_PX)};
-
   z-index: 2;
-
   cursor: ew-resize;
 
+  ${DopeSnapHitZoneUI.CSS}
+
   #pointer-root.draggingPositionInSequenceEditor & {
-    pointer-events: auto;
-    cursor: var(${lockedCursorCssVarName});
-
-    // ⸢⸤⸣⸥ thing
-    // This box extends the hitzone so the user does not
-    // accidentally leave the hitzone
-    &:hover:after {
-      position: absolute;
-      top: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
-      left: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
-      width: ${SNAP_CURSOR_SIZE_PX}px;
-      height: ${SNAP_CURSOR_SIZE_PX}px;
-      display: block;
-      content: ' ';
-      background: url(${SNAP_CURSOR_SVG_URL}) no-repeat 100% 100%;
-      // This icon might also fit: GiConvergenceTarget
-    }
+    ${DopeSnapHitZoneUI.CSS_WHEN_SOMETHING_DRAGGING}
   }
 
-  &.beingDragged {
-    pointer-events: none !important;
-  }
-
-  &:hover + ${DotContainer}, &.beingDragged + ${DotContainer} {
-    ${dims(DOT_HOVER_SIZE_PX)}
+  &:hover + ${DotContainer}, 
+  // notice "," css "or"
+  &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS} + ${DotContainer} {
+    ${absoluteDims(DOT_HOVER_SIZE_PX)}
   }
 `
 
@@ -162,9 +131,10 @@ function AggregateKeyframeDot_ref(
     <>
       <HitZone
         ref={ref}
-        {...includeLockFrameStampAttrs(props.position)}
-        {...DopeSnap.includePositionSnapAttrs(props.position)}
-        // className={isDragging ? 'beingDragged' : ''}
+        {...DopeSnapHitZoneUI.reactProps({
+          isDragging: false,
+          position: props.position,
+        })}
       />
       <DotContainer>
         {props.isAllHere ? (
