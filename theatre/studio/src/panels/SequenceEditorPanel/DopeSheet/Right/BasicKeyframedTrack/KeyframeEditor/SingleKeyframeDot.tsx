@@ -11,14 +11,8 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
-import {
-  includeLockFrameStampAttrs,
-  useLockFrameStampPosition,
-} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {
-  lockedCursorCssVarName,
-  useCssCursorLock,
-} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
@@ -27,19 +21,11 @@ import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import {useTempTransactionEditingTools} from './useTempTransactionEditingTools'
 import {DeterminePropEditorForSingleKeyframe} from './DeterminePropEditorForSingleKeyframe'
 import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
-import {SNAP_CURSOR_SVG_URL} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/SNAP_CURSOR_SVG_URL'
+import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
+import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 
 export const DOT_SIZE_PX = 6
-const HIT_ZONE_SIZE_PX = 12
-const SNAP_CURSOR_SIZE_PX = 34
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
-
-const dims = (size: number) => `
-  left: ${-size / 2}px;
-  top: ${-size / 2}px;
-  width: ${size}px;
-  height: ${size}px;
-`
 
 const dotTheme = {
   normalColor: '#40AAA4',
@@ -51,7 +37,7 @@ const dotTheme = {
 /** The keyframe diamond ◆ */
 const Diamond = styled.div<{isSelected: boolean}>`
   position: absolute;
-  ${dims(DOT_SIZE_PX)}
+  ${absoluteDims(DOT_SIZE_PX)}
 
   background: ${(props) =>
     props.isSelected ? dotTheme.selectedColor : dotTheme.normalColor};
@@ -59,43 +45,24 @@ const Diamond = styled.div<{isSelected: boolean}>`
 
   z-index: 1;
   pointer-events: none;
-  ${dims(DOT_SIZE_PX)}
 `
 
 const HitZone = styled.div`
-  position: absolute;
-  ${dims(HIT_ZONE_SIZE_PX)};
-
   z-index: 1;
-
   cursor: ew-resize;
 
+  ${DopeSnapHitZoneUI.CSS}
+
   #pointer-root.draggingPositionInSequenceEditor & {
-    pointer-events: auto;
-    cursor: var(${lockedCursorCssVarName});
-
-    // ⸢⸤⸣⸥ thing
-    // This box extends the hitzone so the user does not
-    // accidentally leave the hitzone
-    &:hover:after {
-      position: absolute;
-      top: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
-      left: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
-      width: ${SNAP_CURSOR_SIZE_PX}px;
-      height: ${SNAP_CURSOR_SIZE_PX}px;
-      display: block;
-      content: ' ';
-      background: url(${SNAP_CURSOR_SVG_URL}) no-repeat 100% 100%;
-      // This icon might also fit: GiConvergenceTarget
-    }
+    ${DopeSnapHitZoneUI.CSS_WHEN_SOMETHING_DRAGGING}
   }
 
-  &.beingDragged {
-    pointer-events: none !important;
-  }
-
-  &:hover + ${Diamond}, &.beingDragged + ${Diamond} {
-    ${dims(DOT_HOVER_SIZE_PX)}
+  &:hover
+    + ${Diamond},
+    // notice , "or" in CSS
+    &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS}
+    + ${Diamond} {
+    ${absoluteDims(DOT_HOVER_SIZE_PX)}
   }
 `
 
@@ -118,9 +85,10 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
     <>
       <HitZone
         ref={ref}
-        {...includeLockFrameStampAttrs(props.keyframe.position)}
-        {...DopeSnap.includePositionSnapAttrs(props.keyframe.position)}
-        className={isDragging ? 'beingDragged' : ''}
+        {...DopeSnapHitZoneUI.reactProps({
+          isDragging,
+          position: props.keyframe.position,
+        })}
       />
       <Diamond isSelected={!!props.selection} />
       {inlineEditorPopover}
