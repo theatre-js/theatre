@@ -152,14 +152,18 @@ const OutlinePanel: React.FC<{}> = (props) => {
   const [hovering, setHovering] = useState(false)
 
   useEffect(() => {
-    document.addEventListener('mousemove', (e) => {
-      if (e.x < 200) {
+    const listener = (e: MouseEvent) => {
+      const threshold = hovering ? 200 : 50
+      if (e.x < threshold) {
         setHovering(true)
       } else {
         setHovering(false)
       }
-    })
-  }, [])
+    }
+    document.addEventListener('mousemove', listener)
+
+    return () => document.removeEventListener('mousemove', listener)
+  }, [hovering])
 
   return (
     <Container>
