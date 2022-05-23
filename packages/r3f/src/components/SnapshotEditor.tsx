@@ -15,9 +15,11 @@ import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
 import {DragDetectorProvider} from './DragDetector'
-import TooltipPortalProvider from './TooltipPortalProvider'
+import Toolbar from './Toolbar/Toolbar'
+import PortalProvider from './PortalProvider'
 import {FiRefreshCw} from 'react-icons/fi'
 import ReferenceWindow from './ReferenceWindow/ReferenceWindow'
+import {PortalContext} from 'reakit'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -99,7 +101,7 @@ const Wrapper = styled.div`
 `
 
 const CanvasWrapper = styled.div`
-  display: relative;
+  position: relative;
   z-index: 0;
   height: 100%;
   overflow: hidden;
@@ -116,6 +118,19 @@ const Tools = styled.div`
   position: absolute;
   left: 12px;
   top: 12px;
+  pointer-events: auto;
+`
+
+const ToolbarContainer = styled.div`
+  position: absolute;
+  display: flex;
+  left: 0;
+  right: 0;
+  top: 12px;
+  justify-content: center;
+`
+
+const Interactive = styled.div`
   pointer-events: auto;
 `
 
@@ -175,7 +190,7 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
       <StyleSheetManager disableVendorPrefixes>
         <>
           <GlobalStyle />
-          <TooltipPortalProvider>
+          <PortalProvider portalContext={PortalContext}>
             <Wrapper>
               <Overlay>
                 <Tools>
@@ -186,6 +201,11 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                     <FiRefreshCw />
                   </ToolbarIconButton>
                 </Tools>
+                <ToolbarContainer>
+                  <Interactive>
+                    <Toolbar />
+                  </Interactive>
+                </ToolbarContainer>
                 {showReferenceWindow && (
                   <ReferenceWindowContainer>
                     <ReferenceWindow height={120} />
@@ -214,7 +234,7 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                 </>
               ) : null}
             </Wrapper>
-          </TooltipPortalProvider>
+          </PortalProvider>
         </>
       </StyleSheetManager>
     </root.div>

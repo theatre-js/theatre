@@ -1,12 +1,21 @@
 import type {VFC} from 'react'
 import React from 'react'
-import {IoCameraOutline} from 'react-icons/io5'
-import studio, {ToolbarIconButton} from '@theatre/studio'
+import studio from '@theatre/studio'
 import {useVal} from '@theatre/react'
 import TransformControlsModeSelect from './TransformControlsModeSelect'
 import ViewportShadingSelect from './ViewportShadingSelect'
 import TransformControlsSpaceSelect from './TransformControlsSpaceSelect'
 import {getEditorSheetObject} from '../editorStuff'
+import styled from 'styled-components'
+
+const Container = styled.div`
+  position: relative;
+  height: 36px;
+
+  display: flex;
+  gap: 1rem;
+  z-index: 1;
+`
 
 const Toolbar: VFC = () => {
   const editorObject = getEditorSheetObject()
@@ -21,15 +30,7 @@ const Toolbar: VFC = () => {
   if (!editorObject) return <></>
 
   return (
-    <>
-      <ToolbarIconButton
-        onClick={() => {
-          studio.createPane('snapshot')
-        }}
-        title="Create snapshot"
-      >
-        <IoCameraOutline />
-      </ToolbarIconButton>
+    <Container>
       <TransformControlsModeSelect
         value={transformControlsMode}
         onChange={(value) =>
@@ -111,7 +112,7 @@ const Toolbar: VFC = () => {
           }
         }}
       /> */}
-    </>
+    </Container>
   )
 }
 

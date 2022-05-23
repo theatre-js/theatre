@@ -1,11 +1,11 @@
 import SnapshotEditor from './components/SnapshotEditor'
 import type {IExtension} from '@theatre/studio'
-import Toolbar from './components/Toolbar/Toolbar'
+import GlobalToolbar from './components/GlobalToolbar'
 
 const r3fExtension: IExtension = {
   id: '@theatre/r3f',
   globalToolbar: {
-    component: Toolbar,
+    component: GlobalToolbar,
   },
   panes: [
     {
