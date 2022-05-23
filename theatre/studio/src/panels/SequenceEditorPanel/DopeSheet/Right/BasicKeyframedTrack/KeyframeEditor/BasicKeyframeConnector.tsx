@@ -25,6 +25,7 @@ import {isKeyframeConnectionInSelection} from '@theatre/studio/panels/SequenceEd
 const CONNECTOR_HEIGHT = DOT_SIZE_PX / 2 + 1
 const CONNECTOR_WIDTH_UNSCALED = 1000
 import styled from 'styled-components'
+import {DOT_SIZE_PX} from './SingleKeyframeDot'
 
 const POPOVER_MARGIN = 5
 
