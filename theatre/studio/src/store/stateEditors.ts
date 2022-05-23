@@ -399,6 +399,16 @@ namespace stateEditors {
       }
     }
     export namespace ahistoric {
+      export function setPinOutline(
+        pinOutline: StudioAhistoricState['pinOutline'],
+      ) {
+        drafts().ahistoric.pinOutline = pinOutline
+      }
+      export function setPinDetails(
+        pinDetails: StudioAhistoricState['pinDetails'],
+      ) {
+        drafts().ahistoric.pinDetails = pinDetails
+      }
       export function setVisibilityState(
         visibilityState: StudioAhistoricState['visibilityState'],
       ) {

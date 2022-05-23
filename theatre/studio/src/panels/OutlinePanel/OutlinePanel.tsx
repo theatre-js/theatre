@@ -1,11 +1,11 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import ProjectsList from './ProjectsList/ProjectsList'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import ToolbarIconButton from '@theatre/studio/uiComponents/toolbar/ToolbarIconButton'
 import {VscListTree} from 'react-icons/all'
-import {usePrism} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
 import {val} from '@theatre/dataverse'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
@@ -22,21 +22,6 @@ const Container = styled.div`
   bottom: 0px;
   right: 0;
   z-index: ${panelZIndexes.outlinePanel};
-
-  &:before {
-    display: block;
-    content: ' ';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 40px;
-    ${pointerEventsAutoInNormalMode};
-  }
-  &:hover:before {
-    top: -12px;
-    width: 300px;
-  }
 `
 
 const TriggerContainer = styled.div`
@@ -48,17 +33,17 @@ const TriggerContainer = styled.div`
   align-items: center;
 `
 
-const Content = styled.div`
+const Content = styled.div<{pin: boolean}>`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  transform: translateX(-100%);
+  display: ${({pin}) => (pin ? 'block' : 'none')};
   pointer-events: none;
 
   ${Container}:hover & {
-    transform: translateX(0);
+    display: block;
   }
 `
 
@@ -148,6 +133,8 @@ const OutlinePanel: React.FC<{}> = (props) => {
       )
   }, [])
 
+  const pin = useVal(getStudio().atomP.ahistoric.pinOutline)
+
   const [triggerTooltip, triggerButtonRef] = useTooltip(
     {enabled: conflicts.length > 0, enterDelay: conflicts.length > 0 ? 0 : 200},
     () =>
@@ -162,9 +149,29 @@ const OutlinePanel: React.FC<{}> = (props) => {
       ),
   )
 
+  const [hovering, setHovering] = useState(false)
+
+  useEffect(() => {
+    document.addEventListener('mousemove', (e) => {
+      if (e.x < 200) {
+        setHovering(true)
+      } else {
+        setHovering(false)
+      }
+    })
+  }, [])
+
   return (
     <Container>
-      <TriggerContainer>
+      <TriggerContainer
+        onClick={() => {
+          getStudio().transaction(({stateEditors, drafts}) => {
+            stateEditors.studio.ahistoric.setPinOutline(
+              !drafts.ahistoric.pinOutline,
+            )
+          })
+        }}
+      >
         {triggerTooltip}
         <TriggerButton
           ref={triggerButtonRef as $IntentionalAny}
@@ -179,7 +186,7 @@ const OutlinePanel: React.FC<{}> = (props) => {
         ) : null}
         {/* <Title>Outline</Title> */}
       </TriggerContainer>
-      <Content>
+      <Content pin={pin || hovering}>
         <Body data-testid="OutlinePanel-Content">
           <ProjectsList />
         </Body>

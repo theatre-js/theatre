@@ -4,6 +4,8 @@ import type {ProjectId} from '@theatre/shared/utils/ids'
 import type {IRange, StrictRecord} from '@theatre/shared/utils/types'
 
 export type StudioAhistoricState = {
+  pinOutline: boolean
+  pinDetails: boolean
   visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
   clipboard?: {
     keyframes?: Keyframe[]
