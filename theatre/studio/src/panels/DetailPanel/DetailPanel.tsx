@@ -14,22 +14,26 @@ import ProjectDetails from './ProjectDetails'
 import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
 
+const headerHeight = `32px`
+
 const Container = styled.div<{pin: boolean}>`
   background-color: rgba(40, 43, 47, 0.8);
-  pointer-events: none;
   position: fixed;
   right: 8px;
   top: 50px;
-  bottom: 0px;
   width: 236px;
   height: fit-content;
   z-index: ${panelZIndexes.propsPanel};
 
-  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25), 0px 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(14px);
   border-radius: 2px;
 
   display: ${({pin}) => (pin ? 'block' : 'none')};
+
+  &:hover {
+    display: block;
+  }
 `
 
 const Title = styled.div`
@@ -44,8 +48,6 @@ const Title = styled.div`
   text-overflow: ellipsis;
 `
 
-const headerHeight = `32px`
-
 const Header = styled.div`
   height: ${headerHeight};
   display: flex;
@@ -54,8 +56,7 @@ const Header = styled.div`
 
 const Body = styled.div`
   ${pointerEventsAutoInNormalMode};
-  height: auto;
-  max-height: calc(100% - ${headerHeight});
+  max-height: calc(100vh - 100px);
   overflow-y: scroll;
   &::-webkit-scrollbar {
     display: none;
