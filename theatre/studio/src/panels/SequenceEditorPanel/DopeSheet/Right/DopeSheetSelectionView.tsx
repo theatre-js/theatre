@@ -202,6 +202,9 @@ namespace utils {
     bounds: SelectionBounds,
     selectionByObjectKey: DopeSheetSelection['byObjectKey'],
   ) {
+    // don't collect from non rendered
+    if (!leaf.shouldRender) return
+
     if (
       bounds.ys[0] > leaf.top + leaf.heightIncludingChildren ||
       leaf.top > bounds.ys[1]
