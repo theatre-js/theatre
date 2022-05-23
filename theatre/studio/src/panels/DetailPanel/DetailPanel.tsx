@@ -14,21 +14,26 @@ import ProjectDetails from './ProjectDetails'
 import getStudio from '@theatre/studio/getStudio'
 
 const Container = styled.div<{pin: boolean}>`
-  background-color: transparent;
+  background-color: rgba(40, 43, 47, 0.8);
   pointer-events: none;
   position: fixed;
-  right: 0;
+  right: 8px;
   top: 50px;
   bottom: 0px;
-  width: 260px;
+  width: 236px;
+  height: fit-content;
   z-index: ${panelZIndexes.propsPanel};
+
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25), 0px 2px 6px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(14px);
+  border-radius: 2px;
 
   display: ${({pin}) => (pin ? 'block' : 'none')};
 `
 
 const Title = styled.div`
   margin: 0 10px;
-  color: #ffffffc2;
+  color: #919191;
   font-weight: 500;
   font-size: 10px;
   user-select: none;
@@ -44,29 +49,10 @@ const Header = styled.div`
   height: ${headerHeight};
   display: flex;
   align-items: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-
-  &:after {
-    position: absolute;
-    inset: 1px 0px;
-    display: block;
-    content: ' ';
-    pointer-events: none;
-    z-index: -1;
-    background-color: #262c2dd1;
-    /* border-radius: 2px 0 0 2px; */
-  }
 `
 
 const Body = styled.div`
   ${pointerEventsAutoInNormalMode};
-  position: absolute;
-  top: ${headerHeight};
-  left: 0;
-  right: 0;
   height: auto;
   max-height: calc(100% - ${headerHeight});
   overflow-y: scroll;
@@ -118,7 +104,7 @@ const DetailPanel: React.FC<{}> = (props) => {
                 {obj.sheet.address.sheetInstanceId}{' '}
               </TitleBar_Piece>
 
-              <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
+              <TitleBar_Punctuation>&nbsp;&rarr;&nbsp;</TitleBar_Punctuation>
               <TitleBar_Piece>{obj.address.objectKey}</TitleBar_Piece>
             </Title>
           </Header>

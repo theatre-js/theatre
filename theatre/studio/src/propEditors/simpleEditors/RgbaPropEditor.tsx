@@ -33,7 +33,7 @@ const ColorPreviewPuck = styled.div.attrs<ColorPreviewPuckProps>((props) => ({
 }))<ColorPreviewPuckProps>`
   height: 18px;
   aspect-ratio: 1;
-  border-radius: 2px;
+  border-radius: 99999px;
 `
 
 const HexInput = styled(BasicStringInput)`
@@ -46,14 +46,13 @@ const RgbaPopover = styled.div`
   position: absolute;
   background-color: ${popoverBackgroundColor};
   color: white;
-  padding: 0;
   margin: 0;
   cursor: default;
   border-radius: 3px;
   z-index: 10000;
   backdrop-filter: blur(8px);
 
-  padding: 4;
+  padding: 4px;
   pointer-events: all;
 
   border: none;

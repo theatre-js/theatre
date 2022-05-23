@@ -6,10 +6,7 @@ import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
 import React from 'react'
 import styled from 'styled-components'
-import {
-  indentationFormula,
-  rowBg,
-} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/SingleRowPropEditor'
+import {indentationFormula} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/SingleRowPropEditor'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import DefaultOrStaticValueIndicator from '@theatre/studio/propEditors/DefaultValueIndicator'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
@@ -29,8 +26,6 @@ const Header = styled.div`
   display: flex;
   align-items: stretch;
   position: relative;
-
-  ${rowBg};
 `
 
 const Padding = styled.div`
