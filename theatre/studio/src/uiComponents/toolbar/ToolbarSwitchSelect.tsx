@@ -5,8 +5,6 @@ import {Group, Button} from 'reakit'
 import styled from 'styled-components'
 import ButtonImpl from './ToolbarIconButton'
 
-const Opt = styled(ButtonImpl)``
-
 function OptionButton<T>({
   value,
   label,
@@ -22,7 +20,7 @@ function OptionButton<T>({
 }) {
   return (
     <>
-      <Opt
+      <ButtonImpl
         forwardedAs={Button}
         className={isSelected ? 'selected' : undefined}
         aria-label={label}
@@ -30,7 +28,7 @@ function OptionButton<T>({
         title={label}
       >
         {icon}
-      </Opt>
+      </ButtonImpl>
     </>
   )
 }
@@ -47,8 +45,12 @@ interface Props<Option> {
 
 const Container = styled(Group)`
   display: flex;
-  gap: 5px;
+  height: fit-content;
+  backdrop-filter: blur(14px);
+  border-radius: 2px;
 `
+
+export {Container as ToolbarSwitchSelectContainer}
 
 const ToolbarSwitchSelect = <Option extends string | number>({
   value: valueOfSwitch,
