@@ -12,7 +12,12 @@ test.describe('setting-static-props', () => {
   test('Undo/redo', async ({page}) => {
     await page.locator('[data-testid="OutlinePanel-TriggerButton"]').click()
 
-    await page.locator('span:has-text("sample object")').first().click()
+    // https://github.com/microsoft/playwright/issues/12298
+    // The div does not in fact intercept pointer events 🤦‍
+    await page
+      .locator('span:has-text("sample object")')
+      .first()
+      .click({force: true})
 
     const detailPanel = page.locator('[data-testid="DetailPanel-Object"]')
 
