@@ -46,13 +46,13 @@ const Header = styled(BaseHeader)`
     // TODO
   }
 
-  &:not(.not-selectable):hover {
+  &:not(.not-selectable):not(.selected):hover {
     background: rgba(59, 63, 69, 0.9);
 
     border-bottom: 1px solid rgba(255, 255, 255, 0.24);
   }
 
-  &:active {
+  &:not(.not-selectable):not(.selected):active {
     background: rgba(82, 88, 96, 0.9);
     border-bottom: 1px solid rgba(255, 255, 255, 0.24);
   }
