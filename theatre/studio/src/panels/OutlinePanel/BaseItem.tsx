@@ -19,13 +19,14 @@ export const BaseHeader = styled.div``
 
 const Header = styled(BaseHeader)`
   position: relative;
-  margin-top: 5px;
+  margin-top: 2px;
   margin-bottom: 2px;
   margin-left: calc(4px + var(--depth) * 16px);
   padding-left: 8px;
   padding-right: 8px;
   gap: 8px;
   height: 28px;
+  line-height: 0;
   box-sizing: border-box;
   display: flex;
   flex-wrap: nowrap;

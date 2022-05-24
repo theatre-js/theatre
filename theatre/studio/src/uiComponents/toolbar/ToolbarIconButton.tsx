@@ -26,6 +26,9 @@ const Container = styled.button`
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
+  filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.25))
+    drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.15));
+
   &:hover {
     background: rgba(59, 63, 69, 0.8);
   }
@@ -53,6 +56,7 @@ const Container = styled.button`
   // on the group-level, otherwise we get seams.
   ${ToolbarSwitchSelectContainer} > & {
     backdrop-filter: none;
+    filter: none;
   }
 
   @supports not (backdrop-filter: blur()) {
