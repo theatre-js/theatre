@@ -21,7 +21,7 @@ const Header = styled(BaseHeader)<{
   isSelectable: boolean
   isSelected: boolean
 }>`
-  padding-left: calc(16px + var(--depth) * 20px);
+  padding-left: calc(8px + var(--depth) * 20px);
 
   display: flex;
   align-items: stretch;
@@ -42,14 +42,21 @@ const Head_Label = styled.span`
   flex-wrap: nowrap;
 `
 
-const Head_Icon = styled.span<{isOpen: boolean}>`
+const Head_Icon = styled.span<{isCollapsed: boolean}>`
   width: 12px;
-  margin-right: 8px;
+  padding: 8px;
   font-size: 9px;
   display: flex;
   align-items: center;
 
-  transform: rotateZ(${(props) => (props.isOpen ? 90 : 0)}deg);
+  transition: transform 0.05s ease-out, color 0.1s ease-out;
+  transform: rotateZ(${(props) => (props.isCollapsed ? 0 : 90)}deg);
+  color: #66686a;
+
+  &:hover {
+    transform: rotateZ(${(props) => (props.isCollapsed ? 15 : 75)}deg);
+    color: #c0c4c9;
+  }
 `
 
 const Children = styled.ul`
@@ -62,9 +69,20 @@ const AnyCompositeRow: React.FC<{
   leaf: SequenceEditorTree_Row<unknown>
   label: React.ReactNode
   toggleSelect?: VoidFn
+  toggleCollapsed: VoidFn
   isSelected?: boolean
   isSelectable?: boolean
-}> = ({leaf, label, children, isSelectable, isSelected, toggleSelect}) => {
+  isCollapsed: boolean
+}> = ({
+  leaf,
+  label,
+  children,
+  isSelectable,
+  isSelected,
+  toggleSelect,
+  toggleCollapsed,
+  isCollapsed,
+}) => {
   const hasChildren = Array.isArray(children) && children.length > 0
 
   return (
@@ -78,7 +96,7 @@ const AnyCompositeRow: React.FC<{
         onClick={toggleSelect}
         isEven={leaf.n % 2 === 0}
       >
-        <Head_Icon isOpen={true}>
+        <Head_Icon isCollapsed={isCollapsed} onClick={toggleCollapsed}>
           <HiOutlineChevronRight />
         </Head_Icon>
         <Head_Label>{label}</Head_Label>

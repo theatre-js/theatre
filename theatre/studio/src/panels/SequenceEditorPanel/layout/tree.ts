@@ -9,10 +9,12 @@ import type {IPropPathToTrackIdTree} from '@theatre/core/sheetObjects/SheetObjec
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {PathToProp} from '@theatre/shared/utils/addresses'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
-import {prism, val} from '@theatre/dataverse'
+import {prism, val, valueDerivation} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import {titleBarHeight} from '@theatre/studio/panels/BasePanel/common'
+import type {Studio} from '@theatre/studio/Studio'
 
 export type SequenceEditorTree_Row<Type> = {
   type: Type
@@ -32,6 +34,7 @@ export type SequenceEditorTree_Sheet = SequenceEditorTree_Row<'sheet'> & {
 
 export type SequenceEditorTree_SheetObject =
   SequenceEditorTree_Row<'sheetObject'> & {
+    isCollapsed: boolean
     sheetObject: SheetObject
     children: Array<
       SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp
@@ -40,6 +43,7 @@ export type SequenceEditorTree_SheetObject =
 
 export type SequenceEditorTree_PropWithChildren =
   SequenceEditorTree_Row<'propWithChildren'> & {
+    isCollapsed: boolean
     sheetObject: SheetObject
     pathToProp: PathToProp
     children: Array<
@@ -62,13 +66,14 @@ export type SequenceEditorTree_AllRowTypes =
   | SequenceEditorTree_PropWithChildren
   | SequenceEditorTree_PrimitiveProp
 
-const heightOfAnyTitle = 28
+const HEIGHT_OF_ANY_TITLE = 28
 
 /**
  * Must run inside prism()
  */
 export const calculateSequenceEditorTree = (
   sheet: Sheet,
+  studio: Studio,
 ): SequenceEditorTree => {
   prism.ensurePrism()
   let topSoFar = titleBarHeight
@@ -81,11 +86,14 @@ export const calculateSequenceEditorTree = (
     top: topSoFar,
     depth: -1,
     n: nSoFar,
-    nodeHeight: 0,
-    heightIncludingChildren: -1, // will defined this later
+    nodeHeight: 0, // always 0
+    heightIncludingChildren: -1, // will define this later
   }
-  topSoFar += tree.nodeHeight
   nSoFar += 1
+
+  const collapsableP =
+    studio.atomP.ahistoric.projects.stateByProjectId[sheet.address.projectId]
+      .stateBySheetId[sheet.address.sheetId].sequence.collapsableItems
 
   for (const sheetObject of Object.values(val(sheet.objectsP))) {
     if (sheetObject) {
@@ -105,29 +113,37 @@ export const calculateSequenceEditorTree = (
 
     if (Object.keys(trackSetups).length === 0) return
 
+    const isCollapsedP =
+      collapsableP.byId[createStudioSheetItemKey.forSheetObject(sheetObject)]
+        .isCollapsed
+    const isCollapsed = valueDerivation(isCollapsedP).getValue() ?? false
+
     const row: SequenceEditorTree_SheetObject = {
       type: 'sheetObject',
+      isCollapsed: isCollapsed,
       top: topSoFar,
       children: [],
       depth: level,
       n: nSoFar,
       sheetObject: sheetObject,
-      nodeHeight: heightOfAnyTitle,
+      nodeHeight: HEIGHT_OF_ANY_TITLE,
       heightIncludingChildren: -1,
     }
     arrayOfChildren.push(row)
     nSoFar += 1
-    topSoFar += heightOfAnyTitle
-
-    addProps(
-      sheetObject,
-      trackSetups,
-      [],
-      sheetObject.template.config,
-      row.children,
-      level + 1,
-    )
-
+    // As we add rows to the tree, top to bottom, we accumulate the pixel
+    // distance to the top of the tree from the bottom of the current row:
+    topSoFar += row.nodeHeight
+    if (!isCollapsed) {
+      addProps(
+        sheetObject,
+        trackSetups,
+        [],
+        sheetObject.template.config,
+        row.children,
+        level + 1,
+      )
+    }
     row.heightIncludingChildren = topSoFar - row.top
   }
 
@@ -201,31 +217,39 @@ export const calculateSequenceEditorTree = (
     >,
     level: number,
   ) {
+    const isCollapsedP =
+      collapsableP.byId[
+        createStudioSheetItemKey.forSheetObjectProp(sheetObject, pathToProp)
+      ].isCollapsed
+    const isCollapsed = valueDerivation(isCollapsedP).getValue() ?? false
+
     const row: SequenceEditorTree_PropWithChildren = {
       type: 'propWithChildren',
+      isCollapsed: isCollapsed,
       pathToProp,
       sheetObject: sheetObject,
       top: topSoFar,
       children: [],
-      nodeHeight: heightOfAnyTitle,
+      nodeHeight: HEIGHT_OF_ANY_TITLE,
       heightIncludingChildren: -1,
       depth: level,
       trackMapping,
       n: nSoFar,
     }
-    topSoFar += heightOfAnyTitle
-    nSoFar += 1
     arrayOfChildren.push(row)
+    topSoFar += row.nodeHeight
+    if (!isCollapsed) {
+      nSoFar += 1
 
-    addProps(
-      sheetObject,
-      trackMapping,
-      pathToProp,
-      conf,
-      row.children,
-      level + 1,
-    )
-
+      addProps(
+        sheetObject,
+        trackMapping,
+        pathToProp,
+        conf,
+        row.children,
+        level + 1,
+      )
+    }
     row.heightIncludingChildren = topSoFar - row.top
   }
 
@@ -246,14 +270,14 @@ export const calculateSequenceEditorTree = (
       sheetObject: sheetObject,
       pathToProp,
       top: topSoFar,
-      nodeHeight: heightOfAnyTitle,
-      heightIncludingChildren: heightOfAnyTitle,
+      nodeHeight: HEIGHT_OF_ANY_TITLE,
+      heightIncludingChildren: HEIGHT_OF_ANY_TITLE,
       trackId,
       n: nSoFar,
     }
     arrayOfChildren.push(row)
     nSoFar += 1
-    topSoFar += heightOfAnyTitle
+    topSoFar += row.nodeHeight
   }
 
   return tree

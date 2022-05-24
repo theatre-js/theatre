@@ -35,10 +35,11 @@ const Children = styled.ul`
   list-style: none;
 `
 
-const Row: React.FC<{
+const RightRow: React.FC<{
   leaf: SequenceEditorTree_Row<unknown>
   node: React.ReactElement
-}> = ({leaf, children, node}) => {
+  isCollapsed: boolean
+}> = ({leaf, children, node, isCollapsed}) => {
   const hasChildren = Array.isArray(children) && children.length > 0
 
   return (
@@ -54,4 +55,4 @@ const Row: React.FC<{
   )
 }
 
-export default Row
+export default RightRow

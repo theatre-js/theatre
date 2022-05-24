@@ -17,14 +17,14 @@ function Model({url}: {url: string}) {
     <group rotation={[-Math.PI / 2, 0, 0]} position={[0, -7, 0]} scale={7}>
       <group rotation={[Math.PI / 13.5, -Math.PI / 5.8, Math.PI / 5.6]}>
         <e.mesh
-          uniqueName="Thingy"
+          uniqueName="Example Namespace / Thingy"
           receiveShadow
           castShadow
           geometry={nodes.planet001.geometry}
           material={nodes.planet001.material}
         />
         <e.mesh
-          uniqueName="Debris 2"
+          uniqueName="Example Namespace / Debris 2"
           receiveShadow
           castShadow
           geometry={nodes.planet002.geometry}

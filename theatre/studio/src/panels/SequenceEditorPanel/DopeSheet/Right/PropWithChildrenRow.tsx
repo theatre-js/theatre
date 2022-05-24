@@ -6,9 +6,8 @@ import type {
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
-import styled from 'styled-components'
 import PrimitivePropRow from './PrimitivePropRow'
-import Row from './Row'
+import RightRow from './Row'
 
 export const decideRowByPropType = (
   leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp,
@@ -28,9 +27,7 @@ export const decideRowByPropType = (
     />
   )
 
-const Container = styled.div``
-
-const PropWithChildrenRow: React.FC<{
+const PropWithChildrenRow: React.VFC<{
   leaf: SequenceEditorTree_PropWithChildren
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({leaf, layoutP}) => {
@@ -38,13 +35,11 @@ const PropWithChildrenRow: React.FC<{
     const node = <div />
 
     return (
-      <Row leaf={leaf} node={node}>
+      <RightRow leaf={leaf} node={node} isCollapsed={leaf.isCollapsed}>
         {leaf.children.map((propLeaf) =>
           decideRowByPropType(propLeaf, layoutP),
         )}
-      </Row>
+      </RightRow>
     )
   }, [leaf, layoutP])
 }
-
-export default PropWithChildrenRow

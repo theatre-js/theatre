@@ -5,6 +5,7 @@ import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {IProject, ISheet} from '@theatre/core'
 import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
+import type {ShorthandCompoundPropsToInitialValue} from '@theatre/core/propTypes/internals'
 
 studio.initialize({usePersistentStorage: false})
 
@@ -22,9 +23,41 @@ const boxObjectConfig = {
   test: types.string('Hello?', {interpolate: textInterpolate}),
   testLiteral: types.stringLiteral('a', {a: 'Option A', b: 'Option B'}),
   bool: types.boolean(false),
+  favoriteFood: types.compound({
+    name: types.string('Pie'),
+    // if needing more compounds, consider adding weight with different units
+    price: types.compound({
+      currency: types.stringLiteral('USD', {USD: 'USD', EUR: 'EUR'}),
+      amount: types.number(10, {range: [0, 1000], label: '$'}),
+    }),
+  }),
   x: types.number(200),
   y: types.number(200),
   color: types.rgba({r: 1, g: 0, b: 0, a: 1}),
+}
+
+// this can also be inferred with
+type _State = ShorthandCompoundPropsToInitialValue<typeof boxObjectConfig>
+type State = {
+  x: number
+  y: number
+  test: string
+  testLiteral: string
+  bool: boolean
+  // a compound compound prop
+  favoriteFood: {
+    name: string
+    price: {
+      amount: number
+      currency: string
+    }
+  }
+  color: {
+    r: number
+    g: number
+    b: number
+    a: number
+  }
 }
 
 const Box: React.FC<{
@@ -37,19 +70,7 @@ const Box: React.FC<{
 
   const isSelected = selection.includes(obj)
 
-  const [state, setState] = useState<{
-    x: number
-    y: number
-    test: string
-    testLiteral: string
-    bool: boolean
-    color: {
-      r: number
-      g: number
-      b: number
-      a: number
-    }
-  }>(obj.value)
+  const [state, setState] = useState<State>(obj.value)
 
   useLayoutEffect(() => {
     const unsubscribeFromChanges = onChange(obj.props, (newValues) => {
@@ -77,12 +98,9 @@ const Box: React.FC<{
         }
         scrub!.capture(({set}) => {
           set(obj.props, {
+            ...initial,
             x: x + initial.x,
             y: y + initial.y,
-            test: initial.test,
-            testLiteral: initial.testLiteral,
-            bool: initial.bool,
-            color: initial.color,
           })
         })
       },

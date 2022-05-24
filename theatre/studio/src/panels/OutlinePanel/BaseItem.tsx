@@ -46,7 +46,7 @@ const Header = styled(BaseHeader)`
     // TODO
   }
 
-  &:hover {
+  &:not(.not-selectable):hover {
     background: rgba(59, 63, 69, 0.9);
 
     border-bottom: 1px solid rgba(255, 255, 255, 0.24);

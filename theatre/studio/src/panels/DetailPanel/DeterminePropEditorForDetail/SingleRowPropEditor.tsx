@@ -12,7 +12,7 @@ import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS
 
 export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
 
-const Row = styled.div`
+const LeftRow = styled.div`
   display: flex;
   height: 30px;
   justify-content: flex-start;
@@ -97,7 +97,7 @@ export function SingleRowPropEditor<T>({
   })
 
   return (
-    <Row>
+    <LeftRow>
       {contextMenu}
       <Left>
         <ControlsContainer>{editingTools.controlIndicators}</ControlsContainer>
@@ -113,6 +113,6 @@ export function SingleRowPropEditor<T>({
       </Left>
 
       <InputContainer>{children}</InputContainer>
-    </Row>
+    </LeftRow>
   )
 }
