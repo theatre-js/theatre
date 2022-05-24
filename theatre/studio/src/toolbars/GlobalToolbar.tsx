@@ -84,6 +84,7 @@ const GlobalToolbar: React.FC = () => {
         {triggerTooltip}
         <PinButton
           ref={triggerButtonRef as $IntentionalAny}
+          data-testid="OutlinePanel-TriggerButton"
           onClick={() => {
             getStudio().transaction(({stateEditors, drafts}) => {
               stateEditors.studio.ahistoric.setPinOutline(
