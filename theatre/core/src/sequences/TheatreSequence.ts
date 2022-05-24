@@ -308,6 +308,11 @@ async function resolveAudioBuffer(args: IAttachAudioArgs): Promise<{
 
     // AudioContext is suspended, probably because the browser
     // has blocked it since it is not initiated by a user gesture
+
+    // if in SSR, just resolve the promise, as there is not much more to be done
+    if (typeof window === 'undefined') {
+      return Promise.resolve(ctx)
+    }
     return new Promise<AudioContext>((resolve) => {
       const listener = () => {
         ctx.resume()

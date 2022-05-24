@@ -2,10 +2,12 @@ import path from 'path'
 import {build} from 'esbuild'
 
 export const definedGlobals = {
-  global: 'window',
   'process.env.version': JSON.stringify(
     require('../studio/package.json').version,
   ),
+  // json-touch-patch (an unmaintained package) reads this value. We patch it to just 'Set', becauce
+  // this is only used in `@theatre/studio`, which only supports evergreen browsers
+  'global.Set': 'Set',
 }
 
 export function createBundles(watch: boolean) {
@@ -17,7 +19,10 @@ export function createBundles(watch: boolean) {
       loader: {'.png': 'file', '.svg': 'dataurl'},
       bundle: true,
       sourcemap: true,
-      define: {...definedGlobals, __IS_VISUAL_REGRESSION_TESTING: 'false'},
+      define: {
+        ...definedGlobals,
+        __IS_VISUAL_REGRESSION_TESTING: 'false',
+      },
       watch,
       external: [
         '@theatre/dataverse',
@@ -38,9 +43,9 @@ export function createBundles(watch: boolean) {
          * It's probably possible to bundle our own react version and somehow share it
          * with the plugins, but that's not urgent atm.
          */
-        'react',
-        'react-dom',
-        'styled-components',
+        // 'react',
+        // 'react-dom',
+        // 'styled-components',
       ],
     }
 

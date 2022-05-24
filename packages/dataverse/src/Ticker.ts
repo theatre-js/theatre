@@ -1,10 +1,42 @@
 type ICallback = (t: number) => void
 
+function createRafTicker() {
+  const ticker = new Ticker()
+
+  if (typeof window !== 'undefined') {
+    /**
+     * @remarks
+     * TODO users should also be able to define their own ticker.
+     */
+    const onAnimationFrame = (t: number) => {
+      ticker.tick(t)
+      window.requestAnimationFrame(onAnimationFrame)
+    }
+    window.requestAnimationFrame(onAnimationFrame)
+  } else {
+    ticker.tick(0)
+    setTimeout(() => ticker.tick(1), 0)
+    console.log(
+      `@theatre/dataverse is running in a server rather than in a browser. We haven't gotten around to testing server-side rendering, so if something is working in the browser but not on the server, please file a bug: https://github.com/theatre-js/theatre/issues/new`,
+    )
+  }
+
+  return ticker
+}
+
+let rafTicker: undefined | Ticker
+
 /**
  * The Ticker class helps schedule callbacks. Scheduled callbacks are executed per tick. Ticks can be triggered by an
  * external scheduling strategy, e.g. a raf.
  */
 export default class Ticker {
+  static get raf(): Ticker {
+    if (!rafTicker) {
+      rafTicker = createRafTicker()
+    }
+    return rafTicker
+  }
   private _scheduledForThisOrNextTick: Set<ICallback>
   private _scheduledForNextTick: Set<ICallback>
   private _timeAtCurrentTick: number

@@ -1,15 +1,5 @@
 import {Ticker} from '@theatre/dataverse'
 
-const coreTicker = new Ticker()
+const coreTicker = Ticker.raf
 
 export default coreTicker
-
-/**
- * @remarks
- * TODO users should also be able to define their own ticker.
- */
-const onAnimationFrame = (t: number) => {
-  coreTicker.tick(t)
-  window.requestAnimationFrame(onAnimationFrame)
-}
-window.requestAnimationFrame(onAnimationFrame)

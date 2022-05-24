@@ -1,0 +1,13 @@
+{
+  "name": "@compat/parcel2-react18",
+  "scripts": {
+    "dev": "parcel serve ./index.html"
+  },
+  "dependencies": {
+    "@theatre/core": "0.0.1-COMPAT.1",
+    "@theatre/studio": "0.0.1-COMPAT.1",
+    "parcel": "^2.5.0",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
+  }
+}
