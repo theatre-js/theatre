@@ -9,7 +9,8 @@ import React from 'react'
 import PrimitivePropRow from './PrimitivePropRow'
 import RightRow from './Row'
 import AggregatedKeyframeTrack from './AggregatedKeyframeTrack/AggregatedKeyframeTrack'
-import {collectAggregateKeyframes} from './collectAggregateKeyframes'
+import {collectAggregateKeyframesInPrism} from './collectAggregateKeyframes'
+import {ProvideLogger, useLogger} from '@theatre/studio/uiComponents/useLogger'
 
 export const decideRowByPropType = (
   leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp,
@@ -33,8 +34,15 @@ const RightPropWithChildrenRow: React.VFC<{
   viewModel: SequenceEditorTree_PropWithChildren
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({viewModel, layoutP}) => {
+  const logger = useLogger(
+    'RightPropWithChildrenRow',
+    viewModel.pathToProp.join(),
+  )
   return usePrism(() => {
-    const aggregatedKeyframes = collectAggregateKeyframes(viewModel)
+    const aggregatedKeyframes = collectAggregateKeyframesInPrism(
+      logger.utilFor.internal(),
+      viewModel,
+    )
 
     const node = (
       <AggregatedKeyframeTrack
@@ -45,15 +53,17 @@ const RightPropWithChildrenRow: React.VFC<{
     )
 
     return (
-      <RightRow
-        leaf={viewModel}
-        node={node}
-        isCollapsed={viewModel.isCollapsed}
-      >
-        {viewModel.children.map((propLeaf) =>
-          decideRowByPropType(propLeaf, layoutP),
-        )}
-      </RightRow>
+      <ProvideLogger logger={logger}>
+        <RightRow
+          leaf={viewModel}
+          node={node}
+          isCollapsed={viewModel.isCollapsed}
+        >
+          {viewModel.children.map((propLeaf) =>
+            decideRowByPropType(propLeaf, layoutP),
+          )}
+        </RightRow>
+      </ProvideLogger>
     )
   }, [viewModel, layoutP])
 }

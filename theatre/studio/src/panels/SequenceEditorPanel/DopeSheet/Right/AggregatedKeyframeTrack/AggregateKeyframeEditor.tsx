@@ -6,7 +6,10 @@ import type {
   DopeSheetSelection,
   SequenceEditorPanelLayout,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {SequenceEditorTree_PropWithChildren} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import type {
+  SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_SheetObject,
+} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
@@ -14,7 +17,7 @@ import styled from 'styled-components'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
 import {AggregateKeyframePositionIsSelected} from './AggregatedKeyframeTrack'
-import type {AggregateKeyframe} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
+import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 
@@ -28,11 +31,15 @@ export type IAggregateKeyframeEditorProps = {
   index: number
   aggregateKeyframes: {
     position: number
+    /** all tracks have a keyframe for this position (otherwise, false means 'partial') */
+    allHere: boolean
     selected: AggregateKeyframePositionIsSelected | undefined
     keyframes: {kf: Keyframe; track: {id: SequenceTrackId; data: TrackData}}[]
   }[]
   layoutP: Pointer<SequenceEditorPanelLayout>
-  viewModel: SequenceEditorTree_PropWithChildren
+  viewModel:
+    | SequenceEditorTree_PropWithChildren
+    | SequenceEditorTree_SheetObject
   selection: undefined | DopeSheetSelection
 }
 
@@ -42,8 +49,6 @@ const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
   const {index, aggregateKeyframes} = props
   const cur = aggregateKeyframes[index]
   const next = aggregateKeyframes[index + 1]
-
-  const isAllHere = cur.keyframes.length === props.viewModel.children.length
   const connected =
     next && cur.keyframes.length === next.keyframes.length
       ? // all keyframes are same in the next position
@@ -74,7 +79,7 @@ const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
         theme={{
           isSelected: cur.selected,
         }}
-        isAllHere={isAllHere}
+        isAllHere={cur.allHere}
       />
       {connected ? (
         <ConnectorLine
@@ -123,7 +128,7 @@ function AggregateKeyframeDot_ref(
     theme: IDotThemeValues
     isAllHere: boolean
     position: number
-    keyframes: AggregateKeyframe[]
+    keyframes: KeyframeWithTrack[]
   }>,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {

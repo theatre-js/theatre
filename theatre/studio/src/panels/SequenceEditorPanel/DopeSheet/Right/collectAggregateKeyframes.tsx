@@ -1,38 +1,52 @@
 import getStudio from '@theatre/studio/getStudio'
 import {val} from '@theatre/dataverse'
 import type {
-  SequenceEditorTree_PrimitiveProp,
   SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import type {
   Keyframe,
   TrackData,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {IUtilLogger} from '@theatre/shared/logger'
 
+/**
+ * An index over a series of keyframes that have been collected from different tracks.
+ *
+ * Usually constructed via {@link collectAggregateKeyframesInPrism}.
+ */
 export type AggregatedKeyframes = {
-  byPosition: Map<number, AggregateKeyframe[]>
-  tracks: AggregateTrack[]
+  byPosition: Map<number, KeyframeWithTrack[]>
+  tracks: TrackWithId[]
 }
 
-export type AggregateTrack = {
+export type TrackWithId = {
   id: SequenceTrackId
   data: TrackData
 }
 
-export type AggregateKeyframe = {
+export type KeyframeWithTrack = {
   kf: Keyframe
-  track: AggregateTrack
+  track: TrackWithId
 }
 
-export function collectAggregateKeyframes(
-  leaf: SequenceEditorTree_PropWithChildren,
-) {
+/**
+ * Collect {@link AggregatedKeyframes} information from the given tree row with children.
+ *
+ * Must be called within a `prism` context.
+ *
+ * Implementation progress 2/10:
+ *  - This currently does a lot of duplicate work for each compound rows' compound rows.
+ *
+ * Note that we do not need to filter to only tracks that should be displayed, because we
+ * do not do anything counting or iterating over all tracks.
+ */
+export function collectAggregateKeyframesInPrism(
+  logger: IUtilLogger,
+  leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_SheetObject,
+): AggregatedKeyframes {
   const sheetObject = leaf.sheetObject
-  const childSimpleProps: SequenceEditorTree_PrimitiveProp[] =
-    leaf.children.flatMap((c) => {
-      return c.type === 'primitiveProp' ? [c] : []
-    })
 
   const projectId = sheetObject.address.projectId
 
@@ -41,20 +55,48 @@ export function collectAggregateKeyframes(
       sheetObject.address.sheetId
     ].sequence.tracksByObject[sheetObject.address.objectKey]
 
-  const tracks = childSimpleProps.flatMap((childSimpleProp) => {
-    const trackId = val(
-      sheetObjectTracksP.trackIdByPropPath[
-        JSON.stringify(childSimpleProp.pathToProp)
-      ],
-    )
-    if (!trackId) return []
-    const trackData = val(sheetObjectTracksP.trackData[trackId])
-    if (!trackData) return []
+  const aggregatedKeyframes: AggregatedKeyframes[] = []
+  const childSimpleTracks: TrackWithId[] = []
+  for (const childLeaf of leaf.children) {
+    if (childLeaf.type === 'primitiveProp') {
+      const trackId = val(
+        sheetObjectTracksP.trackIdByPropPath[
+          JSON.stringify(childLeaf.pathToProp)
+        ],
+      )
+      if (!trackId) {
+        logger.trace('missing track id?', {childLeaf})
+        continue
+      }
+      const trackData = val(sheetObjectTracksP.trackData[trackId])
+      if (!trackData) {
+        logger.trace('missing track data?', {trackId, childLeaf})
+        continue
+      }
 
-    return [{id: trackId, data: trackData}]
+      childSimpleTracks.push({id: trackId, data: trackData})
+    } else if (childLeaf.type === 'propWithChildren') {
+      aggregatedKeyframes.push(
+        collectAggregateKeyframesInPrism(
+          logger.named('propWithChildren', childLeaf.pathToProp.join()),
+          childLeaf,
+        ),
+      )
+    } else {
+      logger.error('unexpected kind of prop', {childLeaf})
+    }
+  }
+
+  logger.trace('see collected of children', {
+    aggregatedKeyframes,
+    childSimpleTracks,
   })
 
-  const byPosition = new Map<number, AggregateKeyframe[]>()
+  const tracks = aggregatedKeyframes
+    .flatMap((a) => a.tracks)
+    .concat(childSimpleTracks)
+
+  const byPosition = new Map<number, KeyframeWithTrack[]>()
 
   for (const track of tracks) {
     const kfs = track.data.keyframes
@@ -68,6 +110,7 @@ export function collectAggregateKeyframes(
       existing.push({kf, track})
     }
   }
+
   return {
     byPosition,
     tracks,
