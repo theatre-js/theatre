@@ -17,7 +17,9 @@ import type {
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {SequenceEditorTree_AllRowTypes} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
-import {collectAggregateKeyframes} from './collectAggregateKeyframes'
+import {collectAggregateKeyframesInPrism} from './collectAggregateKeyframes'
+import type {ILogger, IUtilLogger} from '@theatre/shared/logger'
+import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 
 const Container = styled.div<{isShiftDown: boolean}>`
   cursor: ${(props) => (props.isShiftDown ? 'cell' : 'default')};
@@ -55,6 +57,7 @@ function useCaptureSelection(
 ) {
   const [ref, state] = useRefAndState<SelectionBounds | null>(null)
 
+  const logger = useLogger('useCaptureSelection')
   useDrag(
     containerNode,
     useMemo((): Parameters<typeof useDrag>[1] => {
@@ -97,7 +100,11 @@ function useCaptureSelection(
                 ys: [ref.current!.ys[0], event.clientY - rect.top],
               }
 
-              const selection = utils.boundsToSelection(layoutP, ref.current)
+              const selection = utils.boundsToSelection(
+                logger,
+                layoutP,
+                ref.current,
+              )
               val(layoutP.selectionAtom).setState({current: selection})
             },
             onDragEnd(_dragHappened) {
@@ -115,15 +122,16 @@ function useCaptureSelection(
 namespace utils {
   const collectorByLeafType: {
     [K in SequenceEditorTree_AllRowTypes['type']]?: (
+      logger: IUtilLogger,
       layoutP: Pointer<SequenceEditorPanelLayout>,
       leaf: Extract<SequenceEditorTree_AllRowTypes, {type: K}>,
       bounds: SelectionBounds,
       selectionByObjectKey: DopeSheetSelection['byObjectKey'],
     ) => void
   } = {
-    propWithChildren(layoutP, leaf, bounds, selectionByObjectKey) {
+    propWithChildren(logger, layoutP, leaf, bounds, selectionByObjectKey) {
       const sheetObject = leaf.sheetObject
-      const aggregatedKeyframes = collectAggregateKeyframes(leaf)
+      const aggregatedKeyframes = collectAggregateKeyframesInPrism(logger, leaf)
 
       const bottom = leaf.top + leaf.nodeHeight
       if (bottom > bounds.ys[0]) {
@@ -154,9 +162,9 @@ namespace utils {
         }
       }
 
-      collectChildren(layoutP, leaf, bounds, selectionByObjectKey)
+      collectChildren(logger, layoutP, leaf, bounds, selectionByObjectKey)
     },
-    primitiveProp(layoutP, leaf, bounds, selectionByObjectKey) {
+    primitiveProp(logger, layoutP, leaf, bounds, selectionByObjectKey) {
       const {sheetObject, trackId} = leaf
       const trackData = val(
         getStudio().atomP.historic.coreByProject[sheetObject.address.projectId]
@@ -184,6 +192,7 @@ namespace utils {
   }
 
   const collectChildren = (
+    logger: IUtilLogger,
     layoutP: Pointer<SequenceEditorPanelLayout>,
     leaf: SequenceEditorTree_AllRowTypes,
     bounds: SelectionBounds,
@@ -191,12 +200,13 @@ namespace utils {
   ) => {
     if ('children' in leaf) {
       for (const sub of leaf.children) {
-        collectFromAnyLeaf(layoutP, sub, bounds, selectionByObjectKey)
+        collectFromAnyLeaf(logger, layoutP, sub, bounds, selectionByObjectKey)
       }
     }
   }
 
   function collectFromAnyLeaf(
+    logger: IUtilLogger,
     layoutP: Pointer<SequenceEditorPanelLayout>,
     leaf: SequenceEditorTree_AllRowTypes,
     bounds: SelectionBounds,
@@ -213,13 +223,20 @@ namespace utils {
     }
     const collector = collectorByLeafType[leaf.type]
     if (collector) {
-      collector(layoutP, leaf as $IntentionalAny, bounds, selectionByObjectKey)
+      collector(
+        logger,
+        layoutP,
+        leaf as $IntentionalAny,
+        bounds,
+        selectionByObjectKey,
+      )
     } else {
-      collectChildren(layoutP, leaf, bounds, selectionByObjectKey)
+      collectChildren(logger, layoutP, leaf, bounds, selectionByObjectKey)
     }
   }
 
   export function boundsToSelection(
+    logger: ILogger,
     layoutP: Pointer<SequenceEditorPanelLayout>,
     bounds: SelectionBounds,
   ): DopeSheetSelection {
@@ -227,7 +244,13 @@ namespace utils {
     bounds = sortBounds(bounds)
 
     const tree = val(layoutP.tree)
-    collectFromAnyLeaf(layoutP, tree, bounds, selectionByObjectKey)
+    collectFromAnyLeaf(
+      logger.utilFor.internal(),
+      layoutP,
+      tree,
+      bounds,
+      selectionByObjectKey,
+    )
 
     const sheet = val(layoutP.tree.sheet)
     return {

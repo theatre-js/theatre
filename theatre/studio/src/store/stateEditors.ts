@@ -611,6 +611,7 @@ namespace stateEditors {
 
             tracks.trackData[trackId] = {
               type: 'BasicKeyframedTrack',
+              debugName: `${p.objectKey}:${pathEncoded}`,
               keyframes: [],
             }
             tracks.trackIdByPropPath[pathEncoded] = trackId

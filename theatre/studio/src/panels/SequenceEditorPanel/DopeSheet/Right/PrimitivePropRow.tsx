@@ -7,11 +7,13 @@ import {val} from '@theatre/dataverse'
 import React from 'react'
 import RightRow from './Row'
 import BasicKeyframedTrack from './BasicKeyframedTrack/BasicKeyframedTrack'
+import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 
-const PrimitivePropRow: React.FC<{
+const PrimitivePropRow: React.VFC<{
   leaf: SequenceEditorTree_PrimitiveProp
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({leaf, layoutP}) => {
+  const logger = useLogger('PrimitivePropRow', leaf.pathToProp.join())
   return usePrism(() => {
     const {sheetObject} = leaf
     const {trackId} = leaf
@@ -24,7 +26,7 @@ const PrimitivePropRow: React.FC<{
     )
 
     if (trackData?.type !== 'BasicKeyframedTrack') {
-      console.error(
+      logger.errorDev(
         `trackData type ${trackData?.type} is not yet supported on the sequence editor`,
       )
       return (

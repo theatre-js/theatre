@@ -65,8 +65,13 @@ export type Keyframe = {
   connectedRight: boolean
 }
 
-export type BasicKeyframedTrack = {
-  type: 'BasicKeyframedTrack'
+type TrackDataCommon<TypeName extends string> = {
+  type: TypeName
+  /** Initial name of the track for debugging purposes */
+  debugName?: string
+}
+
+export type BasicKeyframedTrack = TrackDataCommon<'BasicKeyframedTrack'> & {
   /**
    * {@link Keyframe} is not provided an explicit generic value `T`, because
    * a single track can technically have multiple different types for each keyframe.
