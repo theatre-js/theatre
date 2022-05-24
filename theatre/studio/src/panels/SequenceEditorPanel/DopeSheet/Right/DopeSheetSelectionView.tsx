@@ -15,7 +15,11 @@ import type {
   DopeSheetSelection,
   SequenceEditorPanelLayout,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {SequenceEditorTree_AllRowTypes} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import type {
+  SequenceEditorTree_AllRowTypes,
+  SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_SheetObject,
+} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import {collectAggregateKeyframesInPrism} from './collectAggregateKeyframes'
 import type {ILogger, IUtilLogger} from '@theatre/shared/logger'
@@ -120,6 +124,42 @@ function useCaptureSelection(
 }
 
 namespace utils {
+  const collectForAggregatedChildren = (
+    logger: IUtilLogger,
+    layoutP: Pointer<SequenceEditorPanelLayout>,
+    leaf: SequenceEditorTree_SheetObject | SequenceEditorTree_PropWithChildren,
+    bounds: SelectionBounds,
+    selectionByObjectKey: DopeSheetSelection['byObjectKey'],
+  ) => {
+    const sheetObject = leaf.sheetObject
+    const aggregatedKeyframes = collectAggregateKeyframesInPrism(logger, leaf)
+
+    const bottom = leaf.top + leaf.nodeHeight
+    if (bottom > bounds.ys[0]) {
+      for (const [position, keyframes] of aggregatedKeyframes.byPosition) {
+        if (position <= bounds.positions[0]) continue
+        if (position >= bounds.positions[1]) break
+
+        // yes selected
+
+        for (const kf of keyframes) {
+          mutableSetDeep(
+            selectionByObjectKey,
+            (selectionByObjectKeyP) =>
+              // convenience for accessing a deep path which might not actually exist
+              // through the use of pointer proxy (so we don't have to deal with undeifned )
+              selectionByObjectKeyP[sheetObject.address.objectKey].byTrackId[
+                kf.track.id
+              ].byKeyframeId[kf.kf.id],
+            true,
+          )
+        }
+      }
+    }
+
+    collectChildren(logger, layoutP, leaf, bounds, selectionByObjectKey)
+  }
+
   const collectorByLeafType: {
     [K in SequenceEditorTree_AllRowTypes['type']]?: (
       logger: IUtilLogger,
@@ -130,39 +170,22 @@ namespace utils {
     ) => void
   } = {
     propWithChildren(logger, layoutP, leaf, bounds, selectionByObjectKey) {
-      const sheetObject = leaf.sheetObject
-      const aggregatedKeyframes = collectAggregateKeyframesInPrism(logger, leaf)
-
-      const bottom = leaf.top + leaf.nodeHeight
-      if (bottom > bounds.ys[0]) {
-        // console.error('TODO: in bounds?', {
-        //   top: leaf.top,
-        //   nodeHeight: leaf.nodeHeight,
-        //   ys: bounds.ys,
-        // })
-
-        for (const [position, keyframes] of aggregatedKeyframes.byPosition) {
-          if (position <= bounds.positions[0]) continue
-          if (position >= bounds.positions[1]) break
-
-          // yes selected
-
-          for (const kf of keyframes) {
-            mutableSetDeep(
-              selectionByObjectKey,
-              (selectionByObjectKeyP) =>
-                // convenience for accessing a deep path which might not actually exist
-                // through the use of pointer proxy (so we don't have to deal with undeifned )
-                selectionByObjectKeyP[sheetObject.address.objectKey].byTrackId[
-                  kf.track.id
-                ].byKeyframeId[kf.kf.id],
-              true,
-            )
-          }
-        }
-      }
-
-      collectChildren(logger, layoutP, leaf, bounds, selectionByObjectKey)
+      collectForAggregatedChildren(
+        logger,
+        layoutP,
+        leaf,
+        bounds,
+        selectionByObjectKey,
+      )
+    },
+    sheetObject(logger, layoutP, leaf, bounds, selectionByObjectKey) {
+      collectForAggregatedChildren(
+        logger,
+        layoutP,
+        leaf,
+        bounds,
+        selectionByObjectKey,
+      )
     },
     primitiveProp(logger, layoutP, leaf, bounds, selectionByObjectKey) {
       const {sheetObject, trackId} = leaf
