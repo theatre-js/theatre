@@ -14,6 +14,11 @@ import TooltipContext from '@theatre/studio/uiComponents/Popover/TooltipContext'
 import {ProvidePointerCapturing} from './PointerCapturing'
 import {MountAll} from '@theatre/studio/utils/renderInPortalInContext'
 import {PortalLayer, ProvideStyles} from '@theatre/studio/css'
+import {
+  createTheatreInternalLogger,
+  TheatreLoggerLevel,
+} from '@theatre/shared/logger'
+import {ProvideLogger} from '@theatre/studio/uiComponents/useLogger'
 
 const MakeRootHostContainStatic =
   typeof window !== 'undefined'
@@ -39,11 +44,23 @@ const Container = styled(PointerEventsHandler)`
   }
 `
 
+const INTERNAL_LOGGING = /Playground.+Theatre\.js/.test(
+  (typeof document !== 'undefined' ? document?.title : null) ?? '',
+)
+
 export default function UIRoot() {
   const studio = getStudio()
   const [portalLayerRef, portalLayer] = useRefAndState<HTMLDivElement>(
     undefined as $IntentionalAny,
   )
+
+  const uiRootLogger = createTheatreInternalLogger()
+  uiRootLogger.configureLogging({
+    min: TheatreLoggerLevel.DEBUG,
+    dev: INTERNAL_LOGGING,
+    internal: INTERNAL_LOGGING,
+  })
+  const logger = uiRootLogger.getLogger().named('Theatre UIRoot')
 
   useKeyboardShortcuts()
 
@@ -63,33 +80,35 @@ export default function UIRoot() {
     const initialised = val(studio.atomP.ephemeral.initialised)
 
     return !initialised ? null : (
-      <TooltipContext>
-        <ProvidePointerCapturing>
-          <MountExtensionComponents />
-          <PortalContext.Provider value={portalLayer}>
-            <ProvideStyles
-              target={
-                window.__IS_VISUAL_REGRESSION_TESTING === true
-                  ? undefined
-                  : getStudio()!.ui.containerShadow
-              }
-            >
-              <>
-                <MakeRootHostContainStatic />
-                <Container
-                  className={
-                    visiblityState === 'everythingIsHidden' ? 'invisible' : ''
-                  }
-                >
-                  <PortalLayer ref={portalLayerRef} />
-                  {<GlobalToolbar />}
-                  {<PanelsRoot />}
-                </Container>
-              </>
-            </ProvideStyles>
-          </PortalContext.Provider>
-        </ProvidePointerCapturing>
-      </TooltipContext>
+      <ProvideLogger logger={logger}>
+        <TooltipContext>
+          <ProvidePointerCapturing>
+            <MountExtensionComponents />
+            <PortalContext.Provider value={portalLayer}>
+              <ProvideStyles
+                target={
+                  window.__IS_VISUAL_REGRESSION_TESTING === true
+                    ? undefined
+                    : getStudio()!.ui.containerShadow
+                }
+              >
+                <>
+                  <MakeRootHostContainStatic />
+                  <Container
+                    className={
+                      visiblityState === 'everythingIsHidden' ? 'invisible' : ''
+                    }
+                  >
+                    <PortalLayer ref={portalLayerRef} />
+                    <GlobalToolbar />
+                    <PanelsRoot />
+                  </Container>
+                </>
+              </ProvideStyles>
+            </PortalContext.Provider>
+          </ProvidePointerCapturing>
+        </TooltipContext>
+      </ProvideLogger>
     )
   }, [studio, portalLayerRef, portalLayer])
 
