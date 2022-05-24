@@ -2,12 +2,6 @@ import {usePrism, useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
 import React from 'react'
 import styled from 'styled-components'
-import {
-  BsChevronRight,
-  BiSlider,
-  VscListTree,
-  BsChevronLeft,
-} from 'react-icons/all'
 import type {$IntentionalAny} from '@theatre/dataverse/dist/types'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import ErrorTooltip from '@theatre/studio/uiComponents/Popover/ErrorTooltip'
@@ -15,6 +9,12 @@ import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 import {val} from '@theatre/dataverse'
 import ExtensionToolbar from './ExtensionToolbar/ExtensionToolbar'
 import PinButton from './PinButton'
+import {
+  ChevronLeft,
+  ChevronRight,
+  Details,
+  Outline,
+} from '@theatre/studio/uiComponents/icons'
 
 const Container = styled.div`
   height: 36px;
@@ -91,9 +91,9 @@ const GlobalToolbar: React.FC = () => {
               )
             })
           }}
-          icon={<VscListTree />}
-          pinHintIcon={<BsChevronRight />}
-          unpinHintIcon={<BsChevronLeft />}
+          icon={<Outline />}
+          pinHintIcon={<ChevronRight />}
+          unpinHintIcon={<ChevronLeft />}
           pinned={outlinePinned}
           hint={showOutline}
         />
@@ -114,9 +114,9 @@ const GlobalToolbar: React.FC = () => {
               )
             })
           }}
-          icon={<BiSlider />}
-          pinHintIcon={<BsChevronLeft />}
-          unpinHintIcon={<BsChevronRight />}
+          icon={<Details />}
+          pinHintIcon={<ChevronLeft />}
+          unpinHintIcon={<ChevronRight />}
           pinned={detailsPinned}
           hint={showDetails}
         />
