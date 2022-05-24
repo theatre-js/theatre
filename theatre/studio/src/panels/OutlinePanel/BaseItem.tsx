@@ -1,9 +1,9 @@
 import type {VoidFn} from '@theatre/shared/utils/types'
 import React from 'react'
-import {GoChevronRight, DiHtml53DEffects} from 'react-icons/all'
 import styled, {css} from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import {ChevronRight, Package} from '@theatre/studio/uiComponents/icons'
 
 export const Container = styled.li`
   margin: 0;
@@ -139,10 +139,10 @@ const BaseItem: React.FC<{
         <Head_IconContainer>
           {canContainChildren ? (
             <Head_Icon_WithDescendants isOpen={true}>
-              <GoChevronRight />
+              <ChevronRight />
             </Head_Icon_WithDescendants>
           ) : (
-            <DiHtml53DEffects />
+            <Package />
           )}
         </Head_IconContainer>
 
