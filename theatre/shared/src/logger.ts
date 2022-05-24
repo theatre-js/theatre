@@ -34,4 +34,4 @@ internal.configureLogging({
 export default internal
   .getLogger()
   .named('Theatre.js (default logger)')
-  .downgrade.dev()
+  .utilFor.dev()

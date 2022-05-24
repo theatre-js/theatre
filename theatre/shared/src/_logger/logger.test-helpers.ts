@@ -79,8 +79,8 @@ function setupFn(options: ITheatreInternalLoggerOptions) {
       named(name: string, key?: string | number) {
         return t(logger.named(name, key))
       },
-      downgrade: objMap(
-        logger.downgrade,
+      utilFor: objMap(
+        logger.utilFor,
         ([audience, downgradeFn]) =>
           () =>
             setupUtilLogger(downgradeFn(), audience, con),
@@ -146,7 +146,7 @@ type TestLoggerIncludes = ((string | RegExp) | {not: string | RegExp})[]
 
 function setupUtilLogger(
   logger: IUtilLogger,
-  audience: keyof ILogger['downgrade'],
+  audience: keyof ILogger['utilFor'],
   con: jest.Mocked<ITheatreConsoleLogger>,
 ) {
   return {
