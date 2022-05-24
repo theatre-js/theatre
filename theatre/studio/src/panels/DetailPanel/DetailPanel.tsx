@@ -86,6 +86,7 @@ const DetailPanel: React.FC<{}> = (props) => {
     if (obj) {
       return (
         <Container
+          data-testid="DetailPanel-Object"
           pin={pin || active}
           onMouseEnter={() => {
             setHovered(true)
