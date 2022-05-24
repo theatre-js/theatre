@@ -12,7 +12,6 @@ import type {$FixMe} from '@theatre/shared/utils/types'
 import StudioBundle from './StudioBundle'
 import type CoreBundle from '@theatre/core/CoreBundle'
 import type {IStudio} from '@theatre/studio/TheatreStudio'
-import './setupWebComponents'
 
 const studioPrivateAPI = new Studio()
 setStudio(studioPrivateAPI)
