@@ -159,11 +159,11 @@ describeLogger('Theatre internal logger', (setup) => {
       t.expectIncluded('warnPublic', 'warn', [{not: 'color:'}, 'Test1'])
     })
   })
-  describe('downgrade', () => {
-    test('.downgrade.public() with defaults', () => {
+  describe('utilFor', () => {
+    test('.utilFor.public() with defaults', () => {
       const h = setup()
 
-      const publ = h.t().downgrade.public()
+      const publ = h.t().utilFor.public()
 
       publ.expectIncluded('error', 'error')
       publ.expectIncluded('warn', 'warn')
@@ -171,10 +171,10 @@ describeLogger('Theatre internal logger', (setup) => {
       publ.expectExcluded('trace')
     })
 
-    test('.downgrade.dev() with defaults', () => {
+    test('.utilFor.dev() with defaults', () => {
       const h = setup()
 
-      const dev = h.t().downgrade.dev()
+      const dev = h.t().utilFor.dev()
 
       dev.expectExcluded('error')
       dev.expectExcluded('warn')
@@ -182,10 +182,10 @@ describeLogger('Theatre internal logger', (setup) => {
       dev.expectExcluded('trace')
     })
 
-    test('.downgrade.internal() with defaults', () => {
+    test('.utilFor.internal() with defaults', () => {
       const h = setup()
 
-      const internal = h.t().downgrade.internal()
+      const internal = h.t().utilFor.internal()
 
       internal.expectExcluded('error')
       internal.expectExcluded('warn')
@@ -193,7 +193,7 @@ describeLogger('Theatre internal logger', (setup) => {
       internal.expectExcluded('trace')
     })
 
-    test('.downgrade.internal() can be named', () => {
+    test('.utilFor.internal() can be named', () => {
       const h = setup()
 
       h.internal.configureLogging({
@@ -201,7 +201,7 @@ describeLogger('Theatre internal logger', (setup) => {
         min: TheatreLoggerLevel.TRACE,
       })
 
-      const internal = h.t().downgrade.internal()
+      const internal = h.t().utilFor.internal()
       const appleInternal = internal.named('Apple')
 
       internal.expectIncluded('error', 'error', [{not: 'Apple'}])
@@ -215,13 +215,13 @@ describeLogger('Theatre internal logger', (setup) => {
       appleInternal.expectIncluded('trace', 'debug', ['Apple'])
     })
 
-    test('.downgrade.public() debug/trace warns internal', () => {
+    test('.utilFor.public() debug/trace warns internal', () => {
       const h = setup()
       {
         h.internal.configureLogging({
           internal: true,
         })
-        const publ = h.t().downgrade.public()
+        const publ = h.t().utilFor.public()
 
         publ.expectIncluded('error', 'error', [{not: 'filtered out'}])
         publ.expectIncluded('warn', 'warn', [{not: 'filtered out'}])
@@ -235,7 +235,7 @@ describeLogger('Theatre internal logger', (setup) => {
         h.internal.configureLogging({
           dev: true,
         })
-        const publ = h.t().downgrade.public()
+        const publ = h.t().utilFor.public()
 
         publ.expectIncluded('error', 'error', [{not: /filtered out/}])
         publ.expectIncluded('warn', 'warn', [{not: /filtered out/}])
