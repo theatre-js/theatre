@@ -1,1 +1,0 @@
-import './uiComponents/webComponents/TheatreJSToolbarIcon'
