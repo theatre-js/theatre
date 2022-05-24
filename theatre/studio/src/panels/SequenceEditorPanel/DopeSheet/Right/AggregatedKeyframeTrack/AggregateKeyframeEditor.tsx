@@ -27,15 +27,23 @@ const AggregateKeyframeEditorContainer = styled.div`
 
 const noConnector = <></>
 
+export type IAggregateKeyframesAtPosition = {
+  position: number
+  /** all tracks have a keyframe for this position (otherwise, false means 'partial') */
+  allHere: boolean
+  selected: AggregateKeyframePositionIsSelected | undefined
+  keyframes: {
+    kf: Keyframe
+    track: {
+      id: SequenceTrackId
+      data: TrackData
+    }
+  }[]
+}
+
 export type IAggregateKeyframeEditorProps = {
   index: number
-  aggregateKeyframes: {
-    position: number
-    /** all tracks have a keyframe for this position (otherwise, false means 'partial') */
-    allHere: boolean
-    selected: AggregateKeyframePositionIsSelected | undefined
-    keyframes: {kf: Keyframe; track: {id: SequenceTrackId; data: TrackData}}[]
-  }[]
+  aggregateKeyframes: IAggregateKeyframesAtPosition[]
   layoutP: Pointer<SequenceEditorPanelLayout>
   viewModel:
     | SequenceEditorTree_PropWithChildren

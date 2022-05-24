@@ -16,6 +16,9 @@ import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextM
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import getStudio from '@theatre/studio/getStudio'
+import type {
+  IAggregateKeyframesAtPosition,
+} from './AggregateKeyframeEditor';
 import AggregateKeyframeEditor from './AggregateKeyframeEditor'
 import type {AggregatedKeyframes} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
@@ -63,7 +66,9 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
     () => logger._debug('see aggregatedKeyframes', props.aggregatedKeyframes),
   )
 
-  const posKfs = [...aggregatedKeyframes.byPosition.entries()]
+  const posKfs: IAggregateKeyframesAtPosition[] = [
+    ...aggregatedKeyframes.byPosition.entries(),
+  ]
     .sort((a, b) => a[0] - b[0])
     .map(([position, keyframes]) => ({
       position,
@@ -104,7 +109,11 @@ export default AggregatedKeyframeTrack
 export enum AggregateKeyframePositionIsSelected {
   AllSelected,
   AtLeastOneUnselected,
+  NoneSelected,
 }
+
+const {AllSelected, AtLeastOneUnselected, NoneSelected} =
+  AggregateKeyframePositionIsSelected
 
 /** Helper to put together the selected positions */
 function useCollectedSelectedPositions(
@@ -129,28 +138,35 @@ function useCollectedSelectedPositions(
     >()
 
     for (const [position, kfsWithTrack] of aggregatedKeyframes.byPosition) {
-      let positionIsSelected: null | AggregateKeyframePositionIsSelected = null
+      let positionIsSelected: undefined | AggregateKeyframePositionIsSelected =
+        undefined
       for (const kf of kfsWithTrack) {
         const kfIsSelected =
           sheetObjectSelection.byTrackId[kf.track.id]?.byKeyframeId?.[
             kf.kf.id
           ] === true
-        if (kfIsSelected) {
-          if (positionIsSelected === null) {
-            positionIsSelected = AggregateKeyframePositionIsSelected.AllSelected
+        // -1/10: This sux
+        // undefined = have not encountered
+        // null = none selected
+        if (positionIsSelected === undefined) {
+          // first item
+          if (kfIsSelected) {
+            positionIsSelected = AllSelected
+          } else {
+            positionIsSelected = NoneSelected
+          }
+        } else if (kfIsSelected) {
+          if (positionIsSelected === NoneSelected) {
+            positionIsSelected = AtLeastOneUnselected
           }
         } else {
-          if (
-            positionIsSelected ===
-            AggregateKeyframePositionIsSelected.AllSelected
-          ) {
-            positionIsSelected =
-              AggregateKeyframePositionIsSelected.AtLeastOneUnselected
+          if (positionIsSelected === AllSelected) {
+            positionIsSelected = AtLeastOneUnselected
           }
         }
       }
 
-      if (positionIsSelected !== null) {
+      if (positionIsSelected != null) {
         selectedAtPositions.set(position, positionIsSelected)
       }
     }
