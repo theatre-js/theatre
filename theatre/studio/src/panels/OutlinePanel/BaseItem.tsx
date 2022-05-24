@@ -43,7 +43,7 @@ const Header = styled(BaseHeader)`
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
   &.descendant-is-selected {
-    // TODO
+    background: rgba(29, 53, 59, 0.7);
   }
 
   &:not(.not-selectable):not(.selected):hover {
