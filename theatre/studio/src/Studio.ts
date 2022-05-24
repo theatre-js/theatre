@@ -170,6 +170,7 @@ export class Studio {
       if (drafts.ephemeral.extensions.byId[extension.id]) {
         throw new Error(`Extension id "${extension.id}" is already defined`)
       }
+
       drafts.ephemeral.extensions.byId[extension.id] = extension
 
       const allPaneClasses = drafts.ephemeral.extensions.paneClasses

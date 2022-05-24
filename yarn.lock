@@ -6320,6 +6320,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stencil/core@npm:~2.12.0":
+  version: 2.12.1
+  resolution: "@stencil/core@npm:2.12.1"
+  bin:
+    stencil: bin/stencil
+  checksum: acbd781a8073eb155cabad9375fda080ee38cb642f63fda2ae8c09811f996c6282ff84cd60f7796827e31fbce4eccc3c17f2041d9c5fec2df08947ebf8bcb0ac
+  languageName: node
+  linkType: hard
+
 "@surma/rollup-plugin-off-main-thread@npm:^1.1.1":
   version: 1.4.2
   resolution: "@surma/rollup-plugin-off-main-thread@npm:1.4.2"
@@ -6605,6 +6614,7 @@ __metadata:
     "@types/node": ^15.6.2
     "@types/react": ^17.0.9
     "@types/styled-components": ^5.1.9
+    ionicons: ^6.0.1
     lodash-es: ^4.17.21
     npm-run-all: ^4.1.5
     polished: ^4.1.3
@@ -16921,6 +16931,15 @@ fsevents@^1.2.7:
   dependencies:
     loose-envify: ^1.0.0
   checksum: cc3182d793aad82a8d1f0af697b462939cb46066ec48bbf1707c150ad5fad6406137e91a262022c269702e01621f35ef60269f6c0d7fd178487959809acdfb14
+  languageName: node
+  linkType: hard
+
+"ionicons@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "ionicons@npm:6.0.1"
+  dependencies:
+    "@stencil/core": ~2.12.0
+  checksum: 395ff7574529c90a5e044ad5729793b4cc2233e6757a0f7c645cbee562402f4dc9f0ffa4b2799f14bc0874b2526e35287924a113ddc82cd16d48dae4c8df31fd
   languageName: node
   linkType: hard
 

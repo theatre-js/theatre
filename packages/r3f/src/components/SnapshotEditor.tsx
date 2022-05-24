@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useLayoutEffect, useMemo} from 'react'
+import {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import React from 'react'
 import {Canvas, useThree} from '@react-three/fiber'
 import type {BaseSheetObjectType} from '../store'
@@ -6,7 +6,7 @@ import {allRegisteredObjects, useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
 import ProxyManager from './ProxyManager'
-import studio, {ToolbarIconButton} from '@theatre/studio'
+import studio from '@theatre/studio'
 import {useVal} from '@theatre/react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
 import type {ISheet} from '@theatre/core'
@@ -16,7 +16,6 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
 import {DragDetectorProvider} from './DragDetector'
 import TooltipPortalProvider from './TooltipPortalProvider'
-import {FiRefreshCw} from 'react-icons/fi'
 import ReferenceWindow from './ReferenceWindow/ReferenceWindow'
 
 const GlobalStyle = createGlobalStyle`
@@ -168,6 +167,14 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
     }
   }, [])
 
+  const [toolsContainer, setToolsContainer] = useState<null | HTMLElement>()
+
+  useEffect(() => {
+    if (!toolsContainer) return
+
+    return studio.ui.renderToolset('snapshot-editor', toolsContainer)
+  }, [toolsContainer])
+
   if (!editorObject) return <></>
 
   return (
@@ -178,14 +185,7 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
           <TooltipPortalProvider>
             <Wrapper>
               <Overlay>
-                <Tools>
-                  <ToolbarIconButton
-                    title="Refresh Snapshot"
-                    onClick={createSnapshot}
-                  >
-                    <FiRefreshCw />
-                  </ToolbarIconButton>
-                </Tools>
+                <Tools ref={setToolsContainer} />
                 {showReferenceWindow && (
                   <ReferenceWindowContainer>
                     <ReferenceWindow height={120} />
