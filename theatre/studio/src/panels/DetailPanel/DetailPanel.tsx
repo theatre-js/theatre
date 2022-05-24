@@ -1,6 +1,6 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
 import {usePrism, useVal} from '@theatre/react'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
 import {
@@ -71,6 +71,13 @@ const DetailPanel: React.FC<{}> = (props) => {
   const pin = useVal(getStudio().atomP.ahistoric.pinDetails)
 
   const active = useHotspot('right')
+  const [hovered, setHovered] = useState(false)
+
+  useEffect(() => {
+    getStudio().transaction(({stateEditors, drafts}) => {
+      stateEditors.studio.ephemeral.setShowDetails(active || hovered)
+    })
+  }, [active, hovered])
 
   return usePrism(() => {
     const selection = getOutlineSelection()
@@ -78,7 +85,15 @@ const DetailPanel: React.FC<{}> = (props) => {
     const obj = selection.find(isSheetObject)
     if (obj) {
       return (
-        <Container pin={pin || active}>
+        <Container
+          pin={pin || active}
+          onMouseEnter={() => {
+            setHovered(true)
+          }}
+          onMouseLeave={() => {
+            setHovered(false)
+          }}
+        >
           <Header>
             <Title
               title={`${obj.sheet.address.sheetId}: ${obj.sheet.address.sheetInstanceId} > ${obj.address.objectKey}`}

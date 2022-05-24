@@ -35,4 +35,6 @@ export type StudioEphemeralState = {
       }
     }
   }
+  showOutline: boolean
+  showDetails: boolean
 }

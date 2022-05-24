@@ -1,15 +1,20 @@
-import {usePrism} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
 import React from 'react'
 import styled from 'styled-components'
-import {ToolbarIconButton} from '@theatre/studio/index'
-import {VscListTree, BiSlider} from 'react-icons/all'
+import {
+  BsChevronRight,
+  BiSlider,
+  VscListTree,
+  BsChevronLeft,
+} from 'react-icons/all'
 import type {$IntentionalAny} from '@theatre/dataverse/dist/types'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import ErrorTooltip from '@theatre/studio/uiComponents/Popover/ErrorTooltip'
 import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 import {val} from '@theatre/dataverse'
 import ExtensionToolbar from './ExtensionToolbar/ExtensionToolbar'
+import PinButton from './PinButton'
 
 const Container = styled.div`
   height: 36px;
@@ -68,13 +73,17 @@ const GlobalToolbar: React.FC = () => {
       ),
   )
 
+  const outlinePinned = useVal(getStudio().atomP.ahistoric.pinOutline)
+  const detailsPinned = useVal(getStudio().atomP.ahistoric.pinDetails)
+  const showOutline = useVal(getStudio().atomP.ephemeral.showOutline)
+  const showDetails = useVal(getStudio().atomP.ephemeral.showDetails)
+
   return (
     <Container>
       <SubContainer>
         {triggerTooltip}
-        <ToolbarIconButton
+        <PinButton
           ref={triggerButtonRef as $IntentionalAny}
-          data-testid="OutlinePanel-TriggerButton"
           onClick={() => {
             getStudio().transaction(({stateEditors, drafts}) => {
               stateEditors.studio.ahistoric.setPinOutline(
@@ -82,9 +91,12 @@ const GlobalToolbar: React.FC = () => {
               )
             })
           }}
-        >
-          <VscListTree />
-        </ToolbarIconButton>
+          icon={<VscListTree />}
+          pinHintIcon={<BsChevronRight />}
+          unpinHintIcon={<BsChevronLeft />}
+          pinned={outlinePinned}
+          hint={showOutline}
+        />
         {conflicts.length > 0 ? (
           <NumberOfConflictsIndicator>
             {conflicts.length}
@@ -93,9 +105,8 @@ const GlobalToolbar: React.FC = () => {
         <ExtensionToolbar />
       </SubContainer>
       <SubContainer>
-        <ToolbarIconButton
+        <PinButton
           ref={triggerButtonRef as $IntentionalAny}
-          data-testid="OutlinePanel-TriggerButton"
           onClick={() => {
             getStudio().transaction(({stateEditors, drafts}) => {
               stateEditors.studio.ahistoric.setPinDetails(
@@ -103,9 +114,12 @@ const GlobalToolbar: React.FC = () => {
               )
             })
           }}
-        >
-          <BiSlider />
-        </ToolbarIconButton>
+          icon={<BiSlider />}
+          pinHintIcon={<BsChevronLeft />}
+          unpinHintIcon={<BsChevronRight />}
+          pinned={detailsPinned}
+          hint={showDetails}
+        />
       </SubContainer>
     </Container>
   )

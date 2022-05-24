@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import ProjectsList from './ProjectsList/ProjectsList'
@@ -45,10 +45,26 @@ const Container = styled.div<{pin: boolean}>`
 
 const OutlinePanel: React.FC<{}> = (props) => {
   const pin = useVal(getStudio().atomP.ahistoric.pinOutline)
+  const show = useVal(getStudio().atomP.ephemeral.showOutline)
   const active = useHotspot('left')
+  const [hovered, setHovered] = useState(false)
+
+  useEffect(() => {
+    getStudio().transaction(({stateEditors, drafts}) => {
+      stateEditors.studio.ephemeral.setShowOutline(active || hovered)
+    })
+  }, [active, hovered])
 
   return (
-    <Container pin={pin || active}>
+    <Container
+      pin={pin || show}
+      onMouseEnter={() => {
+        setHovered(true)
+      }}
+      onMouseLeave={() => {
+        setHovered(false)
+      }}
+    >
       <ProjectsList />
     </Container>
   )
