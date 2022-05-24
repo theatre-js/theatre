@@ -39,6 +39,7 @@ const Header = styled(BaseHeader)`
 
   color: rgba(255, 255, 255, 0.9);
   background: rgba(40, 43, 47, 0.65);
+  backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
   &.descendant-is-selected {
