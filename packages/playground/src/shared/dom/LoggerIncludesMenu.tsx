@@ -7,7 +7,7 @@ import type {
 import {TheatreLoggerLevel} from '@theatre/shared/logger'
 
 import React, {useContext} from 'react'
-import {reactD, deriveAllD, childD} from './derive-utils'
+import {reactD, childD} from './derive-utils'
 import styleD from './_styleD'
 
 export function LoggerIncludesMenu({state}: {state: LoggerIncludeState}) {
@@ -52,7 +52,7 @@ const SearchInput = styleD.input``
 const SearchLabel = styleD.label``
 
 const MenuSearchInput = React.memo(() => {
-  const menu = useMenuState()
+  const menuSearch = useMenuState().search
 
   return (
     <>
@@ -60,9 +60,9 @@ const MenuSearchInput = React.memo(() => {
       <SearchInput
         type="text"
         id="logger-menu-ui"
-        value={menu.search.searchValueD}
+        value={menuSearch.searchValueD}
         onChange={(event) =>
-          menu.search.setSearchValue(event.currentTarget.value)
+          menuSearch.setSearchValue(event.currentTarget.value)
         }
       />
     </>
@@ -80,7 +80,7 @@ const MenuSearchResults = React.memo(() => {
       <h1>{childD(menu.search.searchValueD)}</h1>
       {childD(searchUpperCaseD)}
       <div style={{display: 'flex', flexDirection: 'column'}}>
-        {reactD(deriveAllD([menu.shownKeysD]), ([shownKeys]) =>
+        {reactD(menu.shownKeysD, (shownKeys) =>
           shownKeys.map((source) => (
             <MenuItem
               config={source.config}
