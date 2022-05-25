@@ -34,7 +34,9 @@ type OnDragCallback = (
   dyFromLastEvent: number,
 ) => void
 
-type OnDragEndCallback = (dragHappened: boolean) => void
+type OnClickCallback = (mouseUpEvent: MouseEvent) => void
+
+type OnDragEndCallback = (dragHappened: boolean, event?: MouseEvent) => void
 
 export type UseDragOpts = {
   /**
@@ -88,6 +90,7 @@ export type UseDragOpts = {
          */
         onDragEnd?: OnDragEndCallback
         onDrag: OnDragCallback
+        onClick?: OnClickCallback
       }
 
   // which mouse button to use the drag event
@@ -170,7 +173,8 @@ export default function useDrag(
   const callbacksRef = useRef<{
     onDrag: OnDragCallback
     onDragEnd: OnDragEndCallback
-  }>({onDrag: noop, onDragEnd: noop})
+    onClick: OnClickCallback
+  }>({onDrag: noop, onDragEnd: noop, onClick: noop})
 
   const capturedPointerRef = useRef<undefined | CapturedPointer>()
   // needed to have a state on the react lifecycle which can be updated
@@ -239,13 +243,16 @@ export default function useDrag(
       }
     }
 
-    const dragEndHandler = () => {
+    const dragEndHandler = (e: MouseEvent) => {
       removeDragListeners()
       if (!stateRef.current.domDragStarted) return
       const dragHappened = stateRef.current.detection.detected
       stateRef.current = {domDragStarted: false}
       if (opts.shouldPointerLock && !isSafari) document.exitPointerLock()
       callbacksRef.current.onDragEnd(dragHappened)
+      if (!dragHappened) {
+        callbacksRef.current.onClick(e)
+      }
       ensureIsDraggingUpToDateForReactLifecycle()
     }
 
@@ -296,6 +303,7 @@ export default function useDrag(
 
       callbacksRef.current.onDrag = returnOfOnDragStart.onDrag
       callbacksRef.current.onDragEnd = returnOfOnDragStart.onDragEnd ?? noop
+      callbacksRef.current.onClick = returnOfOnDragStart.onClick ?? noop
 
       // need to capture pointer after we know the provided handler wants to handle drag start
       capturedPointerRef.current = capturePointer('Drag start')

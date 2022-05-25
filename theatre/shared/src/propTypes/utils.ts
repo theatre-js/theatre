@@ -54,5 +54,71 @@ export function valueInProp<PropConfig extends PropTypeConfig_AllSimples>(
 export function isPropConfSequencable(
   conf: PropTypeConfig,
 ): conf is Extract<PropTypeConfig, {interpolate: any}> {
-  return Object.prototype.hasOwnProperty.call(conf, 'interpolate')
+  return !isPropConfigComposite(conf) // now all non-compounds are sequencable
+}
+
+const compoundPropSequenceabilityCache = new WeakMap<
+  PropTypeConfig_Compound<{}> | PropTypeConfig_Enum,
+  boolean
+>()
+
+/**
+ * See {@link compoundHasSimpleDescendantsImpl}
+ */
+export function compoundHasSimpleDescendants(
+  conf: PropTypeConfig_Compound<{}> | PropTypeConfig_Enum,
+): boolean {
+  if (!compoundPropSequenceabilityCache.has(conf)) {
+    compoundPropSequenceabilityCache.set(
+      conf,
+      compoundHasSimpleDescendantsImpl(conf),
+    )
+  }
+
+  return compoundPropSequenceabilityCache.get(conf)!
+}
+
+/**
+ * This basically checks of the compound prop has at least one simple prop in its descendants.
+ * In other words, if the compound props has no subs, or its subs are only compounds that eventually
+ * don't have simple subs, this will return false.
+ */
+function compoundHasSimpleDescendantsImpl(
+  conf: PropTypeConfig_Compound<{}> | PropTypeConfig_Enum,
+): boolean {
+  if (conf.type === 'enum') {
+    throw new Error(`Not implemented yet for enums`)
+  }
+
+  for (const key in conf.props) {
+    const subConf = conf.props[
+      key as $IntentionalAny as keyof typeof conf.props
+    ] as PropTypeConfig
+    if (isPropConfigComposite(subConf)) {
+      if (compoundHasSimpleDescendants(subConf)) {
+        return true
+      }
+    } else {
+      return true
+    }
+  }
+  return false
+}
+
+export function* iteratePropType(
+  conf: PropTypeConfig,
+  pathUpToThisPoint: PathToProp,
+): Generator<{path: PathToProp; conf: PropTypeConfig}, void, void> {
+  if (conf.type === 'compound') {
+    for (const key in conf.props) {
+      yield* iteratePropType(conf.props[key] as PropTypeConfig, [
+        ...pathUpToThisPoint,
+        key,
+      ])
+    }
+  } else if (conf.type === 'enum') {
+    throw new Error(`Not implemented yet`)
+  } else {
+    return yield {path: pathUpToThisPoint, conf}
+  }
 }

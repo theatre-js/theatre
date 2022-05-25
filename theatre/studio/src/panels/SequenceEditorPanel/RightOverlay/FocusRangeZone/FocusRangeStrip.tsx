@@ -12,6 +12,7 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
+import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 
 export const focusRangeStripTheme = {
   enabled: {
@@ -175,7 +176,6 @@ const FocusRangeStrip: React.FC<{
   })
 
   const scaledSpaceToUnitSpace = useVal(layoutP.scaledSpace.toUnitSpace)
-  const [isDraggingRef, isDragging] = useRefAndState(false)
   const sheet = useVal(layoutP.sheet)
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
@@ -192,7 +192,6 @@ const FocusRangeStrip: React.FC<{
         const endPosBeforeDrag = existingRange.range.end
         let dragHappened = false
         const sequence = val(layoutP.sheet).getSequence()
-        isDraggingRef.current = true
 
         return {
           onDrag(dx) {
@@ -234,7 +233,6 @@ const FocusRangeStrip: React.FC<{
             }
           },
           onDragEnd() {
-            isDraggingRef.current = false
             if (existingRange) {
               if (dragHappened && tempTransaction !== undefined) {
                 tempTransaction.commit()
@@ -250,7 +248,9 @@ const FocusRangeStrip: React.FC<{
     }
   }, [sheet, scaledSpaceToUnitSpace])
 
-  useDrag(rangeStripNode, gestureHandlers)
+  const [isDragging] = useDrag(rangeStripNode, gestureHandlers)
+
+  useLockFrameStampPosition(isDragging, -1)
 
   return usePrism(() => {
     const existingRange = existingRangeD.getValue()

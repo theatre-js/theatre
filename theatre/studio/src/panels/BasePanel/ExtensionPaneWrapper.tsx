@@ -39,8 +39,6 @@ const ExtensionPaneWrapper: React.FC<{
 }
 
 const Container = styled(PanelWrapper)`
-  overflow: hidden;
-
   display: flex;
   flex-direction: column;
 

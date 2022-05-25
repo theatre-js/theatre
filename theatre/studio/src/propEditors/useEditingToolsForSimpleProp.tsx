@@ -1,10 +1,7 @@
 import get from 'lodash-es/get'
-import last from 'lodash-es/last'
 import React from 'react'
-
 import type {Pointer} from '@theatre/dataverse'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import type Scrub from '@theatre/studio/Scrub'
@@ -15,8 +12,10 @@ import type {SerializablePrimitive as SerializablePrimitive} from '@theatre/shar
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import {isPropConfSequencable} from '@theatre/shared/propTypes/utils'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
-
 import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
+import type {NearbyKeyframes} from './getNearbyKeyframesOfTrack'
+import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
+import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 
 interface EditingToolsCommon<T> {
@@ -170,33 +169,10 @@ export function useEditingToolsForSimplePropInDetailsPanel<
                 sequenceTrackId
               ],
             )
-            if (!track || track.keyframes.length === 0) return {}
-
-            const pos = val(obj.sheet.getSequence().positionDerivation)
-
-            const i = track.keyframes.findIndex((kf) => kf.position >= pos)
-
-            if (i === -1)
-              return {
-                prev: last(track.keyframes),
-              }
-
-            const k = track.keyframes[i]!
-            if (k.position === pos) {
-              return {
-                prev: i > 0 ? track.keyframes[i - 1] : undefined,
-                cur: k,
-                next:
-                  i === track.keyframes.length - 1
-                    ? undefined
-                    : track.keyframes[i + 1],
-              }
-            } else {
-              return {
-                next: k,
-                prev: i > 0 ? track.keyframes[i - 1] : undefined,
-              }
-            }
+            const sequencePosition = val(
+              obj.sheet.getSequence().positionDerivation,
+            )
+            return getNearbyKeyframesOfTrack(track, sequencePosition)
           },
           [sequenceTrackId],
         )
@@ -215,13 +191,10 @@ export function useEditingToolsForSimplePropInDetailsPanel<
           }
         }
 
-        const nextPrevKeyframeCursors = (
-          <NextPrevKeyframeCursors
-            {...nearbyKeyframes}
-            jumpToPosition={(position) => {
-              obj.sheet.getSequence().position = position
-            }}
-            toggleKeyframeOnCurrentPosition={() => {
+        const controls: NearbyKeyframesControls = {
+          cur: {
+            type: nearbyKeyframes.cur ? 'on' : 'off',
+            toggle: () => {
               if (nearbyKeyframes.cur) {
                 getStudio()!.transaction((api) => {
                   api.unset(pointerToProp)
@@ -231,8 +204,32 @@ export function useEditingToolsForSimplePropInDetailsPanel<
                   api.set(pointerToProp, common.value)
                 })
               }
-            }}
-          />
+            },
+          },
+          prev:
+            nearbyKeyframes.prev !== undefined
+              ? {
+                  position: nearbyKeyframes.prev.position,
+                  jump: () => {
+                    obj.sheet.getSequence().position =
+                      nearbyKeyframes.prev!.position
+                  },
+                }
+              : undefined,
+          next:
+            nearbyKeyframes.next !== undefined
+              ? {
+                  position: nearbyKeyframes.next.position,
+                  jump: () => {
+                    obj.sheet.getSequence().position =
+                      nearbyKeyframes.next!.position
+                  },
+                }
+              : undefined,
+        }
+
+        const nextPrevKeyframeCursors = (
+          <NextPrevKeyframeCursors {...controls} />
         )
 
         const ret: EditingToolsSequenced<T> = {
@@ -297,22 +294,6 @@ export function useEditingToolsForSimplePropInDetailsPanel<
 
     return ret
   }, [])
-}
-
-type NearbyKeyframes = {
-  prev?: Keyframe
-  cur?: Keyframe
-  next?: Keyframe
-}
-
-export const shadeToColor: {[K in Shade]: string} = {
-  Default: '#222',
-  Static: '#333',
-  Static_BeingScrubbed: '#91a100',
-  Sequenced_OnKeyframe: '#700202',
-  Sequenced_OnKeyframe_BeingScrubbed: '#c50000',
-  Sequenced_BeingInterpolated: '#0387a8',
-  Sequened_NotBeingInterpolated: '#004c5f',
 }
 
 type Shade =
