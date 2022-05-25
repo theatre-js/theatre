@@ -69,7 +69,7 @@ const Body = styled.div`
 `
 
 const DetailPanel: React.FC<{}> = (props) => {
-  const pin = useVal(getStudio().atomP.ahistoric.pinDetails)
+  const pin = useVal(getStudio().atomP.ahistoric.pinDetails) !== false
 
   const hostspotActive = useHotspot('right')
 

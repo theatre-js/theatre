@@ -44,7 +44,7 @@ const Container = styled.div<{pin: boolean}>`
 `
 
 const OutlinePanel: React.FC<{}> = (props) => {
-  const pin = useVal(getStudio().atomP.ahistoric.pinOutline)
+  const pin = useVal(getStudio().atomP.ahistoric.pinOutline) !== false
   const show = useVal(getStudio().atomP.ephemeral.showOutline)
   const active = useHotspot('left')
   const [hovered, setHovered] = useState(false)
