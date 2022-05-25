@@ -770,7 +770,10 @@ namespace stateEditors {
             replaceKeyframes({...p, keyframes: transformed})
           }
 
-          export function setKeyframesHandlesIfConnected(
+          /**
+           * Sets the easing between two keyframes
+           */
+          export function setTweenBetweenKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: SequenceTrackId
               keyframeIds: KeyframeId[]
@@ -782,10 +785,10 @@ namespace stateEditors {
 
             track.keyframes = track.keyframes.map((kf, i) => {
               const prevKf = track.keyframes[i - 1]
-              const isEditing = p.keyframeIds.includes(kf.id)
-              const isAfterEditingKeyframe = p.keyframeIds.includes(prevKf?.id)
+              const isBeingEdited = p.keyframeIds.includes(kf.id)
+              const isAfterEditedKeyframe = p.keyframeIds.includes(prevKf?.id)
 
-              if (isEditing && !isAfterEditingKeyframe) {
+              if (isBeingEdited && !isAfterEditedKeyframe) {
                 return {
                   ...kf,
                   handles: [
@@ -795,7 +798,7 @@ namespace stateEditors {
                     p.handles[1],
                   ],
                 }
-              } else if (isEditing && isAfterEditingKeyframe) {
+              } else if (isBeingEdited && isAfterEditedKeyframe) {
                 return {
                   ...kf,
                   handles: [
@@ -805,7 +808,7 @@ namespace stateEditors {
                     p.handles[1],
                   ],
                 }
-              } else if (isAfterEditingKeyframe) {
+              } else if (isAfterEditedKeyframe) {
                 return {
                   ...kf,
                   handles: [

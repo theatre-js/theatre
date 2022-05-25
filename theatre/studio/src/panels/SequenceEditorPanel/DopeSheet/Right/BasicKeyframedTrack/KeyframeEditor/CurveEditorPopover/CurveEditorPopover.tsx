@@ -1,4 +1,4 @@
-import type { Pointer} from '@theatre/dataverse';
+import type {Pointer} from '@theatre/dataverse'
 import {Box, prism} from '@theatre/dataverse'
 import type {KeyboardEvent} from 'react'
 import React, {
@@ -437,11 +437,11 @@ function transactionSetCubicBezier(
   handles: CubicBezierHandles,
 ): CommitOrDiscard {
   return getStudio().tempTransaction(({stateEditors}) => {
-    const {setKeyframesHandlesIfConnected} =
+    const {setTweenBetweenKeyframes: setKeyframesHandlesIfConnected} =
       stateEditors.coreByProject.historic.sheetsById.sequence
 
     // set easing for current connector
-    setKeyframesHandlesIfConnected({
+    setTweenBetweenKeyframes({
       ...props.leaf.sheetObject.address,
       trackId: props.leaf.trackId,
       keyframeIds: [cur.id, next.id],
@@ -453,7 +453,7 @@ function transactionSetCubicBezier(
       for (const {objectKey, trackId, keyframeIds} of flatSelectionTrackIds(
         props.selection,
       )) {
-        setKeyframesHandlesIfConnected({
+        setTweenBetweenKeyframes({
           projectId: props.leaf.sheetObject.address.projectId,
           sheetId: props.leaf.sheetObject.address.sheetId,
           objectKey,
