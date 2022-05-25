@@ -85,6 +85,8 @@ const Head_Label = styled.span`
 
   ${pointerEventsAutoInNormalMode};
   position: relative;
+  // Compensate for border bottom
+  top: 1px;
   display: flex;
   height: 20px;
   align-items: center;
