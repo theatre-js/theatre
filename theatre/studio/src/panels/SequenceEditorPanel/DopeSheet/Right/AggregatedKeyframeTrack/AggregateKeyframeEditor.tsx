@@ -91,6 +91,8 @@ const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
       />
       {connected ? (
         <ConnectorLine
+          /* TEMP: Disabled until interactivity */
+          mvpIsInteractiveDisabled={true}
           connectorLengthInUnitSpace={connected.length}
           isPopoverOpen={false}
           // if all keyframe aggregates are selected
@@ -115,7 +117,8 @@ const DotContainer = styled.div`
 
 const HitZone = styled.div`
   z-index: 2;
-  cursor: ew-resize;
+  /* TEMP: Disabled until interactivity */
+  /* cursor: ew-resize; */
 
   ${DopeSnapHitZoneUI.CSS}
 
@@ -123,7 +126,9 @@ const HitZone = styled.div`
     ${DopeSnapHitZoneUI.CSS_WHEN_SOMETHING_DRAGGING}
   }
 
-  &:hover + ${DotContainer}, 
+  /* TEMP: Disabled until interactivity */
+  /* &:hover + ${DotContainer}, */
+  #pointer-root.draggingPositionInSequenceEditor &:hover + ${DotContainer},
   // notice "," css "or"
   &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS} + ${DotContainer} {
     ${absoluteDims(DOT_HOVER_SIZE_PX)}
