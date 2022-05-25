@@ -25,7 +25,7 @@ const Header = styled(BaseHeader)`
   padding-left: 8px;
   padding-right: 8px;
   gap: 8px;
-  height: 28px;
+  height: 23px;
   line-height: 0;
   box-sizing: border-box;
   display: flex;
