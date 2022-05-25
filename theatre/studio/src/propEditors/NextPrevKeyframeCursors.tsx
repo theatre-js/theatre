@@ -1,8 +1,15 @@
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {VoidFn} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {transparentize} from 'polished'
 import React from 'react'
 import styled, {css} from 'styled-components'
+
+export type NearbyKeyframesControls = {
+  prev?: Pick<Keyframe, 'position'> & {jump: VoidFn}
+  cur: {type: 'on'; toggle: VoidFn} | {type: 'off'; toggle: VoidFn}
+  next?: Pick<Keyframe, 'position'> & {jump: VoidFn}
+}
 
 const Container = styled.div`
   display: flex;
@@ -158,41 +165,16 @@ namespace Icons {
   )
 }
 
-const NextPrevKeyframeCursors: React.FC<{
-  prev?: Keyframe
-  cur?: Keyframe
-  next?: Keyframe
-  jumpToPosition: (position: number) => void
-  toggleKeyframeOnCurrentPosition: () => void
-}> = (props) => {
+const NextPrevKeyframeCursors: React.FC<NearbyKeyframesControls> = (props) => {
   return (
     <Container>
-      <Prev
-        available={!!props.prev}
-        onClick={() => {
-          if (props.prev) {
-            props.jumpToPosition(props.prev.position)
-          }
-        }}
-      >
+      <Prev available={!!props.prev} onClick={props.prev?.jump}>
         <Icons.Prev />
       </Prev>
-      <CurButton
-        isOn={!!props.cur}
-        onClick={() => {
-          props.toggleKeyframeOnCurrentPosition()
-        }}
-      >
+      <CurButton isOn={props.cur.type === 'on'} onClick={props.cur.toggle}>
         <Icons.Cur />
       </CurButton>
-      <Next
-        available={!!props.next}
-        onClick={() => {
-          if (props.next) {
-            props.jumpToPosition(props.next.position)
-          }
-        }}
-      >
+      <Next available={!!props.next} onClick={props.next?.jump}>
         <Icons.Next />
       </Next>
     </Container>

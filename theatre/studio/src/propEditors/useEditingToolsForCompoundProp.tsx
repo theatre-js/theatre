@@ -1,7 +1,3 @@
-import type {
-  Keyframe,
-  TrackData,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -10,12 +6,10 @@ import {usePrism} from '@theatre/react'
 import type {
   $IntentionalAny,
   SerializablePrimitive,
-  VoidFn,
 } from '@theatre/shared/utils/types'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import get from 'lodash-es/get'
-import last from 'lodash-es/last'
 import React from 'react'
 import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
@@ -27,9 +21,11 @@ import {
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import type {IPropPathToTrackIdTree} from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import pointerDeep from '@theatre/shared/utils/pointerDeep'
-import NextPrevKeyframeCursorsNew from './NextPrevKeyframeCursorsNew'
+import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
+import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
+import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 
-interface CommonStuff<T> {
+interface CommonStuff {
   beingScrubbed: boolean
   contextMenuItems: Array<IContextMenuItem>
   controlIndicators: React.ReactElement
@@ -38,26 +34,25 @@ interface CommonStuff<T> {
 /**
  * For compounds that have _no_ sequenced track in all of their descendants
  */
-interface AllStatic<T> extends CommonStuff<T> {
+interface AllStatic extends CommonStuff {
   type: 'AllStatic'
 }
 
 /**
  * For compounds that have at least one sequenced track in their descendants
  */
-interface HasSequences<T> extends CommonStuff<T> {
+interface HasSequences extends CommonStuff {
   type: 'HasSequences'
-  nearbyKeyframes: NearbyKeyframes
 }
 
-type Stuff<T> = AllStatic<T> | HasSequences<T>
+type Stuff = AllStatic | HasSequences
 
 export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
-  pointerToProp: Pointer<T>,
+  pointerToProp: Pointer<{}>,
   obj: SheetObject,
   propConfig: PropTypeConfig_Compound<{}>,
-): Stuff<T> {
-  return usePrism((): Stuff<T> => {
+): Stuff {
+  return usePrism((): Stuff => {
     // if the compound has no simple descendants, then there isn't much the user can do with it
     if (!compoundHasSimpleDescendants(propConfig)) {
       return {
@@ -89,7 +84,7 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
 
     const contextMenuItems: IContextMenuItem[] = []
 
-    const common: CommonStuff<T> = {
+    const common: CommonStuff = {
       beingScrubbed: someDescendantsBeingScrubbed,
       contextMenuItems,
       controlIndicators: <></>,
@@ -189,14 +184,21 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
 
     if (hasOneOrMoreSequencedTracks) {
       const sequenceTrackId = possibleSequenceTrackIds
-      const nearbyKeyframes = prism.sub(
+      const nearbyKeyframeControls = prism.sub(
         'lcr',
-        (): NearbyKeyframes => {
+        (): NearbyKeyframesControls => {
           const sequencePosition = val(
             obj.sheet.getSequence().positionDerivation,
           )
 
-          const s = listOfDescendantTrackIds
+          /* 
+          2/10 perf concern: 
+          When displaying a hierarchy like {props: {transform: {position: {x, y, z}}}},
+          we'd be recalculating this variable for both `position` and `transform`. While
+          we _could_ be re-using the calculation of `transform` in `position`, I think
+          it's unlikely that this optimization would matter.
+          */
+          const nearbyKeyframesInEachTrack = listOfDescendantTrackIds
             .map((trackId) => ({
               trackId,
               track: val(
@@ -213,10 +215,16 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
               nearbies: getNearbyKeyframesOfTrack(s.track, sequencePosition),
             }))
 
-          const hasCur = s.find(({nearbies}) => !!nearbies.cur)
-          const allCur = s.every(({nearbies}) => !!nearbies.cur)
+          const hasCur = nearbyKeyframesInEachTrack.find(
+            ({nearbies}) => !!nearbies.cur,
+          )
+          const allCur = nearbyKeyframesInEachTrack.every(
+            ({nearbies}) => !!nearbies.cur,
+          )
 
-          const closestPrev = s.reduce<undefined | number>((acc, s) => {
+          const closestPrev = nearbyKeyframesInEachTrack.reduce<
+            undefined | number
+          >((acc, s) => {
             if (s.nearbies.prev) {
               if (acc === undefined) {
                 return s.nearbies.prev.position
@@ -228,7 +236,9 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
             }
           }, undefined)
 
-          const closestNext = s.reduce<undefined | number>((acc, s) => {
+          const closestNext = nearbyKeyframesInEachTrack.reduce<
+            undefined | number
+          >((acc, s) => {
             if (s.nearbies.next) {
               if (acc === undefined) {
                 return s.nearbies.next.position
@@ -283,13 +293,12 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
       )
 
       const nextPrevKeyframeCursors = (
-        <NextPrevKeyframeCursorsNew {...nearbyKeyframes} />
+        <NextPrevKeyframeCursors {...nearbyKeyframeControls} />
       )
 
-      const ret: HasSequences<T> = {
+      const ret: HasSequences = {
         ...common,
         type: 'HasSequences',
-        nearbyKeyframes,
         controlIndicators: nextPrevKeyframeCursors,
       }
 
@@ -299,49 +308,9 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
         ...common,
         type: 'AllStatic',
         controlIndicators: (
-          // todo
           <DefaultOrStaticValueIndicator hasStaticOverride={false} />
         ),
       }
     }
   }, [])
-}
-
-type NearbyKeyframes = {
-  prev?: Pick<Keyframe, 'position'> & {jump: VoidFn}
-  cur: {type: 'on'; toggle: VoidFn} | {type: 'off'; toggle: VoidFn}
-  next?: Pick<Keyframe, 'position'> & {jump: VoidFn}
-}
-
-function getNearbyKeyframesOfTrack(
-  track: TrackData | undefined,
-  sequencePosition: number,
-): {
-  prev?: Keyframe
-  cur?: Keyframe
-  next?: Keyframe
-} {
-  if (!track || track.keyframes.length === 0) return {}
-
-  const i = track.keyframes.findIndex((kf) => kf.position >= sequencePosition)
-
-  if (i === -1)
-    return {
-      prev: last(track.keyframes),
-    }
-
-  const k = track.keyframes[i]!
-  if (k.position === sequencePosition) {
-    return {
-      prev: i > 0 ? track.keyframes[i - 1] : undefined,
-      cur: k,
-      next:
-        i === track.keyframes.length - 1 ? undefined : track.keyframes[i + 1],
-    }
-  } else {
-    return {
-      next: k,
-      prev: i > 0 ? track.keyframes[i - 1] : undefined,
-    }
-  }
 }

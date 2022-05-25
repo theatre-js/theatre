@@ -35,6 +35,17 @@ const Children = styled.ul`
   list-style: none;
 `
 
+/**
+ * @remarks
+ * Right now, we're rendering a hierarchical dom tree that reflects the hierarchy of
+ * objects, compound props, and their subs. This is not necessary and makes styling complicated.
+ * Instead of this, we can simply render a list. This should be easy to do, since the view model
+ * in {@link calculateSequenceEditorTree} already includes all the vertical placement information
+ * (height and top) we need to render the nodes as a list.
+ *
+ * Note that we don't need to change {@link calculateSequenceEditorTree} to be list-based. It can
+ * retain its hierarchy. It's just the DOM tree that should be list-based.
+ */
 const RightRow: React.FC<{
   leaf: SequenceEditorTree_Row<unknown>
   node: React.ReactElement

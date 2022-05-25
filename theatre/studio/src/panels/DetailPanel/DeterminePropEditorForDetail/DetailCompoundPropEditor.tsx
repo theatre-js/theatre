@@ -93,10 +93,6 @@ function DetailCompoundPropEditor<
     propConfig,
   )
 
-  if (propName === 'position') {
-    console.log(propName, tools)
-  }
-
   const [contextMenu] = useContextMenu(propNameContainer, {
     menuItems: tools.contextMenuItems,
   })
