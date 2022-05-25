@@ -15,7 +15,6 @@ import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
 import {DragDetectorProvider} from './DragDetector'
-import Toolbar from './Toolbar/Toolbar'
 import PortalProvider from './PortalProvider'
 import ReferenceWindow from './ReferenceWindow/ReferenceWindow'
 import {PortalContext} from 'reakit'
@@ -203,7 +202,7 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                 <Tools ref={setToolsContainer} />
                 <ToolbarContainer>
                   <Interactive>
-                    <Toolbar />
+                    <div />
                   </Interactive>
                 </ToolbarContainer>
                 {showReferenceWindow && (

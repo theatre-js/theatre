@@ -24,6 +24,26 @@ const r3fExtension: IExtension = {
       const calc = prism<ToolsetConfig>(() => {
         const editorObject = getEditorSheetObject()
 
+        return [
+          {
+            type: 'Icon',
+            title: 'Create Snapshot',
+            svgSource: io5CameraOutline,
+            onClick: () => {
+              studio.createPane('snapshot')
+            },
+          },
+        ]
+      })
+      return calc.tapImmediate(Ticker.raf, () => {
+        set(calc.getValue())
+      })
+    },
+    'snapshot-editor': (set, studio) => {
+      const {createSnapshot} = useEditorStore.getState()
+      const calc = prism<ToolsetConfig>(() => {
+        const editorObject = getEditorSheetObject()
+
         const transformControlsMode =
           val(editorObject?.props.transformControls.mode) ?? 'translate'
         const transformControlsSpace =
@@ -34,11 +54,9 @@ const r3fExtension: IExtension = {
         return [
           {
             type: 'Icon',
-            title: 'Create Snapshot',
-            svgSource: io5CameraOutline,
-            onClick: () => {
-              studio.createPane('snapshot')
-            },
+            onClick: createSnapshot,
+            title: 'Refresh Snapshot',
+            svgSource: `<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`,
           },
           {
             type: 'Switch',
@@ -120,19 +138,6 @@ const r3fExtension: IExtension = {
       return calc.tapImmediate(Ticker.raf, () => {
         set(calc.getValue())
       })
-    },
-    'snapshot-editor': (set) => {
-      const {createSnapshot} = useEditorStore.getState()
-      const onClick = createSnapshot
-      set([
-        {
-          type: 'Icon',
-          onClick,
-          title: 'Refresh Snapshot',
-          svgSource: `<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`,
-        },
-      ])
-      return () => {}
     },
   },
   panes: [
