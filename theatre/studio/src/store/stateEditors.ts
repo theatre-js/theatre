@@ -358,6 +358,16 @@ namespace stateEditors {
             return s.projects.stateByProjectId[p.projectId]!
           }
 
+          export function setIsCurveEditorPopoverOpen(
+            p: ProjectAddress & {
+              isCurveEditorPopoverOpen: boolean
+            },
+          ) {
+            const s =
+              stateEditors.studio.ephemeral.projects.stateByProjectId._ensure(p)
+            s.isCurveEditorPopoverOpen = p.isCurveEditorPopoverOpen
+          }
+
           export namespace stateBySheetId {
             export function _ensure(p: WithoutSheetInstance<SheetAddress>) {
               const projectState =
@@ -755,8 +765,8 @@ namespace stateEditors {
             if (!track) return
             const initialKeyframes = current(track.keyframes)
 
-            const selectedKeyframes = initialKeyframes.filter(
-              (kf) => p.keyframeIds.indexOf(kf.id) !== -1,
+            const selectedKeyframes = initialKeyframes.filter((kf) =>
+              p.keyframeIds.includes(kf.id),
             )
 
             const transformed = selectedKeyframes.map((untransformedKf) => {
@@ -768,6 +778,57 @@ namespace stateEditors {
             })
 
             replaceKeyframes({...p, keyframes: transformed})
+          }
+
+          export function setKeyframesHandlesIfConnected(
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+              keyframeIds: KeyframeId[]
+              handles: [number, number, number, number]
+            },
+          ) {
+            const track = _getTrack(p)
+            if (!track) return
+
+            track.keyframes = track.keyframes.map((kf, i) => {
+              const prevKf = track.keyframes[i - 1]
+              const isEditing = p.keyframeIds.includes(kf.id)
+              const isAfterEditingKeyframe = p.keyframeIds.includes(prevKf?.id)
+
+              if (isEditing && !isAfterEditingKeyframe) {
+                return {
+                  ...kf,
+                  handles: [
+                    kf.handles[0],
+                    kf.handles[1],
+                    p.handles[0],
+                    p.handles[1],
+                  ],
+                }
+              } else if (isEditing && isAfterEditingKeyframe) {
+                return {
+                  ...kf,
+                  handles: [
+                    p.handles[2],
+                    p.handles[3],
+                    p.handles[0],
+                    p.handles[1],
+                  ],
+                }
+              } else if (isAfterEditingKeyframe) {
+                return {
+                  ...kf,
+                  handles: [
+                    p.handles[2],
+                    p.handles[3],
+                    kf.handles[2],
+                    kf.handles[3],
+                  ],
+                }
+              } else {
+                return kf
+              }
+            })
           }
 
           export function deleteKeyframes(

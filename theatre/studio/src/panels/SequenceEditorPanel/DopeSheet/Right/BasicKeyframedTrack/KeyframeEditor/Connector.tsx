@@ -18,6 +18,8 @@ import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
 import {COLOR_POPOVER_BACK} from './CurveEditorPopover/colors'
+import {useVal} from '@theatre/react'
+import {isKeyframeConnectionInSelection} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
 const CONNECTOR_HEIGHT = DOT_SIZE_PX / 2 + 1
 const CONNECTOR_WIDTH_UNSCALED = 1000
@@ -121,8 +123,21 @@ const Connector: React.FC<IProps> = (props) => {
 
   const connectorLengthInUnitSpace = next.position - cur.position
 
+  // The following two flags determine whether this connector
+  // is being edited as part of a selection using the curve
+  // editor popover
+  const isCurveEditorPopoverOpen = useVal(
+    getStudio().atomP.ephemeral.projects.stateByProjectId[
+      props.leaf.sheetObject.address.projectId
+    ].isCurveEditorPopoverOpen,
+  )
+  const isInCurveEditorPopoverSelection =
+    isCurveEditorPopoverOpen &&
+    props.selection !== undefined &&
+    isKeyframeConnectionInSelection([cur, next], props.selection)
+
   const themeValues: IConnectorThemeValues = {
-    isPopoverOpen,
+    isPopoverOpen: isPopoverOpen || isInCurveEditorPopoverSelection || false,
     isSelected: !!props.selection,
   }
 

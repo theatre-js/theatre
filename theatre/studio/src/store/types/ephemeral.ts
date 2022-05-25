@@ -32,6 +32,7 @@ export type StudioEphemeralState = {
     stateByProjectId: StrictRecord<
       string,
       {
+        isCurveEditorPopoverOpen?: boolean
         stateBySheetId: StrictRecord<
           string,
           {
