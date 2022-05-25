@@ -16,9 +16,7 @@ import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextM
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import getStudio from '@theatre/studio/getStudio'
-import type {
-  IAggregateKeyframesAtPosition,
-} from './AggregateKeyframeEditor';
+import type {IAggregateKeyframesAtPosition} from './AggregateKeyframeEditor'
 import AggregateKeyframeEditor from './AggregateKeyframeEditor'
 import type {AggregatedKeyframes} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
@@ -140,10 +138,10 @@ function useCollectedSelectedPositions(
     for (const [position, kfsWithTrack] of aggregatedKeyframes.byPosition) {
       let positionIsSelected: undefined | AggregateKeyframePositionIsSelected =
         undefined
-      for (const kf of kfsWithTrack) {
+      for (const kfWithTrack of kfsWithTrack) {
         const kfIsSelected =
-          sheetObjectSelection.byTrackId[kf.track.id]?.byKeyframeId?.[
-            kf.kf.id
+          sheetObjectSelection.byTrackId[kfWithTrack.track.id]?.byKeyframeId?.[
+            kfWithTrack.kf.id
           ] === true
         // -1/10: This sux
         // undefined = have not encountered

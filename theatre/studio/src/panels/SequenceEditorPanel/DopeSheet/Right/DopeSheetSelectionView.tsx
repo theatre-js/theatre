@@ -142,15 +142,15 @@ namespace utils {
 
         // yes selected
 
-        for (const kf of keyframes) {
+        for (const keyframeWithTrack of keyframes) {
           mutableSetDeep(
             selectionByObjectKey,
             (selectionByObjectKeyP) =>
               // convenience for accessing a deep path which might not actually exist
               // through the use of pointer proxy (so we don't have to deal with undeifned )
               selectionByObjectKeyP[sheetObject.address.objectKey].byTrackId[
-                kf.track.id
-              ].byKeyframeId[kf.kf.id],
+                keyframeWithTrack.track.id
+              ].byKeyframeId[keyframeWithTrack.kf.id],
             true,
           )
         }
