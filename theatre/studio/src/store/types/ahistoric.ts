@@ -6,6 +6,14 @@ import type {PointableSet} from '@theatre/shared/utils/PointableSet'
 import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
 
 export type StudioAhistoricState = {
+  /**
+   * undefined means the outline menu is pinned
+   */
+  pinOutline?: boolean
+  /**
+   * undefined means the detail panel is pinned
+   */
+  pinDetails?: boolean
   visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
   clipboard?: {
     keyframes?: Keyframe[]

@@ -5,8 +5,8 @@ import ReactDOM from 'react-dom'
 import type {Studio} from './Studio'
 import {val} from '@theatre/dataverse'
 import {getMounter} from './utils/renderInPortalInContext'
-import {Toolbar} from './toolbars/GlobalToolbar/GlobalToolbar'
 import {withStyledShadow} from './css'
+import ExtensionToolbar from './toolbars/ExtensionToolbar/ExtensionToolbar'
 
 export default class UI {
   readonly containerEl = document.createElement('div')
@@ -93,7 +93,11 @@ export default class UI {
   renderToolset(toolsetId: string, htmlNode: HTMLElement) {
     const s = getMounter()
 
-    s.mountOrRender(withStyledShadow(Toolbar), {toolbarId: toolsetId}, htmlNode)
+    s.mountOrRender(
+      withStyledShadow(ExtensionToolbar),
+      {toolbarId: toolsetId},
+      htmlNode,
+    )
 
     return s.unmount
   }

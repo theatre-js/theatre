@@ -15,7 +15,6 @@ import {getEditorSheet, getEditorSheetObject} from './editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
 import {DragDetectorProvider} from './DragDetector'
-import TooltipPortalProvider from './TooltipPortalProvider'
 import ReferenceWindow from './ReferenceWindow/ReferenceWindow'
 
 const GlobalStyle = createGlobalStyle`
@@ -182,39 +181,37 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
       <StyleSheetManager disableVendorPrefixes>
         <>
           <GlobalStyle />
-          <TooltipPortalProvider>
-            <Wrapper>
-              <Overlay>
-                <Tools ref={setToolsContainer} />
-                {showReferenceWindow && (
-                  <ReferenceWindowContainer>
-                    <ReferenceWindow height={120} />
-                  </ReferenceWindowContainer>
-                )}
-              </Overlay>
+          <Wrapper>
+            <Overlay>
+              <Tools ref={setToolsContainer} />
+              {showReferenceWindow && (
+                <ReferenceWindowContainer>
+                  <ReferenceWindow height={120} />
+                </ReferenceWindowContainer>
+              )}
+            </Overlay>
 
-              {sceneSnapshot ? (
-                <>
-                  <CanvasWrapper>
-                    <Canvas
-                      onCreated={({gl}) => {
-                        gl.setClearColor('white')
-                      }}
-                      shadows
-                      dpr={[1, 2]}
-                      frameloop="demand"
-                      onPointerMissed={onPointerMissed}
-                    >
-                      <EditorScene
-                        snapshotEditorSheet={snapshotEditorSheet}
-                        paneId={paneId}
-                      />
-                    </Canvas>
-                  </CanvasWrapper>
-                </>
-              ) : null}
-            </Wrapper>
-          </TooltipPortalProvider>
+            {sceneSnapshot ? (
+              <>
+                <CanvasWrapper>
+                  <Canvas
+                    onCreated={({gl}) => {
+                      gl.setClearColor('white')
+                    }}
+                    shadows
+                    dpr={[1, 2]}
+                    frameloop="demand"
+                    onPointerMissed={onPointerMissed}
+                  >
+                    <EditorScene
+                      snapshotEditorSheet={snapshotEditorSheet}
+                      paneId={paneId}
+                    />
+                  </Canvas>
+                </CanvasWrapper>
+              </>
+            ) : null}
+          </Wrapper>
         </>
       </StyleSheetManager>
     </root.div>

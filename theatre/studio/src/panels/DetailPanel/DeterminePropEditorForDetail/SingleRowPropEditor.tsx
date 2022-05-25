@@ -6,38 +6,11 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {last} from 'lodash-es'
 import React from 'react'
 import type {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
-import styled, {css} from 'styled-components'
-import {transparentize} from 'polished'
+import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 
 export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
-
-export const rowBgColor = transparentize(0.05, '#282b2f')
-
-export const rowBg = css`
-  &:after,
-  &:before {
-    position: absolute;
-    display: block;
-    content: ' ';
-    z-index: -1;
-    box-sizing: content-box;
-  }
-
-  &:after {
-    inset: 0px 0 1px calc(-2px + var(--left-pad) + var(--depth) * var(--step));
-    background-color: ${rowBgColor};
-  }
-
-  &:before {
-    height: 2px;
-    right: 0;
-    bottom: 0px;
-    left: calc(-2px + var(--left-pad) + var(--depth) * var(--step));
-    background-color: ${transparentize(0.2, rowBgColor)};
-  }
-`
 
 const LeftRow = styled.div`
   display: flex;
@@ -47,8 +20,6 @@ const LeftRow = styled.div`
   --right-width: 60%;
   position: relative;
   ${pointerEventsAutoInNormalMode};
-
-  ${rowBg};
 `
 
 const Left = styled.div`

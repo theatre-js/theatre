@@ -5,12 +5,9 @@ import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
-import {rowBgColor} from './DeterminePropEditorForDetail/SingleRowPropEditor'
 import StateConflictRow from './ProjectDetails/StateConflictRow'
 
-const Container = styled.div`
-  background-color: ${rowBgColor};
-`
+const Container = styled.div``
 
 const TheExportRow = styled.div`
   padding: 8px 10px;

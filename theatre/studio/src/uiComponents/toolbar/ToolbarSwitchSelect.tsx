@@ -1,11 +1,9 @@
 import type {ReactElement} from 'react'
 import React from 'react'
 import type {IconType} from 'react-icons'
-import {Group, Button} from 'reakit'
-import styled from 'styled-components'
+import {Button} from 'reakit'
 import ButtonImpl from './ToolbarIconButton'
-
-const Opt = styled(ButtonImpl)``
+import Container from './ToolbarSwitchSelectContainer'
 
 function OptionButton<T>({
   value,
@@ -22,7 +20,7 @@ function OptionButton<T>({
 }) {
   return (
     <>
-      <Opt
+      <ButtonImpl
         forwardedAs={Button}
         className={isSelected ? 'selected' : undefined}
         aria-label={label}
@@ -30,7 +28,7 @@ function OptionButton<T>({
         title={label}
       >
         {icon}
-      </Opt>
+      </ButtonImpl>
     </>
   )
 }
@@ -44,11 +42,6 @@ interface Props<Option> {
     icon: ReactElement<IconType>
   }[]
 }
-
-const Container = styled(Group)`
-  display: flex;
-  gap: 5px;
-`
 
 const ToolbarSwitchSelect = <Option extends string | number>({
   value: valueOfSwitch,

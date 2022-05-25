@@ -99,8 +99,6 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({height}) => {
 
       const ctx = canvasRef.current!.getContext('2d')!
 
-      // console.log(gl.domElement.getContext('webgl2')!.getContextAttributes())
-
       // https://stackoverflow.com/questions/17861447/html5-canvas-drawimage-how-to-apply-antialiasing
       ctx.imageSmoothingQuality = 'high'
 

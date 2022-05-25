@@ -42,6 +42,7 @@ import type {
   OutlineSelectionState,
   PanelPosition,
   StudioAhistoricState,
+  StudioEphemeralState,
   StudioHistoricStateSequenceEditorMarker,
 } from './types'
 import {clamp, uniq} from 'lodash-es'
@@ -339,6 +340,11 @@ namespace stateEditors {
       }
     }
     export namespace ephemeral {
+      export function setShowOutline(
+        showOutline: StudioEphemeralState['showOutline'],
+      ) {
+        drafts().ephemeral.showOutline = showOutline
+      }
       export namespace projects {
         export namespace stateByProjectId {
           export function _ensure(p: ProjectAddress) {
@@ -400,6 +406,16 @@ namespace stateEditors {
       }
     }
     export namespace ahistoric {
+      export function setPinOutline(
+        pinOutline: StudioAhistoricState['pinOutline'],
+      ) {
+        drafts().ahistoric.pinOutline = pinOutline
+      }
+      export function setPinDetails(
+        pinDetails: StudioAhistoricState['pinDetails'],
+      ) {
+        drafts().ahistoric.pinDetails = pinDetails
+      }
       export function setVisibilityState(
         visibilityState: StudioAhistoricState['visibilityState'],
       ) {

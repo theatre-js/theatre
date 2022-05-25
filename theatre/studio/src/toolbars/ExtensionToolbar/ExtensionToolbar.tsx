@@ -3,21 +3,15 @@ import {useVal} from '@theatre/react'
 import type {IExtension} from '@theatre/studio'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
-import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import type {ToolsetConfig} from '@theatre/studio/TheatreStudio'
 import React, {useLayoutEffect, useMemo} from 'react'
+
 import styled from 'styled-components'
 import Toolset from './Toolset'
 
 const Container = styled.div`
-  position: fixed;
-  z-index: ${panelZIndexes.toolbar};
-
-  top: 12px;
-  right: 12px;
-  left: 12px;
   height: 36px;
-  pointer-events: none;
+  /* pointer-events: none; */
 
   display: flex;
   gap: 1rem;
@@ -60,17 +54,9 @@ const ExtensionToolsetRender: React.FC<{
   return <Toolset config={config} />
 }
 
-const GlobalToolbar: React.FC<{}> = (props) => {
-  return (
-    <Container>
-      <Bg>
-        <Toolbar toolbarId="global" />
-      </Bg>
-    </Container>
-  )
-}
-
-export const Toolbar: React.FC<{toolbarId: string}> = ({toolbarId}) => {
+export const ExtensionToolbar: React.FC<{toolbarId: string}> = ({
+  toolbarId,
+}) => {
   const groups: Array<React.ReactNode> = []
   const extensionsById = useVal(getStudio().atomP.ephemeral.extensions.byId)
 
@@ -87,7 +73,8 @@ export const Toolbar: React.FC<{toolbarId: string}> = ({toolbarId}) => {
   }
 
   if (groups.length === 0) return null
-  return <>{groups}</>
+
+  return <Container>{groups}</Container>
 }
 
-export default GlobalToolbar
+export default ExtensionToolbar

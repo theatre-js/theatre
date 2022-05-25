@@ -41,6 +41,7 @@ const initialState: StudioState = {
       byId: {},
       paneClasses: {},
     },
+    showOutline: false,
   },
 }
 

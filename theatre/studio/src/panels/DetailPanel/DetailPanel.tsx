@@ -1,6 +1,6 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
-import {usePrism} from '@theatre/react'
-import React from 'react'
+import {usePrism, useVal} from '@theatre/react'
+import React, {useEffect, useLayoutEffect} from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
 import {
@@ -11,46 +11,35 @@ import {
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import ObjectDetails from './ObjectDetails'
 import ProjectDetails from './ProjectDetails'
+import getStudio from '@theatre/studio/getStudio'
+import useHotspot from '@theatre/studio/uiComponents/useHotspot'
+import {Box, prism, val} from '@theatre/dataverse'
 
-const Container = styled.div`
-  background-color: transparent;
-  pointer-events: none;
+const headerHeight = `32px`
+
+const Container = styled.div<{pin: boolean}>`
+  background-color: rgba(40, 43, 47, 0.8);
   position: fixed;
-  left: 0;
-  right: 0;
-  top: 12px;
-  bottom: 0px;
+  right: 8px;
+  top: 50px;
+  width: 236px;
+  height: fit-content;
   z-index: ${panelZIndexes.propsPanel};
 
-  &:before {
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(14px);
+  border-radius: 2px;
+
+  display: ${({pin}) => (pin ? 'block' : 'none')};
+
+  &:hover {
     display: block;
-    content: ' ';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    width: 20px;
-    ${pointerEventsAutoInNormalMode};
-  }
-`
-
-const Content = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 260px;
-  bottom: 0;
-  /* transform: translateX(100%); */
-  /* pointer-events: none; */
-
-  ${Container}:hover & {
-    transform: translateX(0);
   }
 `
 
 const Title = styled.div`
   margin: 0 10px;
-  color: #ffffffc2;
+  color: #919191;
   font-weight: 500;
   font-size: 10px;
   user-select: none;
@@ -60,37 +49,15 @@ const Title = styled.div`
   text-overflow: ellipsis;
 `
 
-const headerHeight = `32px`
-
 const Header = styled.div`
   height: ${headerHeight};
   display: flex;
   align-items: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-
-  &:after {
-    position: absolute;
-    inset: 1px 0px;
-    display: block;
-    content: ' ';
-    pointer-events: none;
-    z-index: -1;
-    background-color: #262c2dd1;
-    /* border-radius: 2px 0 0 2px; */
-  }
 `
 
 const Body = styled.div`
   ${pointerEventsAutoInNormalMode};
-  position: absolute;
-  top: ${headerHeight};
-  left: 0;
-  right: 0;
-  height: auto;
-  max-height: calc(100% - ${headerHeight});
+  max-height: calc(100vh - 100px);
   overflow-y: scroll;
   &::-webkit-scrollbar {
     display: none;
@@ -102,56 +69,87 @@ const Body = styled.div`
 `
 
 const DetailPanel: React.FC<{}> = (props) => {
+  const pin = useVal(getStudio().atomP.ahistoric.pinDetails) !== false
+
+  const hostspotActive = useHotspot('right')
+
+  useLayoutEffect(() => {
+    isDetailPanelHotspotActiveB.set(hostspotActive)
+  }, [hostspotActive])
+
+  // cleanup
+  useEffect(() => {
+    return () => {
+      isDetailPanelHoveredB.set(false)
+      isDetailPanelHotspotActiveB.set(false)
+    }
+  }, [])
+
   return usePrism(() => {
     const selection = getOutlineSelection()
 
     const obj = selection.find(isSheetObject)
     if (obj) {
       return (
-        <Container>
-          <Content data-testid="DetailPanel-Object">
-            <Header>
-              <Title
-                title={`${obj.sheet.address.sheetId}: ${obj.sheet.address.sheetInstanceId} > ${obj.address.objectKey}`}
-              >
-                <TitleBar_Piece>{obj.sheet.address.sheetId} </TitleBar_Piece>
+        <Container
+          data-testid="DetailPanel-Object"
+          pin={pin || hostspotActive}
+          onMouseEnter={() => {
+            isDetailPanelHoveredB.set(true)
+          }}
+          onMouseLeave={() => {
+            isDetailPanelHoveredB.set(false)
+          }}
+        >
+          <Header>
+            <Title
+              title={`${obj.sheet.address.sheetId}: ${obj.sheet.address.sheetInstanceId} > ${obj.address.objectKey}`}
+            >
+              <TitleBar_Piece>{obj.sheet.address.sheetId} </TitleBar_Piece>
 
-                <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
-                <TitleBar_Piece>
-                  {obj.sheet.address.sheetInstanceId}{' '}
-                </TitleBar_Piece>
+              <TitleBar_Punctuation>{':'}&nbsp;</TitleBar_Punctuation>
+              <TitleBar_Piece>
+                {obj.sheet.address.sheetInstanceId}{' '}
+              </TitleBar_Piece>
 
-                <TitleBar_Punctuation>&nbsp;{'>'}&nbsp;</TitleBar_Punctuation>
-                <TitleBar_Piece>{obj.address.objectKey}</TitleBar_Piece>
-              </Title>
-            </Header>
-            <Body>
-              <ObjectDetails objects={[obj]} />
-            </Body>
-          </Content>
+              <TitleBar_Punctuation>&nbsp;&rarr;&nbsp;</TitleBar_Punctuation>
+              <TitleBar_Piece>{obj.address.objectKey}</TitleBar_Piece>
+            </Title>
+          </Header>
+          <Body>
+            <ObjectDetails objects={[obj]} />
+          </Body>
         </Container>
       )
     }
     const project = selection.find(isProject)
     if (project) {
       return (
-        <Container>
-          <Content>
-            <Header>
-              <Title title={`${project.address.projectId}`}>
-                <TitleBar_Piece>{project.address.projectId} </TitleBar_Piece>
-              </Title>
-            </Header>
-            <Body>
-              <ProjectDetails projects={[project]} />
-            </Body>
-          </Content>
+        <Container pin={pin || hostspotActive}>
+          <Header>
+            <Title title={`${project.address.projectId}`}>
+              <TitleBar_Piece>{project.address.projectId} </TitleBar_Piece>
+            </Title>
+          </Header>
+          <Body>
+            <ProjectDetails projects={[project]} />
+          </Body>
         </Container>
       )
     }
 
     return <></>
-  }, [])
+  }, [pin, hostspotActive])
 }
 
 export default DetailPanel
+
+const isDetailPanelHotspotActiveB = new Box<boolean>(false)
+const isDetailPanelHoveredB = new Box<boolean>(false)
+
+export const shouldShowDetailD = prism<boolean>(() => {
+  const isHovered = val(isDetailPanelHoveredB.derivation)
+  const isHotspotActive = val(isDetailPanelHotspotActiveB.derivation)
+
+  return isHovered || isHotspotActive
+})
