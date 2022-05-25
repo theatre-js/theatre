@@ -1,8 +1,8 @@
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import useBoundingClientRect from '@theatre/studio/uiComponents/useBoundingClientRect'
 import transparentize from 'polished/lib/color/transparentize'
-import type {ElementType} from 'react';
-import { useMemo} from 'react'
+import type {ElementType} from 'react'
+import {useMemo} from 'react'
 import {useContext} from 'react'
 import React, {useLayoutEffect, useState} from 'react'
 import {createPortal} from 'react-dom'
@@ -19,6 +19,8 @@ const minWidth = 190
  */
 const pointerDistanceThreshold = 20
 
+const SHOW_OPTIONAL_MENU_TITLE = true
+
 const MenuContainer = styled.ul`
   position: absolute;
   min-width: ${minWidth}px;
@@ -33,6 +35,13 @@ const MenuContainer = styled.ul`
   cursor: default;
   ${pointerEventsAutoInNormalMode};
   border-radius: 3px;
+`
+const MenuTitle = styled.div`
+  padding: 4px 10px;
+  border-bottom: 1px solid #6262626d;
+  color: #adadadb3;
+  font-size: 11px;
+  font-weight: 500;
 `
 
 export type IContextMenuItemCustomNodeRenderFn = (controls: {
@@ -52,6 +61,7 @@ export type IContextMenuItemsValue =
 
 const ContextMenu: React.FC<{
   items: IContextMenuItemsValue
+  displayName?: string
   clickPoint: {clientX: number; clientY: number}
   onRequestClose: () => void
 }> = (props) => {
@@ -110,13 +120,25 @@ const ContextMenu: React.FC<{
     if (ev.key === 'Escape') props.onRequestClose()
   })
 
-  const items = useMemo(
-    () => (Array.isArray(props.items) ? props.items : props.items()),
-    [props.items],
-  )
+  const items = useMemo(() => {
+    const itemsArr = Array.isArray(props.items) ? props.items : props.items()
+    if (itemsArr.length > 0) return itemsArr
+    else
+      return [
+        {
+          label: props.displayName
+            ? `No actions for ${props.displayName}`
+            : `No actions found`,
+          enabled: false,
+        },
+      ]
+  }, [props.items])
 
   return createPortal(
     <MenuContainer ref={setContainer}>
+      {SHOW_OPTIONAL_MENU_TITLE && props.displayName ? (
+        <MenuTitle>{props.displayName}</MenuTitle>
+      ) : null}
       {items.map((item, i) => (
         <Item
           key={`item-${i}`}
