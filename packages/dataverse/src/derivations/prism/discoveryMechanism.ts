@@ -62,10 +62,16 @@ function createMechanism() {
 
 function getSharedMechanism(): ReturnType<typeof createMechanism> {
   const varName = '__dataverse_discoveryMechanism_sharedStack'
-  if (global) {
+  const root =
+    typeof window !== 'undefined'
+      ? window
+      : typeof global !== 'undefined'
+      ? global
+      : {}
+  if (root) {
     const existingMechanism: ReturnType<typeof createMechanism> | undefined =
       // @ts-ignore ignore
-      global[varName]
+      root[varName]
     if (
       existingMechanism &&
       typeof existingMechanism === 'object' &&
@@ -75,7 +81,7 @@ function getSharedMechanism(): ReturnType<typeof createMechanism> {
     } else {
       const mechanism = createMechanism()
       // @ts-ignore ignore
-      global[varName] = mechanism
+      root[varName] = mechanism
       return mechanism
     }
   } else {

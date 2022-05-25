@@ -2,9 +2,8 @@ import getStudio from '@theatre/studio/getStudio'
 import {usePrism, useVal} from '@theatre/react'
 import {val} from '@theatre/dataverse'
 import React, {useEffect} from 'react'
-import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
+import styled, {createGlobalStyle} from 'styled-components'
 import PanelsRoot from './PanelsRoot'
-import ProvideTheme from './ProvideTheme'
 import GlobalToolbar from '@theatre/studio/toolbars/GlobalToolbar'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {PortalContext} from 'reakit'
@@ -13,25 +12,17 @@ import useKeyboardShortcuts from './useKeyboardShortcuts'
 import PointerEventsHandler from '@theatre/studio/uiComponents/PointerEventsHandler'
 import TooltipContext from '@theatre/studio/uiComponents/Popover/TooltipContext'
 import {ProvidePointerCapturing} from './PointerCapturing'
+import {MountAll} from '@theatre/studio/utils/renderInPortalInContext'
+import {PortalLayer, ProvideStyles} from '@theatre/studio/css'
 
-const GlobalStyle = createGlobalStyle`
+const MakeRootHostContainStatic =
+  typeof window !== 'undefined'
+    ? createGlobalStyle`
   :host {
-    all: initial;
     contain: strict;
-    color: white;
-    font: 11px -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe Editor,
-      HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;
-  }
-
-  * {
-    padding: 0;
-    margin: 0;
-    font-size: 100%;
-    font: inherit;
-    vertical-align: baseline;
-    list-style: none;
   }
 `
+    : ({} as ReturnType<typeof createGlobalStyle>)
 
 const Container = styled(PointerEventsHandler)`
   z-index: 50;
@@ -48,22 +39,9 @@ const Container = styled(PointerEventsHandler)`
   }
 `
 
-const PortalLayer = styled.div`
-  z-index: 51;
-  position: fixed;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-  pointer-events: none;
-`
-
 export default function UIRoot() {
   const studio = getStudio()
   const [portalLayerRef, portalLayer] = useRefAndState<HTMLDivElement>(
-    undefined as $IntentionalAny,
-  )
-  const [containerRef, container] = useRefAndState<HTMLDivElement>(
     undefined as $IntentionalAny,
   )
 
@@ -85,37 +63,39 @@ export default function UIRoot() {
     const initialised = val(studio.atomP.ephemeral.initialised)
 
     return !initialised ? null : (
-      <StyleSheetManager
-        disableVendorPrefixes
-        target={
-          window.__IS_VISUAL_REGRESSION_TESTING === true
-            ? undefined
-            : getStudio()!.ui.containerShadow
-        }
-      >
-        <>
-          <GlobalStyle />
-          <ProvidePointerCapturing>
-            <ProvideTheme>
-              <PortalContext.Provider value={portalLayer}>
-                <TooltipContext>
-                  <Container
-                    className={
-                      visiblityState === 'everythingIsHidden' ? 'invisible' : ''
-                    }
-                  >
-                    <PortalLayer ref={portalLayerRef} />
-                    {<GlobalToolbar />}
-                    {<PanelsRoot />}
-                  </Container>
-                </TooltipContext>
-              </PortalContext.Provider>
-            </ProvideTheme>
-          </ProvidePointerCapturing>
-        </>
-      </StyleSheetManager>
+      <TooltipContext>
+        <ProvidePointerCapturing>
+          <MountExtensionComponents />
+          <PortalContext.Provider value={portalLayer}>
+            <ProvideStyles
+              target={
+                window.__IS_VISUAL_REGRESSION_TESTING === true
+                  ? undefined
+                  : getStudio()!.ui.containerShadow
+              }
+            >
+              <>
+                <MakeRootHostContainStatic />
+                <Container
+                  className={
+                    visiblityState === 'everythingIsHidden' ? 'invisible' : ''
+                  }
+                >
+                  <PortalLayer ref={portalLayerRef} />
+                  {<GlobalToolbar />}
+                  {<PanelsRoot />}
+                </Container>
+              </>
+            </ProvideStyles>
+          </PortalContext.Provider>
+        </ProvidePointerCapturing>
+      </TooltipContext>
     )
   }, [studio, portalLayerRef, portalLayer])
 
   return inside
+}
+
+const MountExtensionComponents: React.FC<{}> = () => {
+  return <MountAll />
 }
