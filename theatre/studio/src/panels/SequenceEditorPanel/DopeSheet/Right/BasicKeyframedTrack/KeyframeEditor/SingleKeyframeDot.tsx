@@ -70,6 +70,7 @@ const HitZone = styled.div`
 
 type ISingleKeyframeDotProps = ISingleKeyframeEditorProps
 
+// QUESTION: is the comment below still valid? We already refer to the "keyframe editor" as "dope sheet", right?
 /** The ◆ you can grab onto in "keyframe editor" (aka "dope sheet" in other programs) */
 const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   const logger = useLogger('SingleKeyframeDot')
