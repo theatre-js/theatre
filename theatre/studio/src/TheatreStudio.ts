@@ -13,7 +13,6 @@ import {
 import {getOutlineSelection} from './selectors'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from './getStudio'
-import type React from 'react'
 import {debounce} from 'lodash-es'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {PaneInstanceId, ProjectId} from '@theatre/shared/utils/ids'
@@ -67,20 +66,44 @@ export interface PaneClassDefinition {
    * Each pane has a `class`, which is a string.
    */
   class: string
-  /**
-   * A react component that renders the content of the pane. It is given
-   * a single prop, `paneId`, which is a unique identifier for the pane.
-   *
-   * If you wish to store and persist the state of the pane,
-   * simply use a sheet and an object.
-   */
-  component: React.ComponentType<{
-    /**
-     * The unique identifier of the pane
-     */
-    paneId: string
-  }>
+  // /**
+  //  * A react component that renders the content of the pane. It is given
+  //  * a single prop, `paneId`, which is a unique identifier for the pane.
+  //  *
+  //  * If you wish to store and persist the state of the pane,
+  //  * simply use a sheet and an object.
+  //  */
+  // component: React.ComponentType<{
+  //   /**
+  //    * The unique identifier of the pane
+  //    */
+  //   paneId: string
+  // }>
+
+  mount: (opts: {paneId: string; node: HTMLElement}) => () => void
 }
+
+export type ToolConfigIcon = {
+  type: 'Icon'
+  svgSource: string
+  title: string
+  onClick: () => void
+}
+
+export type ToolConfigSwitch = {
+  type: 'Switch'
+  value: string
+  onChange: (value: string) => void
+  options: {
+    value: string
+    label: string
+    svgSource: string
+  }[]
+}
+
+export type ToolConfig = ToolConfigIcon | ToolConfigSwitch
+
+export type ToolsetConfig = Array<ToolConfig>
 
 /**
  * A Theatre.js Studio extension. You can define one either
@@ -98,15 +121,13 @@ export interface IExtension {
    * @example
    * TODO
    */
-  globalToolbar?: {
-    /**
-     * A basic react component.
-     *
-     * @example
-     * TODO
-     */
-    component: React.ComponentType<{}>
+  toolbars?: {
+    [key in 'global' | string]: (
+      set: (config: ToolsetConfig) => void,
+      studio: IStudio,
+    ) => () => void
   }
+
   /**
    * Introduces new pane types.
    * @example
@@ -134,6 +155,8 @@ export interface IStudioUI {
    * Makes the studio visible again.
    */
   restore(): void
+
+  renderToolset(toolsetId: string, htmlNode: HTMLElement): () => void
 }
 
 export interface _StudioInitializeOpts {
@@ -358,6 +381,10 @@ export default class TheatreStudio implements IStudio {
 
     restore() {
       getStudio().ui.restore()
+    },
+
+    renderToolset(toolsetId: string, htmlNode: HTMLElement) {
+      return getStudio().ui.renderToolset(toolsetId, htmlNode)
     },
   }
 

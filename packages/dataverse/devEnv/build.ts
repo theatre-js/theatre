@@ -1,9 +1,7 @@
 import * as path from 'path'
 import {build} from 'esbuild'
 
-const definedGlobals = {
-  global: 'window',
-}
+const definedGlobals = {}
 
 function createBundles(watch: boolean) {
   const pathToPackage = path.join(__dirname, '../')

@@ -69,9 +69,10 @@ function registerStudioBundle() {
   }
 }
 
-export {default as ToolbarSwitchSelect} from './uiComponents/toolbar/ToolbarSwitchSelect'
-export {default as ToolbarIconButton} from './uiComponents/toolbar/ToolbarIconButton'
+// export {default as ToolbarSwitchSelect} from './uiComponents/toolbar/ToolbarSwitchSelect'
+// export {default as ToolbarIconButton} from './uiComponents/toolbar/ToolbarIconButton'
 export {default as ToolbarDropdownSelect} from './uiComponents/toolbar/ToolbarDropdownSelect'
+
 export type {IScrub} from '@theatre/studio/Scrub'
 export type {
   IStudio,
@@ -80,4 +81,8 @@ export type {
   PaneClassDefinition,
   IStudioUI,
   _StudioInitializeOpts,
+  ToolsetConfig,
+  ToolConfig,
+  ToolConfigIcon,
+  ToolConfigSwitch,
 } from '@theatre/studio/TheatreStudio'

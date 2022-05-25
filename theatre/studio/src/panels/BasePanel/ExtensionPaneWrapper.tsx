@@ -1,7 +1,7 @@
 import type {$FixMe} from '@theatre/shared/utils/types'
 import type {PanelPosition} from '@theatre/studio/store/types'
 import type {PaneInstance} from '@theatre/studio/TheatreStudio'
-import React, {useCallback} from 'react'
+import React, {useCallback, useLayoutEffect, useState} from 'react'
 import styled from 'styled-components'
 import {F2 as F2Impl, TitleBar} from './common'
 import BasePanel from './BasePanel'
@@ -136,7 +136,21 @@ const ErrorFallback: React.FC<{error: Error}> = (props) => {
 const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
   paneInstance,
 }) => {
-  const Comp = paneInstance.definition.component
+  const [mountingPoint, setMountingPoint] = useState<HTMLElement | null>(null)
+
+  const mount = paneInstance.definition.mount
+
+  useLayoutEffect(() => {
+    if (!mountingPoint) return
+    const unmount = mount({
+      paneId: paneInstance.instanceId,
+      node: mountingPoint!,
+    })
+    if (typeof unmount === 'function') {
+      return unmount
+    }
+  }, [mountingPoint, mount, paneInstance.instanceId])
+
   const closePane = useCallback(() => {
     getStudio().paneManager.destroyPane(
       paneInstance.instanceId as PaneInstanceId,
@@ -155,11 +169,9 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
           <Title>{paneInstance.instanceId}</Title>
         </TitleBar>
       </PanelDragZone>
-      <F2>
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Comp paneId={paneInstance.instanceId} />
-        </ErrorBoundary>
-      </F2>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <F2 ref={setMountingPoint} />
+      </ErrorBoundary>
     </Container>
   )
 }

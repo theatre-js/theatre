@@ -39,5 +39,8 @@ export default defineConfig({
     */
     alias: [...getAliasesFromTsConfigForRollup()],
   },
-  define: {...definedGlobals, 'window.__IS_VISUAL_REGRESSION_TESTING': 'true'},
+  define: {
+    ...definedGlobals,
+    'window.__IS_VISUAL_REGRESSION_TESTING': 'true',
+  },
 })
