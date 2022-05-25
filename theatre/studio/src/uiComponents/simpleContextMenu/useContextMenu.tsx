@@ -21,6 +21,7 @@ export default function useContextMenu(
   target: HTMLElement | SVGElement | null,
   opts: IRequestContextMenuOptions & {
     menuItems: IContextMenuItemsValue
+    displayName?: string
     onOpen?: () => void
   },
 ): [node: React.ReactNode, close: VoidFn, isOpen: boolean] {
@@ -37,6 +38,7 @@ export default function useContextMenu(
   ) : (
     <ContextMenu
       items={opts.menuItems}
+      displayName={opts.displayName}
       clickPoint={status.event}
       onRequestClose={close}
     />

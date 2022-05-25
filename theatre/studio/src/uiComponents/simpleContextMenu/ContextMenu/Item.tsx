@@ -14,8 +14,8 @@ const ItemContainer = styled.li<{enabled: boolean}>`
   font-size: 11px;
   font-weight: 400;
   position: relative;
-  pointer-events: ${(props) => (props.enabled ? 'auto' : 'none')};
-  color: ${(props) => (props.enabled ? 'white' : '#AAA')};
+  color: ${(props) => (props.enabled ? 'white' : '#8f8f8f')};
+  cursor: ${(props) => (props.enabled ? 'normal' : 'not-allowed')};
 
   &:after {
     position: absolute;
@@ -28,7 +28,8 @@ const ItemContainer = styled.li<{enabled: boolean}>`
   }
 
   &:hover:after {
-    background-color: rgba(63, 174, 191, 0.75);
+    background-color: ${(props) =>
+      props.enabled ? 'rgba(63, 174, 191, 0.75)' : 'initial'};
   }
 `
 
@@ -43,6 +44,7 @@ const Item: React.FC<{
     <ItemContainer
       onClick={props.enabled ? props.onClick : noop}
       enabled={props.enabled}
+      title={props.enabled ? undefined : 'Disabled'}
     >
       <ItemLabel>{props.label}</ItemLabel>
     </ItemContainer>

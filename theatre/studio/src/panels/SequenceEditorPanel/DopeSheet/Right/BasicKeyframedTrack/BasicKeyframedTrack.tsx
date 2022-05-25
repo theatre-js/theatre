@@ -89,15 +89,12 @@ function useBasicKeyframedTrackContextMenu(
   props: BasicKeyframedTracksProps,
 ) {
   return useContextMenu(node, {
+    displayName: 'Keyframe Track',
     menuItems: () => {
       const selectionKeyframes =
         val(getStudio()!.atomP.ahistoric.clipboard.keyframes) || []
 
-      if (selectionKeyframes.length > 0) {
-        return [pasteKeyframesContextMenuItem(props, selectionKeyframes)]
-      } else {
-        return []
-      }
+      return [pasteKeyframesContextMenuItem(props, selectionKeyframes)]
     },
   })
 }
@@ -108,6 +105,7 @@ function pasteKeyframesContextMenuItem(
 ): IContextMenuItem {
   return {
     label: 'Paste Keyframes',
+    enabled: keyframes.length > 0,
     callback: () => {
       const sheet = val(props.layoutP.sheet)
       const sequence = sheet.getSequence()

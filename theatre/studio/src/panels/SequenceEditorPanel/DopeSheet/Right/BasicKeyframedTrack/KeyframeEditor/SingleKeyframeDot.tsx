@@ -23,6 +23,8 @@ import {DeterminePropEditorForSingleKeyframe} from './DeterminePropEditorForSing
 import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
+import {useLogger} from '@theatre/studio/uiComponents/useLogger'
+import type {ILogger} from '@theatre/shared/logger'
 
 export const DOT_SIZE_PX = 6
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
@@ -70,9 +72,10 @@ type ISingleKeyframeDotProps = ISingleKeyframeEditorProps
 
 /** The ◆ you can grab onto in "keyframe editor" (aka "dope sheet" in other programs) */
 const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
+  const logger = useLogger('SingleKeyframeDot')
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
-  const [contextMenu] = useSingleKeyframeContextMenu(node, props)
+  const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
   const [inlineEditorPopover, openEditor] =
     useSingleKeyframeInlineEditorPopover(props)
   const [isDragging] = useDragForSingleKeyframeDot(node, props, {
@@ -101,6 +104,7 @@ export default SingleKeyframeDot
 
 function useSingleKeyframeContextMenu(
   target: HTMLDivElement | null,
+  logger: ILogger,
   props: ISingleKeyframeDotProps,
 ) {
   const maybeSelectedKeyframeIds = selectedKeyframeIdsIfInSingleTrack(
@@ -114,8 +118,12 @@ function useSingleKeyframeContextMenu(
   const deleteItem = deleteSelectionOrKeyframeContextMenuItem(props)
 
   return useContextMenu(target, {
+    displayName: 'Keyframe',
     menuItems: () => {
       return [keyframeSelectionItem, deleteItem]
+    },
+    onOpen() {
+      logger._debug('Show keyframe', props)
     },
   })
 }
