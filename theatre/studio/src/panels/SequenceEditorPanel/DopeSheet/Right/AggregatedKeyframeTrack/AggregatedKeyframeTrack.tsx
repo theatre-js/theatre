@@ -12,10 +12,8 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
-import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import getStudio from '@theatre/studio/getStudio'
 import type {IAggregateKeyframesAtPosition} from './AggregateKeyframeEditor'
 import AggregateKeyframeEditor from './AggregateKeyframeEditor'
 import type {AggregatedKeyframes} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
@@ -185,53 +183,7 @@ function useAggregatedKeyframeTrackContextMenu(
     onOpen: debugOnOpen,
     displayName: 'Aggregate Keyframe Track',
     menuItems: () => {
-      const selectionKeyframes =
-        val(getStudio()!.atomP.ahistoric.clipboard.keyframes) || []
-
-      return [pasteKeyframesContextMenuItem(props, selectionKeyframes)]
+      return []
     },
   })
-}
-
-function pasteKeyframesContextMenuItem(
-  props: IAggregatedKeyframeTracksProps,
-  keyframes: Keyframe[],
-): IContextMenuItem {
-  return {
-    label: 'Paste Keyframes',
-    enabled: keyframes.length > 0,
-    callback: () => {
-      const sheet = val(props.layoutP.sheet)
-      const sequence = sheet.getSequence()
-
-      console.log('TODO paste keyframes?')
-      // getStudio()!.transaction(({stateEditors}) => {
-      //   sequence.position = sequence.closestGridPosition(sequence.position)
-      //   const keyframeOffset = earliestKeyframe(keyframes)?.position!
-
-      //   for (const keyframe of keyframes) {
-      //     stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
-      //       {
-      //         ...props.viewModel.sheetObject.address,
-      //         trackId: props.viewModel.trackId,
-      //         position: sequence.position + keyframe.position - keyframeOffset,
-      //         handles: keyframe.handles,
-      //         value: keyframe.value,
-      //         snappingFunction: sequence.closestGridPosition,
-      //       },
-      //     )
-      //   }
-      // })
-    },
-  }
-}
-
-function earliestKeyframe(keyframes: Keyframe[]) {
-  let curEarliest: Keyframe | null = null
-  for (const keyframe of keyframes) {
-    if (curEarliest === null || keyframe.position < curEarliest.position) {
-      curEarliest = keyframe
-    }
-  }
-  return curEarliest
 }

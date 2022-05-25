@@ -57,6 +57,8 @@ const Container = styled.div<IConnectorThemeValues>`
 
 type IConnectorLineProps = React.PropsWithChildren<{
   isPopoverOpen: boolean
+  /** TEMP: Remove once interactivity is added for aggregate? */
+  mvpIsInteractiveDisabled?: boolean
   openPopover?: (event: React.MouseEvent) => void
   isSelected: boolean
   connectorLengthInUnitSpace: number
@@ -80,6 +82,7 @@ export const ConnectorLine = React.forwardRef<
         transform: `scaleX(calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
           props.connectorLengthInUnitSpace / CONNECTOR_WIDTH_UNSCALED
         }))`,
+        pointerEvents: props.mvpIsInteractiveDisabled ? 'none' : undefined,
       }}
       onClick={(e) => {
         props.openPopover?.(e)
