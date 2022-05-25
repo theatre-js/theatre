@@ -53,6 +53,7 @@ function _usePointerCapturingContext(): PointerCapturingFn {
     }
     const capturing: PointerCapturing = {
       capturePointer(reason) {
+        // QUESTION: is this log still relevant?
         logger._debug('Capturing pointer', {forDebugName, reason})
         if (currentCaptureRef.current != null) {
           throw new Error(
@@ -71,6 +72,7 @@ function _usePointerCapturingContext(): PointerCapturingFn {
           },
           release() {
             if (releaseCapture === currentCaptureRef.current) {
+              // QUESTION: is this log still relevant?
               logger._debug('Releasing pointer', {
                 forDebugName,
                 reason,
@@ -91,6 +93,7 @@ function _usePointerCapturingContext(): PointerCapturingFn {
       capturing,
       forceRelease() {
         if (currentCaptureRef.current === localCapture) {
+          // QUESTION: is this log still relevant?
           logger._debug('Force releasing pointer', {localCapture})
           updateCapture(null)
         }

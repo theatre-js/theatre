@@ -12,7 +12,7 @@ import type {
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
@@ -20,6 +20,13 @@ import {AggregateKeyframePositionIsSelected} from './AggregatedKeyframeTrack'
 import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
+import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
+import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
+import getStudio from '@theatre/studio/getStudio'
+import useDrag from '@theatre/studio/uiComponents/useDrag'
+import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 
 const AggregateKeyframeEditorContainer = styled.div`
   position: absolute;
@@ -135,6 +142,102 @@ const HitZone = styled.div`
   }
 `
 
+type IAggregateKeyframeDotProps = IAggregateKeyframeEditorProps
+
+function useDragForAggregateKeyframeDot(
+  node: HTMLDivElement | null,
+  props: IAggregateKeyframeDotProps,
+  options: {
+    /**
+     * hmm: this is a hack so we can actually receive the
+     * {@link MouseEvent} from the drag event handler and use
+     * it for positioning the popup.
+     */
+    onClickFromDrag(dragStartEvent: MouseEvent): void
+  },
+): [isDragging: boolean] {
+  const propsRef = useRef(props)
+  propsRef.current = props
+
+  const useDragOpts = useMemo<UseDragOpts>(() => {
+    return {
+      debugName: 'AggregateKeyframeDot/useDragKeyframe',
+      onDragStart(event) {
+        const props = propsRef.current
+        if (props.selection) {
+          const {selection, leaf} = props
+          const {sheetObject} = leaf
+          return selection
+            .getDragHandlers({
+              ...sheetObject.address,
+              pathToProp: leaf.pathToProp,
+              trackId: leaf.trackId,
+              keyframeId: props.keyframe.id,
+              domNode: node!,
+              positionAtStartOfDrag:
+                props.trackData.keyframes[props.index].position,
+            })
+            .onDragStart(event)
+        }
+
+        const propsAtStartOfDrag = props
+        const toUnitSpace = val(
+          propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace,
+        )
+
+        let tempTransaction: CommitOrDiscard | undefined
+
+        return {
+          onDrag(dx, dy, event) {
+            const original =
+              propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
+            const newPosition = Math.max(
+              // check if our event hoversover a [data-pos] element
+              DopeSnap.checkIfMouseEventSnapToPos(event, {
+                ignore: node,
+              }) ??
+                // if we don't find snapping target, check the distance dragged + original position
+                original.position + toUnitSpace(dx),
+              // sanitize to minimum of zero
+              0,
+            )
+
+            tempTransaction?.discard()
+            tempTransaction = undefined
+            tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
+              stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
+                {
+                  ...propsAtStartOfDrag.leaf.sheetObject.address,
+                  trackId: propsAtStartOfDrag.leaf.trackId,
+                  keyframes: [{...original, position: newPosition}],
+                  snappingFunction: val(
+                    propsAtStartOfDrag.layoutP.sheet,
+                  ).getSequence().closestGridPosition,
+                },
+              )
+            })
+          },
+          onDragEnd(dragHappened) {
+            if (dragHappened) {
+              tempTransaction?.commit()
+            } else {
+              tempTransaction?.discard()
+              options.onClickFromDrag(event)
+            }
+          },
+        }
+      },
+    }
+  }, [])
+
+  const [isDragging] = useDrag(node, useDragOpts)
+
+  useLockFrameStampPosition(isDragging, props.keyframe.position)
+  useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
+
+  return [isDragging]
+}
+
 const AggregateKeyframeDot = React.forwardRef(AggregateKeyframeDot_ref)
 function AggregateKeyframeDot_ref(
   props: React.PropsWithChildren<{
@@ -145,6 +248,12 @@ function AggregateKeyframeDot_ref(
   }>,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
+  // TODO: `useDragForAggregateKeyframeDot` comes here
+  /* const [isDragging] = useDragForAggregateKeyframeDot(node, props, {
+    onClickFromDrag(dragStartEvent) {
+      openEditor(dragStartEvent, ref.current)
+    },
+  }) */
   return (
     <>
       <HitZone
