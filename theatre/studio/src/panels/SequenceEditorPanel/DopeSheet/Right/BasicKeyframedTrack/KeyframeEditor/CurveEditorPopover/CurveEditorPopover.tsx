@@ -1,4 +1,5 @@
-import type {Pointer} from '@theatre/dataverse'
+import type { Pointer} from '@theatre/dataverse';
+import {Box, prism} from '@theatre/dataverse'
 import type {KeyboardEvent} from 'react'
 import React, {
   useEffect,
@@ -143,15 +144,11 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
    */
   const tempTransaction = useRef<CommitOrDiscard | null>(null)
   useEffect(() => {
-    const isOpenT = getStudio().tempTransaction(({stateEditors}) =>
-      stateEditors.studio.ephemeral.projects.stateByProjectId.setIsCurveEditorPopoverOpen(
-        {...props.leaf.sheetObject.address, isCurveEditorPopoverOpen: true},
-      ),
-    )
+    const unlock = getLock()
     // Clean-up function, called when this React component unmounts.
     // When it unmounts, we want to commit edits that are outstanding
     return () => {
-      isOpenT.discard()
+      unlock()
       tempTransaction.current?.commit()
     }
   }, [tempTransaction])
@@ -492,3 +489,26 @@ function areConnectedKeyframesTheSameAs([kfcur1, kfnext1]: [
     kfnext1.handles[0] !== kfnext2.handles[0] ||
     kfnext1.handles[1] !== kfnext2.handles[1]
 }
+
+const {isCurveEditorOpenD, getLock} = (() => {
+  let lastId = 0
+  const idsOfOpenCurveEditors = new Box<number[]>([])
+
+  return {
+    getLock() {
+      const id = lastId++
+      idsOfOpenCurveEditors.set([...idsOfOpenCurveEditors.get(), id])
+
+      return function unlock() {
+        idsOfOpenCurveEditors.set(
+          idsOfOpenCurveEditors.get().filter((cid) => cid !== id),
+        )
+      }
+    },
+    isCurveEditorOpenD: prism(() => {
+      return idsOfOpenCurveEditors.derivation.getValue().length > 0
+    }),
+  }
+})()
+
+export {isCurveEditorOpenD}

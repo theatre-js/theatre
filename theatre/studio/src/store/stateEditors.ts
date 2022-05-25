@@ -358,16 +358,6 @@ namespace stateEditors {
             return s.projects.stateByProjectId[p.projectId]!
           }
 
-          export function setIsCurveEditorPopoverOpen(
-            p: ProjectAddress & {
-              isCurveEditorPopoverOpen: boolean
-            },
-          ) {
-            const s =
-              stateEditors.studio.ephemeral.projects.stateByProjectId._ensure(p)
-            s.isCurveEditorPopoverOpen = p.isCurveEditorPopoverOpen
-          }
-
           export namespace stateBySheetId {
             export function _ensure(p: WithoutSheetInstance<SheetAddress>) {
               const projectState =

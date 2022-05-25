@@ -12,7 +12,9 @@ import {DOT_SIZE_PX} from './KeyframeDot'
 import type KeyframeEditor from './KeyframeEditor'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
-import CurveEditorPopover from './CurveEditorPopover/CurveEditorPopover'
+import CurveEditorPopover, {
+  isCurveEditorOpenD,
+} from './CurveEditorPopover/CurveEditorPopover'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
@@ -126,11 +128,7 @@ const Connector: React.FC<IProps> = (props) => {
   // The following two flags determine whether this connector
   // is being edited as part of a selection using the curve
   // editor popover
-  const isCurveEditorPopoverOpen = useVal(
-    getStudio().atomP.ephemeral.projects.stateByProjectId[
-      props.leaf.sheetObject.address.projectId
-    ].isCurveEditorPopoverOpen,
-  )
+  const isCurveEditorPopoverOpen = useVal(isCurveEditorOpenD)
   const isInCurveEditorPopoverSelection =
     isCurveEditorPopoverOpen &&
     props.selection !== undefined &&
