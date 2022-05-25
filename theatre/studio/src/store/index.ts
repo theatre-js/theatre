@@ -10,8 +10,6 @@ import logger from '@theatre/shared/logger'
 
 const initialState: StudioState = {
   ahistoric: {
-    pinOutline: false,
-    pinDetails: true,
     visibilityState: 'everythingIsVisible',
     theTrigger: {
       position: {
@@ -44,7 +42,6 @@ const initialState: StudioState = {
       paneClasses: {},
     },
     showOutline: false,
-    showDetails: false,
   },
 }
 

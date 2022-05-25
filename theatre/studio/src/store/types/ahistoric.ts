@@ -6,8 +6,8 @@ import type {PointableSet} from '@theatre/shared/utils/PointableSet'
 import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
 
 export type StudioAhistoricState = {
-  pinOutline: boolean
-  pinDetails: boolean
+  pinOutline?: boolean
+  pinDetails?: boolean
   visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
   clipboard?: {
     keyframes?: Keyframe[]

@@ -345,11 +345,6 @@ namespace stateEditors {
       ) {
         drafts().ephemeral.showOutline = showOutline
       }
-      export function setShowDetails(
-        showDetails: StudioEphemeralState['showDetails'],
-      ) {
-        drafts().ephemeral.showDetails = showDetails
-      }
       export namespace projects {
         export namespace stateByProjectId {
           export function _ensure(p: ProjectAddress) {

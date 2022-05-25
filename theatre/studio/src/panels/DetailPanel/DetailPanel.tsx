@@ -1,6 +1,6 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
 import {usePrism, useVal} from '@theatre/react'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useLayoutEffect} from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
 import {
@@ -13,6 +13,7 @@ import ObjectDetails from './ObjectDetails'
 import ProjectDetails from './ProjectDetails'
 import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
+import {Box, prism, val} from '@theatre/dataverse'
 
 const headerHeight = `32px`
 
@@ -70,14 +71,19 @@ const Body = styled.div`
 const DetailPanel: React.FC<{}> = (props) => {
   const pin = useVal(getStudio().atomP.ahistoric.pinDetails)
 
-  const active = useHotspot('right')
-  const [hovered, setHovered] = useState(false)
+  const hostspotActive = useHotspot('right')
 
+  useLayoutEffect(() => {
+    isDetailPanelHotspotActiveB.set(hostspotActive)
+  }, [hostspotActive])
+
+  // cleanup
   useEffect(() => {
-    getStudio().transaction(({stateEditors, drafts}) => {
-      stateEditors.studio.ephemeral.setShowDetails(active || hovered)
-    })
-  }, [active, hovered])
+    return () => {
+      isDetailPanelHoveredB.set(false)
+      isDetailPanelHotspotActiveB.set(false)
+    }
+  }, [])
 
   return usePrism(() => {
     const selection = getOutlineSelection()
@@ -87,12 +93,12 @@ const DetailPanel: React.FC<{}> = (props) => {
       return (
         <Container
           data-testid="DetailPanel-Object"
-          pin={pin || active}
+          pin={pin || hostspotActive}
           onMouseEnter={() => {
-            setHovered(true)
+            isDetailPanelHoveredB.set(true)
           }}
           onMouseLeave={() => {
-            setHovered(false)
+            isDetailPanelHoveredB.set(false)
           }}
         >
           <Header>
@@ -119,7 +125,7 @@ const DetailPanel: React.FC<{}> = (props) => {
     const project = selection.find(isProject)
     if (project) {
       return (
-        <Container pin={pin || active}>
+        <Container pin={pin || hostspotActive}>
           <Header>
             <Title title={`${project.address.projectId}`}>
               <TitleBar_Piece>{project.address.projectId} </TitleBar_Piece>
@@ -133,7 +139,17 @@ const DetailPanel: React.FC<{}> = (props) => {
     }
 
     return <></>
-  }, [pin, active])
+  }, [pin, hostspotActive])
 }
 
 export default DetailPanel
+
+const isDetailPanelHotspotActiveB = new Box<boolean>(false)
+const isDetailPanelHoveredB = new Box<boolean>(false)
+
+export const shouldShowDetailD = prism<boolean>(() => {
+  const isHovered = val(isDetailPanelHoveredB.derivation)
+  const isHotspotActive = val(isDetailPanelHotspotActiveB.derivation)
+
+  return isHovered || isHotspotActive
+})

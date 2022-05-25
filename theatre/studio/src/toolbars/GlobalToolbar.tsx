@@ -6,7 +6,7 @@ import type {$IntentionalAny} from '@theatre/dataverse/dist/types'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import ErrorTooltip from '@theatre/studio/uiComponents/Popover/ErrorTooltip'
 import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
-import {val} from '@theatre/dataverse'
+import { val} from '@theatre/dataverse'
 import ExtensionToolbar from './ExtensionToolbar/ExtensionToolbar'
 import PinButton from './PinButton'
 import {
@@ -15,6 +15,7 @@ import {
   Details,
   Outline,
 } from '@theatre/studio/uiComponents/icons'
+import {shouldShowDetailD} from '@theatre/studio/panels/DetailPanel/DetailPanel'
 
 const Container = styled.div`
   height: 36px;
@@ -76,7 +77,7 @@ const GlobalToolbar: React.FC = () => {
   const outlinePinned = useVal(getStudio().atomP.ahistoric.pinOutline)
   const detailsPinned = useVal(getStudio().atomP.ahistoric.pinDetails)
   const showOutline = useVal(getStudio().atomP.ephemeral.showOutline)
-  const showDetails = useVal(getStudio().atomP.ephemeral.showDetails)
+  const showDetails = useVal(shouldShowDetailD)
 
   return (
     <Container>
