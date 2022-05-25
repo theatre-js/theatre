@@ -1,5 +1,5 @@
 import type {Pointer} from '@theatre/dataverse'
-import {val} from '@theatre/dataverse'
+import {Box, prism} from '@theatre/dataverse'
 import type {KeyboardEvent} from 'react'
 import React, {
   useEffect,
@@ -27,6 +27,11 @@ import {COLOR_BASE, COLOR_POPOVER_BACK} from './colors'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {useUIOptionGrid, Outcome} from './useUIOptionGrid'
+import {useVal} from '@theatre/react'
+import {
+  flatSelectionTrackIds,
+  selectedKeyframeConnections,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
 const PRESET_COLUMNS = 3
 const PRESET_SIZE = 53
@@ -118,6 +123,7 @@ enum TextInputMode {
    * a CSS cubic bezier args string to reflect the state of the curve.
    */
   auto,
+  multipleValues,
 }
 
 type IProps = {
@@ -137,15 +143,15 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
    * popover closes.
    */
   const tempTransaction = useRef<CommitOrDiscard | null>(null)
-  useEffect(
-    () =>
-      // Clean-up function, called when this React component unmounts.
-      // When it unmounts, we want to commit edits that are outstanding
-      () => {
-        tempTransaction.current?.commit()
-      },
-    [tempTransaction],
-  )
+  useEffect(() => {
+    const unlock = getLock()
+    // Clean-up function, called when this React component unmounts.
+    // When it unmounts, we want to commit edits that are outstanding
+    return () => {
+      unlock()
+      tempTransaction.current?.commit()
+    }
+  }, [tempTransaction])
 
   ////// Keyframe and trackdata //////
   const {index, trackData} = props
@@ -198,8 +204,11 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     TextInputMode.init,
   )
   useEffect(() => {
-    if (textInputMode === TextInputMode.auto)
+    if (textInputMode === TextInputMode.auto) {
       setInputValue(cssCubicBezierArgsFromHandles(easing))
+    } else if (textInputMode === TextInputMode.multipleValues) {
+      if (inputValue !== '') setInputValue('')
+    }
   }, [trackData])
 
   // `edit` keeps track of the current edited state of the curve.
@@ -211,11 +220,25 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
 
   // When `preview` or `edit` change, use the `tempTransaction` to change the
   // curve in Theate's data.
-  useMemo(
-    () =>
-      setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? ''),
-    [preview, edit],
+  useMemo(() => {
+    if (textInputMode !== TextInputMode.init)
+      setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? '')
+  }, [preview, edit])
+  ////// selection stuff //////
+  let selectedConnections: Array<[Keyframe, Keyframe]> = useVal(
+    selectedKeyframeConnections(
+      props.leaf.sheetObject.address.projectId,
+      props.leaf.sheetObject.address.sheetId,
+      props.selection,
+    ),
   )
+
+  if (
+    selectedConnections.some(areConnectedKeyframesTheSameAs([cur, next])) &&
+    textInputMode === TextInputMode.init
+  ) {
+    setTextInputMode(TextInputMode.multipleValues)
+  }
 
   //////  Curve editing reactivity //////
   const onCurveChange = (newHandles: CubicBezierHandles) => {
@@ -352,7 +375,11 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     <Grid>
       <SearchBox
         value={inputValue}
-        placeholder="Search presets..."
+        placeholder={
+          textInputMode === TextInputMode.multipleValues
+            ? 'Multiple easings selected'
+            : 'Search presets...'
+        }
         onPaste={setTimeoutFunction(onInputChange)}
         onChange={onInputChange}
         ref={inputRef}
@@ -407,38 +434,35 @@ function transactionSetCubicBezier(
   props: IProps,
   cur: Keyframe,
   next: Keyframe,
-  newHandles: CubicBezierHandles,
+  handles: CubicBezierHandles,
 ): CommitOrDiscard {
   return getStudio().tempTransaction(({stateEditors}) => {
-    const {replaceKeyframes} =
+    const {setTweenBetweenKeyframes} =
       stateEditors.coreByProject.historic.sheetsById.sequence
 
-    replaceKeyframes({
+    // set easing for current connector
+    setTweenBetweenKeyframes({
       ...props.leaf.sheetObject.address,
-      snappingFunction: val(props.layoutP.sheet).getSequence()
-        .closestGridPosition,
       trackId: props.leaf.trackId,
-      keyframes: [
-        {
-          ...cur,
-          handles: [
-            cur.handles[0],
-            cur.handles[1],
-            newHandles[0],
-            newHandles[1],
-          ],
-        },
-        {
-          ...next,
-          handles: [
-            newHandles[2],
-            newHandles[3],
-            next.handles[2],
-            next.handles[3],
-          ],
-        },
-      ],
+      keyframeIds: [cur.id, next.id],
+      handles,
     })
+
+    // set easings for selection
+    if (props.selection) {
+      for (const {objectKey, trackId, keyframeIds} of flatSelectionTrackIds(
+        props.selection,
+      )) {
+        setTweenBetweenKeyframes({
+          projectId: props.leaf.sheetObject.address.projectId,
+          sheetId: props.leaf.sheetObject.address.sheetId,
+          objectKey,
+          trackId,
+          keyframeIds,
+          handles,
+        })
+      }
+    }
   })
 }
 
@@ -454,3 +478,37 @@ export function mod(n: number, m: number) {
 function setTimeoutFunction(f: Function, timeout?: number) {
   return () => setTimeout(f, timeout)
 }
+
+function areConnectedKeyframesTheSameAs([kfcur1, kfnext1]: [
+  Keyframe,
+  Keyframe,
+]) {
+  return ([kfcur2, kfnext2]: [Keyframe, Keyframe]) =>
+    kfcur1.handles[2] !== kfcur2.handles[2] ||
+    kfcur1.handles[3] !== kfcur2.handles[3] ||
+    kfnext1.handles[0] !== kfnext2.handles[0] ||
+    kfnext1.handles[1] !== kfnext2.handles[1]
+}
+
+const {isCurveEditorOpenD, getLock} = (() => {
+  let lastId = 0
+  const idsOfOpenCurveEditors = new Box<number[]>([])
+
+  return {
+    getLock() {
+      const id = lastId++
+      idsOfOpenCurveEditors.set([...idsOfOpenCurveEditors.get(), id])
+
+      return function unlock() {
+        idsOfOpenCurveEditors.set(
+          idsOfOpenCurveEditors.get().filter((cid) => cid !== id),
+        )
+      }
+    },
+    isCurveEditorOpenD: prism(() => {
+      return idsOfOpenCurveEditors.derivation.getValue().length > 0
+    }),
+  }
+})()
+
+export {isCurveEditorOpenD}
