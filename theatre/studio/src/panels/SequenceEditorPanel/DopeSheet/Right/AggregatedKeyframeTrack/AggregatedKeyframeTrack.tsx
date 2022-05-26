@@ -178,7 +178,7 @@ function useAggregatedKeyframeTrackContextMenu(
   props: IAggregatedKeyframeTracksProps,
   debugOnOpen: () => void,
 ) {
-  // TODO: implement copy+paste for aggregate keyframes here
+  // TODO: missing: paste for aggregate keyframes
   return useContextMenu(node, {
     onOpen: debugOnOpen,
     displayName: 'Aggregate Keyframe Track',

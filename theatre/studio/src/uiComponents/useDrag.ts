@@ -306,7 +306,7 @@ export default function useDrag(
       callbacksRef.current.onClick = returnOfOnDragStart.onClick ?? noop
 
       // need to capture pointer after we know the provided handler wants to handle drag start
-      capturedPointerRef.current = capturePointer('Drag start')
+      // capturedPointerRef.current = capturePointer('Drag start')
 
       if (!opts.dontBlockMouseDown) {
         event.stopPropagation()

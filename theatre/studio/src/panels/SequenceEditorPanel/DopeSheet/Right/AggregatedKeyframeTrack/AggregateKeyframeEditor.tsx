@@ -27,6 +27,10 @@ import getStudio from '@theatre/studio/getStudio'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import type {ILogger} from '@theatre/shared/logger'
+import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
+import {useLogger} from '@theatre/studio/uiComponents/useLogger'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
 
 const AggregateKeyframeEditorContainer = styled.div`
   position: absolute;
@@ -95,11 +99,10 @@ const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
           isSelected: cur.selected,
         }}
         isAllHere={cur.allHere}
+        {...props}
       />
       {connected ? (
         <ConnectorLine
-          /* TEMP: Disabled until interactivity */
-          mvpIsInteractiveDisabled={true}
           connectorLengthInUnitSpace={connected.length}
           isPopoverOpen={false}
           // if all keyframe aggregates are selected
@@ -124,8 +127,7 @@ const DotContainer = styled.div`
 
 const HitZone = styled.div`
   z-index: 2;
-  /* TEMP: Disabled until interactivity */
-  /* cursor: ew-resize; */
+  cursor: ew-resize;
 
   ${DopeSnapHitZoneUI.CSS}
 
@@ -133,16 +135,13 @@ const HitZone = styled.div`
     ${DopeSnapHitZoneUI.CSS_WHEN_SOMETHING_DRAGGING}
   }
 
-  /* TEMP: Disabled until interactivity */
-  /* &:hover + ${DotContainer}, */
+  &:hover + ${DotContainer},
   #pointer-root.draggingPositionInSequenceEditor &:hover + ${DotContainer},
   // notice "," css "or"
   &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS} + ${DotContainer} {
     ${absoluteDims(DOT_HOVER_SIZE_PX)}
   }
 `
-
-type IAggregateKeyframeDotProps = IAggregateKeyframeEditorProps
 
 function useDragForAggregateKeyframeDot(
   node: HTMLDivElement | null,
@@ -238,22 +237,18 @@ function useDragForAggregateKeyframeDot(
   return [isDragging]
 }
 
-const AggregateKeyframeDot = React.forwardRef(AggregateKeyframeDot_ref)
-function AggregateKeyframeDot_ref(
-  props: React.PropsWithChildren<{
-    theme: IDotThemeValues
-    isAllHere: boolean
-    position: number
-    keyframes: KeyframeWithTrack[]
-  }>,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
+type IAggregateKeyframeDotProps = {
+  theme: IDotThemeValues
+  isAllHere: boolean
+  position: number
+  keyframes: KeyframeWithTrack[]
+} & IAggregateKeyframeEditorProps
+
+const AggregateKeyframeDot: React.FC<IAggregateKeyframeDotProps> = (props) => {
   // TODO: `useDragForAggregateKeyframeDot` comes here
-  /* const [isDragging] = useDragForAggregateKeyframeDot(node, props, {
-    onClickFromDrag(dragStartEvent) {
-      openEditor(dragStartEvent, ref.current)
-    },
-  }) */
+  const logger = useLogger('AggregateKeyframeDot')
+  const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
+  const [contextMenu] = useAggregateKeyframeContextMenu(node, logger, props)
   return (
     <>
       <HitZone
@@ -270,6 +265,7 @@ function AggregateKeyframeDot_ref(
           <AggregateDotSomeHereSvg {...props.theme} />
         )}
       </DotContainer>
+      {contextMenu}
     </>
   )
 }
@@ -344,5 +340,22 @@ const AggregateDotSomeHereSvg = (theme: IDotThemeValues) => (
     />
   </svg>
 )
+
+function useAggregateKeyframeContextMenu(
+  target: HTMLDivElement | null,
+  logger: ILogger,
+  props: IAggregateKeyframeDotProps,
+) {
+  // TODO: missing features: delete, copy + paste
+  return useContextMenu(target, {
+    displayName: 'Aggregate Keyframe',
+    menuItems: () => {
+      return []
+    },
+    onOpen() {
+      logger._debug('Show keyframe', props)
+    },
+  })
+}
 
 export default AggregateKeyframeEditor
