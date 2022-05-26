@@ -775,7 +775,17 @@ namespace stateEditors {
           }
 
           /**
-           * Sets the easing between two keyframes
+           * Sets the easing between keyframes
+           *
+           *
+           *
+           * X = in keyframeIds
+           * * = not in keyframeIds
+           * + = modified handle
+           * ```
+           * X- --- -*- --- -X
+           * X+ --- +*- --- -X+
+           * ```
            */
           export function setTweenBetweenKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
@@ -825,6 +835,31 @@ namespace stateEditors {
               } else {
                 return kf
               }
+            })
+          }
+
+          export function setHandlesForKeyframe(
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+              keyframeId: KeyframeId
+              start?: [number, number]
+              end?: [number, number]
+            },
+          ) {
+            const track = _getTrack(p)
+            if (!track) return
+            track.keyframes = track.keyframes.map((kf) => {
+              if (kf.id === p.keyframeId) {
+                return {
+                  ...kf,
+                  handles: [
+                    p.end?.[0] ?? kf.handles[0],
+                    p.end?.[1] ?? kf.handles[1],
+                    p.start?.[0] ?? kf.handles[2],
+                    p.start?.[1] ?? kf.handles[3],
+                  ],
+                }
+              } else return kf
             })
           }
 

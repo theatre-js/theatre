@@ -20,12 +20,13 @@ import type {IConnectorThemeValues} from '@theatre/studio/panels/SequenceEditorP
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
 import {COLOR_POPOVER_BACK} from './CurveEditorPopover/colors'
 import {useVal} from '@theatre/react'
-import {isKeyframeConnectionInSelection} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import type {KeyframeConnectionWithAddress} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import {
+  isKeyframeConnectionInSelection,
+  selectedKeyframeConnections,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
-const CONNECTOR_HEIGHT = DOT_SIZE_PX / 2 + 1
-const CONNECTOR_WIDTH_UNSCALED = 1000
 import styled from 'styled-components'
-import {DOT_SIZE_PX} from './SingleKeyframeDot'
 
 const POPOVER_MARGIN = 5
 
@@ -49,6 +50,19 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
     'KeyframeEditor Connector',
   )
 
+  const selectedConnections = selectedKeyframeConnections(
+    props.leaf.sheetObject.address.projectId,
+    props.leaf.sheetObject.address.sheetId,
+    props.selection,
+  ).getValue()
+
+  const curveConnection: KeyframeConnectionWithAddress = {
+    left: cur,
+    right: next,
+    trackId: props.leaf.trackId,
+    ...props.leaf.sheetObject.address,
+  }
+
   const rightDims = val(props.layoutP.rightDims)
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {
@@ -62,7 +76,11 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
     () => {
       return (
         <EasingPopover showPopoverEdgeTriangle={false}>
-          <CurveEditorPopover {...props} onRequestClose={closePopover} />
+          <CurveEditorPopover
+            curveConnection={curveConnection}
+            additionalConnections={selectedConnections}
+            onRequestClose={closePopover}
+          />
         </EasingPopover>
       )
     },
@@ -86,7 +104,7 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
   const isInCurveEditorPopoverSelection =
     isCurveEditorPopoverOpen &&
     props.selection !== undefined &&
-    isKeyframeConnectionInSelection([cur, next], props.selection)
+    isKeyframeConnectionInSelection({left: cur, right: next}, props.selection)
 
   const themeValues: IConnectorThemeValues = {
     isPopoverOpen: isPopoverOpen || isInCurveEditorPopoverSelection || false,
@@ -97,8 +115,7 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
     <ConnectorLine
       ref={nodeRef}
       connectorLengthInUnitSpace={connectorLengthInUnitSpace}
-      isPopoverOpen={isPopoverOpen}
-      isSelected={!!props.selection}
+      {...themeValues}
       openPopover={(e) => {
         if (node) openPopover(e, node)
       }}

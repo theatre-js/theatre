@@ -1,4 +1,3 @@
-import type {Pointer} from '@theatre/dataverse'
 import {Box, prism} from '@theatre/dataverse'
 import type {KeyboardEvent} from 'react'
 import React, {
@@ -10,10 +9,8 @@ import React, {
 } from 'react'
 import styled from 'styled-components'
 import fuzzy from 'fuzzy'
-import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import type {ISingleKeyframeEditorProps} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/SingleKeyframeEditor'
 import CurveSegmentEditor from './CurveSegmentEditor'
 import EasingOption from './EasingOption'
 import type {CSSCubicBezierArgsString, CubicBezierHandles} from './shared'
@@ -27,11 +24,7 @@ import {COLOR_BASE, COLOR_POPOVER_BACK} from './colors'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {useUIOptionGrid, Outcome} from './useUIOptionGrid'
-import {useVal} from '@theatre/react'
-import {
-  flatSelectionTrackIds,
-  selectedKeyframeConnections,
-} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import type {KeyframeConnectionWithAddress} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
 const PRESET_COLUMNS = 3
 const PRESET_SIZE = 53
@@ -126,16 +119,17 @@ enum TextInputMode {
   multipleValues,
 }
 
-type IProps = {
-  layoutP: Pointer<SequenceEditorPanelLayout>
-
+type ICurveEditorPopoverProps = {
   /**
    * Called when user hits enter/escape
    */
   onRequestClose: (reason: string) => void
-} & ISingleKeyframeEditorProps
 
-const CurveEditorPopover: React.FC<IProps> = (props) => {
+  curveConnection: KeyframeConnectionWithAddress
+  additionalConnections: Array<KeyframeConnectionWithAddress>
+}
+
+const CurveEditorPopover: React.VFC<ICurveEditorPopoverProps> = (props) => {
   ////// `tempTransaction` //////
   /*
    * `tempTransaction` is used for all edits in this popover. The transaction
@@ -153,15 +147,16 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     }
   }, [tempTransaction])
 
+  const allConnections = useMemo(
+    () => [props.curveConnection, ...props.additionalConnections],
+    [props.curveConnection, ...props.additionalConnections],
+  )
   ////// Keyframe and trackdata //////
-  const {index, trackData} = props
-  const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
   const easing: CubicBezierHandles = [
-    trackData.keyframes[index].handles[2],
-    trackData.keyframes[index].handles[3],
-    trackData.keyframes[index + 1].handles[0],
-    trackData.keyframes[index + 1].handles[1],
+    props.curveConnection.left.handles[2],
+    props.curveConnection.left.handles[3],
+    props.curveConnection.right.handles[0],
+    props.curveConnection.right.handles[1],
   ]
 
   ////// Text input data and reactivity //////
@@ -209,7 +204,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     } else if (textInputMode === TextInputMode.multipleValues) {
       if (inputValue !== '') setInputValue('')
     }
-  }, [trackData])
+  }, allConnections)
 
   // `edit` keeps track of the current edited state of the curve.
   const [edit, setEdit] = useState<CSSCubicBezierArgsString | null>(
@@ -220,21 +215,19 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
 
   // When `preview` or `edit` change, use the `tempTransaction` to change the
   // curve in Theate's data.
-  useMemo(() => {
-    if (textInputMode !== TextInputMode.init)
-      setTempValue(tempTransaction, props, cur, next, preview ?? edit ?? '')
-  }, [preview, edit])
-  ////// selection stuff //////
-  let selectedConnections: Array<[Keyframe, Keyframe]> = useVal(
-    selectedKeyframeConnections(
-      props.leaf.sheetObject.address.projectId,
-      props.leaf.sheetObject.address.sheetId,
-      props.selection,
-    ),
-  )
+  useEffect(() => {
+    if (
+      textInputMode !== TextInputMode.init &&
+      textInputMode !== TextInputMode.multipleValues
+    )
+      setTempValue(tempTransaction, allConnections, preview ?? edit ?? '')
+  }, [preview, edit, textInputMode])
 
+  ////// selection stuff //////
   if (
-    selectedConnections.some(areConnectedKeyframesTheSameAs([cur, next])) &&
+    allConnections.some(
+      areConnectedKeyframesTheSameAs(props.curveConnection),
+    ) &&
     textInputMode === TextInputMode.init
   ) {
     setTextInputMode(TextInputMode.multipleValues)
@@ -289,7 +282,7 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
     setPreview(item.value)
   const onEasingOptionMouseOut = () => setPreview(null)
   const onSelectEasingOption = (item: {label: string; value: string}) => {
-    setTempValue(tempTransaction, props, cur, next, item.value)
+    setTempValue(tempTransaction, allConnections, item.value)
     props.onRequestClose('selected easing option')
 
     return Outcome.Handled
@@ -396,7 +389,8 @@ const CurveEditorPopover: React.FC<IProps> = (props) => {
       </OptionsContainer>
       <CurveEditorContainer onClick={() => inputRef.current?.focus()}>
         <CurveSegmentEditor
-          {...props}
+          curveConnection={props.curveConnection}
+          backgroundConnections={props.additionalConnections}
           onCurveChange={onCurveChange}
           onCancelCurveChange={onCancelCurveChange}
         />
@@ -409,18 +403,19 @@ export default CurveEditorPopover
 
 function setTempValue(
   tempTransaction: React.MutableRefObject<CommitOrDiscard | null>,
-  props: IProps,
-  cur: Keyframe,
-  next: Keyframe,
-  newCurve: string,
+  keyframeConnections: Array<KeyframeConnectionWithAddress>,
+  newCurveCssCubicBezier: string,
 ): void {
   tempTransaction.current?.discard()
   tempTransaction.current = null
 
-  const handles = handlesFromCssCubicBezierArgs(newCurve)
+  const handles = handlesFromCssCubicBezierArgs(newCurveCssCubicBezier)
   if (handles === null) return
 
-  tempTransaction.current = transactionSetCubicBezier(props, cur, next, handles)
+  tempTransaction.current = transactionSetCubicBezier(
+    keyframeConnections,
+    handles,
+  )
 }
 
 function discardTempValue(
@@ -431,37 +426,37 @@ function discardTempValue(
 }
 
 function transactionSetCubicBezier(
-  props: IProps,
-  cur: Keyframe,
-  next: Keyframe,
+  keyframeConnections: Array<KeyframeConnectionWithAddress>,
   handles: CubicBezierHandles,
 ): CommitOrDiscard {
   return getStudio().tempTransaction(({stateEditors}) => {
-    const {setTweenBetweenKeyframes} =
+    const {setHandlesForKeyframe} =
       stateEditors.coreByProject.historic.sheetsById.sequence
 
-    // set easing for current connector
-    setTweenBetweenKeyframes({
-      ...props.leaf.sheetObject.address,
-      trackId: props.leaf.trackId,
-      keyframeIds: [cur.id, next.id],
-      handles,
-    })
-
-    // set easings for selection
-    if (props.selection) {
-      for (const {objectKey, trackId, keyframeIds} of flatSelectionTrackIds(
-        props.selection,
-      )) {
-        setTweenBetweenKeyframes({
-          projectId: props.leaf.sheetObject.address.projectId,
-          sheetId: props.leaf.sheetObject.address.sheetId,
-          objectKey,
-          trackId,
-          keyframeIds,
-          handles,
-        })
-      }
+    for (const {
+      projectId,
+      sheetId,
+      objectKey,
+      trackId,
+      left,
+      right,
+    } of keyframeConnections) {
+      setHandlesForKeyframe({
+        projectId,
+        sheetId,
+        objectKey,
+        trackId,
+        keyframeId: left.id,
+        start: [handles[0], handles[1]],
+      })
+      setHandlesForKeyframe({
+        projectId,
+        sheetId,
+        objectKey,
+        trackId,
+        keyframeId: right.id,
+        end: [handles[2], handles[3]],
+      })
     }
   })
 }
@@ -479,15 +474,18 @@ function setTimeoutFunction(f: Function, timeout?: number) {
   return () => setTimeout(f, timeout)
 }
 
-function areConnectedKeyframesTheSameAs([kfcur1, kfnext1]: [
-  Keyframe,
-  Keyframe,
-]) {
-  return ([kfcur2, kfnext2]: [Keyframe, Keyframe]) =>
-    kfcur1.handles[2] !== kfcur2.handles[2] ||
-    kfcur1.handles[3] !== kfcur2.handles[3] ||
-    kfnext1.handles[0] !== kfnext2.handles[0] ||
-    kfnext1.handles[1] !== kfnext2.handles[1]
+function areConnectedKeyframesTheSameAs({
+  left: left1,
+  right: right1,
+}: {
+  left: Keyframe
+  right: Keyframe
+}) {
+  return ({left: left2, right: right2}: {left: Keyframe; right: Keyframe}) =>
+    left1.handles[2] !== left2.handles[2] ||
+    left1.handles[3] !== left2.handles[3] ||
+    right1.handles[0] !== right2.handles[0] ||
+    right1.handles[1] !== right2.handles[1]
 }
 
 const {isCurveEditorOpenD, getLock} = (() => {

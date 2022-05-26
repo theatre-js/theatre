@@ -16,13 +16,22 @@ import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Histo
  * keyframe in the connection is selected
  */
 export function isKeyframeConnectionInSelection(
-  keyframeConnection: [Keyframe, Keyframe],
+  keyframeConnection: {left: Keyframe; right: Keyframe},
   selection: DopeSheetSelection,
 ): boolean {
   for (const {keyframeId} of flatSelectionKeyframeIds(selection)) {
-    if (keyframeConnection[0].id === keyframeId) return true
+    if (keyframeConnection.left.id === keyframeId) return true
   }
   return false
+}
+
+export type KeyframeConnectionWithAddress = {
+  projectId: ProjectId
+  sheetId: SheetId
+  objectKey: ObjectAddressKey
+  trackId: SequenceTrackId
+  left: Keyframe
+  right: Keyframe
 }
 
 /**
@@ -34,11 +43,11 @@ export function selectedKeyframeConnections(
   projectId: ProjectId,
   sheetId: SheetId,
   selection: DopeSheetSelection | undefined,
-): IDerivation<Array<[left: Keyframe, right: Keyframe]>> {
+): IDerivation<Array<KeyframeConnectionWithAddress>> {
   return prism(() => {
     if (selection === undefined) return []
 
-    let ckfs: Array<[Keyframe, Keyframe]> = []
+    let ckfs: Array<KeyframeConnectionWithAddress> = []
 
     for (const {objectKey, trackId} of flatSelectionTrackIds(selection)) {
       const track = val(
@@ -48,9 +57,16 @@ export function selectedKeyframeConnections(
 
       if (track) {
         ckfs = ckfs.concat(
-          keyframeConnections(track.keyframes).filter((kfc) =>
-            isKeyframeConnectionInSelection(kfc, selection),
-          ),
+          keyframeConnections(track.keyframes)
+            .filter((kfc) => isKeyframeConnectionInSelection(kfc, selection))
+            .map(({left, right}) => ({
+              left,
+              right,
+              trackId,
+              objectKey,
+              sheetId,
+              projectId,
+            })),
         )
       }
     }
@@ -60,10 +76,10 @@ export function selectedKeyframeConnections(
 
 export function keyframeConnections(
   keyframes: Array<Keyframe>,
-): Array<[Keyframe, Keyframe]> {
+): Array<{left: Keyframe; right: Keyframe}> {
   return keyframes
-    .map((kf, i) => [kf, keyframes[i + 1]] as [Keyframe, Keyframe])
-    .slice(0, -1) // remmove the last entry because it is [kf, undefined]
+    .map((kf, i) => ({left: kf, right: keyframes[i + 1]}))
+    .slice(0, -1) // remmove the last entry because it is { left: kf, right: undefined }
 }
 
 export function flatSelectionKeyframeIds(selection: DopeSheetSelection): Array<{
