@@ -1,7 +1,7 @@
 import type {VFC} from 'react'
 import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import type {Editable} from '../../main/store'
-import {useEditorStore} from '../../main/store'
+import {____private_useEditorStore as useEditorStore} from '../..'
 import {createPortal} from '@react-three/fiber'
 import EditableProxy from './EditableProxy'
 import type {OrbitControls} from 'three-stdlib'

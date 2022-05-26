@@ -1,9 +1,11 @@
 import {useLayoutEffect, useRef, useState} from 'react'
-import {allRegisteredObjects} from '../../main/store'
+import {
+  __private_allRegisteredObjects as allRegisteredObjects,
+  __private_makeStoreKey as makeStoreKey,
+} from '../..'
 import studio from '@theatre/studio'
 import type {ISheetObject} from '@theatre/core'
 import type {$IntentionalAny} from '../../types'
-import {makeStoreKey} from '../../main/utils'
 
 export function useSelected(): undefined | string {
   const [state, set] = useState<string | undefined>(undefined)

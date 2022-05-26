@@ -2,7 +2,10 @@ import {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import React from 'react'
 import {Canvas, useThree} from '@react-three/fiber'
 import type {BaseSheetObjectType} from '../../main/store'
-import {allRegisteredObjects, useEditorStore} from '../../main/store'
+import {
+  ____private_useEditorStore as useEditorStore,
+  __private_allRegisteredObjects as allRegisteredObjects,
+} from '../..'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
 import ProxyManager from './ProxyManager'
