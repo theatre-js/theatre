@@ -1,13 +1,12 @@
 import type {VFC} from 'react'
 import React, {useEffect, useLayoutEffect, useRef} from 'react'
-import {____private_useEditorStore as useEditorStore} from '../../..'
 import shallow from 'zustand/shallow'
 import type {WebGLRenderer} from 'three'
 import useMeasure from 'react-use-measure'
 import styled, {keyframes} from 'styled-components'
 import {TiWarningOutline} from 'react-icons/ti'
-// This is ugly, but pure TS doesn't let you do bundler-stuff
-import noiseImageUrl from './noiseImage'
+import noiseImageUrl from './noise-transparent.png'
+import useExtensionStore from '../../useExtensionStore'
 
 const Container = styled.div`
   position: relative;
@@ -71,7 +70,7 @@ interface ReferenceWindowProps {
 const ReferenceWindow: VFC<ReferenceWindowProps> = ({height}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const [gl] = useEditorStore((state) => [state.gl], shallow)
+  const [gl] = useExtensionStore((state) => [state.gl], shallow)
   const [ref, bounds] = useMeasure()
 
   const preserveDrawingBuffer =

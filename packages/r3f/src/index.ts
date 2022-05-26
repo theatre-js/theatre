@@ -8,7 +8,7 @@ export type {EditableState, BindFunction} from './main/store'
  * @internal
  */
 export {
-  useEditorStore as ____private_useEditorStore,
+  editorStore as ____private_editorStore,
   allRegisteredObjects as __private_allRegisteredObjects,
 } from './main/store'
 /**

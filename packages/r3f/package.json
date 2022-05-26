@@ -21,11 +21,14 @@
   },
   "main": "dist/index.js",
   "module": "dist/index.js",
-  "types": "dist/index.d.ts",
   "sideEffects": false,
   "files": [
     "dist/**/*"
   ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./extension": "./dist/extension/index.js"
+  },
   "scripts": {
     "prepack": "yarn run build",
     "typecheck": "yarn run build",

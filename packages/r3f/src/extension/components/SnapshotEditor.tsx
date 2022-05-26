@@ -2,10 +2,7 @@ import {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import React from 'react'
 import {Canvas, useThree} from '@react-three/fiber'
 import type {BaseSheetObjectType} from '../../main/store'
-import {
-  ____private_useEditorStore as useEditorStore,
-  __private_allRegisteredObjects as allRegisteredObjects,
-} from '../..'
+import {__private_allRegisteredObjects as allRegisteredObjects} from '@theatre/r3f'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
 import ProxyManager from './ProxyManager'
@@ -19,6 +16,7 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
 import {DragDetectorProvider} from './DragDetector'
 import ReferenceWindow from './ReferenceWindow/ReferenceWindow'
+import useExtensionStore from '../useExtensionStore'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -65,7 +63,7 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
     }
   }, [gl, viewportLighting, scene, camera])
 
-  const helpersRoot = useEditorStore((state) => state.helpersRoot, shallow)
+  const helpersRoot = useExtensionStore((state) => state.helpersRoot, shallow)
 
   const showGrid = useVal(editorObject?.props.viewport.showGrid) ?? true
   const showAxes = useVal(editorObject?.props.viewport.showAxes) ?? true
@@ -135,7 +133,7 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   const showReferenceWindow =
     useVal(editorObject?.props.viewport.showReferenceWindow) ?? true
 
-  const [sceneSnapshot, createSnapshot] = useEditorStore(
+  const [sceneSnapshot, createSnapshot] = useExtensionStore(
     (state) => [state.sceneSnapshot, state.createSnapshot],
     shallow,
   )
