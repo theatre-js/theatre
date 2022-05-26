@@ -143,7 +143,6 @@ function useCollectedSelectedPositions(
           ] === true
         // -1/10: This sux
         // undefined = have not encountered
-        // null = none selected
         if (positionIsSelected === undefined) {
           // first item
           if (kfIsSelected) {

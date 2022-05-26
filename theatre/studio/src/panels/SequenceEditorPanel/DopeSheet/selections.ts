@@ -25,11 +25,16 @@ export function isKeyframeConnectionInSelection(
   return false
 }
 
+/**
+ * Returns an array of all the selected keyframes
+ * that are connected to one another. Useful for changing
+ * the tweening in between keyframes.
+ */
 export function selectedKeyframeConnections(
   projectId: ProjectId,
   sheetId: SheetId,
   selection: DopeSheetSelection | undefined,
-): IDerivation<Array<[Keyframe, Keyframe]>> {
+): IDerivation<Array<[left: Keyframe, right: Keyframe]>> {
   return prism(() => {
     if (selection === undefined) return []
 

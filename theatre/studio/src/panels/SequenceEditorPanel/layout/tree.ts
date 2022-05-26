@@ -33,6 +33,10 @@ export type SequenceEditorTree_Row<TypeName extends string> = {
   /**
    * This is a part of the tree, but it is not rendered at all,
    * and it doesn't contribute to height.
+   *
+   * In the future, if we have a filtering mechanism like "show only position props",
+   * this would not be the place to make false, that node should just not be included
+   * in the tree at all, so it doesn't affect aggregate keyframes.
    */
   shouldRender: boolean
   /**

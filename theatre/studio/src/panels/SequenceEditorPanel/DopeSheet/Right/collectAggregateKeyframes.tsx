@@ -10,6 +10,7 @@ import type {
   TrackData,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {IUtilLogger} from '@theatre/shared/logger'
+import {encodePathToProp} from '@theatre/shared/utils/addresses'
 
 /**
  * An index over a series of keyframes that have been collected from different tracks.
@@ -38,9 +39,18 @@ export type KeyframeWithTrack = {
  *
  * Implementation progress 2/10:
  *  - This currently does a lot of duplicate work for each compound rows' compound rows.
+ *    - This appears to have O(N) complexity with N being the number of "things" in the
+ *      tree, thus we don't see an immediate need to cache it further.
+ *    - If concerned, consider making a playground with a lot of objects to test this kind of thing.
  *
  * Note that we do not need to filter to only tracks that should be displayed, because we
  * do not do anything counting or iterating over all tracks.
+ *
+ * Furthermore, we _could_ have been traversing the tree of the sheet and producing
+ * an aggreagte from that, but _that_ aggregate would not take into account
+ * things like filters in the `SequenceEditorPanel`, where the filter would exclude
+ * certain objects and props from the tree.
+ *
  */
 export function collectAggregateKeyframesInPrism(
   logger: IUtilLogger,
@@ -61,13 +71,14 @@ export function collectAggregateKeyframesInPrism(
     if (childLeaf.type === 'primitiveProp') {
       const trackId = val(
         sheetObjectTracksP.trackIdByPropPath[
-          JSON.stringify(childLeaf.pathToProp)
+          encodePathToProp(childLeaf.pathToProp)
         ],
       )
       if (!trackId) {
         logger.trace('missing track id?', {childLeaf})
         continue
       }
+
       const trackData = val(sheetObjectTracksP.trackData[trackId])
       if (!trackData) {
         logger.trace('missing track data?', {trackId, childLeaf})
@@ -83,6 +94,7 @@ export function collectAggregateKeyframesInPrism(
         ),
       )
     } else {
+      const _exhaustive: never = childLeaf
       logger.error('unexpected kind of prop', {childLeaf})
     }
   }

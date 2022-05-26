@@ -68,7 +68,9 @@ export type _LazyLogFns = Readonly<
   }
 >
 
-/** Internal library logger */
+/** Internal library logger
+ * TODO document these fns
+ */
 export interface ILogger extends _LogFns {
   named(name: string, key?: string | number): ILogger
   lazy: _LazyLogFns

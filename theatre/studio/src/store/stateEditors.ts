@@ -1,4 +1,5 @@
 import type {
+  BasicKeyframedTrack,
   HistoricPositionalSequence,
   Keyframe,
   SheetState_Historic,
@@ -609,11 +610,13 @@ namespace stateEditors {
 
             const trackId = generateSequenceTrackId()
 
-            tracks.trackData[trackId] = {
+            const track: BasicKeyframedTrack = {
               type: 'BasicKeyframedTrack',
-              debugName: `${p.objectKey}:${pathEncoded}`,
+              __debugName: `${p.objectKey}:${pathEncoded}`,
               keyframes: [],
             }
+
+            tracks.trackData[trackId] = track
             tracks.trackIdByPropPath[pathEncoded] = trackId
           }
 
@@ -623,7 +626,7 @@ namespace stateEditors {
             },
           ) {
             const tracks = _ensureTracksOfObject(p)
-            const encodedPropPath = JSON.stringify(p.pathToProp)
+            const encodedPropPath = encodePathToProp(p.pathToProp)
             const trackId = tracks.trackIdByPropPath[encodedPropPath]
 
             if (typeof trackId !== 'string') return

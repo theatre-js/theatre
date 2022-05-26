@@ -59,6 +59,10 @@ export type IContextMenuItemsValue =
   | IContextMenuItem[]
   | (() => IContextMenuItem[])
 
+/**
+ * TODO let's make sure that triggering a context menu would close
+ * the other open context menu (if one _is_ open).
+ */
 const ContextMenu: React.FC<{
   items: IContextMenuItemsValue
   displayName?: string
@@ -126,6 +130,9 @@ const ContextMenu: React.FC<{
     else
       return [
         {
+          /**
+           * TODO Need design for this
+           */
           label: props.displayName
             ? `No actions for ${props.displayName}`
             : `No actions found`,

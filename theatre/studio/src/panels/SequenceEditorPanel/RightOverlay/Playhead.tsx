@@ -273,7 +273,6 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
         <Container
           isVisible={isVisible}
           style={{transform: `translate3d(${posInClippedSpace}px, 0, 0)`}}
-          data-hmm="Container"
           className={`${isSeeking && 'seeking'} ${
             isPlayheadAttachedToFocusRange && 'playheadattachedtofocusrange'
           }`}
