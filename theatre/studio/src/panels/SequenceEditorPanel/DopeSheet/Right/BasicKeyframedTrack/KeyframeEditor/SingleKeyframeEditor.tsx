@@ -11,16 +11,16 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
-import Connector from './Connector'
-import KeyframeDot from './KeyframeDot'
+import SingleKeyframeConnector from './BasicKeyframeConnector'
+import SingleKeyframeDot from './SingleKeyframeDot'
 
-const Container = styled.div`
+const SingleKeyframeEditorContainer = styled.div`
   position: absolute;
 `
 
 const noConnector = <></>
 
-export type IKeyframeEditorProps = {
+export type ISingleKeyframeEditorProps = {
   index: number
   keyframe: Keyframe
   trackData: TrackData
@@ -29,7 +29,7 @@ export type IKeyframeEditorProps = {
   selection: undefined | DopeSheetSelection
 }
 
-const KeyframeEditor: React.FC<IKeyframeEditorProps> = (props) => {
+const SingleKeyframeEditor: React.VFC<ISingleKeyframeEditorProps> = (props) => {
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
@@ -37,7 +37,7 @@ const KeyframeEditor: React.FC<IKeyframeEditorProps> = (props) => {
   const connected = cur.connectedRight && !!next
 
   return (
-    <Container
+    <SingleKeyframeEditorContainer
       style={{
         top: `${props.leaf.nodeHeight / 2}px`,
         left: `calc(${val(
@@ -47,10 +47,10 @@ const KeyframeEditor: React.FC<IKeyframeEditorProps> = (props) => {
         }px))`,
       }}
     >
-      <KeyframeDot {...props} />
-      {connected ? <Connector {...props} /> : noConnector}
-    </Container>
+      <SingleKeyframeDot {...props} />
+      {connected ? <SingleKeyframeConnector {...props} /> : noConnector}
+    </SingleKeyframeEditorContainer>
   )
 }
 
-export default KeyframeEditor
+export default SingleKeyframeEditor

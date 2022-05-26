@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import type {IEditingTools} from '@theatre/studio/propEditors/utils/IEditingTools'
 
-export type IKeyframeSimplePropEditorProps<
+export type ISingleKeyframeSimplePropEditorProps<
   TPropTypeConfig extends PropTypeConfig_AllSimples,
 > = {
   propConfig: TPropTypeConfig
@@ -13,7 +13,7 @@ export type IKeyframeSimplePropEditorProps<
   SimpleEditorComponent: React.VFC<ISimplePropEditorReactProps<TPropTypeConfig>>
 }
 
-const KeyframeSimplePropEditorContainer = styled.div`
+const SingleKeyframeSimplePropEditorContainer = styled.div`
   padding: 0 6px;
   display: flex;
   align-items: center;
@@ -23,23 +23,23 @@ const KeyframeSimplePropEditorContainer = styled.div`
  * Initially used for inline keyframe property editor, this editor is attached to the
  * functionality of editing a property for a sequence keyframe.
  */
-function KeyframeSimplePropEditor<
+function SingleKeyframeSimplePropEditor<
   TPropTypeConfig extends PropTypeConfig_AllSimples,
 >({
   propConfig,
   editingTools,
   keyframeValue: value,
   SimpleEditorComponent: EditorComponent,
-}: IKeyframeSimplePropEditorProps<TPropTypeConfig>) {
+}: ISingleKeyframeSimplePropEditorProps<TPropTypeConfig>) {
   return (
-    <KeyframeSimplePropEditorContainer>
+    <SingleKeyframeSimplePropEditorContainer>
       <EditorComponent
         editingTools={editingTools}
         propConfig={propConfig}
         value={value}
       />
-    </KeyframeSimplePropEditorContainer>
+    </SingleKeyframeSimplePropEditorContainer>
   )
 }
 
-export default KeyframeSimplePropEditor
+export default SingleKeyframeSimplePropEditor

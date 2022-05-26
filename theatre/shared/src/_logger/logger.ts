@@ -68,11 +68,13 @@ export type _LazyLogFns = Readonly<
   }
 >
 
-/** Internal library logger */
+/** Internal library logger
+ * TODO document these fns
+ */
 export interface ILogger extends _LogFns {
   named(name: string, key?: string | number): ILogger
   lazy: _LazyLogFns
-  readonly downgrade: {
+  readonly utilFor: {
     internal(): IUtilLogger
     dev(): IUtilLogger
     public(): IUtilLogger
@@ -537,7 +539,7 @@ function createExtLogger(
     },
     //
     named,
-    downgrade: {
+    utilFor: {
       internal() {
         return {
           debug: logger._debug,
@@ -545,7 +547,7 @@ function createExtLogger(
           warn: logger._warn,
           trace: logger._trace,
           named(name, key) {
-            return logger.named(name, key).downgrade.internal()
+            return logger.named(name, key).utilFor.internal()
           },
         }
       },
@@ -556,7 +558,7 @@ function createExtLogger(
           warn: logger.warnDev,
           trace: logger.traceDev,
           named(name, key) {
-            return logger.named(name, key).downgrade.dev()
+            return logger.named(name, key).utilFor.dev()
           },
         }
       },
@@ -571,7 +573,7 @@ function createExtLogger(
             logger._warn(`(public "trace" filtered out) ${message}`, obj)
           },
           named(name, key) {
-            return logger.named(name, key).downgrade.public()
+            return logger.named(name, key).utilFor.public()
           },
         }
       },
@@ -751,7 +753,7 @@ function _createConsoleLogger(
     },
     //
     named,
-    downgrade: {
+    utilFor: {
       internal() {
         return {
           debug: logger._debug,
@@ -759,7 +761,7 @@ function _createConsoleLogger(
           warn: logger._warn,
           trace: logger._trace,
           named(name, key) {
-            return logger.named(name, key).downgrade.internal()
+            return logger.named(name, key).utilFor.internal()
           },
         }
       },
@@ -770,7 +772,7 @@ function _createConsoleLogger(
           warn: logger.warnDev,
           trace: logger.traceDev,
           named(name, key) {
-            return logger.named(name, key).downgrade.dev()
+            return logger.named(name, key).utilFor.dev()
           },
         }
       },
@@ -785,7 +787,7 @@ function _createConsoleLogger(
             logger._warn(`(public "trace" filtered out) ${message}`, obj)
           },
           named(name, key) {
-            return logger.named(name, key).downgrade.public()
+            return logger.named(name, key).utilFor.public()
           },
         }
       },

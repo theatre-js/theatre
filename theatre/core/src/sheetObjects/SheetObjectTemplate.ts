@@ -29,8 +29,24 @@ import {
 } from '@theatre/shared/propTypes/utils'
 import getOrderingOfPropTypeConfig from './getOrderingOfPropTypeConfig'
 
+/**
+ * Given an object like: `{transform: {type: 'absolute', position: {x: 0}}}`,
+ * if both `transform.type` and `transform.position.x` are sequenced, this
+ * type would look like:
+ *
+ * ```ts
+ * {
+ *   transform: {
+ *     type: 'SDFJSDFJ', // track id of transform.type
+ *     position: {
+ *       x: 'NCXNS' // track id of transform.position.x
+ *     }
+ *   }
+ * }
+ * ```
+ */
 export type IPropPathToTrackIdTree = {
-  [key in string]?: SequenceTrackId | IPropPathToTrackIdTree
+  [propName in string]?: SequenceTrackId | IPropPathToTrackIdTree
 }
 
 /**

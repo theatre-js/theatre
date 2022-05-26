@@ -7,7 +7,7 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
-import KeyframeEditor from './KeyframeEditor/KeyframeEditor'
+import SingleKeyframeEditor from './KeyframeEditor/SingleKeyframeEditor'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -25,7 +25,7 @@ type BasicKeyframedTracksProps = {
   trackData: TrackData
 }
 
-const BasicKeyframedTrack: React.FC<BasicKeyframedTracksProps> = React.memo(
+const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
   (props) => {
     const {layoutP, trackData, leaf} = props
     const [containerRef, containerNode] = useRefAndState<HTMLDivElement | null>(
@@ -57,7 +57,7 @@ const BasicKeyframedTrack: React.FC<BasicKeyframedTracksProps> = React.memo(
     )
 
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
-      <KeyframeEditor
+      <SingleKeyframeEditor
         keyframe={kf}
         index={index}
         trackData={trackData}
@@ -89,15 +89,12 @@ function useBasicKeyframedTrackContextMenu(
   props: BasicKeyframedTracksProps,
 ) {
   return useContextMenu(node, {
+    displayName: 'Keyframe Track',
     menuItems: () => {
       const selectionKeyframes =
         val(getStudio()!.atomP.ahistoric.clipboard.keyframes) || []
 
-      if (selectionKeyframes.length > 0) {
-        return [pasteKeyframesContextMenuItem(props, selectionKeyframes)]
-      } else {
-        return []
-      }
+      return [pasteKeyframesContextMenuItem(props, selectionKeyframes)]
     },
   })
 }
@@ -108,6 +105,7 @@ function pasteKeyframesContextMenuItem(
 ): IContextMenuItem {
   return {
     label: 'Paste Keyframes',
+    enabled: keyframes.length > 0,
     callback: () => {
       const sheet = val(props.layoutP.sheet)
       const sequence = sheet.getSequence()

@@ -11,35 +11,23 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
-import {
-  includeLockFrameStampAttrs,
-  useLockFrameStampPosition,
-} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {
-  lockedCursorCssVarName,
-  useCssCursorLock,
-} from '@theatre/studio/uiComponents/PointerEventsHandler'
-import SnapCursor from './SnapCursor.svg'
+import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
-import type {IKeyframeEditorProps} from './KeyframeEditor'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import {useTempTransactionEditingTools} from './useTempTransactionEditingTools'
-import {DeterminePropEditorForKeyframe} from './DeterminePropEditorForKeyframe'
+import {DeterminePropEditorForSingleKeyframe} from './DeterminePropEditorForSingleKeyframe'
+import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
+import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
+import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
+import {useLogger} from '@theatre/studio/uiComponents/useLogger'
+import type {ILogger} from '@theatre/shared/logger'
 
 export const DOT_SIZE_PX = 6
-const HIT_ZONE_SIZE_PX = 12
-const SNAP_CURSOR_SIZE_PX = 34
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
-
-const dims = (size: number) => `
-  left: ${-size / 2}px;
-  top: ${-size / 2}px;
-  width: ${size}px;
-  height: ${size}px;
-`
 
 const dotTheme = {
   normalColor: '#40AAA4',
@@ -51,7 +39,7 @@ const dotTheme = {
 /** The keyframe diamond ◆ */
 const Diamond = styled.div<{isSelected: boolean}>`
   position: absolute;
-  ${dims(DOT_SIZE_PX)}
+  ${absoluteDims(DOT_SIZE_PX)}
 
   background: ${(props) =>
     props.isSelected ? dotTheme.selectedColor : dotTheme.normalColor};
@@ -59,56 +47,38 @@ const Diamond = styled.div<{isSelected: boolean}>`
 
   z-index: 1;
   pointer-events: none;
-  ${dims(DOT_SIZE_PX)}
 `
 
 const HitZone = styled.div`
-  position: absolute;
-  ${dims(HIT_ZONE_SIZE_PX)};
-
   z-index: 1;
-
   cursor: ew-resize;
 
+  ${DopeSnapHitZoneUI.CSS}
+
   #pointer-root.draggingPositionInSequenceEditor & {
-    pointer-events: auto;
-    cursor: var(${lockedCursorCssVarName});
-
-    // ⸢⸤⸣⸥ thing
-    // This box extends the hitzone so the user does not
-    // accidentally leave the hitzone
-    &:hover:after {
-      position: absolute;
-      top: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
-      left: calc(50% - ${SNAP_CURSOR_SIZE_PX / 2}px);
-      width: ${SNAP_CURSOR_SIZE_PX}px;
-      height: ${SNAP_CURSOR_SIZE_PX}px;
-      display: block;
-      content: ' ';
-      background: url(${SnapCursor}) no-repeat 100% 100%;
-      // This icon might also fit: GiConvergenceTarget
-    }
+    ${DopeSnapHitZoneUI.CSS_WHEN_SOMETHING_DRAGGING}
   }
 
-  &.beingDragged {
-    pointer-events: none !important;
-  }
-
-  &:hover + ${Diamond}, &.beingDragged + ${Diamond} {
-    ${dims(DOT_HOVER_SIZE_PX)}
+  &:hover
+    + ${Diamond},
+    // notice , "or" in CSS
+    &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS}
+    + ${Diamond} {
+    ${absoluteDims(DOT_HOVER_SIZE_PX)}
   }
 `
 
-type IKeyframeDotProps = IKeyframeEditorProps
+type ISingleKeyframeDotProps = ISingleKeyframeEditorProps
 
 /** The ◆ you can grab onto in "keyframe editor" (aka "dope sheet" in other programs) */
-const KeyframeDot: React.VFC<IKeyframeDotProps> = (props) => {
+const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
+  const logger = useLogger('SingleKeyframeDot')
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
-  const [contextMenu] = useKeyframeContextMenu(node, props)
+  const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
   const [inlineEditorPopover, openEditor] =
-    useKeyframeInlineEditorPopover(props)
-  const [isDragging] = useDragForKeyframeDot(node, props, {
+    useSingleKeyframeInlineEditorPopover(props)
+  const [isDragging] = useDragForSingleKeyframeDot(node, props, {
     onClickFromDrag(dragStartEvent) {
       openEditor(dragStartEvent, ref.current!)
     },
@@ -118,9 +88,10 @@ const KeyframeDot: React.VFC<IKeyframeDotProps> = (props) => {
     <>
       <HitZone
         ref={ref}
-        {...includeLockFrameStampAttrs(props.keyframe.position)}
-        {...DopeSnap.includePositionSnapAttrs(props.keyframe.position)}
-        className={isDragging ? 'beingDragged' : ''}
+        {...DopeSnapHitZoneUI.reactProps({
+          isDragging,
+          position: props.keyframe.position,
+        })}
       />
       <Diamond isSelected={!!props.selection} />
       {inlineEditorPopover}
@@ -129,11 +100,12 @@ const KeyframeDot: React.VFC<IKeyframeDotProps> = (props) => {
   )
 }
 
-export default KeyframeDot
+export default SingleKeyframeDot
 
-function useKeyframeContextMenu(
+function useSingleKeyframeContextMenu(
   target: HTMLDivElement | null,
-  props: IKeyframeDotProps,
+  logger: ILogger,
+  props: ISingleKeyframeDotProps,
 ) {
   const maybeSelectedKeyframeIds = selectedKeyframeIdsIfInSingleTrack(
     props.selection,
@@ -146,20 +118,24 @@ function useKeyframeContextMenu(
   const deleteItem = deleteSelectionOrKeyframeContextMenuItem(props)
 
   return useContextMenu(target, {
+    displayName: 'Keyframe',
     menuItems: () => {
       return [keyframeSelectionItem, deleteItem]
+    },
+    onOpen() {
+      logger._debug('Show keyframe', props)
     },
   })
 }
 
 /** The editor that pops up when directly clicking a Keyframe. */
-function useKeyframeInlineEditorPopover(props: IKeyframeDotProps) {
+function useSingleKeyframeInlineEditorPopover(props: ISingleKeyframeDotProps) {
   const editingTools = useEditingToolsForKeyframeEditorPopover(props)
   const label = props.leaf.propConf.label ?? last(props.leaf.pathToProp)
 
   return usePopover({debugName: 'useKeyframeInlineEditorPopover'}, () => (
     <BasicPopover showPopoverEdgeTriangle>
-      <DeterminePropEditorForKeyframe
+      <DeterminePropEditorForSingleKeyframe
         propConfig={props.leaf.propConf}
         editingTools={editingTools}
         keyframeValue={props.keyframe.value}
@@ -169,7 +145,9 @@ function useKeyframeInlineEditorPopover(props: IKeyframeDotProps) {
   ))
 }
 
-function useEditingToolsForKeyframeEditorPopover(props: IKeyframeDotProps) {
+function useEditingToolsForKeyframeEditorPopover(
+  props: ISingleKeyframeDotProps,
+) {
   const obj = props.leaf.sheetObject
   return useTempTransactionEditingTools(({stateEditors}, value) => {
     const newKeyframe = {...props.keyframe, value}
@@ -182,9 +160,9 @@ function useEditingToolsForKeyframeEditorPopover(props: IKeyframeDotProps) {
   })
 }
 
-function useDragForKeyframeDot(
+function useDragForSingleKeyframeDot(
   node: HTMLDivElement | null,
-  props: IKeyframeDotProps,
+  props: ISingleKeyframeDotProps,
   options: {
     /**
      * hmm: this is a hack so we can actually receive the
@@ -277,7 +255,7 @@ function useDragForKeyframeDot(
 }
 
 function deleteSelectionOrKeyframeContextMenuItem(
-  props: IKeyframeDotProps,
+  props: ISingleKeyframeDotProps,
 ): IContextMenuItem {
   return {
     label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
@@ -300,7 +278,7 @@ function deleteSelectionOrKeyframeContextMenuItem(
 }
 
 function copyKeyFrameContextMenuItem(
-  props: IKeyframeDotProps,
+  props: ISingleKeyframeDotProps,
   keyframeIds: string[],
 ): IContextMenuItem {
   return {

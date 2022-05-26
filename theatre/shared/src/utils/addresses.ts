@@ -4,6 +4,8 @@ import type {
   SerializableValue,
 } from '@theatre/shared/utils/types'
 import type {ObjectAddressKey, ProjectId, SheetId, SheetInstanceId} from './ids'
+import memoizeFn from './memoizeFn'
+import type {Nominal} from './Nominal'
 
 /**
  * Represents the address to a project
@@ -57,10 +59,12 @@ export interface SheetObjectAddress extends SheetAddress {
 
 export type PathToProp = Array<string | number>
 
-export type PathToProp_Encoded = string
+export type PathToProp_Encoded = Nominal<'PathToProp_Encoded'>
 
-export const encodePathToProp = (p: PathToProp): PathToProp_Encoded =>
-  JSON.stringify(p)
+export const encodePathToProp = memoizeFn(
+  (p: PathToProp): PathToProp_Encoded =>
+    JSON.stringify(p) as PathToProp_Encoded,
+)
 
 export const decodePathToProp = (s: PathToProp_Encoded): PathToProp =>
   JSON.parse(s)

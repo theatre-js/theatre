@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useMemo} from 'react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 
 /** See {@link PointerCapturing} */
 export type CapturedPointer = {
@@ -35,6 +36,7 @@ type PointerCapturingFn = (forDebugName: string) => InternalPointerCapturing
 // const logger = console
 
 function _usePointerCapturingContext(): PointerCapturingFn {
+  const logger = useLogger('PointerCapturing')
   type CaptureInfo = {
     debugOwnerName: string
     debugReason: string
@@ -51,7 +53,7 @@ function _usePointerCapturingContext(): PointerCapturingFn {
     }
     const capturing: PointerCapturing = {
       capturePointer(reason) {
-        // logger.log('Capturing pointer', {forDebugName, reason})
+        logger._debug('Capturing pointer', {forDebugName, reason})
         if (currentCaptureRef.current != null) {
           throw new Error(
             `"${forDebugName}" attempted capturing pointer for "${reason}" while already captured by "${currentCaptureRef.current.debugOwnerName}" for "${currentCaptureRef.current.debugReason}"`,
@@ -69,10 +71,10 @@ function _usePointerCapturingContext(): PointerCapturingFn {
           },
           release() {
             if (releaseCapture === currentCaptureRef.current) {
-              // logger.log('Releasing pointer', {
-              //   forDebugName,
-              //   reason,
-              // })
+              logger._debug('Releasing pointer', {
+                forDebugName,
+                reason,
+              })
               updateCapture(null)
               return true
             }
@@ -89,7 +91,7 @@ function _usePointerCapturingContext(): PointerCapturingFn {
       capturing,
       forceRelease() {
         if (currentCaptureRef.current === localCapture) {
-          // logger.log('Force releasing pointer', currentCaptureRef.current)
+          logger._debug('Force releasing pointer', {localCapture})
           updateCapture(null)
         }
       },
@@ -100,7 +102,6 @@ function _usePointerCapturingContext(): PointerCapturingFn {
 const PointerCapturingContext = React.createContext<PointerCapturingFn>(
   null as $IntentionalAny,
 )
-// const ProviderChildren: React.FC<{children?: React.ReactNode}> = function
 
 const ProviderChildrenMemo: React.FC<{}> = React.memo(({children}) => (
   <>{children}</>

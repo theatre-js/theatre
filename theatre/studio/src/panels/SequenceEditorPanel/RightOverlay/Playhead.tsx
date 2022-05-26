@@ -76,11 +76,13 @@ const Thumb = styled.div`
 
   ${pointerEventsAutoInNormalMode};
 
-  &.seeking {
+  ${Container}.seeking > & {
     pointer-events: none !important;
   }
 
-  #pointer-root.draggingPositionInSequenceEditor &:not(.seeking) {
+  #pointer-root.draggingPositionInSequenceEditor
+    ${Container}:not(.seeking)
+    > & {
     pointer-events: auto;
     cursor: var(${lockedCursorCssVarName});
   }
@@ -203,13 +205,13 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     return {
-      debugName: 'Playhead',
+      debugName: 'RightOverlay/Playhead',
       onDragStart() {
-        const setIsSeeking = val(layoutP.seeker.setIsSeeking)
-
         const sequence = val(layoutP.sheet).getSequence()
         const posBeforeSeek = sequence.position
         const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+
+        const setIsSeeking = val(layoutP.seeker.setIsSeeking)
         setIsSeeking(true)
 
         return {
@@ -232,7 +234,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
         }
       },
     }
-  }, [])
+  }, [layoutP, thumbNode])
 
   const [isDragging] = useDrag(thumbNode, gestureHandlers)
 
