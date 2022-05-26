@@ -1,6 +1,6 @@
 import type {VFC} from 'react'
 import React, {useEffect, useLayoutEffect, useRef} from 'react'
-import {useEditorStore} from '../../store'
+import {useEditorStore} from '../../../main/store'
 import shallow from 'zustand/shallow'
 import type {WebGLRenderer} from 'three'
 import useMeasure from 'react-use-measure'
