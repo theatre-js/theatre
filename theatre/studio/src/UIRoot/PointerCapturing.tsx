@@ -54,7 +54,7 @@ function _usePointerCapturingContext(): PointerCapturingFn {
     const capturing: PointerCapturing = {
       capturePointer(reason) {
         // QUESTION: is this log still relevant?
-        logger._debug('Capturing pointer', {forDebugName, reason})
+        // logger._debug('capturing pointer', {forDebugName, reason})
         if (currentCaptureRef.current != null) {
           throw new Error(
             `"${forDebugName}" attempted capturing pointer for "${reason}" while already captured by "${currentCaptureRef.current.debugOwnerName}" for "${currentCaptureRef.current.debugReason}"`,
@@ -73,10 +73,10 @@ function _usePointerCapturingContext(): PointerCapturingFn {
           release() {
             if (releaseCapture === currentCaptureRef.current) {
               // QUESTION: is this log still relevant?
-              logger._debug('Releasing pointer', {
+              /* logger._debug('Releasing pointer', {
                 forDebugName,
                 reason,
-              })
+              }) */
               updateCapture(null)
               return true
             }
@@ -94,7 +94,7 @@ function _usePointerCapturingContext(): PointerCapturingFn {
       forceRelease() {
         if (currentCaptureRef.current === localCapture) {
           // QUESTION: is this log still relevant?
-          logger._debug('Force releasing pointer', {localCapture})
+          // logger._debug('Force releasing pointer', {localCapture})
           updateCapture(null)
         }
       },
