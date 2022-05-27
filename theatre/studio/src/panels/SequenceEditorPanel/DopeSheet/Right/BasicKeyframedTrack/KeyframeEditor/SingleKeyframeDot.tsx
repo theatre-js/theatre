@@ -88,7 +88,6 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   return (
     <>
       <HitZone
-        data-hitzone
         ref={ref}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging,

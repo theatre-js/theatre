@@ -258,7 +258,6 @@ const AggregateKeyframeDot: React.FC<IAggregateKeyframeDotProps> = (props) => {
   return (
     <>
       <HitZone
-        data-hitzone
         ref={ref}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging,
