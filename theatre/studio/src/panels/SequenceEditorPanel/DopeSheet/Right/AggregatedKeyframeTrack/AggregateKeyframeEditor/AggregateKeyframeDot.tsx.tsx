@@ -1,130 +1,31 @@
-import type {
-  Keyframe,
-  TrackData,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
-import type {
-  DopeSheetSelection,
-  SequenceEditorPanelLayout,
-} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {
-  SequenceEditorTree_PropWithChildren,
-  SequenceEditorTree_SheetObject,
-} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import type {Pointer} from '@theatre/dataverse'
-import {val} from '@theatre/dataverse'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
-import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
-import {AggregateKeyframePositionIsSelected} from './AggregatedKeyframeTrack'
-import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
-import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
+import {val} from '@theatre/dataverse'
+import type {IAggregateKeyframeEditorProps} from './AggregateKeyframeEditor'
+import type {ILogger} from '@theatre/shared/logger'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
+import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
+import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import getStudio from '@theatre/studio/getStudio'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
-import type {ILogger} from '@theatre/shared/logger'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregatedKeyframeTrack'
 
-const AggregateKeyframeEditorContainer = styled.div`
-  position: absolute;
-`
-
-const noConnector = <></>
-
-export type IAggregateKeyframesAtPosition = {
-  position: number
-  /** all tracks have a keyframe for this position (otherwise, false means 'partial') */
-  allHere: boolean
-  selected: AggregateKeyframePositionIsSelected | undefined
-  keyframes: {
-    kf: Keyframe
-    track: {
-      id: SequenceTrackId
-      data: TrackData
-    }
-  }[]
-}
-
-export type IAggregateKeyframeEditorProps = {
-  index: number
-  aggregateKeyframes: IAggregateKeyframesAtPosition[]
-  layoutP: Pointer<SequenceEditorPanelLayout>
-  viewModel:
-    | SequenceEditorTree_PropWithChildren
-    | SequenceEditorTree_SheetObject
-  selection: undefined | DopeSheetSelection
-}
-
-const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
-  props,
-) => {
-  const {index, aggregateKeyframes} = props
-  const cur = aggregateKeyframes[index]
-  const next = aggregateKeyframes[index + 1]
-  const connected =
-    next && cur.keyframes.length === next.keyframes.length
-      ? // all keyframes are same in the next position
-        cur.keyframes.every(
-          ({track}, ind) => next.keyframes[ind].track === track,
-        ) && {
-          length: next.position - cur.position,
-          selected:
-            cur.selected === AggregateKeyframePositionIsSelected.AllSelected &&
-            next.selected === AggregateKeyframePositionIsSelected.AllSelected,
-        }
-      : null
-
-  return (
-    <AggregateKeyframeEditorContainer
-      style={{
-        top: `${props.viewModel.nodeHeight / 2}px`,
-        left: `calc(${val(
-          props.layoutP.scaledSpace.leftPadding,
-        )}px + calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
-          cur.position
-        }px))`,
-      }}
-    >
-      <AggregateKeyframeDot
-        keyframes={cur.keyframes}
-        position={cur.position}
-        theme={{
-          isSelected: cur.selected,
-        }}
-        isAllHere={cur.allHere}
-        {...props}
-      />
-      {connected ? (
-        <ConnectorLine
-          connectorLengthInUnitSpace={connected.length}
-          isPopoverOpen={false}
-          // if all keyframe aggregates are selected
-          isSelected={connected.selected}
-        />
-      ) : (
-        noConnector
-      )}
-    </AggregateKeyframeEditorContainer>
-  )
-}
-
-const DOT_SIZE_PX = 16
+export const DOT_SIZE_PX = 16
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
-
 /** The keyframe diamond ◆ */
 const DotContainer = styled.div`
   position: absolute;
   ${absoluteDims(DOT_SIZE_PX)}
   z-index: 1;
 `
-
 const HitZone = styled.div`
   z-index: 2;
   cursor: ew-resize;
@@ -242,8 +143,9 @@ type IAggregateKeyframeDotProps = {
   position: number
   keyframes: KeyframeWithTrack[]
 } & IAggregateKeyframeEditorProps
-
-const AggregateKeyframeDot: React.FC<IAggregateKeyframeDotProps> = (props) => {
+export const AggregateKeyframeDot: React.FC<IAggregateKeyframeDotProps> = (
+  props,
+) => {
   const logger = useLogger('AggregateKeyframeDot')
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
   const [contextMenu] = useAggregateKeyframeContextMenu(node, logger, props)
@@ -275,11 +177,9 @@ const AggregateKeyframeDot: React.FC<IAggregateKeyframeDotProps> = (props) => {
     </>
   )
 }
-
 type IDotThemeValues = {
   isSelected: AggregateKeyframePositionIsSelected | undefined
 }
-
 const SELECTED_COLOR = '#b8e4e2'
 const DEFAULT_PRIMARY_COLOR = '#40AAA4'
 const DEFAULT_SECONDARY_COLOR = '#45747C'
@@ -297,7 +197,6 @@ const selectionColorSome = (theme: IDotThemeValues) =>
       AggregateKeyframePositionIsSelected.AtLeastOneUnselected
     ? DEFAULT_PRIMARY_COLOR
     : DEFAULT_SECONDARY_COLOR
-
 const AggregateDotAllHereSvg = (theme: IDotThemeValues) => (
   <svg
     width="100%"
@@ -325,7 +224,6 @@ const AggregateDotAllHereSvg = (theme: IDotThemeValues) => (
     />
   </svg>
 )
-
 // when the aggregate keyframes are sparse across tracks at this position
 const AggregateDotSomeHereSvg = (theme: IDotThemeValues) => (
   <svg
@@ -363,5 +261,3 @@ function useAggregateKeyframeContextMenu(
     },
   })
 }
-
-export default AggregateKeyframeEditor
