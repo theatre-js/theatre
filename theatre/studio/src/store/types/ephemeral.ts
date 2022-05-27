@@ -1,4 +1,9 @@
 import type {ProjectState} from '@theatre/core/projects/store/storeTypes'
+import type {
+  ObjectAddressKey,
+  ProjectId,
+  SheetId,
+} from '@theatre/shared/utils/ids'
 import type {SerializableMap, StrictRecord} from '@theatre/shared/utils/types'
 import type {
   IExtension,
@@ -30,14 +35,15 @@ export type StudioEphemeralState = {
   coreByProject: {[projectId in string]: ProjectState['ephemeral']}
   projects: {
     stateByProjectId: StrictRecord<
-      string,
+      ProjectId,
       {
         stateBySheetId: StrictRecord<
-          string,
+          SheetId,
           {
             stateByObjectKey: StrictRecord<
-              string,
+              ObjectAddressKey,
               {
+                /** e.g. `{color: {r: true, g: true}, price: true}` */
                 valuesBeingScrubbed?: SerializableMap<boolean>
               }
             >
