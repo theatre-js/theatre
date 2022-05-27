@@ -17,6 +17,7 @@ import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/t
 import KeyframeSnapTarget, {
   snapPositionsStateD,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 
 const Container = styled.div`
   position: relative;
@@ -82,9 +83,17 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
           />
         )}
         <SingleKeyframeEditor
+          itemKey={createStudioSheetItemKey.forTrackKeyframe(
+            leaf.sheetObject,
+            leaf.trackId,
+            kf.id,
+          )}
           keyframe={kf}
           index={index}
-          trackData={trackData}
+          track={{
+            data: trackData,
+            id: leaf.trackId,
+          }}
           layoutP={layoutP}
           leaf={leaf}
           selection={

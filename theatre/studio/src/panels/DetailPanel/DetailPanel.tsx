@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
   useLayoutEffect,
+  useState,
 } from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
@@ -21,6 +22,7 @@ import useHotspot from '@theatre/studio/uiComponents/useHotspot'
 import {Box, prism, val} from '@theatre/dataverse'
 import EmptyState from './EmptyState'
 import useLockSet from '@theatre/studio/uiComponents/useLockSet'
+import {usePresenceListenersOnRootElement} from '@theatre/studio/uiComponents/usePresence'
 
 const headerHeight = `32px`
 
@@ -106,6 +108,9 @@ const DetailPanel: React.FC<{}> = (props) => {
 
   const showDetailsPanel = pin || hotspotActive || isContextMenuShown
 
+  const [containerElt, setContainerElt] = useState<null | HTMLDivElement>(null)
+  usePresenceListenersOnRootElement(containerElt)
+
   return usePrism(() => {
     const selection = getOutlineSelection()
 
@@ -115,6 +120,7 @@ const DetailPanel: React.FC<{}> = (props) => {
         <Container
           data-testid="DetailPanel-Object"
           pin={showDetailsPanel}
+          ref={setContainerElt}
           onMouseEnter={() => {
             isDetailPanelHoveredB.set(true)
           }}

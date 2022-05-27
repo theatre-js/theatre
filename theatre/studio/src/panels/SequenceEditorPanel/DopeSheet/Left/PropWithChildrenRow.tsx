@@ -31,7 +31,10 @@ const PropWithChildrenRow: React.VFC<{
       label={leaf.pathToProp[leaf.pathToProp.length - 1]}
       isCollapsed={leaf.isCollapsed}
       toggleCollapsed={() =>
-        setCollapsedSheetObjectOrCompoundProp(!leaf.isCollapsed, leaf)
+        setCollapsedSheetObjectOrCompoundProp(!leaf.isCollapsed, {
+          sheetAddress: leaf.sheetObject.address,
+          sheetItemKey: leaf.sheetItemKey,
+        })
       }
     >
       {leaf.children.map((propLeaf) => decideRowByPropType(propLeaf))}

@@ -1,5 +1,6 @@
 import React from 'react'
 import {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregatedKeyframeTrack'
+import {PresenceFlag} from '@theatre/studio/uiComponents/usePresence'
 import styled from 'styled-components'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
@@ -34,11 +35,13 @@ export const HitZone = styled.div`
 `
 
 export function AggregateKeyframeVisualDot(props: {
+  flag: PresenceFlag | undefined
   isSelected: AggregateKeyframePositionIsSelected | undefined
   isAllHere: boolean
 }) {
   const theme: IDotThemeValues = {
     isSelected: props.isSelected,
+    flag: props.flag,
   }
 
   return (
@@ -53,6 +56,7 @@ export function AggregateKeyframeVisualDot(props: {
 }
 type IDotThemeValues = {
   isSelected: AggregateKeyframePositionIsSelected | undefined
+  flag: PresenceFlag | undefined
 }
 const SELECTED_COLOR = '#F2C95C'
 const DEFAULT_PRIMARY_COLOR = '#40AAA4'
@@ -95,6 +99,8 @@ const AggregateDotAllHereSvg = (theme: IDotThemeValues) => (
       height="6"
       transform="rotate(-45 3.75732 6.01953)"
       fill={selectionColorAll(theme)}
+      stroke={theme.flag === PresenceFlag.Primary ? 'white' : undefined}
+      strokeWidth={theme.flag === PresenceFlag.Primary ? '2px' : undefined}
     />
   </svg>
 )
@@ -114,7 +120,10 @@ const AggregateDotSomeHereSvg = (theme: IDotThemeValues) => (
       height="5"
       transform="rotate(-45 4.46443 8)"
       fill="#23262B"
-      stroke={selectionColorAll(theme)}
+      stroke={
+        theme.flag === PresenceFlag.Primary ? 'white' : selectionColorAll(theme)
+      }
+      strokeWidth={theme.flag === PresenceFlag.Primary ? '2px' : undefined}
     />
   </svg>
 )

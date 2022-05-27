@@ -1,7 +1,4 @@
-import type {
-  Keyframe,
-  TrackData,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {
   DopeSheetSelection,
   SequenceEditorPanelLayout,
@@ -13,6 +10,8 @@ import React from 'react'
 import styled from 'styled-components'
 import SingleKeyframeConnector from './BasicKeyframeConnector'
 import SingleKeyframeDot from './SingleKeyframeDot'
+import type {TrackWithId} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
+import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
 
 const SingleKeyframeEditorContainer = styled.div`
   position: absolute;
@@ -23,14 +22,19 @@ const noConnector = <></>
 export type ISingleKeyframeEditorProps = {
   index: number
   keyframe: Keyframe
-  trackData: TrackData
+  track: TrackWithId
+  itemKey: StudioSheetItemKey
   layoutP: Pointer<SequenceEditorPanelLayout>
   leaf: SequenceEditorTree_PrimitiveProp
   selection: undefined | DopeSheetSelection
 }
 
 const SingleKeyframeEditor: React.VFC<ISingleKeyframeEditorProps> = (props) => {
-  const {index, trackData} = props
+  const {
+    index,
+    keyframe,
+    track: {data: trackData},
+  } = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
 
@@ -47,7 +51,7 @@ const SingleKeyframeEditor: React.VFC<ISingleKeyframeEditorProps> = (props) => {
         }px))`,
       }}
     >
-      <SingleKeyframeDot {...props} />
+      <SingleKeyframeDot {...props} itemKey={props.itemKey} />
       {connected ? <SingleKeyframeConnector {...props} /> : noConnector}
     </SingleKeyframeEditorContainer>
   )
