@@ -1,11 +1,11 @@
 import {getProject} from '@theatre/core'
 import * as THREE from 'three'
-import {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {useFrame, Canvas} from '@react-three/fiber'
 import {Shadow, softShadows} from '@react-three/drei'
-import React from 'react'
 import studio from '@theatre/studio'
-import {editable as e, SheetProvider, extension} from '@theatre/r3f'
+import {editable as e, SheetProvider} from '@theatre/r3f'
+import extension from '@theatre/r3f/dist/extension'
 
 if (process.env.NODE_ENV === 'development') {
   studio.extend(extension)
@@ -90,6 +90,10 @@ function App() {
       <Canvas
         // @ts-ignore
         shadowMap
+        gl={{preserveDrawingBuffer: true}}
+        linear
+        frameloop="demand"
+        dpr={[1.5, 2]}
       >
         <SheetProvider
           sheet={getProject('Playground - R3F').sheet('R3F-Canvas')}

@@ -1,14 +1,14 @@
 import type {ComponentProps, ComponentType, RefAttributes} from 'react'
 import React, {forwardRef, useLayoutEffect, useRef, useState} from 'react'
-import {allRegisteredObjects, useEditorStore} from '../store'
+import {allRegisteredObjects, editorStore} from './store'
 import mergeRefs from 'react-merge-refs'
-import type {$FixMe} from '@theatre/shared/utils/types'
 import type {ISheetObject} from '@theatre/core'
 import useInvalidate from './useInvalidate'
-import {useCurrentSheet} from '../SheetProvider'
-import defaultEditableFactoryConfig from '../defaultEditableFactoryConfig'
-import type {EditableFactoryConfig} from '../editableFactoryConfigUtils'
-import {makeStoreKey} from '../utils'
+import {useCurrentSheet} from './SheetProvider'
+import defaultEditableFactoryConfig from './defaultEditableFactoryConfig'
+import type {EditableFactoryConfig} from './editableFactoryConfigUtils'
+import {makeStoreKey} from './utils'
+import type {$FixMe} from '../types'
 
 const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   config: EditableFactoryConfig,
@@ -78,7 +78,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
 
           if (objRef) objRef!.current = sheetObject
 
-          useEditorStore.getState().addEditable(storeKey, {
+          editorStore.getState().addEditable(storeKey, {
             type: actualType,
             sheetObject,
             visibleOnlyInEditor: visible === 'editor',

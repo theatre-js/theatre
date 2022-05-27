@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import {refreshSnapshot} from '../utils'
+import {refreshSnapshot} from './utils'
 
 /**
  * Putting this element in a suspense tree makes sure the snapshot editor

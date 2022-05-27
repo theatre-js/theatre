@@ -1,7 +1,6 @@
 import type {VFC} from 'react'
 import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
-import type {Editable} from '../store'
-import {useEditorStore} from '../store'
+import type {Editable} from '../../main/store'
 import {createPortal} from '@react-three/fiber'
 import EditableProxy from './EditableProxy'
 import type {OrbitControls} from 'three-stdlib'
@@ -13,7 +12,8 @@ import type {IScrub} from '@theatre/studio'
 import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
-import {getEditorSheetObject} from './editorStuff'
+import {getEditorSheetObject} from '../editorStuff'
+import useExtensionStore from '../useExtensionStore'
 
 export interface ProxyManagerProps {
   orbitControlsRef: React.MutableRefObject<OrbitControls | null>
@@ -28,7 +28,7 @@ type IEditableProxy<T> = {
 const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
   const isBeingEdited = useRef(false)
   const editorObject = getEditorSheetObject()
-  const [sceneSnapshot, editables] = useEditorStore(
+  const [sceneSnapshot, editables] = useExtensionStore(
     (state) => [state.sceneSnapshot, state.editables],
     shallow,
   )

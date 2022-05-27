@@ -24,7 +24,8 @@
       "@theatre/shared/*": ["./theatre/shared/src/*"],
       "@theatre/dataverse": ["./packages/dataverse/src/index.ts"],
       "@theatre/react": ["./packages/react/src/index.ts"],
-      "@theatre/r3f": ["./packages/r3f/src/index.tsx"],
+      "@theatre/r3f": ["./packages/r3f/src/index.ts"],
+      "@theatre/r3f/dist/extension": ["./packages/r3f/src/extension/index.ts"],
       "@theatre/dataverse-experiments": [
         "./packages/dataverse-experiments/src/index.ts"
       ]

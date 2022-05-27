@@ -2,17 +2,17 @@ import type {Object3D} from 'three'
 import type {VFC} from 'react'
 import React, {useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import {Sphere, Html} from '@react-three/drei'
-import {useEditorStore} from '../store'
 import shallow from 'zustand/shallow'
 import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
-import {getEditorSheetObject} from './editorStuff'
+import {getEditorSheetObject} from '../editorStuff'
 import type {IconID} from '../icons'
 import icons from '../icons'
-import type {Helper} from '../editableFactoryConfigUtils'
+import type {Helper} from '../../main/editableFactoryConfigUtils'
 import {invalidate, useFrame, useThree} from '@react-three/fiber'
 import {useDragDetector} from './DragDetector'
+import useExtensionStore from '../useExtensionStore'
 
 export interface EditableProxyProps {
   storeKey: string
@@ -21,7 +21,7 @@ export interface EditableProxyProps {
 
 const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
   const editorObject = getEditorSheetObject()
-  const [setSnapshotProxyObject, editables] = useEditorStore(
+  const [setSnapshotProxyObject, editables] = useExtensionStore(
     (state) => [state.setSnapshotProxyObject, state.editables],
     shallow,
   )
@@ -122,7 +122,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
             e.stopPropagation()
 
             const theatreObject =
-              useEditorStore.getState().editables[storeKey].sheetObject
+              useExtensionStore.getState().editables[storeKey].sheetObject
 
             if (!theatreObject) {
               console.log('no theatre object for', storeKey)
@@ -169,7 +169,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
                 if (e.delta < 2) {
                   e.stopPropagation()
                   const theatreObject =
-                    useEditorStore.getState().editables[storeKey].sheetObject
+                    useExtensionStore.getState().editables[storeKey].sheetObject
 
                   if (!theatreObject) {
                     console.log('no theatre object for', storeKey)

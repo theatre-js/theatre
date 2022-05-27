@@ -1,8 +1,8 @@
 import {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import React from 'react'
 import {Canvas, useThree} from '@react-three/fiber'
-import type {BaseSheetObjectType} from '../store'
-import {allRegisteredObjects, useEditorStore} from '../store'
+import type {BaseSheetObjectType} from '../../main/store'
+import {__private_allRegisteredObjects as allRegisteredObjects} from '@theatre/r3f'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
 import ProxyManager from './ProxyManager'
@@ -11,11 +11,13 @@ import {useVal} from '@theatre/react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
 import type {ISheet} from '@theatre/core'
 import useSnapshotEditorCamera from './useSnapshotEditorCamera'
-import {getEditorSheet, getEditorSheetObject} from './editorStuff'
+import {getEditorSheet, getEditorSheetObject} from '../editorStuff'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {InfiniteGridHelper} from '../InfiniteGridHelper'
 import {DragDetectorProvider} from './DragDetector'
 import ReferenceWindow from './ReferenceWindow/ReferenceWindow'
+import useExtensionStore from '../useExtensionStore'
+import useMeasure from 'react-use-measure'
 
 const GlobalStyle = createGlobalStyle`
   :host {
@@ -62,7 +64,7 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
     }
   }, [gl, viewportLighting, scene, camera])
 
-  const helpersRoot = useEditorStore((state) => state.helpersRoot, shallow)
+  const helpersRoot = useExtensionStore((state) => state.helpersRoot, shallow)
 
   const showGrid = useVal(editorObject?.props.viewport.showGrid) ?? true
   const showAxes = useVal(editorObject?.props.viewport.showAxes) ?? true
@@ -128,11 +130,9 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   const snapshotEditorSheet = getEditorSheet()
   const paneId = props.paneId
   const editorObject = getEditorSheetObject()
+  const [ref, bounds] = useMeasure()
 
-  const showReferenceWindow =
-    useVal(editorObject?.props.viewport.showReferenceWindow) ?? true
-
-  const [sceneSnapshot, createSnapshot] = useEditorStore(
+  const [sceneSnapshot, createSnapshot] = useExtensionStore(
     (state) => [state.sceneSnapshot, state.createSnapshot],
     shallow,
   )
@@ -184,16 +184,17 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
           <Wrapper>
             <Overlay>
               <Tools ref={setToolsContainer} />
-              {showReferenceWindow && (
-                <ReferenceWindowContainer>
-                  <ReferenceWindow height={120} />
-                </ReferenceWindowContainer>
-              )}
+              <ReferenceWindowContainer>
+                <ReferenceWindow
+                  maxHeight={Math.min(bounds.height * 0.3, 120)}
+                  maxWidth={Math.min(bounds.width * 0.4, 200)}
+                />
+              </ReferenceWindowContainer>
             </Overlay>
 
             {sceneSnapshot ? (
               <>
-                <CanvasWrapper>
+                <CanvasWrapper ref={ref}>
                   <Canvas
                     onCreated={({gl}) => {
                       gl.setClearColor('white')

@@ -8,7 +8,7 @@ import App from './App'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App project={getProject('CRA project')} />
+    <App />
   </React.StrictMode>,
   document.getElementById('root'),
 )

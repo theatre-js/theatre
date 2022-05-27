@@ -1,5 +1,5 @@
 import type {StateCreator} from 'zustand'
-import create from 'zustand'
+import create from 'zustand/vanilla'
 import type {Object3D, Scene, WebGLRenderer} from 'three'
 import {Group} from 'three'
 import type {ISheetObject} from '@theatre/core'
@@ -102,7 +102,7 @@ const config: StateCreator<EditorStore> = (set) => {
   }
 }
 
-export const useEditorStore = create<EditorStore>(config)
+export const editorStore = create<EditorStore>(config)
 
 export type BindFunction = (options: {
   allowImplicitInstancing?: boolean
@@ -111,6 +111,6 @@ export type BindFunction = (options: {
 }) => void
 
 export const bindToCanvas: BindFunction = ({gl, scene}) => {
-  const init = useEditorStore.getState().init
+  const init = editorStore.getState().init
   init(scene, gl)
 }
