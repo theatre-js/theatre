@@ -130,6 +130,11 @@ type ICurveEditorPopoverProps = {
 }
 
 const CurveEditorPopover: React.VFC<ICurveEditorPopoverProps> = (props) => {
+  const allConnections = useMemo(
+    () => [props.curveConnection, ...props.additionalConnections],
+    [props.curveConnection, ...props.additionalConnections],
+  )
+
   ////// `tempTransaction` //////
   /*
    * `tempTransaction` is used for all edits in this popover. The transaction
@@ -138,7 +143,7 @@ const CurveEditorPopover: React.VFC<ICurveEditorPopoverProps> = (props) => {
    */
   const tempTransaction = useRef<CommitOrDiscard | null>(null)
   useEffect(() => {
-    const unlock = getLock()
+    const unlock = getLock(allConnections)
     // Clean-up function, called when this React component unmounts.
     // When it unmounts, we want to commit edits that are outstanding
     return () => {
@@ -147,10 +152,6 @@ const CurveEditorPopover: React.VFC<ICurveEditorPopoverProps> = (props) => {
     }
   }, [tempTransaction])
 
-  const allConnections = useMemo(
-    () => [props.curveConnection, ...props.additionalConnections],
-    [props.curveConnection, ...props.additionalConnections],
-  )
   ////// Keyframe and trackdata //////
   const easing: CubicBezierHandles = [
     props.curveConnection.left.handles[2],
@@ -488,25 +489,35 @@ function areConnectedKeyframesTheSameAs({
     right1.handles[1] !== right2.handles[1]
 }
 
-const {isCurveEditorOpenD, getLock} = (() => {
-  let lastId = 0
-  const idsOfOpenCurveEditors = new Box<number[]>([])
+const {isCurveEditorOpenD, isConnectionEditingInCurvePopoverD, getLock} =
+  (() => {
+    const connectionsInCurvePopoverEdit = new Box<
+      Array<KeyframeConnectionWithAddress>
+    >([])
 
-  return {
-    getLock() {
-      const id = lastId++
-      idsOfOpenCurveEditors.set([...idsOfOpenCurveEditors.get(), id])
+    return {
+      getLock(connections: Array<KeyframeConnectionWithAddress>) {
+        connectionsInCurvePopoverEdit.set(connections)
 
-      return function unlock() {
-        idsOfOpenCurveEditors.set(
-          idsOfOpenCurveEditors.get().filter((cid) => cid !== id),
-        )
-      }
-    },
-    isCurveEditorOpenD: prism(() => {
-      return idsOfOpenCurveEditors.derivation.getValue().length > 0
-    }),
-  }
-})()
+        return function unlock() {
+          connectionsInCurvePopoverEdit.set([])
+        }
+      },
+      isCurveEditorOpenD: prism(() => {
+        return connectionsInCurvePopoverEdit.derivation.getValue().length > 0
+      }),
+      isConnectionEditingInCurvePopoverD: (
+        con: KeyframeConnectionWithAddress,
+      ) =>
+        prism(() => {
+          return connectionsInCurvePopoverEdit.derivation
+            .getValue()
+            .some(
+              ({left, right}) =>
+                con.left.id === left.id && con.right.id === right.id,
+            )
+        }),
+    }
+  })()
 
-export {isCurveEditorOpenD}
+export {isCurveEditorOpenD, isConnectionEditingInCurvePopoverD}

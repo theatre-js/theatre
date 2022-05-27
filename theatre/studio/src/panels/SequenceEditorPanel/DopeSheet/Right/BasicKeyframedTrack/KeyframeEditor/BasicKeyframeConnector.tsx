@@ -9,7 +9,7 @@ import {useMemo, useRef} from 'react'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover, {
-  isCurveEditorOpenD,
+  isConnectionEditingInCurvePopoverD,
 } from './CurveEditorPopover/CurveEditorPopover'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
@@ -21,10 +21,7 @@ import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeShee
 import {COLOR_POPOVER_BACK} from './CurveEditorPopover/colors'
 import {useVal} from '@theatre/react'
 import type {KeyframeConnectionWithAddress} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
-import {
-  isKeyframeConnectionInSelection,
-  selectedKeyframeConnections,
-} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import {selectedKeyframeConnections} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
 import styled from 'styled-components'
 
@@ -97,18 +94,18 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
 
   const connectorLengthInUnitSpace = next.position - cur.position
 
-  // The following two flags determine whether this connector
-  // is being edited as part of a selection using the curve
-  // editor popover
-  const isCurveEditorPopoverOpen = useVal(isCurveEditorOpenD)
-  const isInCurveEditorPopoverSelection =
-    isCurveEditorPopoverOpen &&
-    props.selection !== undefined &&
-    isKeyframeConnectionInSelection({left: cur, right: next}, props.selection)
+  const isInCurveEditorPopoverSelection = useVal(
+    isConnectionEditingInCurvePopoverD({
+      ...props.leaf.sheetObject.address,
+      trackId: props.leaf.trackId,
+      left: cur,
+      right: next,
+    }),
+  )
 
   const themeValues: IConnectorThemeValues = {
-    isPopoverOpen: isPopoverOpen || isInCurveEditorPopoverSelection || false,
-    isSelected: !!props.selection,
+    isPopoverOpen: isInCurveEditorPopoverSelection,
+    isSelected: props.selection !== undefined,
   }
 
   return (
