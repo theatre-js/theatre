@@ -1,14 +1,25 @@
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {VoidFn} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {transparentize} from 'polished'
 import React from 'react'
 import styled, {css} from 'styled-components'
+import {FocusRelationship} from '@theatre/studio/uiComponents/usePresence'
+import usePresence from '@theatre/studio/uiComponents/usePresence'
 
 export type NearbyKeyframesControls = {
-  prev?: Pick<Keyframe, 'position'> & {jump: VoidFn}
-  cur: {type: 'on'; toggle: VoidFn} | {type: 'off'; toggle: VoidFn}
-  next?: Pick<Keyframe, 'position'> & {jump: VoidFn}
+  prev?: Pick<Keyframe, 'position'> & {
+    jump: VoidFn
+    itemKey: StudioSheetItemKey
+  }
+  cur:
+    | {type: 'on'; toggle: VoidFn; itemKey: StudioSheetItemKey}
+    | {type: 'off'; toggle: VoidFn}
+  next?: Pick<Keyframe, 'position'> & {
+    jump: VoidFn
+    itemKey: StudioSheetItemKey
+  }
 }
 
 const Container = styled.div`
@@ -70,21 +81,34 @@ export const nextPrevCursorsTheme = {
   onColor: '#e0c917',
 }
 
-const CurButton = styled(Button)<{isOn: boolean}>`
+const CurButton = styled(Button)<{
+  isOn: boolean
+  presence: FocusRelationship | undefined
+}>`
   &:hover {
     color: #e0c917;
   }
+
   color: ${(props) =>
-    props.isOn ? nextPrevCursorsTheme.onColor : nextPrevCursorsTheme.offColor};
+    props.presence === FocusRelationship.Hovered
+      ? 'white'
+      : props.isOn
+      ? nextPrevCursorsTheme.onColor
+      : nextPrevCursorsTheme.offColor};
 `
 
 const pointerEventsNone = css`
   pointer-events: none !important;
 `
 
-const PrevOrNextButton = styled(Button)<{available: boolean}>`
+const PrevOrNextButton = styled(Button)<{
+  available: boolean
+  presence: FocusRelationship | undefined
+}>`
   color: ${(props) =>
-    props.available
+    props.presence === FocusRelationship.Hovered
+      ? 'white'
+      : props.available
       ? nextPrevCursorsTheme.onColor
       : nextPrevCursorsTheme.offColor};
 
@@ -92,15 +116,20 @@ const PrevOrNextButton = styled(Button)<{available: boolean}>`
     props.available ? pointerEventsAutoInNormalMode : pointerEventsNone};
 `
 
-const Prev = styled(PrevOrNextButton)<{available: boolean}>`
+const Prev = styled(PrevOrNextButton)<{
+  available: boolean
+  presence: FocusRelationship | undefined
+}>`
   transform: translateX(2px);
   ${Container}:hover & {
     transform: translateX(-7px);
   }
 `
-const Next = styled(PrevOrNextButton)<{available: boolean}>`
+const Next = styled(PrevOrNextButton)<{
+  available: boolean
+  presence: FocusRelationship | undefined
+}>`
   transform: translateX(-2px);
-
   ${Container}:hover & {
     transform: translateX(7px);
   }
@@ -165,16 +194,41 @@ namespace Icons {
   )
 }
 
-const NextPrevKeyframeCursors: React.FC<NearbyKeyframesControls> = (props) => {
+const NextPrevKeyframeCursors: React.VFC<NearbyKeyframesControls> = (props) => {
+  const [prevAttrs, prevPresence] = usePresence({
+    key: props.prev?.itemKey,
+  })
+  const [curAttrs, curPresence] = usePresence({
+    key: props.cur?.type === 'on' ? props.cur.itemKey : undefined,
+  })
+  const [nextAttrs, nextPresence] = usePresence({
+    key: props.next?.itemKey,
+  })
+
   return (
     <Container>
-      <Prev available={!!props.prev} onClick={props.prev?.jump}>
+      <Prev
+        available={!!props.prev}
+        onClick={props.prev?.jump}
+        {...prevAttrs}
+        presence={prevPresence.current}
+      >
         <Icons.Prev />
       </Prev>
-      <CurButton isOn={props.cur.type === 'on'} onClick={props.cur.toggle}>
+      <CurButton
+        isOn={props.cur.type === 'on'}
+        onClick={props.cur.toggle}
+        presence={curPresence.current}
+        {...curAttrs}
+      >
         <Icons.Cur />
       </CurButton>
-      <Next available={!!props.next} onClick={props.next?.jump}>
+      <Next
+        available={!!props.next}
+        onClick={props.next?.jump}
+        {...nextAttrs}
+        presence={nextPresence.current}
+      >
         <Icons.Next />
       </Next>
     </Container>

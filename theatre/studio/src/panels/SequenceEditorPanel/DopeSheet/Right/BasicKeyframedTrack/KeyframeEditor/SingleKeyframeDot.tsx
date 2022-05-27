@@ -25,6 +25,10 @@ import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import type {ILogger} from '@theatre/shared/logger'
+import usePresence, {
+  FocusRelationship,
+} from '@theatre/studio/uiComponents/usePresence'
+import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
 
 export const DOT_SIZE_PX = 6
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
@@ -37,13 +41,21 @@ const dotTheme = {
 }
 
 /** The keyframe diamond ◆ */
-const Diamond = styled.div<{isSelected: boolean}>`
+const Diamond = styled.div<{
+  isSelected: boolean
+  focusRel: FocusRelationship | undefined
+}>`
   position: absolute;
   ${absoluteDims(DOT_SIZE_PX)}
 
   background: ${(props) =>
     props.isSelected ? dotTheme.selectedColor : dotTheme.normalColor};
   transform: rotateZ(45deg);
+
+  ${(props) =>
+    props.focusRel === FocusRelationship.Hovered
+      ? 'outline: 2px solid white;'
+      : ''};
 
   z-index: 1;
   pointer-events: none;
@@ -68,11 +80,14 @@ const HitZone = styled.div`
   }
 `
 
-type ISingleKeyframeDotProps = ISingleKeyframeEditorProps
+type ISingleKeyframeDotProps = ISingleKeyframeEditorProps & {
+  itemKey: StudioSheetItemKey
+}
 
 /** The ◆ you can grab onto in "keyframe editor" (aka "dope sheet" in other programs) */
 const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
-  const logger = useLogger('SingleKeyframeDot')
+  const logger = useLogger('SingleKeyframeDot', props.keyframe.id)
+  const [presenceAttrs, presence] = usePresence({key: props.itemKey})
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
@@ -88,12 +103,13 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
     <>
       <HitZone
         ref={ref}
+        {...presenceAttrs}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging,
           position: props.keyframe.position,
         })}
       />
-      <Diamond isSelected={!!props.selection} />
+      <Diamond isSelected={!!props.selection} focusRel={presence.current} />
       {inlineEditorPopover}
       {contextMenu}
     </>
@@ -188,7 +204,7 @@ function useDragForSingleKeyframeDot(
               ...sheetObject.address,
               domNode: node!,
               positionAtStartOfDrag:
-                props.trackData.keyframes[props.index].position,
+                props.track.data.keyframes[props.index].position,
             })
             .onDragStart(event)
         }
@@ -203,7 +219,7 @@ function useDragForSingleKeyframeDot(
         return {
           onDrag(dx, dy, event) {
             const original =
-              propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
+              propsAtStartOfDrag.track.data.keyframes[propsAtStartOfDrag.index]
             const newPosition = Math.max(
               // check if our event hoversover a [data-pos] element
               DopeSnap.checkIfMouseEventSnapToPos(event, {
@@ -286,7 +302,7 @@ function copyKeyFrameContextMenuItem(
     callback: () => {
       const keyframes = keyframeIds.map(
         (keyframeId) =>
-          props.trackData.keyframes.find(
+          props.track.data.keyframes.find(
             (keyframe) => keyframe.id === keyframeId,
           )!,
       )

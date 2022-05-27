@@ -172,7 +172,14 @@ export function useEditingToolsForSimplePropInDetailsPanel<
             const sequencePosition = val(
               obj.sheet.getSequence().positionDerivation,
             )
-            return getNearbyKeyframesOfTrack(track, sequencePosition)
+            return getNearbyKeyframesOfTrack(
+              obj,
+              track && {
+                data: track,
+                id: sequenceTrackId,
+              },
+              sequencePosition,
+            )
           },
           [sequenceTrackId],
         )
@@ -184,45 +191,54 @@ export function useEditingToolsForSimplePropInDetailsPanel<
         } else {
           if (nearbyKeyframes.cur) {
             shade = 'Sequenced_OnKeyframe'
-          } else if (nearbyKeyframes.prev?.connectedRight === true) {
+          } else if (nearbyKeyframes.prev?.kf.connectedRight === true) {
             shade = 'Sequenced_BeingInterpolated'
           } else {
             shade = 'Sequened_NotBeingInterpolated'
           }
         }
 
+        const toggle = () => {
+          if (nearbyKeyframes.cur) {
+            getStudio()!.transaction((api) => {
+              api.unset(pointerToProp)
+            })
+          } else {
+            getStudio()!.transaction((api) => {
+              api.set(pointerToProp, common.value)
+            })
+          }
+        }
         const controls: NearbyKeyframesControls = {
-          cur: {
-            type: nearbyKeyframes.cur ? 'on' : 'off',
-            toggle: () => {
-              if (nearbyKeyframes.cur) {
-                getStudio()!.transaction((api) => {
-                  api.unset(pointerToProp)
-                })
-              } else {
-                getStudio()!.transaction((api) => {
-                  api.set(pointerToProp, common.value)
-                })
+          cur: nearbyKeyframes.cur
+            ? {
+                type: 'on',
+                itemKey: nearbyKeyframes.cur.itemKey,
+                toggle,
               }
-            },
-          },
+            : {
+                type: 'off',
+                toggle,
+              },
           prev:
             nearbyKeyframes.prev !== undefined
               ? {
-                  position: nearbyKeyframes.prev.position,
+                  itemKey: nearbyKeyframes.prev.itemKey,
+                  position: nearbyKeyframes.prev.kf.position,
                   jump: () => {
                     obj.sheet.getSequence().position =
-                      nearbyKeyframes.prev!.position
+                      nearbyKeyframes.prev!.kf.position
                   },
                 }
               : undefined,
           next:
             nearbyKeyframes.next !== undefined
               ? {
-                  position: nearbyKeyframes.next.position,
+                  itemKey: nearbyKeyframes.next.itemKey,
+                  position: nearbyKeyframes.next.kf.position,
                   jump: () => {
                     obj.sheet.getSequence().position =
-                      nearbyKeyframes.next!.position
+                      nearbyKeyframes.next!.kf.position
                   },
                 }
               : undefined,

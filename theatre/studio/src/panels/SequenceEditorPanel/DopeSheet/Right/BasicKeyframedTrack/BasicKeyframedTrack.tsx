@@ -12,6 +12,7 @@ import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextM
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import getStudio from '@theatre/studio/getStudio'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 
 const Container = styled.div`
   position: relative;
@@ -58,9 +59,17 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
 
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
       <SingleKeyframeEditor
+        itemKey={createStudioSheetItemKey.forTrackKeyframe(
+          leaf.sheetObject,
+          leaf.trackId,
+          kf.id,
+        )}
+        track={{
+          data: trackData,
+          id: leaf.trackId,
+        }}
         keyframe={kf}
         index={index}
-        trackData={trackData}
         layoutP={layoutP}
         leaf={leaf}
         key={'keyframe-' + kf.id}

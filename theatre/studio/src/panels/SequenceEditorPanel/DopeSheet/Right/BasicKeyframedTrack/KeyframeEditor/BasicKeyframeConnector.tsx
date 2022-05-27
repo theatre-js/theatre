@@ -36,9 +36,9 @@ type IBasicKeyframeConnectorProps = ISingleKeyframeEditorProps
 const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
   props,
 ) => {
-  const {index, trackData} = props
-  const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
+  const {index, track} = props
+  const cur = track.data.keyframes[index]
+  const next = track.data.keyframes[index + 1]
 
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
 
@@ -102,7 +102,11 @@ export default BasicKeyframeConnector
 const SingleCurveEditorPopover: React.FC<
   IBasicKeyframeConnectorProps & {closePopover: (reason: string) => void}
 > = React.forwardRef((props, ref) => {
-  const {index, trackData, selection} = props
+  const {
+    index,
+    track: {data: trackData},
+    selection,
+  } = props
   const cur = trackData.keyframes[index]
   const next = trackData.keyframes[index + 1]
 
@@ -164,7 +168,7 @@ function useDragKeyframe(
               ...sheetObject.address,
               domNode: node!,
               positionAtStartOfDrag:
-                props.trackData.keyframes[props.index].position,
+                props.track.data.keyframes[props.index].position,
             })
             .onDragStart(event)
         }
@@ -190,7 +194,7 @@ function useDragKeyframe(
                   trackId: propsAtStartOfDrag.leaf.trackId,
                   keyframeIds: [
                     propsAtStartOfDrag.keyframe.id,
-                    propsAtStartOfDrag.trackData.keyframes[
+                    propsAtStartOfDrag.track.data.keyframes[
                       propsAtStartOfDrag.index + 1
                     ].id,
                   ],
@@ -237,7 +241,7 @@ function useConnectorContextMenu(
             if (maybeKeyframeIds) {
               const keyframes = maybeKeyframeIds.map(
                 (keyframeId) =>
-                  props.trackData.keyframes.find(
+                  props.track.data.keyframes.find(
                     (keyframe) => keyframe.id === keyframeId,
                   )!,
               )

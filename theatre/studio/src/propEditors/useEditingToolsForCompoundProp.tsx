@@ -19,11 +19,14 @@ import {
   iteratePropType,
 } from '@theatre/shared/propTypes/utils'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {IPropPathToTrackIdTree} from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import pointerDeep from '@theatre/shared/utils/pointerDeep'
 import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 
 interface CommonStuff {
   beingScrubbed: boolean
@@ -212,7 +215,11 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
             .filter(({track}) => !!track)
             .map((s) => ({
               ...s,
-              nearbies: getNearbyKeyframesOfTrack(s.track, sequencePosition),
+              nearbies: getNearbyKeyframesOfTrack(
+                obj,
+                {id: s.trackId, data: s.track!},
+                sequencePosition,
+              ),
             }))
 
           const hasCur = nearbyKeyframesInEachTrack.find(
@@ -223,13 +230,16 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
           )
 
           const closestPrev = nearbyKeyframesInEachTrack.reduce<
-            undefined | number
+            undefined | KeyframeWithTrack
           >((acc, s) => {
             if (s.nearbies.prev) {
-              if (acc === undefined) {
-                return s.nearbies.prev.position
+              if (
+                acc === undefined ||
+                s.nearbies.prev.kf.position > acc.kf.position
+              ) {
+                return s.nearbies.prev
               } else {
-                return Math.max(s.nearbies.prev.position, acc)
+                return acc
               }
             } else {
               return acc
@@ -237,53 +247,80 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
           }, undefined)
 
           const closestNext = nearbyKeyframesInEachTrack.reduce<
-            undefined | number
+            undefined | KeyframeWithTrack
           >((acc, s) => {
             if (s.nearbies.next) {
-              if (acc === undefined) {
-                return s.nearbies.next.position
+              if (
+                acc === undefined ||
+                s.nearbies.next.kf.position < acc.kf.position
+              ) {
+                return s.nearbies.next
               } else {
-                return Math.min(s.nearbies.next.position, acc)
+                return acc
               }
             } else {
               return acc
             }
           }, undefined)
 
+          const toggle = () => {
+            if (allCur) {
+              getStudio().transaction((api) => {
+                api.unset(pointerToProp)
+              })
+            } else if (hasCur) {
+              getStudio().transaction((api) => {
+                api.set(pointerToProp, val(pointerToProp))
+              })
+            } else {
+              getStudio().transaction((api) => {
+                api.set(pointerToProp, val(pointerToProp))
+              })
+            }
+          }
           return {
-            cur: {
-              type: hasCur ? 'on' : 'off',
-              toggle: () => {
-                if (allCur) {
-                  getStudio().transaction((api) => {
-                    api.unset(pointerToProp)
-                  })
-                } else if (hasCur) {
-                  getStudio().transaction((api) => {
-                    api.set(pointerToProp, val(pointerToProp))
-                  })
-                } else {
-                  getStudio().transaction((api) => {
-                    api.set(pointerToProp, val(pointerToProp))
-                  })
+            cur: hasCur
+              ? {
+                  type: 'on',
+                  itemKey:
+                    createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+                      obj,
+                      pathToProp,
+                      sequencePosition,
+                    ),
+                  toggle,
                 }
-              },
-            },
+              : {
+                  toggle,
+                  type: 'off',
+                },
             prev:
               closestPrev !== undefined
                 ? {
-                    position: closestPrev,
+                    position: closestPrev.kf.position,
+                    itemKey:
+                      createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+                        obj,
+                        pathToProp,
+                        closestPrev.kf.position,
+                      ),
                     jump: () => {
-                      obj.sheet.getSequence().position = closestPrev
+                      obj.sheet.getSequence().position = closestPrev.kf.position
                     },
                   }
                 : undefined,
             next:
               closestNext !== undefined
                 ? {
-                    position: closestNext,
+                    position: closestNext.kf.position,
+                    itemKey:
+                      createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+                        obj,
+                        pathToProp,
+                        closestNext.kf.position,
+                      ),
                     jump: () => {
-                      obj.sheet.getSequence().position = closestNext
+                      obj.sheet.getSequence().position = closestNext.kf.position
                     },
                   }
                 : undefined,
