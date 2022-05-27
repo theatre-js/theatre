@@ -5,7 +5,7 @@ import {useFrame, Canvas} from '@react-three/fiber'
 import {Shadow, softShadows} from '@react-three/drei'
 import studio from '@theatre/studio'
 import {editable as e, SheetProvider} from '@theatre/r3f'
-import extension from '@theatre/r3f/extension'
+import extension from '@theatre/r3f/dist/extension'
 
 if (process.env.NODE_ENV === 'development') {
   studio.extend(extension)

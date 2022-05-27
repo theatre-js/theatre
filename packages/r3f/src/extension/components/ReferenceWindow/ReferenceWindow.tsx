@@ -1,4 +1,5 @@
 import type {VFC} from 'react'
+import {useMemo} from 'react'
 import React, {useEffect, useLayoutEffect, useRef} from 'react'
 import shallow from 'zustand/shallow'
 import type {WebGLRenderer} from 'three'
@@ -7,13 +8,20 @@ import styled, {keyframes} from 'styled-components'
 import {TiWarningOutline} from 'react-icons/ti'
 import noiseImageUrl from './noise-transparent.png'
 import useExtensionStore from '../../useExtensionStore'
+import {useVal} from '@theatre/react'
+import {getEditorSheetObject} from '../../editorStuff'
+import studio from '@theatre/studio'
 
 const Container = styled.div`
   position: relative;
-  width: fit-content;
-  height: fit-content;
   border-radius: 4px;
+  pointer-events: auto;
+  cursor: pointer;
   overflow: hidden;
+
+  &.hidden {
+    border-radius: 8px;
+  }
 `
 
 const Canvas = styled.canvas`
@@ -63,12 +71,25 @@ const Warning = styled.div`
   opacity: 0.8;
 `
 
+const Dot = styled.div`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: red;
+  pointer-events: auto;
+  cursor: pointer;
+`
+
 interface ReferenceWindowProps {
-  height: number
+  maxHeight: number
+  maxWidth: number
 }
 
-const ReferenceWindow: VFC<ReferenceWindowProps> = ({height}) => {
+const ReferenceWindow: VFC<ReferenceWindowProps> = ({maxHeight, maxWidth}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  const visible =
+    useVal(getEditorSheetObject()?.props.viewport.showReferenceWindow) ?? true
 
   const [gl] = useExtensionStore((state) => [state.gl], shallow)
   const [ref, bounds] = useMeasure()
@@ -84,7 +105,18 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({height}) => {
     }
   }, [gl, ref])
 
+  const [width, height] = useMemo(() => {
+    if (!gl) return [0, 0]
+    const aspectRatio = gl.domElement.width / gl.domElement.height
+
+    const width = Math.min(aspectRatio * maxHeight, maxWidth)
+
+    const height = width / aspectRatio
+    return [width, height]
+  }, [gl, maxWidth, maxHeight])
+
   useEffect(() => {
+    // if (!visible) return
     let animationHandle: number
     const draw = (gl: WebGLRenderer) => () => {
       animationHandle = requestAnimationFrame(draw(gl))
@@ -93,8 +125,6 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({height}) => {
         cancelAnimationFrame(animationHandle)
         return
       }
-
-      const width = (gl.domElement.width / gl.domElement.height) * height
 
       const ctx = canvasRef.current!.getContext('2d')!
 
@@ -114,20 +144,29 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({height}) => {
     return () => {
       cancelAnimationFrame(animationHandle)
     }
-  }, [gl, height, preserveDrawingBuffer])
+  }, [gl, width, height, preserveDrawingBuffer])
+
+  const toggleVisibility = () => {
+    studio.transaction(({set}) => {
+      set(getEditorSheetObject()!.props.viewport.showReferenceWindow, !visible)
+    })
+  }
+
+  // if (!visible) {
+  //   return <Dot onClick={toggleVisibility} />
+  // }
 
   return (
-    <Container>
+    <Container
+      onClick={toggleVisibility}
+      className={`${visible ? 'visible' : 'hidden'}`}
+      style={{
+        width: (visible ? width : 12) + 'px',
+        height: (visible ? height : 12) + 'px',
+      }}
+    >
       {gl?.domElement && preserveDrawingBuffer ? (
-        <Canvas
-          ref={canvasRef}
-          width={
-            ((bounds.width || gl.domElement.width) /
-              (bounds.height || gl.domElement.height)) *
-            height
-          }
-          height={height}
-        />
+        <Canvas ref={canvasRef} width={width} height={height} />
       ) : (
         <Static>
           <Warning>
