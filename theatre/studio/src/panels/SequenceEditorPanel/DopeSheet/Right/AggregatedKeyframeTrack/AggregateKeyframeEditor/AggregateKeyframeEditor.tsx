@@ -16,7 +16,7 @@ import React from 'react'
 import styled from 'styled-components'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import type {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregatedKeyframeTrack'
-import {AggregateKeyframeDot} from './AggregateKeyframeDot.tsx'
+import {AggregateKeyframeDot} from './AggregateKeyframeDot'
 import AggregateKeyframeConnector from './AggregateKeyframeConnector'
 
 const AggregateKeyframeEditorContainer = styled.div`
