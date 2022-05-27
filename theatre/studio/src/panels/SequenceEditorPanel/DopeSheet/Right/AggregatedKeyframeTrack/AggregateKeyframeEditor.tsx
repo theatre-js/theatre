@@ -319,7 +319,13 @@ function AggregateKeyframeDot_ref(
         affects: kf.itemKey,
         relationship: FocusRelationship.Hovered,
       })),
-    props.keyframes,
+    [
+      // Hmm: Is this a valid fix for the changing size of the useEffect's dependency array?
+      // also: does it work properly with selections?
+      props.keyframes
+        .map((keyframeWithTrack) => keyframeWithTrack.track.id)
+        .join('-'),
+    ],
   )
   return (
     <>

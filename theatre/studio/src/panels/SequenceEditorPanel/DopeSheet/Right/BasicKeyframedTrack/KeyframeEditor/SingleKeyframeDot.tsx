@@ -104,12 +104,10 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
       <HitZone
         ref={ref}
         {...presenceAttrs}
-        {...(presence.current !== FocusRelationship.Hovered
-          ? DopeSnapHitZoneUI.reactProps({
-              isDragging,
-              position: props.keyframe.position,
-            })
-          : {})}
+        {...DopeSnapHitZoneUI.reactProps({
+          isDragging,
+          position: props.keyframe.position,
+        })}
       />
       <Diamond isSelected={!!props.selection} focusRel={presence.current} />
       {inlineEditorPopover}

@@ -146,6 +146,7 @@ export default function usePresence(config: {
     current: FocusRelationship | undefined
     useRelationships(
       getRelationships: () => Array<RelationshipConfig>,
+      // QUESTION: is this right?
       deps: any[],
     ): void
   },
@@ -161,12 +162,13 @@ export default function usePresence(config: {
     {
       current: focus,
       useRelationships(getRelationships, deps) {
-        useEffect(
-          () =>
+        useEffect(() => {
+          console.log('deps', deps.length, ...deps)
+          return (
             config.key &&
-            presence.addRelationships(config.key, getRelationships()),
-          [config.key, ...deps],
-        )
+            presence.addRelationships(config.key, getRelationships())
+          )
+        }, [config.key, ...deps])
       },
     },
   ]
