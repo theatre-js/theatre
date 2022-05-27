@@ -1,14 +1,24 @@
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {VoidFn} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {transparentize} from 'polished'
 import React from 'react'
 import styled, {css} from 'styled-components'
+import usePresence from '@theatre/studio/uiComponents/usePresence'
 
 export type NearbyKeyframesControls = {
-  prev?: Pick<Keyframe, 'position'> & {jump: VoidFn}
-  cur: {type: 'on'; toggle: VoidFn} | {type: 'off'; toggle: VoidFn}
-  next?: Pick<Keyframe, 'position'> & {jump: VoidFn}
+  prev?: Pick<Keyframe, 'position'> & {
+    jump: VoidFn
+    itemKey: StudioSheetItemKey
+  }
+  cur:
+    | {type: 'on'; toggle: VoidFn; itemKey: StudioSheetItemKey}
+    | {type: 'off'; toggle: VoidFn}
+  next?: Pick<Keyframe, 'position'> & {
+    jump: VoidFn
+    itemKey: StudioSheetItemKey
+  }
 }
 
 const Container = styled.div`
@@ -165,16 +175,30 @@ namespace Icons {
   )
 }
 
-const NextPrevKeyframeCursors: React.FC<NearbyKeyframesControls> = (props) => {
+const NextPrevKeyframeCursors: React.VFC<NearbyKeyframesControls> = (props) => {
+  const [prevAttrs] = usePresence({
+    key: props.prev?.itemKey,
+  })
+  const [curAttrs] = usePresence({
+    key: props.cur?.type === 'on' ? props.cur.itemKey : undefined,
+  })
+  const [nextAttrs] = usePresence({
+    key: props.next?.itemKey,
+  })
+
   return (
     <Container>
-      <Prev available={!!props.prev} onClick={props.prev?.jump}>
+      <Prev available={!!props.prev} onClick={props.prev?.jump} {...prevAttrs}>
         <Icons.Prev />
       </Prev>
-      <CurButton isOn={props.cur.type === 'on'} onClick={props.cur.toggle}>
+      <CurButton
+        isOn={props.cur.type === 'on'}
+        onClick={props.cur.toggle}
+        {...curAttrs}
+      >
         <Icons.Cur />
       </CurButton>
-      <Next available={!!props.next} onClick={props.next?.jump}>
+      <Next available={!!props.next} onClick={props.next?.jump} {...nextAttrs}>
         <Icons.Next />
       </Next>
     </Container>

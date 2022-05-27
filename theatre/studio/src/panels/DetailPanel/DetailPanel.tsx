@@ -1,6 +1,6 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
 import {usePrism, useVal} from '@theatre/react'
-import React, {useEffect, useLayoutEffect} from 'react'
+import React, {useEffect, useLayoutEffect, useState} from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
 import {
@@ -14,6 +14,7 @@ import ProjectDetails from './ProjectDetails'
 import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
 import {Box, prism, val} from '@theatre/dataverse'
+import {usePresenceListeners} from '@theatre/studio/uiComponents/usePresence'
 
 const headerHeight = `32px`
 
@@ -85,6 +86,9 @@ const DetailPanel: React.FC<{}> = (props) => {
     }
   }, [])
 
+  const [containerElt, setContainerElt] = useState<null | HTMLDivElement>(null)
+  usePresenceListeners(containerElt)
+
   return usePrism(() => {
     const selection = getOutlineSelection()
 
@@ -94,6 +98,7 @@ const DetailPanel: React.FC<{}> = (props) => {
         <Container
           data-testid="DetailPanel-Object"
           pin={pin || hostspotActive}
+          ref={setContainerElt}
           onMouseEnter={() => {
             isDetailPanelHoveredB.set(true)
           }}

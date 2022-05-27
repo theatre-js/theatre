@@ -1,7 +1,4 @@
-import type {
-  Keyframe,
-  TrackData,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {
   DopeSheetSelection,
   SequenceEditorPanelLayout,
@@ -15,7 +12,11 @@ import {prism} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import type {
+  SequenceTrackId,
+  StudioSheetItemKey,
+} from '@theatre/shared/utils/ids'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
 import {AggregateKeyframePositionIsSelected} from './AggregatedKeyframeTrack'
 import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
@@ -31,6 +32,9 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {usePrism} from '@theatre/react'
 import {selectedKeyframeConnections} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
+import usePresence, {
+  FocusRelationship,
+} from '@theatre/studio/uiComponents/usePresence'
 
 const POPOVER_MARGIN_PX = 5
 
@@ -50,13 +54,7 @@ export type IAggregateKeyframesAtPosition = {
   /** all tracks have a keyframe for this position (otherwise, false means 'partial') */
   allHere: boolean
   selected: AggregateKeyframePositionIsSelected | undefined
-  keyframes: {
-    kf: Keyframe
-    track: {
-      id: SequenceTrackId
-      data: TrackData
-    }
-  }[]
+  keyframes: KeyframeWithTrack[]
 }
 
 type AggregatedKeyframeConnection = SheetObjectAddress & {
@@ -91,7 +89,7 @@ export type IAggregateKeyframeEditorProps = {
 const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
   props,
 ) => {
-  const {cur, connected, isAggregateEditingInCurvePopover} =
+  const {cur, connected, itemKey, isAggregateEditingInCurvePopover} =
     useAggregateKeyframeEditorUtils(props)
 
   const {isPointerBeingCaptured} = usePointerCapturing(
@@ -132,6 +130,7 @@ const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
       }}
     >
       <AggregateKeyframeDot
+        itemKey={itemKey}
         keyframes={cur.keyframes}
         position={cur.position}
         theme={{
@@ -158,6 +157,8 @@ const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
   )
 }
 
+// I think this was pulled out for performance
+// 1/10: Not sure this is properly split up
 function useAggregateKeyframeEditorUtils(
   props: Pick<
     IAggregateKeyframeEditorProps,
@@ -193,29 +194,56 @@ function useAggregateKeyframeEditorUtils(
           right: next.keyframes[i].kf,
         }))
 
-    const {projectId, sheetId} = props.viewModel.sheetObject.address
+    const allConnections = iif(() => {
+      const {projectId, sheetId} = props.viewModel.sheetObject.address
 
-    const selectedConnections = prism
-      .memo(
-        'selectedConnections',
-        () =>
-          selectedKeyframeConnections(
-            props.viewModel.sheetObject.address.projectId,
-            props.viewModel.sheetObject.address.sheetId,
-            props.selection,
-          ),
-        [projectId, sheetId, props.selection],
-      )
-      .getValue()
+      const selectedConnections = prism
+        .memo(
+          'selectedConnections',
+          () =>
+            selectedKeyframeConnections(
+              props.viewModel.sheetObject.address.projectId,
+              props.viewModel.sheetObject.address.sheetId,
+              props.selection,
+            ),
+          [projectId, sheetId, props.selection],
+        )
+        .getValue()
 
-    const allConnections = [...aggregatedConnections, ...selectedConnections]
+      return [...aggregatedConnections, ...selectedConnections]
+    })
 
     const isAggregateEditingInCurvePopover = aggregatedConnections.every(
       (con) => isConnectionEditingInCurvePopover(con),
     )
 
-    return {cur, connected, isAggregateEditingInCurvePopover, allConnections}
-  }, [])
+    const itemKey = prism.memo(
+      'itemKey',
+      () => {
+        if (props.viewModel.type === 'sheetObject') {
+          return createStudioSheetItemKey.forSheetObjectAggregateKeyframe(
+            props.viewModel.sheetObject,
+            cur.position,
+          )
+        } else {
+          return createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+            props.viewModel.sheetObject,
+            props.viewModel.pathToProp,
+            cur.position,
+          )
+        }
+      },
+      [props.viewModel.sheetObject, cur.position],
+    )
+
+    return {
+      itemKey,
+      cur,
+      connected,
+      isAggregateEditingInCurvePopover,
+      allConnections,
+    }
+  }, [props.aggregateKeyframes[props.index].position])
 }
 
 const AggregateCurveEditorPopover: React.FC<
@@ -242,16 +270,22 @@ const DOT_SIZE_PX = 16
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
 
 /** The keyframe diamond ◆ */
-const DotContainer = styled.div`
+const DotContainer = styled.div<{presence: FocusRelationship | undefined}>`
   position: absolute;
   ${absoluteDims(DOT_SIZE_PX)}
   z-index: 1;
+
+  & svg rect:last-of-type {
+    ${({presence}) =>
+      presence === FocusRelationship.Hovered
+        ? `stroke: white !important; stroke-width: 2px;`
+        : ''}
+  }
 `
 
 const HitZone = styled.div`
   z-index: 2;
-  /* TEMP: Disabled until interactivity */
-  /* cursor: ew-resize; */
+  cursor: ew-resize;
 
   ${DopeSnapHitZoneUI.CSS}
 
@@ -259,8 +293,7 @@ const HitZone = styled.div`
     ${DopeSnapHitZoneUI.CSS_WHEN_SOMETHING_DRAGGING}
   }
 
-  /* TEMP: Disabled until interactivity */
-  /* &:hover + ${DotContainer}, */
+  &:hover + ${DotContainer},
   #pointer-root.draggingPositionInSequenceEditor &:hover + ${DotContainer},
   // notice "," css "or"
   &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS} + ${DotContainer} {
@@ -271,6 +304,7 @@ const HitZone = styled.div`
 const AggregateKeyframeDot = React.forwardRef(AggregateKeyframeDot_ref)
 function AggregateKeyframeDot_ref(
   props: React.PropsWithChildren<{
+    itemKey: StudioSheetItemKey
     theme: IDotThemeValues
     isAllHere: boolean
     position: number
@@ -278,16 +312,26 @@ function AggregateKeyframeDot_ref(
   }>,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
+  const [attrs, presence] = usePresence({key: props.itemKey})
+  presence.useRelationships(
+    () =>
+      props.keyframes.map((kf) => ({
+        affects: kf.itemKey,
+        relationship: FocusRelationship.Hovered,
+      })),
+    props.keyframes,
+  )
   return (
     <>
       <HitZone
         ref={ref}
+        {...attrs}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging: false,
           position: props.position,
         })}
       />
-      <DotContainer>
+      <DotContainer presence={presence.current}>
         {props.isAllHere ? (
           <AggregateDotAllHereSvg {...props.theme} />
         ) : (
@@ -370,3 +414,7 @@ const AggregateDotSomeHereSvg = (theme: IDotThemeValues) => (
 )
 
 export default AggregateKeyframeEditor
+
+function iif<F extends () => any>(fn: F): ReturnType<F> {
+  return fn()
+}
