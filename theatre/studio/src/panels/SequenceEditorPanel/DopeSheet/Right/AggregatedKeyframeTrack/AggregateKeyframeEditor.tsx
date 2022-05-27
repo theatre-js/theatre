@@ -164,20 +164,18 @@ function useDragForAggregateKeyframeDot(
       onDragStart(event) {
         const props = propsRef.current
         if (props.selection) {
-          const {selection, leaf} = props
-          const {sheetObject} = leaf
+          const {selection, viewModel} = props
+          const {sheetObject} = viewModel
           return selection
             .getDragHandlers({
               ...sheetObject.address,
-              pathToProp: leaf.pathToProp,
-              trackId: leaf.trackId,
-              keyframeId: props.keyframe.id,
               domNode: node!,
-              positionAtStartOfDrag:
-                props.trackData.keyframes[props.index].position,
+              positionAtStartOfDrag: props.keyframes[0].kf.position,
             })
             .onDragStart(event)
         }
+
+        const {keyframes} = props
 
         const propsAtStartOfDrag = props
         const toUnitSpace = val(
@@ -188,15 +186,13 @@ function useDragForAggregateKeyframeDot(
 
         return {
           onDrag(dx, dy, event) {
-            const original =
-              propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
             const newPosition = Math.max(
               // check if our event hoversover a [data-pos] element
               DopeSnap.checkIfMouseEventSnapToPos(event, {
                 ignore: node,
               }) ??
                 // if we don't find snapping target, check the distance dragged + original position
-                original.position + toUnitSpace(dx),
+                keyframes[0].kf.position + toUnitSpace(dx),
               // sanitize to minimum of zero
               0,
             )
@@ -204,16 +200,19 @@ function useDragForAggregateKeyframeDot(
             tempTransaction?.discard()
             tempTransaction = undefined
             tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-              stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
-                {
-                  ...propsAtStartOfDrag.leaf.sheetObject.address,
-                  trackId: propsAtStartOfDrag.leaf.trackId,
-                  keyframes: [{...original, position: newPosition}],
-                  snappingFunction: val(
-                    propsAtStartOfDrag.layoutP.sheet,
-                  ).getSequence().closestGridPosition,
-                },
-              )
+              for (const keyframe of keyframes) {
+                const original = keyframe.kf
+                stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
+                  {
+                    ...propsAtStartOfDrag.viewModel.sheetObject.address,
+                    trackId: keyframe.track.id,
+                    keyframes: [{...original, position: newPosition}],
+                    snappingFunction: val(
+                      propsAtStartOfDrag.layoutP.sheet,
+                    ).getSequence().closestGridPosition,
+                  },
+                )
+              }
             })
           },
           onDragEnd(dragHappened) {
@@ -231,7 +230,7 @@ function useDragForAggregateKeyframeDot(
 
   const [isDragging] = useDrag(node, useDragOpts)
 
-  useLockFrameStampPosition(isDragging, props.keyframe.position)
+  useLockFrameStampPosition(isDragging, props.keyframes[0].kf.position)
   useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   return [isDragging]
@@ -245,13 +244,21 @@ type IAggregateKeyframeDotProps = {
 } & IAggregateKeyframeEditorProps
 
 const AggregateKeyframeDot: React.FC<IAggregateKeyframeDotProps> = (props) => {
-  // TODO: `useDragForAggregateKeyframeDot` comes here
   const logger = useLogger('AggregateKeyframeDot')
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
   const [contextMenu] = useAggregateKeyframeContextMenu(node, logger, props)
+
+  const [isDragging] = useDragForAggregateKeyframeDot(node, props, {
+    onClickFromDrag(dragStartEvent) {
+      // TODO Aggregate inline keyframe editor
+      // openEditor(dragStartEvent, ref.current!)
+    },
+  })
+
   return (
     <>
       <HitZone
+        data-hitzone
         ref={ref}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging: false,

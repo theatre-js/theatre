@@ -6,7 +6,6 @@ import type {
   SequenceEditorTree_PropWithChildren,
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
@@ -79,7 +78,7 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
       layoutP={layoutP}
       viewModel={viewModel}
       aggregateKeyframes={posKfs}
-      key={'agg-' + position}
+      key={'agg-' + keyframes[0].kf.id}
       selection={
         selectedPositions.has(position) === true ? selection : undefined
       }
