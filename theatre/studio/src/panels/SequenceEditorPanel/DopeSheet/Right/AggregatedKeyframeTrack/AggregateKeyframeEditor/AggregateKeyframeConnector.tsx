@@ -9,49 +9,49 @@ import type {IAggregateKeyframeEditorProps} from './AggregateKeyframeEditor'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
 import {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregatedKeyframeTrack'
 
-type IAgregateKeyframeConnectorProps = IAggregateKeyframeEditorProps
+type IAggregateKeyframeConnectorProps = IAggregateKeyframeEditorProps
 
-const AggregateKeyframeConnector: React.VFC<IAgregateKeyframeConnectorProps> = (
-  props,
-) => {
-  const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
+const AggregateKeyframeConnector: React.VFC<IAggregateKeyframeConnectorProps> =
+  (props) => {
+    const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
 
-  const [isDragging] = useDragKeyframe(node, props)
+    const [isDragging] = useDragKeyframe(node, props)
 
-  const {index, aggregateKeyframes} = props
-  const cur = aggregateKeyframes[index]
-  const next = props.aggregateKeyframes[index + 1]
-  const connected =
-    next && cur.keyframes.length === next.keyframes.length
-      ? // all keyframes are same in the next position
-        cur.keyframes.every(
-          ({track}, ind) => next.keyframes[ind].track === track,
-        ) && {
-          length: next.position - cur.position,
-          selected:
-            cur.selected === AggregateKeyframePositionIsSelected.AllSelected &&
-            next.selected === AggregateKeyframePositionIsSelected.AllSelected,
-        }
-      : null
+    const {index, aggregateKeyframes} = props
+    const cur = aggregateKeyframes[index]
+    const next = props.aggregateKeyframes[index + 1]
+    const connected =
+      next && cur.keyframes.length === next.keyframes.length
+        ? // all keyframes are same in the next position
+          cur.keyframes.every(
+            ({track}, ind) => next.keyframes[ind].track === track,
+          ) && {
+            length: next.position - cur.position,
+            selected:
+              cur.selected ===
+                AggregateKeyframePositionIsSelected.AllSelected &&
+              next.selected === AggregateKeyframePositionIsSelected.AllSelected,
+          }
+        : null
 
-  // We don't want to interrupt an existing drag, so in order to persist the dragged
-  // html node, we just set the connector length to 0, but we don't remove it yet.
-  return connected || isDragging ? (
-    <ConnectorLine
-      ref={nodeRef}
-      isPopoverOpen={false}
-      connectorLengthInUnitSpace={connected ? connected.length : 0}
-      isSelected={connected ? connected.selected : false}
-    />
-  ) : (
-    <></>
-  )
-}
+    // We don't want to interrupt an existing drag, so in order to persist the dragged
+    // html node, we just set the connector length to 0, but we don't remove it yet.
+    return connected || isDragging ? (
+      <ConnectorLine
+        ref={nodeRef}
+        isPopoverOpen={false}
+        connectorLengthInUnitSpace={connected ? connected.length : 0}
+        isSelected={connected ? connected.selected : false}
+      />
+    ) : (
+      <></>
+    )
+  }
 export default AggregateKeyframeConnector
 
 function useDragKeyframe(
   node: HTMLDivElement | null,
-  props: IAgregateKeyframeConnectorProps,
+  props: IAggregateKeyframeConnectorProps,
 ) {
   const propsRef = useRef(props)
   propsRef.current = props
