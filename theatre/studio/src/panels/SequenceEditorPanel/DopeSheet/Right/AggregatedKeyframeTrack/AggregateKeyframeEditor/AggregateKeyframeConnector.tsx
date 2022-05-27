@@ -64,33 +64,21 @@ function useDragKeyframe(
 
         const keyframes = props.aggregateKeyframes[props.index].keyframes
 
-        if (props.selection) {
-          const selectedKeyframeIDs = Object.values(
-            props.selection.byObjectKey!,
-          ).flatMap((ok) =>
-            Object.values(ok!.byTrackId).flatMap((ti) =>
-              Object.keys(ti!.byKeyframeId),
-            ),
-          )
-
-          // If all children are selected, we delegate to the selection's drag handler
-          // otherwise we handle it ourselves
-          const allChildrenAreSelected = keyframes
-            .map((kf) => kf.kf.id)
-            .every((id) => selectedKeyframeIDs.includes(id))
-
-          if (allChildrenAreSelected) {
-            const {selection, viewModel} = props
-            const {sheetObject} = viewModel
-            return selection
-              .getDragHandlers({
-                ...sheetObject.address,
-                domNode: node!,
-                positionAtStartOfDrag:
-                  props.aggregateKeyframes[props.index].position,
-              })
-              .onDragStart(event)
-          }
+        if (
+          props.selection &&
+          props.aggregateKeyframes[props.index].selected ===
+            AggregateKeyframePositionIsSelected.AllSelected
+        ) {
+          const {selection, viewModel} = props
+          const {sheetObject} = viewModel
+          return selection
+            .getDragHandlers({
+              ...sheetObject.address,
+              domNode: node!,
+              positionAtStartOfDrag:
+                props.aggregateKeyframes[props.index].position,
+            })
+            .onDragStart(event)
         }
 
         const propsAtStartOfDrag = props
