@@ -28,9 +28,7 @@ const AggregateKeyframeConnector: React.VFC<IAggregateKeyframeConnectorProps> =
           ) && {
             length: next.position - cur.position,
             selected:
-              cur.selected ===
-                AggregateKeyframePositionIsSelected.AllSelected &&
-              next.selected === AggregateKeyframePositionIsSelected.AllSelected,
+              cur.selected === AggregateKeyframePositionIsSelected.AllSelected,
           }
         : null
 
