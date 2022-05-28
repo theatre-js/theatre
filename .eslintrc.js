@@ -26,7 +26,7 @@ module.exports = {
   extends: [],
   rules: {
     'unused-imports/no-unused-imports': 'warn',
-    'tsdoc/syntax': 'warn',
+    // 'tsdoc/syntax': 'warn',
     'no-restricted-imports': [
       'error',
       {

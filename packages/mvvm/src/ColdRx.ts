@@ -1,0 +1,59 @@
+import type {RxForView} from './best-practices'
+import {Rx} from './best-practices'
+import type {DisposableLike, TeardownLogic} from './Disposable'
+import {Disposable, execFinalizer} from './Disposable'
+import type {Tapper} from './types'
+import {arrRemove} from './utils/arrRemove'
+
+/** Multicast by default observables */
+export class ColdRx<T> extends Rx<T> implements RxForView<T> {
+  constructor(private readonly source: (observer: Tapper<T>) => TeardownLogic) {
+    super()
+  }
+  #observers: Tapper<T> | Tapper<T>[] | null = null
+  #sourceTeardown: TeardownLogic = undefined
+
+  // @ts-ignore
+  forView: RxForView<T>['forView']
+  // @ts-ignore
+  forView() {
+    return this
+  }
+
+  private _sourceEmit(value: T) {
+    if (!this.#observers) return
+    if (Array.isArray(this.#observers)) {
+      for (const obs of this.#observers) {
+        obs(value)
+      }
+    } else {
+      this.#observers(value)
+    }
+  }
+
+  private _dispose(observer: Tapper<T>) {
+    const disposeSource = Array.isArray(this.#observers)
+      ? (arrRemove(this.#observers, observer), this.#observers.length === 0)
+      : this.#observers === observer
+    if (disposeSource) {
+      this.#observers = null
+      execFinalizer(this.#sourceTeardown)
+      this.#sourceTeardown = undefined
+    }
+  }
+
+  /** Returns a disposable for removing this tap in particular */
+  override tap(disposable: Disposable, observer: Tapper<T>): DisposableLike {
+    const os = this.#observers
+    this.#observers = Array.isArray(os)
+      ? (os.push(observer), os)
+      : ((this.#sourceTeardown = this.source(this._sourceEmit.bind(this))), os)
+      ? [os, observer]
+      : observer
+    const like: DisposableLike = new Disposable(
+      this._dispose.bind(this, observer),
+    )
+    disposable.add(like)
+    return like
+  }
+}

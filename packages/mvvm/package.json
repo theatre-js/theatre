@@ -1,0 +1,23 @@
+{
+  "name": "@theatre/mvvm",
+  "version": "1.0.0-dev",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Cole Lawrence",
+    "email": "cole@theatrejs.com",
+    "url": "https://github.com/colelawrence"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "typecheck": "yarn run _declarations:emit",
+    "_declarations:emit": "tsc --build ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "@types/lodash-es": "^4.17.4",
+    "@types/node": "^15.6.2",
+    "@types/react": "^17.0.9",
+    "typescript": "^4.4.2"
+  }
+}

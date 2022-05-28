@@ -6594,6 +6594,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@theatre/mvvm@workspace:packages/mvvm":
+  version: 0.0.0-use.local
+  resolution: "@theatre/mvvm@workspace:packages/mvvm"
+  dependencies:
+    "@types/jest": ^26.0.23
+    "@types/lodash-es": ^4.17.4
+    "@types/node": ^15.6.2
+    "@types/react": ^17.0.9
+    typescript: ^4.4.2
+  languageName: unknown
+  linkType: soft
+
 "@theatre/r3f@workspace:*, @theatre/r3f@workspace:packages/r3f":
   version: 0.0.0-use.local
   resolution: "@theatre/r3f@workspace:packages/r3f"
