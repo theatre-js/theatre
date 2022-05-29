@@ -179,6 +179,31 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
    * Gets the current value of the derivation. If the value is stale, it causes the derivation to freshen.
    */
   getValue(): V {
+    /**
+     * TODO We should prevent (or warn about) a common mistake users make, which is reading the value of
+     * a derivation in the body of a react component (e.g. `der.getValue()` (often via `val()`) instead of `useVal()`
+     * or `uesPrism()`).
+     *
+     * Although that's the most common example of this mistake, you can also find it outside of react components.
+     * Basically the user runs `der.getValue()` assuming the read is detected by a wrapping prism when it's not.
+     *
+     * Sometiems the derivation isn't even hot when the user assumes it is.
+     *
+     * We can fix this type of mistake by:
+     * 1. Warning the user when they call `getValue()` on a cold derivation.
+     * 2. Warning the user about calling `getValue()` on a hot-but-stale derivation
+     *    if `getValue()` isn't called by a known mechanism like a `DerivationEmitter`.
+     *
+     * Design constraints:
+     * - This fix should not have a perf-penalty in production. Perhaps use a global flag + `process.env.NODE_ENV !== 'production'`
+     *   to enable it.
+     * - In the case of `DerivationValuelessEmitter`, we don't control when the user calls
+     *   `getValue()` (as opposed to `DerivationEmitter` which calls `getValue()` directly).
+     *   Perhaps we can disable the check in that case.
+     * - Probably the best place to add this check is right here in this method plus some changes to `reportResulutionStart()`,
+     *   which would have to be changed to let the caller know if there is an actual collector (a prism)
+     *   present in its stack.
+     */
     reportResolutionStart(this)
 
     if (!this._isFresh) {
