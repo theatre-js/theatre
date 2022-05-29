@@ -91,6 +91,7 @@ const CurveSegmentEditor: React.VFC<ICurveSegmentEditorProps> = (props) => {
 
   const [refLeft, nodeLeft] = useRefAndState<SVGCircleElement | null>(null)
   useKeyframeDrag(nodeSVG, nodeLeft, props, (dx, dy) => {
+    // TODO - document this
     const handleX = clamp(left.handles[2] + dx * viewboxToElWidthRatio, 0, 1)
     const handleY = left.handles[3] - dy * viewboxToElHeightRatio
     return [handleX, handleY, right.handles[0], right.handles[1]]
@@ -98,6 +99,7 @@ const CurveSegmentEditor: React.VFC<ICurveSegmentEditorProps> = (props) => {
 
   const [refRight, nodeRight] = useRefAndState<SVGCircleElement | null>(null)
   useKeyframeDrag(nodeSVG, nodeRight, props, (dx, dy) => {
+    // TODO - document this
     const handleX = clamp(right.handles[0] + dx * viewboxToElWidthRatio, 0, 1)
     const handleY = right.handles[1] - dy * viewboxToElHeightRatio
     return [left.handles[2], left.handles[3], handleX, handleY]
@@ -289,7 +291,7 @@ function useKeyframeDrag(
         }
       },
     }),
-    [svgNode, props],
+    [svgNode, props.onCurveChange, props.onCancelCurveChange],
   )
 
   useDrag(node, handlers)

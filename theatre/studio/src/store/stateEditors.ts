@@ -777,8 +777,6 @@ namespace stateEditors {
           /**
            * Sets the easing between keyframes
            *
-           *
-           *
            * X = in keyframeIds
            * * = not in keyframeIds
            * + = modified handle
@@ -786,6 +784,8 @@ namespace stateEditors {
            * X- --- -*- --- -X
            * X+ --- +*- --- -X+
            * ```
+           *
+           * TODO - explain further
            */
           export function setTweenBetweenKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
@@ -850,6 +850,9 @@ namespace stateEditors {
             if (!track) return
             track.keyframes = track.keyframes.map((kf) => {
               if (kf.id === p.keyframeId) {
+                // Use given value or fallback to original value,
+                // allowing the caller to customize exactly which side
+                // of the curve they are editing.
                 return {
                   ...kf,
                   handles: [

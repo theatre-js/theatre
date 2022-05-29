@@ -47,40 +47,19 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
     'KeyframeEditor Connector',
   )
 
-  const selectedConnections = selectedKeyframeConnections(
-    props.leaf.sheetObject.address.projectId,
-    props.leaf.sheetObject.address.sheetId,
-    props.selection,
-  ).getValue()
-
-  const curveConnection: KeyframeConnectionWithAddress = {
-    left: cur,
-    right: next,
-    trackId: props.leaf.trackId,
-    ...props.leaf.sheetObject.address,
-  }
-
-  const rightDims = val(props.layoutP.rightDims)
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
-    {
-      debugName: 'Connector',
-      closeWhenPointerIsDistant: !isPointerBeingCaptured(),
-      constraints: {
-        minX: rightDims.screenX + POPOVER_MARGIN,
-        maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN,
-      },
-    },
     () => {
-      return (
-        <EasingPopover showPopoverEdgeTriangle={false}>
-          <CurveEditorPopover
-            curveConnection={curveConnection}
-            additionalConnections={selectedConnections}
-            onRequestClose={closePopover}
-          />
-        </EasingPopover>
-      )
+      const rightDims = val(props.layoutP.rightDims)
+      return {
+        debugName: 'Connector',
+        closeWhenPointerIsDistant: !isPointerBeingCaptured(),
+        constraints: {
+          minX: rightDims.screenX + POPOVER_MARGIN,
+          maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN,
+        },
+      }
     },
+    () => <SingleCurveEditorPopover {...props} closePopover={closePopover} />,
   )
 
   const [contextMenu] = useConnectorContextMenu(
@@ -125,6 +104,48 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
   )
 }
 export default BasicKeyframeConnector
+
+const SingleCurveEditorPopover: React.FC<
+  IBasicKeyframeConnectorProps & {closePopover: (reason: string) => void}
+> = React.forwardRef((props, ref) => {
+  const {index, trackData, selection} = props
+  const cur = trackData.keyframes[index]
+  const next = trackData.keyframes[index + 1]
+
+  const trackId = props.leaf.trackId
+  const address = props.leaf.sheetObject.address
+
+  const selectedConnections = usePrism(
+    () =>
+      selectedKeyframeConnections(
+        address.projectId,
+        address.sheetId,
+        selection,
+      ).getValue(),
+    [address, selection],
+  )
+
+  const curveConnection: KeyframeConnectionWithAddress = {
+    left: cur,
+    right: next,
+    trackId,
+    ...address,
+  }
+
+  return (
+    <EasingPopover
+      showPopoverEdgeTriangle={false}
+      // @ts-ignore @todo
+      ref={ref}
+    >
+      <CurveEditorPopover
+        curveConnection={curveConnection}
+        additionalConnections={selectedConnections}
+        onRequestClose={props.closePopover}
+      />
+    </EasingPopover>
+  )
+})
 
 function useDragKeyframe(
   node: HTMLDivElement | null,

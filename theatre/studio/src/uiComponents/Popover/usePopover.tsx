@@ -46,7 +46,7 @@ type Opts = {
 }
 
 export default function usePopover(
-  _opts: Opts | (() => Opts),
+  opts: Opts | (() => Opts),
   render: () => React.ReactElement,
 ): [node: React.ReactNode, open: OpenFn, close: CloseFn, isOpen: boolean] {
   const _debug = (...args: any) => {}
@@ -55,7 +55,7 @@ export default function usePopover(
     isOpen: false,
   })
 
-  const optsRef = useRef(_opts)
+  const optsRef = useRef(opts)
 
   const close = useCallback<CloseFn>((reason: string): void => {
     _debug(`closing due to "${reason}"`)

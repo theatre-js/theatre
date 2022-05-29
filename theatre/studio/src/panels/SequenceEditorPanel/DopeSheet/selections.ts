@@ -38,6 +38,10 @@ export type KeyframeConnectionWithAddress = {
  * Returns an array of all the selected keyframes
  * that are connected to one another. Useful for changing
  * the tweening in between keyframes.
+ *
+ * TODO - rename to selectedKeyframeConnectionsD(), or better yet,
+ * make it a `prism.ensurePrism()` function, rather than returning
+ * a prism.
  */
 export function selectedKeyframeConnections(
   projectId: ProjectId,
