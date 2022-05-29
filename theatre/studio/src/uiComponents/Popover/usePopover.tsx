@@ -1,11 +1,5 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import React, {useCallback, useContext, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
 import {PortalContext} from 'reakit'
 import type {AbsolutePlacementBoxConstraints} from './TooltipWrapper'
@@ -25,6 +19,12 @@ type State =
         clientY: number
       }
       target: HTMLElement
+      opts: Opts
+      onPointerOutside?: {
+        threshold: number
+        callback: (e: MouseEvent) => void
+      }
+      onClickOutside: () => void
     }
 
 const PopoverAutoCloseLock = React.createContext({
@@ -37,33 +37,61 @@ const PopoverAutoCloseLock = React.createContext({
   },
 })
 
+type Opts = {
+  debugName: string
+  closeWhenPointerIsDistant?: boolean
+  pointerDistanceThreshold?: number
+  closeOnClickOutside?: boolean
+  constraints?: AbsolutePlacementBoxConstraints
+}
+
 export default function usePopover(
-  opts: {
-    debugName: string
-    closeWhenPointerIsDistant?: boolean
-    pointerDistanceThreshold?: number
-    closeOnClickOutside?: boolean
-    constraints?: AbsolutePlacementBoxConstraints
-  },
+  opts: Opts | (() => Opts),
   render: () => React.ReactElement,
 ): [node: React.ReactNode, open: OpenFn, close: CloseFn, isOpen: boolean] {
-  const _debug = (...args: any) => {} // console.debug.bind(console, opts.debugName)
+  const _debug = (...args: any) => {}
 
-  const [state, setState] = useState<State>({
+  const [stateRef, state] = useRefAndState<State>({
     isOpen: false,
   })
 
+  const optsRef = useRef(opts)
+
+  const close = useCallback<CloseFn>((reason: string): void => {
+    _debug(`closing due to "${reason}"`)
+    stateRef.current = {isOpen: false}
+  }, [])
+
   const open = useCallback<OpenFn>((e, target) => {
-    setState({
+    const opts =
+      typeof optsRef.current === 'function'
+        ? optsRef.current()
+        : optsRef.current
+
+    function onClickOutside(): void {
+      if (lock.childHasFocusRef.current) return
+      if (opts.closeOnClickOutside !== false) {
+        close('clicked outside popover')
+      }
+    }
+
+    stateRef.current = {
       isOpen: true,
       clickPoint: {clientX: e.clientX, clientY: e.clientY},
       target,
-    })
-  }, [])
-
-  const close = useCallback<CloseFn>((reason) => {
-    _debug(`closing due to "${reason}"`)
-    setState({isOpen: false})
+      opts,
+      onClickOutside: onClickOutside,
+      onPointerOutside:
+        opts.closeWhenPointerIsDistant === false
+          ? undefined
+          : {
+              threshold: opts.pointerDistanceThreshold ?? 100,
+              callback: () => {
+                if (lock.childHasFocusRef.current) return
+                close('pointer outside')
+              },
+            },
+    }
   }, [])
 
   /**
@@ -76,24 +104,7 @@ export default function usePopover(
     state,
   })
 
-  const onClickOutside = useCallback(() => {
-    if (lock.childHasFocusRef.current) return
-    if (opts.closeOnClickOutside !== false) {
-      close('clicked outside popover')
-    }
-  }, [opts.closeOnClickOutside])
-
   const portalLayer = useContext(PortalContext)
-  const onPointerOutside = useMemo(() => {
-    if (opts.closeWhenPointerIsDistant === false) return undefined
-    return {
-      threshold: opts.pointerDistanceThreshold ?? 100,
-      callback: () => {
-        if (lock.childHasFocusRef.current) return
-        close('pointer outside')
-      },
-    }
-  }, [opts.closeWhenPointerIsDistant])
 
   const node = state.isOpen ? (
     createPortal(
@@ -101,9 +112,9 @@ export default function usePopover(
         <TooltipWrapper
           children={render}
           target={state.target}
-          onClickOutside={onClickOutside}
-          onPointerOutside={onPointerOutside}
-          constraints={opts.constraints}
+          onClickOutside={state.onClickOutside}
+          onPointerOutside={state.onPointerOutside}
+          constraints={state.opts.constraints}
         />
       </PopoverAutoCloseLock.Provider>,
       portalLayer!,

@@ -2,12 +2,12 @@ import React from 'react'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import clamp from 'lodash-es/clamp'
-import type CurveEditorPopover from './CurveEditorPopover'
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import type {CubicBezierHandles} from './shared'
 import {useFreezableMemo} from './useFreezableMemo'
 import {COLOR_BASE} from './colors'
+import type {KeyframeConnectionWithAddress} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
 // Defines the dimensions of the SVG viewbox space
 const VIEWBOX_PADDING = 0.12
@@ -29,6 +29,13 @@ const CURVE_END_OVERSHOOT_COLOR = '#3EAAA4'
 const CONTROL_COLOR = '#B3B3B3'
 const HANDLE_COLOR = '#3eaaa4'
 const HANDLE_HOVER_COLOR = '#67dfd8'
+
+const BACKGROUND_CURVE_COLORS = [
+  'goldenrod',
+  'cornflowerblue',
+  'dodgerblue',
+  'lawngreen',
+]
 
 const Circle = styled.circle`
   stroke-width: 0.1px;
@@ -53,23 +60,26 @@ const HitZone = styled.circle`
   }
 `
 
-type IProps = {
+type ICurveSegmentEditorProps = {
   onCurveChange: (newHandles: CubicBezierHandles) => void
   onCancelCurveChange: () => void
-} & Parameters<typeof CurveEditorPopover>[0]
+  curveConnection: KeyframeConnectionWithAddress
+  backgroundConnections: Array<KeyframeConnectionWithAddress>
+}
 
-const CurveSegmentEditor: React.FC<IProps> = (props) => {
-  const {index, trackData} = props
-  const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
-
+const CurveSegmentEditor: React.VFC<ICurveSegmentEditorProps> = (props) => {
+  const {
+    curveConnection,
+    curveConnection: {left, right},
+    backgroundConnections,
+  } = props
   // Calculations towards keeping the handles in the viewbox. The extremum space
   // of this editor vertically scales to keep the handles in the viewbox of the
   // SVG. This produces a nice "stretching space" effect while you are dragging
   // the handles.
   // Demo: https://user-images.githubusercontent.com/11082236/164542544-f1f66de2-f62e-44dd-b4cb-05b5f6e73a52.mp4
-  const minY = Math.min(0, 1 - next.handles[1], 1 - cur.handles[3])
-  const maxY = Math.max(1, 1 - next.handles[1], 1 - cur.handles[3])
+  const minY = Math.min(0, 1 - right.handles[1], 1 - left.handles[3])
+  const maxY = Math.max(1, 1 - right.handles[1], 1 - left.handles[3])
   const h = Math.max(1, maxY - minY)
 
   const toExtremumSpace = (y: number) => (y - minY) / h
@@ -81,26 +91,26 @@ const CurveSegmentEditor: React.FC<IProps> = (props) => {
 
   const [refLeft, nodeLeft] = useRefAndState<SVGCircleElement | null>(null)
   useKeyframeDrag(nodeSVG, nodeLeft, props, (dx, dy) => {
-    const handleX = clamp(cur.handles[2] + dx * viewboxToElWidthRatio, 0, 1)
-    const handleY = cur.handles[3] - dy * viewboxToElHeightRatio
-
-    return [handleX, handleY, next.handles[0], next.handles[1]]
+    // TODO - document this
+    const handleX = clamp(left.handles[2] + dx * viewboxToElWidthRatio, 0, 1)
+    const handleY = left.handles[3] - dy * viewboxToElHeightRatio
+    return [handleX, handleY, right.handles[0], right.handles[1]]
   })
 
   const [refRight, nodeRight] = useRefAndState<SVGCircleElement | null>(null)
   useKeyframeDrag(nodeSVG, nodeRight, props, (dx, dy) => {
-    const handleX = clamp(next.handles[0] + dx * viewboxToElWidthRatio, 0, 1)
-    const handleY = next.handles[1] - dy * viewboxToElHeightRatio
-
-    return [cur.handles[2], cur.handles[3], handleX, handleY]
+    // TODO - document this
+    const handleX = clamp(right.handles[0] + dx * viewboxToElWidthRatio, 0, 1)
+    const handleY = right.handles[1] - dy * viewboxToElHeightRatio
+    return [left.handles[2], left.handles[3], handleX, handleY]
   })
 
-  const curvePathDAttrValue = `M0 ${toExtremumSpace(1)} C${
-    cur.handles[2]
-  } ${toExtremumSpace(1 - cur.handles[3])} 
-${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
-    0,
-  )}`
+  const curvePathDAttrValue = (connection: KeyframeConnectionWithAddress) =>
+    `M0 ${toExtremumSpace(1)} C${connection.left.handles[2]} ${toExtremumSpace(
+      1 - connection.left.handles[3],
+    )} ${connection.right.handles[0]} ${toExtremumSpace(
+      1 - connection.right.handles[1],
+    )} 1 ${toExtremumSpace(0)}`
 
   return (
     <svg
@@ -173,8 +183,8 @@ ${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
       <line
         x1={0}
         y1={toExtremumSpace(1)}
-        x2={cur.handles[2]}
-        y2={toExtremumSpace(1 - cur.handles[3])}
+        x2={left.handles[2]}
+        y2={toExtremumSpace(1 - left.handles[3])}
         stroke={CONTROL_COLOR}
         strokeWidth="0.01"
       />
@@ -182,26 +192,35 @@ ${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
       <line
         x1={1}
         y1={toExtremumSpace(0)}
-        x2={next.handles[0]}
-        y2={toExtremumSpace(1 - next.handles[1])}
+        x2={right.handles[0]}
+        y2={toExtremumSpace(1 - right.handles[1])}
         stroke={CONTROL_COLOR}
         strokeWidth="0.01"
       />
 
       {/* Curve "shadow": the low-opacity filled area between the curve and the diagonal */}
       <path
-        d={curvePathDAttrValue}
+        d={curvePathDAttrValue(props.curveConnection)}
         stroke="none"
         fill="url('#myGradient')"
         opacity="0.1"
       />
+      {/* The background curves (e.g. multiple different values) */}
+      {backgroundConnections.map((connection, i) => (
+        <path
+          key={connection.objectKey + '/' + connection.left.id}
+          d={curvePathDAttrValue(connection)}
+          stroke={BACKGROUND_CURVE_COLORS[i % BACKGROUND_CURVE_COLORS.length]}
+          opacity={0.6}
+          strokeWidth="0.01"
+        />
+      ))}
       {/* The curve */}
       <path
-        d={curvePathDAttrValue}
+        d={curvePathDAttrValue(props.curveConnection)}
         stroke="url('#myGradient')"
         strokeWidth="0.02"
       />
-
       {/* Right end of curve */}
       <circle
         cx={0}
@@ -224,21 +243,24 @@ ${next.handles[0]} ${toExtremumSpace(1 - next.handles[1])} 1 ${toExtremumSpace(
       {/* Right handle and hit zone */}
       <HitZone
         ref={refLeft}
-        cx={cur.handles[2]}
-        cy={toExtremumSpace(1 - cur.handles[3])}
+        cx={left.handles[2]}
+        cy={toExtremumSpace(1 - left.handles[3])}
         fill={CURVE_START_COLOR}
         opacity={0.2}
       />
-      <Circle cx={cur.handles[2]} cy={toExtremumSpace(1 - cur.handles[3])} />
+      <Circle cx={left.handles[2]} cy={toExtremumSpace(1 - left.handles[3])} />
       {/* Left handle and hit zone */}
       <HitZone
         ref={refRight}
-        cx={next.handles[0]}
-        cy={toExtremumSpace(1 - next.handles[1])}
+        cx={right.handles[0]}
+        cy={toExtremumSpace(1 - right.handles[1])}
         fill={CURVE_END_COLOR}
         opacity={0.2}
       />
-      <Circle cx={next.handles[0]} cy={toExtremumSpace(1 - next.handles[1])} />
+      <Circle
+        cx={right.handles[0]}
+        cy={toExtremumSpace(1 - right.handles[1])}
+      />
     </svg>
   )
 }
@@ -247,7 +269,7 @@ export default CurveSegmentEditor
 function useKeyframeDrag(
   svgNode: SVGSVGElement | null,
   node: SVGCircleElement | null,
-  props: IProps,
+  props: ICurveSegmentEditorProps,
   setHandles: (dx: number, dy: number) => CubicBezierHandles,
 ): void {
   const handlers = useFreezableMemo<Parameters<typeof useDrag>[1]>(
@@ -269,7 +291,7 @@ function useKeyframeDrag(
         }
       },
     }),
-    [svgNode, props.trackData],
+    [svgNode, props.onCurveChange, props.onCancelCurveChange],
   )
 
   useDrag(node, handlers)

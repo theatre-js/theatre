@@ -9,7 +9,7 @@ import {useMemo, useRef} from 'react'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover, {
-  isCurveEditorOpenD,
+  isConnectionEditingInCurvePopover,
 } from './CurveEditorPopover/CurveEditorPopover'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
@@ -19,13 +19,11 @@ import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
 import type {IConnectorThemeValues} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
 import {COLOR_POPOVER_BACK} from './CurveEditorPopover/colors'
-import {useVal} from '@theatre/react'
-import {isKeyframeConnectionInSelection} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import {usePrism} from '@theatre/react'
+import type {KeyframeConnectionWithAddress} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import {selectedKeyframeConnections} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
-const CONNECTOR_HEIGHT = DOT_SIZE_PX / 2 + 1
-const CONNECTOR_WIDTH_UNSCALED = 1000
 import styled from 'styled-components'
-import {DOT_SIZE_PX} from './SingleKeyframeDot'
 
 const POPOVER_MARGIN = 5
 
@@ -49,23 +47,19 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
     'KeyframeEditor Connector',
   )
 
-  const rightDims = val(props.layoutP.rightDims)
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
-    {
-      debugName: 'Connector',
-      closeWhenPointerIsDistant: !isPointerBeingCaptured(),
-      constraints: {
-        minX: rightDims.screenX + POPOVER_MARGIN,
-        maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN,
-      },
-    },
     () => {
-      return (
-        <EasingPopover showPopoverEdgeTriangle={false}>
-          <CurveEditorPopover {...props} onRequestClose={closePopover} />
-        </EasingPopover>
-      )
+      const rightDims = val(props.layoutP.rightDims)
+      return {
+        debugName: 'Connector',
+        closeWhenPointerIsDistant: !isPointerBeingCaptured(),
+        constraints: {
+          minX: rightDims.screenX + POPOVER_MARGIN,
+          maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN,
+        },
+      }
     },
+    () => <SingleCurveEditorPopover {...props} closePopover={closePopover} />,
   )
 
   const [contextMenu] = useConnectorContextMenu(
@@ -79,26 +73,27 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
 
   const connectorLengthInUnitSpace = next.position - cur.position
 
-  // The following two flags determine whether this connector
-  // is being edited as part of a selection using the curve
-  // editor popover
-  const isCurveEditorPopoverOpen = useVal(isCurveEditorOpenD)
-  const isInCurveEditorPopoverSelection =
-    isCurveEditorPopoverOpen &&
-    props.selection !== undefined &&
-    isKeyframeConnectionInSelection([cur, next], props.selection)
+  const isInCurveEditorPopoverSelection = usePrism(
+    () =>
+      isConnectionEditingInCurvePopover({
+        ...props.leaf.sheetObject.address,
+        trackId: props.leaf.trackId,
+        left: cur,
+        right: next,
+      }),
+    [props.leaf.sheetObject.address, props.leaf.trackId, cur, next],
+  )
 
   const themeValues: IConnectorThemeValues = {
-    isPopoverOpen: isPopoverOpen || isInCurveEditorPopoverSelection || false,
-    isSelected: !!props.selection,
+    isPopoverOpen: isInCurveEditorPopoverSelection,
+    isSelected: props.selection !== undefined,
   }
 
   return (
     <ConnectorLine
       ref={nodeRef}
       connectorLengthInUnitSpace={connectorLengthInUnitSpace}
-      isPopoverOpen={isPopoverOpen}
-      isSelected={!!props.selection}
+      {...themeValues}
       openPopover={(e) => {
         if (node) openPopover(e, node)
       }}
@@ -109,6 +104,48 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
   )
 }
 export default BasicKeyframeConnector
+
+const SingleCurveEditorPopover: React.FC<
+  IBasicKeyframeConnectorProps & {closePopover: (reason: string) => void}
+> = React.forwardRef((props, ref) => {
+  const {index, trackData, selection} = props
+  const cur = trackData.keyframes[index]
+  const next = trackData.keyframes[index + 1]
+
+  const trackId = props.leaf.trackId
+  const address = props.leaf.sheetObject.address
+
+  const selectedConnections = usePrism(
+    () =>
+      selectedKeyframeConnections(
+        address.projectId,
+        address.sheetId,
+        selection,
+      ).getValue(),
+    [address, selection],
+  )
+
+  const curveConnection: KeyframeConnectionWithAddress = {
+    left: cur,
+    right: next,
+    trackId,
+    ...address,
+  }
+
+  return (
+    <EasingPopover
+      showPopoverEdgeTriangle={false}
+      // @ts-ignore @todo
+      ref={ref}
+    >
+      <CurveEditorPopover
+        curveConnection={curveConnection}
+        additionalConnections={selectedConnections}
+        onRequestClose={props.closePopover}
+      />
+    </EasingPopover>
+  )
+})
 
 function useDragKeyframe(
   node: HTMLDivElement | null,
