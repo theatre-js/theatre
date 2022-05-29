@@ -9,7 +9,7 @@ import {useMemo, useRef} from 'react'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover, {
-  isConnectionEditingInCurvePopoverD,
+  isConnectionEditingInCurvePopover,
 } from './CurveEditorPopover/CurveEditorPopover'
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
@@ -19,7 +19,7 @@ import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
 import type {IConnectorThemeValues} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
 import {COLOR_POPOVER_BACK} from './CurveEditorPopover/colors'
-import {useVal} from '@theatre/react'
+import {usePrism} from '@theatre/react'
 import type {KeyframeConnectionWithAddress} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 import {selectedKeyframeConnections} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
@@ -94,13 +94,15 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
 
   const connectorLengthInUnitSpace = next.position - cur.position
 
-  const isInCurveEditorPopoverSelection = useVal(
-    isConnectionEditingInCurvePopoverD({
-      ...props.leaf.sheetObject.address,
-      trackId: props.leaf.trackId,
-      left: cur,
-      right: next,
-    }),
+  const isInCurveEditorPopoverSelection = usePrism(
+    () =>
+      isConnectionEditingInCurvePopover({
+        ...props.leaf.sheetObject.address,
+        trackId: props.leaf.trackId,
+        left: cur,
+        right: next,
+      }),
+    [props.leaf.sheetObject.address, props.leaf.trackId, cur, next],
   )
 
   const themeValues: IConnectorThemeValues = {

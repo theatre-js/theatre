@@ -489,7 +489,7 @@ function areConnectedKeyframesTheSameAs({
     right1.handles[1] !== right2.handles[1]
 }
 
-const {isCurveEditorOpenD, isConnectionEditingInCurvePopoverD, getLock} =
+const {isCurveEditorOpenD, isConnectionEditingInCurvePopover, getLock} =
   (() => {
     const connectionsInCurvePopoverEdit = new Box<
       Array<KeyframeConnectionWithAddress>
@@ -506,18 +506,17 @@ const {isCurveEditorOpenD, isConnectionEditingInCurvePopoverD, getLock} =
       isCurveEditorOpenD: prism(() => {
         return connectionsInCurvePopoverEdit.derivation.getValue().length > 0
       }),
-      isConnectionEditingInCurvePopoverD: (
-        con: KeyframeConnectionWithAddress,
-      ) =>
-        prism(() => {
-          return connectionsInCurvePopoverEdit.derivation
-            .getValue()
-            .some(
-              ({left, right}) =>
-                con.left.id === left.id && con.right.id === right.id,
-            )
-        }),
+      // must be run in a prism
+      isConnectionEditingInCurvePopover(con: KeyframeConnectionWithAddress) {
+        prism.ensurePrism()
+        return connectionsInCurvePopoverEdit.derivation
+          .getValue()
+          .some(
+            ({left, right}) =>
+              con.left.id === left.id && con.right.id === right.id,
+          )
+      },
     }
   })()
 
-export {isCurveEditorOpenD, isConnectionEditingInCurvePopoverD}
+export {isCurveEditorOpenD, isConnectionEditingInCurvePopover}

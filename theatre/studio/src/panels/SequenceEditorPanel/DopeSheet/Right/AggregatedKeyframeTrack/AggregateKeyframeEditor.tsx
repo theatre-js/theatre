@@ -11,8 +11,9 @@ import type {
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Pointer} from '@theatre/dataverse'
+import {prism} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React, {useMemo} from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
@@ -24,10 +25,10 @@ import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import CurveEditorPopover, {
-  isConnectionEditingInCurvePopoverD,
+  isConnectionEditingInCurvePopover,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/CurveEditorPopover/CurveEditorPopover'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import {usePrism, useVal} from '@theatre/react'
+import {usePrism} from '@theatre/react'
 import {selectedKeyframeConnections} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 
@@ -37,7 +38,7 @@ const AggregateKeyframeEditorContainer = styled.div`
   position: absolute;
 `
 
-const EasingPopover = styled(BasicPopover)`
+const EasingPopoverWrapper = styled(BasicPopover)`
   --popover-outer-stroke: transparent;
   --popover-inner-stroke: rgba(26, 28, 30, 0.97);
 `
@@ -77,85 +78,34 @@ export type IAggregateKeyframeEditorProps = {
 const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
   props,
 ) => {
-  const {index, aggregateKeyframes} = props
-  const cur = aggregateKeyframes[index]
-  const next = aggregateKeyframes[index + 1]
-  const curAndNextAggregateKeyframesMatch =
-    next &&
-    cur.keyframes.length === next.keyframes.length &&
-    cur.keyframes.every(({track}, ind) => next.keyframes[ind].track === track)
-
-  const connected = curAndNextAggregateKeyframesMatch
-    ? {
-        length: next.position - cur.position,
-        selected:
-          cur.selected === AggregateKeyframePositionIsSelected.AllSelected &&
-          next.selected === AggregateKeyframePositionIsSelected.AllSelected,
-      }
-    : null
-
-  const aggregatedConnections: AggregatedKeyframeConnection[] = !connected
-    ? []
-    : cur.keyframes.map(({kf, track}, i) => ({
-        ...props.viewModel.sheetObject.address,
-        trackId: track.id,
-        left: kf,
-        right: next.keyframes[i].kf,
-      }))
-
-  const {projectId, sheetId} = props.viewModel.sheetObject.address
-
-  const selectedConnectionsD = useMemo(
-    () =>
-      selectedKeyframeConnections(
-        props.viewModel.sheetObject.address.projectId,
-        props.viewModel.sheetObject.address.sheetId,
-        props.selection,
-      ),
-    [projectId, sheetId, props.selection],
-  )
-
-  const selectedConnections = useVal(selectedConnectionsD)
-
-  const allConnections = [...aggregatedConnections, ...selectedConnections]
-
-  const rightDims = useVal(props.layoutP.rightDims)
+  const {cur, connected, isAggregateEditingInCurvePopover} =
+    useAggregateKeyframeEditorUtils(props)
 
   const {isPointerBeingCaptured} = usePointerCapturing(
     'AggregateKeyframeEditor Connector',
   )
 
-  const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
-    {
-      debugName: 'Connector',
-      closeWhenPointerIsDistant: !isPointerBeingCaptured(),
-      constraints: {
-        minX: rightDims.screenX + POPOVER_MARGIN_PX,
-        maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN_PX,
-      },
+  const [popoverNode, openPopover, closePopover] = usePopover(
+    () => {
+      const rightDims = val(props.layoutP.rightDims)
+
+      return {
+        debugName: 'Connector',
+        closeWhenPointerIsDistant: !isPointerBeingCaptured(),
+        constraints: {
+          minX: rightDims.screenX + POPOVER_MARGIN_PX,
+          maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN_PX,
+        },
+      }
     },
     () => {
       return (
-        <EasingPopover showPopoverEdgeTriangle={false}>
-          <CurveEditorPopover
-            curveConnection={allConnections[0]}
-            additionalConnections={allConnections}
-            onRequestClose={closePopover}
-          />
-        </EasingPopover>
+        <AggregateCurveEditorPopover {...props} closePopover={closePopover} />
       )
     },
   )
 
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
-
-  const isAggregateEditingInCurvePopover = usePrism(
-    () =>
-      aggregatedConnections.every((con) =>
-        isConnectionEditingInCurvePopoverD(con).getValue(),
-      ),
-    allConnections,
-  )
 
   return (
     <AggregateKeyframeEditorContainer
@@ -194,6 +144,86 @@ const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
     </AggregateKeyframeEditorContainer>
   )
 }
+
+function useAggregateKeyframeEditorUtils(
+  props: Pick<
+    IAggregateKeyframeEditorProps,
+    'index' | 'aggregateKeyframes' | 'selection' | 'viewModel'
+  >,
+) {
+  return usePrism(() => {
+    const {index, aggregateKeyframes} = props
+
+    const cur = aggregateKeyframes[index]
+    const next = aggregateKeyframes[index + 1]
+
+    const curAndNextAggregateKeyframesMatch =
+      next &&
+      cur.keyframes.length === next.keyframes.length &&
+      cur.keyframes.every(({track}, ind) => next.keyframes[ind].track === track)
+
+    const connected = curAndNextAggregateKeyframesMatch
+      ? {
+          length: next.position - cur.position,
+          selected:
+            cur.selected === AggregateKeyframePositionIsSelected.AllSelected &&
+            next.selected === AggregateKeyframePositionIsSelected.AllSelected,
+        }
+      : null
+
+    const aggregatedConnections: AggregatedKeyframeConnection[] = !connected
+      ? []
+      : cur.keyframes.map(({kf, track}, i) => ({
+          ...props.viewModel.sheetObject.address,
+          trackId: track.id,
+          left: kf,
+          right: next.keyframes[i].kf,
+        }))
+
+    const {projectId, sheetId} = props.viewModel.sheetObject.address
+
+    const selectedConnections = prism
+      .memo(
+        'selectedConnections',
+        () =>
+          selectedKeyframeConnections(
+            props.viewModel.sheetObject.address.projectId,
+            props.viewModel.sheetObject.address.sheetId,
+            props.selection,
+          ),
+        [projectId, sheetId, props.selection],
+      )
+      .getValue()
+
+    const allConnections = [...aggregatedConnections, ...selectedConnections]
+
+    const isAggregateEditingInCurvePopover = aggregatedConnections.every(
+      (con) => isConnectionEditingInCurvePopover(con),
+    )
+
+    return {cur, connected, isAggregateEditingInCurvePopover, allConnections}
+  }, [])
+}
+
+const AggregateCurveEditorPopover: React.FC<
+  IAggregateKeyframeEditorProps & {closePopover: (reason: string) => void}
+> = React.forwardRef((props, ref) => {
+  const {allConnections} = useAggregateKeyframeEditorUtils(props)
+
+  return (
+    <EasingPopoverWrapper
+      showPopoverEdgeTriangle={false}
+      // @ts-ignore @todo
+      ref={ref}
+    >
+      <CurveEditorPopover
+        curveConnection={allConnections[0]}
+        additionalConnections={allConnections}
+        onRequestClose={props.closePopover}
+      />
+    </EasingPopoverWrapper>
+  )
+})
 
 const DOT_SIZE_PX = 16
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5

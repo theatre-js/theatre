@@ -1,4 +1,3 @@
-import noop from '@theatre/shared/utils/noop'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useCallback, useContext, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
@@ -19,7 +18,6 @@ type State =
         clientX: number
         clientY: number
       }
-      close: CloseFn
       target: HTMLElement
       opts: Opts
       onPointerOutside?: {
@@ -48,7 +46,7 @@ type Opts = {
 }
 
 export default function usePopover(
-  _opts: Opts,
+  _opts: Opts | (() => Opts),
   render: () => React.ReactElement,
 ): [node: React.ReactNode, open: OpenFn, close: CloseFn, isOpen: boolean] {
   const _debug = (...args: any) => {}
@@ -59,17 +57,21 @@ export default function usePopover(
 
   const optsRef = useRef(_opts)
 
+  const close = useCallback<CloseFn>((reason: string): void => {
+    _debug(`closing due to "${reason}"`)
+    stateRef.current = {isOpen: false}
+  }, [])
+
   const open = useCallback<OpenFn>((e, target) => {
-    const opts = optsRef.current
-    function closePopover(reason: string): void {
-      _debug(`closing due to "${reason}"`)
-      stateRef.current = {isOpen: false}
-    }
+    const opts =
+      typeof optsRef.current === 'function'
+        ? optsRef.current()
+        : optsRef.current
 
     function onClickOutside(): void {
       if (lock.childHasFocusRef.current) return
       if (opts.closeOnClickOutside !== false) {
-        closePopover('clicked outside popover')
+        close('clicked outside popover')
       }
     }
 
@@ -78,7 +80,6 @@ export default function usePopover(
       clickPoint: {clientX: e.clientX, clientY: e.clientY},
       target,
       opts,
-      close: closePopover,
       onClickOutside: onClickOutside,
       onPointerOutside:
         opts.closeWhenPointerIsDistant === false
@@ -87,7 +88,7 @@ export default function usePopover(
               threshold: opts.pointerDistanceThreshold ?? 100,
               callback: () => {
                 if (lock.childHasFocusRef.current) return
-                closePopover('pointer outside')
+                close('pointer outside')
               },
             },
     }
@@ -122,7 +123,7 @@ export default function usePopover(
     <></>
   )
 
-  return [node, open, state.isOpen ? state.close : noop, state.isOpen]
+  return [node, open, close, state.isOpen]
 }
 
 /**
