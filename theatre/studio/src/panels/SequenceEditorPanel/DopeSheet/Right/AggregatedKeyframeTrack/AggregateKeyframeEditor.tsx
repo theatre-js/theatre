@@ -12,7 +12,7 @@ import type {
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
@@ -27,10 +27,11 @@ import CurveEditorPopover, {
   isConnectionEditingInCurvePopoverD,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/CurveEditorPopover/CurveEditorPopover'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import {usePrism} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import {selectedKeyframeConnections} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 
-const POPOVER_MARGIN = 5
+const POPOVER_MARGIN_PX = 5
 
 const AggregateKeyframeEditorContainer = styled.div`
   position: absolute;
@@ -55,6 +56,12 @@ export type IAggregateKeyframesAtPosition = {
       data: TrackData
     }
   }[]
+}
+
+type AggregatedKeyframeConnection = SheetObjectAddress & {
+  trackId: SequenceTrackId
+  left: Keyframe
+  right: Keyframe
 }
 
 export type IAggregateKeyframeEditorProps = {
@@ -87,11 +94,7 @@ const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
       }
     : null
 
-  const {isPointerBeingCaptured} = usePointerCapturing(
-    'KeyframeEditor Connector',
-  )
-
-  const aggregatedConnections = !connected
+  const aggregatedConnections: AggregatedKeyframeConnection[] = !connected
     ? []
     : cur.keyframes.map(({kf, track}, i) => ({
         ...props.viewModel.sheetObject.address,
@@ -100,22 +103,35 @@ const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
         right: next.keyframes[i].kf,
       }))
 
-  const selectedConnections = selectedKeyframeConnections(
-    props.viewModel.sheetObject.address.projectId,
-    props.viewModel.sheetObject.address.sheetId,
-    props.selection,
-  ).getValue()
+  const {projectId, sheetId} = props.viewModel.sheetObject.address
+
+  const selectedConnectionsD = useMemo(
+    () =>
+      selectedKeyframeConnections(
+        props.viewModel.sheetObject.address.projectId,
+        props.viewModel.sheetObject.address.sheetId,
+        props.selection,
+      ),
+    [projectId, sheetId, props.selection],
+  )
+
+  const selectedConnections = useVal(selectedConnectionsD)
 
   const allConnections = [...aggregatedConnections, ...selectedConnections]
 
-  const rightDims = val(props.layoutP.rightDims)
+  const rightDims = useVal(props.layoutP.rightDims)
+
+  const {isPointerBeingCaptured} = usePointerCapturing(
+    'AggregateKeyframeEditor Connector',
+  )
+
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {
       debugName: 'Connector',
       closeWhenPointerIsDistant: !isPointerBeingCaptured(),
       constraints: {
-        minX: rightDims.screenX + POPOVER_MARGIN,
-        maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN,
+        minX: rightDims.screenX + POPOVER_MARGIN_PX,
+        maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN_PX,
       },
     },
     () => {
