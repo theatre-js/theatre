@@ -75,6 +75,19 @@ export type IAggregateKeyframeEditorProps = {
   selection: undefined | DopeSheetSelection
 }
 
+/**
+ * TODO we're spending a lot of cycles on each render of each aggreagte keyframes.
+ *
+ * Each keyframe node is doing O(N) operations, N being the number of underlying
+ * keyframes it represetns.
+ *
+ * The biggest example is the `isConnectionEditingInCurvePopover()` call which is run
+ * for every underlying keyframe, every time this component is rendered.
+ *
+ * We can optimize this away by doing all of this work _once_ when a curve editor popover
+ * is open. This would require having some kind of stable identity for each aggregate row.
+ * Let's defer that work until other interactive keyframe editing PRs are merged in.
+ */
 const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
   props,
 ) => {
