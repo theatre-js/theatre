@@ -79,7 +79,8 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
       layoutP={layoutP}
       viewModel={viewModel}
       aggregateKeyframes={posKfs}
-      key={'agg-' + position}
+      // To optimize rendering in cases such as when dragging a series of keyframes
+      key={'agg-' + keyframes[0].kf.id}
       selection={
         selectedPositions.has(position) === true ? selection : undefined
       }
