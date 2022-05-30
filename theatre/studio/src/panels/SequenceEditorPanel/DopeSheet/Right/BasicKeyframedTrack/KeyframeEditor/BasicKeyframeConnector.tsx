@@ -168,9 +168,6 @@ function useDragKeyframe(
           return selection
             .getDragHandlers({
               ...sheetObject.address,
-              pathToProp: leaf.pathToProp,
-              trackId: leaf.trackId,
-              keyframeId: props.keyframe.id,
               domNode: node!,
               positionAtStartOfDrag:
                 props.trackData.keyframes[props.index].position,
