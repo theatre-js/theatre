@@ -245,6 +245,9 @@ function useDragForSingleKeyframeDot(
 
   const [isDragging] = useDrag(node, useDragOpts)
 
+  // Lock frame stamp to the current position of the dragged keyframe instead of
+  // the mouse position, so that it appears centered above the keyframe even
+  // regardless of where in the hit zone of the keyframe the mouse is located.
   useLockFrameStampPosition(isDragging, props.keyframe.position)
   useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
