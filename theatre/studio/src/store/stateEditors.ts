@@ -58,6 +58,7 @@ import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
 import {pointableSetUtil} from '@theatre/shared/utils/PointableSet'
+import {mvpDontSnapToMyself} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregateKeyframeEditor/mvpDontSnapToMyself'
 
 export const setDrafts__onlyMeantToBeCalledByTransaction = (
   drafts: undefined | Drafts,
@@ -912,9 +913,12 @@ namespace stateEditors {
 
             const unselectedByPosition = keyBy(unselected, 'position')
 
+            const mvpMovingKeyframePositions = new Set<number>()
+
             // If the new transformed keyframes overlap with any existing keyframes,
             // we remove the overlapped keyframes
             sanitizedKeyframes.forEach(({position}) => {
+              mvpMovingKeyframePositions.add(position)
               const existingKeyframeAtThisPosition =
                 unselectedByPosition[position]
               if (existingKeyframeAtThisPosition) {
@@ -925,6 +929,10 @@ namespace stateEditors {
             const sorted = sortBy(
               [...unselected, ...sanitizedKeyframes],
               'position',
+            )
+
+            mvpDontSnapToMyself.updateCurrentPositionsDragging(
+              mvpMovingKeyframePositions,
             )
 
             track.keyframes = sorted

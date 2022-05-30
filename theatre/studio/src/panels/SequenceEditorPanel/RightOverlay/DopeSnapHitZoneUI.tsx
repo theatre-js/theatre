@@ -5,6 +5,7 @@ import SnapCursor from './SnapCursor.svg'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import DopeSnap from './DopeSnap'
 import {includeLockFrameStampAttrs} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
+import {mvpDontSnapToMyself} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregateKeyframeEditor/mvpDontSnapToMyself'
 
 const HIT_ZONE_SIZE_PX = 12
 const SNAP_CURSOR_SIZE_PX = 34
@@ -53,7 +54,10 @@ export const DopeSnapHitZoneUI = {
       // used to make this behave correctly.
       ...includeLockFrameStampAttrs(config.position),
       ...DopeSnap.includePositionSnapAttrs(config.position),
-      className: config.isDragging ? DopeSnapHitZoneUI.BEING_DRAGGED_CLASS : '',
+      className:
+        config.isDragging || !mvpDontSnapToMyself.canSnap(config.position)
+          ? DopeSnapHitZoneUI.BEING_DRAGGED_CLASS
+          : '',
     }
   },
 }

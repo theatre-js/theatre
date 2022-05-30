@@ -46,6 +46,8 @@ const DopeSnap = {
    * ```
    */
   includePositionSnapAttrs(position: number) {
+    if (!mvpDontSnapToMyself.canSnap(position)) return {}
+
     return {[POSITION_SNAP_ATTR]: position}
   },
 }
