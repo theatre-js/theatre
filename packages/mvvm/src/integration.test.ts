@@ -23,23 +23,17 @@ describe(`mvvm tests`, () => {
       const cold = new ColdRx((sourceObserver) => {
         next = sourceObserver
         return () => {
-          // @ts-ignore
           next = undefined
         }
       })
       const [wait1, dis1] = waitForNext(cold)
+      expect(dis1.closed).toBe(false)
       next?.(1)
 
       await expect(wait1).resolves.toBe(1)
+      expect(dis1.closed).toBe(true)
+      // after waitForNext unsubscribes, there are no subscribers
       expect(next).toBeUndefined()
-
-      // const [wait2, dis2] = waitForNext(cold)
-      // next?.(2)
-      // await expect(wait2).resolves.toBe(2)
-
-      // // dis.dispose()
-
-      // expect(next).toBe(undefined)
     })
   })
 })

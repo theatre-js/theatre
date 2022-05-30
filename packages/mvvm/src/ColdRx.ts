@@ -5,10 +5,19 @@ import {Disposable, execFinalizer} from './Disposable'
 import type {Tapper} from './types'
 import {arrRemove} from './utils/arrRemove'
 
+const cold = Symbol('cold')
+const hot = Symbol('hot')
+type Cold = typeof cold
+type Hot = typeof hot
+type IsHot<T> = [Extract<T, Hot>] extends [never] ? false : true
+type A1 = IsHot<Cold>
+type A2 = IsHot<Hot>
+
 /** Multicast by default observables */
 export class ColdRx<T> extends Rx<T> implements RxForView<T> {
-  constructor(private readonly source: (observer: Tapper<T>) => TeardownLogic) {
+  constructor(source: (observer: Tapper<T>) => TeardownLogic) {
     super()
+    this.source = source
   }
   #observers: Tapper<T> | Tapper<T>[] | null = null
   #sourceTeardown: TeardownLogic = undefined

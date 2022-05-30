@@ -1,6 +1,7 @@
 import type {DevString} from './DevString'
-import type {Disposable} from './Disposable'
+import type {Disposable, TeardownLogic} from './Disposable'
 import type {Outcome, Tapper} from './types'
+import {pipeFromArray} from './utils/pipe'
 
 export class BestPracticeError<
   Path extends string,
@@ -16,9 +17,128 @@ export interface ViewRx<T> extends Rx<T> {
   [RxViewValid]: true
 }
 
-export abstract class Rx<T> {
+export interface UnaryFunction<T, R> {
+  (source: T): R
+}
+
+/***
+ * @deprecated Internal implementation detail, do not use directly. Will be made internal in v8.
+ */
+export interface Operator<T, R> {
+  call(tapper: Tapper<R>, source: any): TeardownLogic
+}
+
+export interface OperatorFunction<T, R> extends UnaryFunction<Rx<T>, Rx<R>> {}
+
+export class Rx<T> {
   [RxType]: T = undefined!
-  abstract tap(disposable: Disposable, tapper: Tapper<T>): void
+  /**
+   * @internal Internal implementation detail, do not use directly. Will be made internal in v8.
+   */
+  source: Rx<T> | undefined
+  /**
+   * @internal Internal implementation detail, do not use directly. Will be made internal in v8.
+   */
+  operator: Operator<any, T> | undefined
+
+  constructor(
+    subscribe?: (
+      this: Rx<T>,
+      disposable: Disposable,
+      tapper: Tapper<T>,
+    ) => void,
+  ) {
+    if (subscribe) {
+      this._subscribe = subscribe
+    }
+  }
+
+  /** @internal */
+  protected _subscribe(disposable: Disposable, tapper: Tapper<any>): void {
+    this.source?.tap(disposable, tapper)
+  }
+
+  tap(disposable: Disposable, tapper: Tapper<T>): void {}
+
+  /** @internal */
+  protected _tap(disposable: Disposable, tapper: Tapper<any>): void {
+    this.source?.tap(disposable, tapper)
+  }
+
+  pipe(): Rx<T>
+  pipe<A>(op1: OperatorFunction<T, A>): Rx<A>
+  pipe<A, B>(op1: OperatorFunction<T, A>, op2: OperatorFunction<A, B>): Rx<B>
+  pipe<A, B, C>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>,
+  ): Rx<C>
+  pipe<A, B, C, D>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>,
+    op4: OperatorFunction<C, D>,
+  ): Rx<D>
+  pipe<A, B, C, D, E>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>,
+    op4: OperatorFunction<C, D>,
+    op5: OperatorFunction<D, E>,
+  ): Rx<E>
+  pipe<A, B, C, D, E, F>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>,
+    op4: OperatorFunction<C, D>,
+    op5: OperatorFunction<D, E>,
+    op6: OperatorFunction<E, F>,
+  ): Rx<F>
+  pipe<A, B, C, D, E, F, G>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>,
+    op4: OperatorFunction<C, D>,
+    op5: OperatorFunction<D, E>,
+    op6: OperatorFunction<E, F>,
+    op7: OperatorFunction<F, G>,
+  ): Rx<G>
+  pipe<A, B, C, D, E, F, G, H>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>,
+    op4: OperatorFunction<C, D>,
+    op5: OperatorFunction<D, E>,
+    op6: OperatorFunction<E, F>,
+    op7: OperatorFunction<F, G>,
+    op8: OperatorFunction<G, H>,
+  ): Rx<H>
+  pipe<A, B, C, D, E, F, G, H, I>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>,
+    op4: OperatorFunction<C, D>,
+    op5: OperatorFunction<D, E>,
+    op6: OperatorFunction<E, F>,
+    op7: OperatorFunction<F, G>,
+    op8: OperatorFunction<G, H>,
+    op9: OperatorFunction<H, I>,
+  ): Rx<I>
+  pipe<A, B, C, D, E, F, G, H, I>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>,
+    op4: OperatorFunction<C, D>,
+    op5: OperatorFunction<D, E>,
+    op6: OperatorFunction<E, F>,
+    op7: OperatorFunction<F, G>,
+    op8: OperatorFunction<G, H>,
+    op9: OperatorFunction<H, I>,
+    ...operations: OperatorFunction<any, any>[]
+  ): Rx<unknown>
+  pipe(...ops: OperatorFunction<any, any>[]): Rx<any> {
+    return pipeFromArray(ops)(this)
+  }
 }
 
 export interface RxForView<T> extends Rx<T> {

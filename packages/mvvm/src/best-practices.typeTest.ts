@@ -2,6 +2,7 @@ import type {RxForView} from './best-practices'
 import type {DevString} from './DevString'
 import {ColdRx} from './ColdRx'
 import {HotRx} from './HotRx'
+import type {Outcome} from './types'
 
 declare function check<T>(value: T): RxForView<T>
 
@@ -34,8 +35,17 @@ function typeChecks() {
     takesNoArg() {},
   }).forView()
 
+  const rx = new ColdRx<number>(null!)
   const a = check({
     takesReasonArg(reason: DevString) {},
+
+    toggleItem(): Outcome {
+      return null!
+    },
+
+    rx: rx.forView(),
+
+    // f: Promise.resolve(1)
   }).forView()
   a
 
