@@ -79,7 +79,9 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
       layoutP={layoutP}
       viewModel={viewModel}
       aggregateKeyframes={posKfs}
-      key={'agg-' + position}
+      // To ensure that while dragging, we don't lose reference to the
+      // aggregate we're trying to drag.
+      key={'agg-' + keyframes[0].kf.id}
       selection={
         selectedPositions.has(position) === true ? selection : undefined
       }
