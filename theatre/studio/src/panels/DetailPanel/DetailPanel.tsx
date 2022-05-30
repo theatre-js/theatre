@@ -22,7 +22,8 @@ const Container = styled.div<{pin: boolean}>`
   position: fixed;
   right: 8px;
   top: 50px;
-  width: 236px;
+  // Temporary, see comment about CSS grid in SingleRowPropEditor.
+  width: 280px;
   height: fit-content;
   z-index: ${panelZIndexes.propsPanel};
 
