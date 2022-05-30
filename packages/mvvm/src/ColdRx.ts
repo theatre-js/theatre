@@ -17,7 +17,9 @@ type A2 = IsHot<Hot>
 export class ColdRx<T> extends Rx<T> implements RxForView<T> {
   constructor(source: (observer: Tapper<T>) => TeardownLogic) {
     super()
-    this.source = source
+    if (source) {
+      this.source = new Rx(source)
+    }
   }
   #observers: Tapper<T> | Tapper<T>[] | null = null
   #sourceTeardown: TeardownLogic = undefined
@@ -56,9 +58,11 @@ export class ColdRx<T> extends Rx<T> implements RxForView<T> {
     const os = this.#observers
     this.#observers = Array.isArray(os)
       ? (os.push(observer), os)
-      : ((this.#sourceTeardown = this.source(this._sourceEmit.bind(this))), os)
+      : os
       ? [os, observer]
-      : observer
+      : // os must have been null
+        ((this.#sourceTeardown = this.source(this._sourceEmit.bind(this))),
+        observer)
     const like: DisposableLike = new Disposable(
       this._dispose.bind(this, observer),
     )
