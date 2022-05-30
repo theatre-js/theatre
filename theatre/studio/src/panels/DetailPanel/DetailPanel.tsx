@@ -72,11 +72,11 @@ const Body = styled.div`
 const DetailPanel: React.FC<{}> = (props) => {
   const pin = useVal(getStudio().atomP.ahistoric.pinDetails) !== false
 
-  const hostspotActive = useHotspot('right')
+  const hotspotActive = useHotspot('right')
 
   useLayoutEffect(() => {
-    isDetailPanelHotspotActiveB.set(hostspotActive)
-  }, [hostspotActive])
+    isDetailPanelHotspotActiveB.set(hotspotActive)
+  }, [hotspotActive])
 
   // cleanup
   useEffect(() => {
@@ -94,7 +94,7 @@ const DetailPanel: React.FC<{}> = (props) => {
       return (
         <Container
           data-testid="DetailPanel-Object"
-          pin={pin || hostspotActive}
+          pin={pin || hotspotActive}
           onMouseEnter={() => {
             isDetailPanelHoveredB.set(true)
           }}
@@ -126,7 +126,7 @@ const DetailPanel: React.FC<{}> = (props) => {
     const project = selection.find(isProject)
     if (project) {
       return (
-        <Container pin={pin || hostspotActive}>
+        <Container pin={pin || hotspotActive}>
           <Header>
             <Title title={`${project.address.projectId}`}>
               <TitleBar_Piece>{project.address.projectId} </TitleBar_Piece>
@@ -140,7 +140,7 @@ const DetailPanel: React.FC<{}> = (props) => {
     }
 
     return <></>
-  }, [pin, hostspotActive])
+  }, [pin, hotspotActive])
 }
 
 export default DetailPanel
