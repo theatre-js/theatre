@@ -14,8 +14,8 @@ import React from 'react'
 import styled from 'styled-components'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {IAggregateKeyframesAtPosition} from './AggregateKeyframeEditor'
-import AggregateKeyframeEditor from './AggregateKeyframeEditor'
+import type {IAggregateKeyframesAtPosition} from './AggregateKeyframeEditor/AggregateKeyframeEditor'
+import AggregateKeyframeEditor from './AggregateKeyframeEditor/AggregateKeyframeEditor'
 import type {AggregatedKeyframes} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 
@@ -66,12 +66,14 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
     ...aggregatedKeyframes.byPosition.entries(),
   ]
     .sort((a, b) => a[0] - b[0])
-    .map(([position, keyframes]) => ({
-      position,
-      keyframes,
-      selected: selectedPositions.get(position),
-      allHere: keyframes.length === aggregatedKeyframes.tracks.length,
-    }))
+    .map(
+      ([position, keyframes]): IAggregateKeyframesAtPosition => ({
+        position,
+        keyframes,
+        selected: selectedPositions.get(position),
+        allHere: keyframes.length === aggregatedKeyframes.tracks.length,
+      }),
+    )
 
   const keyframeEditors = posKfs.map(({position, keyframes}, index) => (
     <AggregateKeyframeEditor
