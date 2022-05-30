@@ -148,7 +148,7 @@ export function usePointerCapturing(forDebugName: string): PointerCapturing {
       // force release on unmount
       control.forceRelease()
     }
-  }, [forDebugName, pointerCapturingFn])
+  }, [control])
 
   return control.capturing
 }
