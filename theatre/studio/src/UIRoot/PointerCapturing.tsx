@@ -33,8 +33,6 @@ type InternalPointerCapturing = {
 
 type PointerCapturingFn = (forDebugName: string) => InternalPointerCapturing
 
-// const logger = console
-
 function _usePointerCapturingContext(): PointerCapturingFn {
   const logger = useLogger('PointerCapturing')
   type CaptureInfo = {
@@ -129,6 +127,17 @@ export function ProvidePointerCapturing(props: {
   )
 }
 
+/**
+ * Used to ensure we're locking drag and pointer events to a single place in the UI logic.
+ * Without this, we can much more easily accidentally create multiple drag handlers on
+ * child / parent dom elements which both `useDrag`, for example.
+ *
+ * An example of this helping us was when we first started building the Curve editor popover.
+ * In that activity, we were experiencing a weird issue where the popover would unmount while
+ * dragging away from the popover, and the drag end listener would not be called.
+ * By having "Pointer Capturing" we're able to identify that the pointer was not being properly
+ * released, because there would be a lock contention when trying to drag something else.
+ */
 export function usePointerCapturing(forDebugName: string): PointerCapturing {
   const pointerCapturingFn = useContext(PointerCapturingContext)
   const control = useMemo(() => {
