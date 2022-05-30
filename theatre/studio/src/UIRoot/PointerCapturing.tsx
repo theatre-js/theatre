@@ -40,6 +40,7 @@ function _usePointerCapturingContext(): PointerCapturingFn {
     debugReason: string
   }
   let currentCaptureRef = React.useRef<null | CaptureInfo>(null)
+  const isPointerBeingCaptured = () => currentCaptureRef.current != null
 
   return (forDebugName) => {
     /** keep track of the captures being made by this user of {@link usePointerCapturing} */
@@ -80,15 +81,13 @@ function _usePointerCapturingContext(): PointerCapturingFn {
           },
         }
       },
-      isPointerBeingCaptured() {
-        return currentCaptureRef.current != null
-      },
+      isPointerBeingCaptured,
     }
 
     return {
       capturing,
       forceRelease() {
-        if (currentCaptureRef.current === localCapture) {
+        if (localCapture && currentCaptureRef.current === localCapture) {
           logger._debug('Force releasing pointer', {localCapture})
           updateCapture(null)
         }

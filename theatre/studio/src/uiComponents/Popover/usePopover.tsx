@@ -1,3 +1,4 @@
+import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useCallback, useContext, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
@@ -51,6 +52,10 @@ export default function usePopover(
 ): [node: React.ReactNode, open: OpenFn, close: CloseFn, isOpen: boolean] {
   const _debug = (...args: any) => {}
 
+  // want to make sure that we don't close a popover when dragging something (like a curve editor handle)
+  // I think this could be improved to handle closing after done dragging, better.
+  const {isPointerBeingCaptured} = usePointerCapturing(`usePopover`)
+
   const [stateRef, state] = useRefAndState<State>({
     isOpen: false,
   })
@@ -88,6 +93,9 @@ export default function usePopover(
               threshold: opts.pointerDistanceThreshold ?? 100,
               callback: () => {
                 if (lock.childHasFocusRef.current) return
+                // this is a bit weird, because when you stop capturing, then the popover can close on you...
+                // TODO: Better fixes?
+                if (isPointerBeingCaptured()) return
                 close('pointer outside')
               },
             },
