@@ -13,9 +13,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Details,
+  Ellipsis,
   Outline,
 } from '@theatre/studio/uiComponents/icons'
 import {shouldShowDetailD} from '@theatre/studio/panels/DetailPanel/DetailPanel'
+import ToolbarIconButton from '@theatre/studio/uiComponents/toolbar/ToolbarIconButton'
+import usePopover from '@theatre/studio/src/uiComponents/Popover/usePopover'
 
 const Container = styled.div`
   height: 36px;
@@ -79,6 +82,8 @@ const GlobalToolbar: React.FC = () => {
   const showOutline = useVal(getStudio().atomP.ephemeral.showOutline)
   const showDetails = useVal(shouldShowDetailD)
 
+  const [] = usePopover(() => {}, [])
+
   return (
     <Container>
       <SubContainer>
@@ -107,6 +112,15 @@ const GlobalToolbar: React.FC = () => {
         <ExtensionToolbar toolbarId="global" />
       </SubContainer>
       <SubContainer>
+        <ToolbarIconButton
+          onClick={() => {
+            console.log('ok')
+          }}
+          title="Updates"
+        >
+          <Ellipsis />
+        </ToolbarIconButton>
+
         <PinButton
           ref={triggerButtonRef as $IntentionalAny}
           onClick={() => {

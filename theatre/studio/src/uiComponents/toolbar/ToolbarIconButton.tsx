@@ -7,7 +7,7 @@ import mergeRefs from 'react-merge-refs'
 import MinimalTooltip from '@theatre/studio/uiComponents/Popover/MinimalTooltip'
 import ToolbarSwitchSelectContainer from './ToolbarSwitchSelectContainer'
 
-const Container = styled.button`
+export const Container = styled.button`
   ${pointerEventsAutoInNormalMode};
   position: relative;
   display: flex;

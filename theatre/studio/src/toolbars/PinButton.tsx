@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import type {ComponentPropsWithRef, ReactNode} from 'react';
-import React, { forwardRef} from 'react'
+import type {ComponentPropsWithRef, ReactNode} from 'react'
+import React, {forwardRef} from 'react'
 
 const Container = styled.button<{pinned?: boolean}>`
   ${pointerEventsAutoInNormalMode};
