@@ -1,5 +1,6 @@
 import React from 'react'
 import {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregatedKeyframeTrack'
+import {FocusRelationship} from '@theatre/studio/uiComponents/usePresence'
 import styled from 'styled-components'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
@@ -8,10 +9,18 @@ const DOT_SIZE_PX = 16
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
 
 /** The keyframe diamond ◆ */
-const DotContainer = styled.div`
+const DotContainer = styled.div<{
+  presence: FocusRelationship | undefined
+}>`
   position: absolute;
   ${absoluteDims(DOT_SIZE_PX)}
   z-index: 1;
+  & svg rect:last-of-type {
+    ${({presence}) =>
+      presence === FocusRelationship.Hovered
+        ? `stroke: white !important; stroke-width: 2px;`
+        : ''}
+  }
 `
 
 // hmm kinda weird to organize like this (exporting `HitZone`). Maybe there's a way to re-use
@@ -35,6 +44,7 @@ export const HitZone = styled.div`
 `
 
 export function AggregateKeyframeVisualDot(props: {
+  presence: FocusRelationship | undefined
   isSelected: AggregateKeyframePositionIsSelected | undefined
   isAllHere: boolean
 }) {
@@ -43,7 +53,7 @@ export function AggregateKeyframeVisualDot(props: {
   }
 
   return (
-    <DotContainer>
+    <DotContainer presence={props.presence}>
       {props.isAllHere ? (
         <AggregateDotAllHereSvg {...theme} />
       ) : (

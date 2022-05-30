@@ -3,6 +3,9 @@ import React, {useMemo, useRef} from 'react'
 import {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregatedKeyframeTrack'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import usePresence, {
+  FocusRelationship,
+} from '@theatre/studio/uiComponents/usePresence'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import getStudio from '@theatre/studio/getStudio'
@@ -27,6 +30,22 @@ export function AggregateKeyframeDot(
   const logger = useLogger('AggregateKeyframeDot')
   const {cur} = props.utils
 
+  const [attrs, presence] = usePresence({key: props.utils.itemKey})
+  presence.useRelationships(
+    () =>
+      cur.keyframes.map((kf) => ({
+        affects: kf.itemKey,
+        relationship: FocusRelationship.Hovered,
+      })),
+    [
+      // Hmm: Is this a valid fix for the changing size of the useEffect's dependency array?
+      // also: does it work properly with selections?
+      cur.keyframes
+        .map((keyframeWithTrack) => keyframeWithTrack.track.id)
+        .join('-'),
+    ],
+  )
+
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
   const [isDragging] = useDragForAggregateKeyframeDot(node, props, {
     onClickFromDrag(dragStartEvent) {
@@ -43,12 +62,14 @@ export function AggregateKeyframeDot(
     <>
       <HitZone
         ref={ref}
+        {...attrs}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging,
           position: cur.position,
         })}
       />
       <AggregateKeyframeVisualDot
+        presence={presence.current}
         isAllHere={cur.allHere}
         isSelected={cur.selected}
       />
