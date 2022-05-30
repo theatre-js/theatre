@@ -1,6 +1,9 @@
 // Pretty much same code as for keyframe and similar for playhead.
 // Consider if we should unify the implementations.
 // - See "useLockFrameStampPosition"
+
+import {mvpDontSnapToMyself} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregateKeyframeEditor/mvpDontSnapToMyself'
+
 // - Also see "pointerPositionInUnitSpace" for a related impl (for different problem)
 const POSITION_SNAP_ATTR = 'data-pos'
 
@@ -24,6 +27,9 @@ const DopeSnap = {
     if (snapTarget) {
       const snapPos = parseFloat(snapTarget.getAttribute(POSITION_SNAP_ATTR)!)
       if (isFinite(snapPos)) {
+        if (!mvpDontSnapToMyself.canSnap(snapPos)) return null
+        mvpDontSnapToMyself.updateLastSnap(snapPos)
+
         return snapPos
       }
     }

@@ -24,6 +24,7 @@ import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/Do
 import {collectAggregateKeyframesInPrism} from './collectAggregateKeyframes'
 import type {ILogger, IUtilLogger} from '@theatre/shared/logger'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
+import {mvpDontSnapToMyself} from './AggregatedKeyframeTrack/AggregateKeyframeEditor/mvpDontSnapToMyself'
 
 const Container = styled.div<{isShiftDown: boolean}>`
   cursor: ${(props) => (props.isShiftDown ? 'cell' : 'default')};
@@ -303,8 +304,10 @@ namespace utils {
                     ? snapPos - origin.positionAtStartOfDrag
                     : toUnitSpace(dx)
 
+                const mvpKeyframePositionMoving = new Set<number>()
+
                 tempTransaction = getStudio().tempTransaction(
-                  ({stateEditors}) => {
+                  ({stateEditors, drafts}) => {
                     const transformKeyframes =
                       stateEditors.coreByProject.historic.sheetsById.sequence
                         .transformKeyframes
@@ -313,9 +316,10 @@ namespace utils {
                       const {byTrackId} = selectionByObjectKey[objectKey]!
                       for (const trackId of Object.keys(byTrackId)) {
                         const {byKeyframeId} = byTrackId[trackId]!
+                        const keyframeIds = Object.keys(byKeyframeId)
                         transformKeyframes({
                           trackId,
-                          keyframeIds: Object.keys(byKeyframeId),
+                          keyframeIds,
                           translate: delta,
                           scale: 1,
                           origin: 0,
@@ -325,9 +329,27 @@ namespace utils {
                           projectId: origin.projectId,
                           sheetId: origin.sheetId,
                         })
+
+                        const updatedKfs =
+                          drafts.historic.coreByProject[origin.projectId]
+                            .sheetsById[origin.sheetId]?.sequence
+                            ?.tracksByObject[objectKey]?.trackData[trackId]
+                            ?.keyframes
+
+                        if (updatedKfs) {
+                          for (const kf of updatedKfs) {
+                            if (byKeyframeId[kf.id]) {
+                              mvpKeyframePositionMoving.add(kf.position)
+                            }
+                          }
+                        }
                       }
                     }
                   },
+                )
+
+                mvpDontSnapToMyself.updateCurrentPositionsDragging(
+                  mvpKeyframePositionMoving,
                 )
               },
               onDragEnd(dragHappened) {

@@ -99,6 +99,7 @@ function useDragForAggregateKeyframeDot(
 
         if (
           props.selection &&
+          // if everything is selected, then we can drag, so we don't need to "merge" or anything
           props.aggregateKeyframes[props.index].selected ===
             AggregateKeyframePositionIsSelected.AllSelected
         ) {
