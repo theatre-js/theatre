@@ -134,13 +134,13 @@ export const useLockFrameStampPosition = (shouldLock: boolean, val: number) => {
     return () => {
       lockRef.current!.unlock()
     }
-  }, [shouldLock])
+  }, [shouldLock, getLock])
 
   useLayoutEffect(() => {
     if (shouldLock) {
       lockRef.current!.set(val)
     }
-  }, [val])
+  }, [val, shouldLock])
 }
 
 /**
