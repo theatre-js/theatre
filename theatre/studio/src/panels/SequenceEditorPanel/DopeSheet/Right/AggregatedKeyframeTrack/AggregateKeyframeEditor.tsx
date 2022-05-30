@@ -164,9 +164,10 @@ function useAggregateKeyframeEditorUtils(
     'index' | 'aggregateKeyframes' | 'selection' | 'viewModel'
   >,
 ) {
-  return usePrism(() => {
-    const {index, aggregateKeyframes} = props
+  const {index, aggregateKeyframes, selection} = props
+  const sheetObjectAddress = props.viewModel.sheetObject.address
 
+  return usePrism(() => {
     const cur = aggregateKeyframes[index]
     const next = aggregateKeyframes[index + 1]
 
@@ -187,24 +188,24 @@ function useAggregateKeyframeEditorUtils(
     const aggregatedConnections: AggregatedKeyframeConnection[] = !connected
       ? []
       : cur.keyframes.map(({kf, track}, i) => ({
-          ...props.viewModel.sheetObject.address,
+          ...sheetObjectAddress,
           trackId: track.id,
           left: kf,
           right: next.keyframes[i].kf,
         }))
 
-    const {projectId, sheetId} = props.viewModel.sheetObject.address
+    const {projectId, sheetId} = sheetObjectAddress
 
     const selectedConnections = prism
       .memo(
         'selectedConnections',
         () =>
           selectedKeyframeConnections(
-            props.viewModel.sheetObject.address.projectId,
-            props.viewModel.sheetObject.address.sheetId,
-            props.selection,
+            sheetObjectAddress.projectId,
+            sheetObjectAddress.sheetId,
+            selection,
           ),
-        [projectId, sheetId, props.selection],
+        [projectId, sheetId, selection],
       )
       .getValue()
 
@@ -215,7 +216,7 @@ function useAggregateKeyframeEditorUtils(
     )
 
     return {cur, connected, isAggregateEditingInCurvePopover, allConnections}
-  }, [])
+  }, [index, aggregateKeyframes, selection, sheetObjectAddress])
 }
 
 const AggregateCurveEditorPopover: React.FC<

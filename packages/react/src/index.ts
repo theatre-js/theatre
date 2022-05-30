@@ -42,10 +42,14 @@ function useForceUpdate(debugLabel?: string) {
  * whenever there's a change in the values of the dependency array, or in the
  * derivations that are used within the callback function.
  *
- *
  * @param fn - The callback function
  * @param deps - The dependency array
  * @param debugLabel - The label used by the debugger
+ *
+ * @remarks
+ *
+ * A common mistake with `usePrism()` is not including its deps in its dependency array. Let's
+ * have an eslint rule to catch that.
  */
 export function usePrism<T>(
   fn: () => T,
