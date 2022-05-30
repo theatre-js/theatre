@@ -14,7 +14,6 @@ import CurveEditorPopover, {
 import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
-import {usePointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
 import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
 import type {IConnectorThemeValues} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
@@ -43,16 +42,11 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
 
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
 
-  const {isPointerBeingCaptured} = usePointerCapturing(
-    'KeyframeEditor Connector',
-  )
-
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     () => {
       const rightDims = val(props.layoutP.rightDims)
       return {
         debugName: 'Connector',
-        closeWhenPointerIsDistant: !isPointerBeingCaptured(),
         constraints: {
           minX: rightDims.screenX + POPOVER_MARGIN,
           maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN,
