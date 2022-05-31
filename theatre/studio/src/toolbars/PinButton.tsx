@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import type {ComponentPropsWithRef, ReactNode} from 'react';
-import React, { forwardRef} from 'react'
+import type {ComponentPropsWithRef, ReactNode} from 'react'
+import React, {forwardRef} from 'react'
 
 const Container = styled.button<{pinned?: boolean}>`
   ${pointerEventsAutoInNormalMode};
@@ -22,6 +22,7 @@ const Container = styled.button<{pinned?: boolean}>`
   backdrop-filter: blur(14px);
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
 
   &:hover {
     background: rgba(59, 63, 69, 0.8);

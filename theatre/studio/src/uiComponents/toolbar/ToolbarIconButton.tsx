@@ -25,6 +25,7 @@ const Container = styled.button`
   backdrop-filter: blur(14px);
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
 
   filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.25))
     drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.15));
@@ -42,21 +43,22 @@ const Container = styled.button`
     color: white;
   }
 
-  &:first-child {
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
-  }
-
-  &:last-child {
-    border-bottom-right-radius: 2px;
-    border-top-right-radius: 2px;
-  }
-
   // Don't blur if in a button group, because it already blurs. We need to blur
   // on the group-level, otherwise we get seams.
   ${ToolbarSwitchSelectContainer} > & {
     backdrop-filter: none;
     filter: none;
+    border-radius: 0;
+
+    &:first-child {
+      border-top-left-radius: 2px;
+      border-bottom-left-radius: 2px;
+    }
+
+    &:last-child {
+      border-bottom-right-radius: 2px;
+      border-top-right-radius: 2px;
+    }
   }
 
   @supports not (backdrop-filter: blur()) {
