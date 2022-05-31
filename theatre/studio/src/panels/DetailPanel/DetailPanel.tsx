@@ -18,6 +18,7 @@ import {Box, prism, val} from '@theatre/dataverse'
 const headerHeight = `32px`
 
 const Container = styled.div<{pin: boolean}>`
+  ${pointerEventsAutoInNormalMode};
   background-color: rgba(40, 43, 47, 0.8);
   position: fixed;
   right: 8px;

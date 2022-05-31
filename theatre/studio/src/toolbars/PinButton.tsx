@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import type {ComponentPropsWithRef, ReactNode} from 'react'
-import React, {forwardRef} from 'react'
+import React, {forwardRef, useState} from 'react'
 
 const Container = styled.button<{pinned?: boolean}>`
   ${pointerEventsAutoInNormalMode};
@@ -44,9 +44,23 @@ interface PinButtonProps extends ComponentPropsWithRef<'button'> {
 
 const PinButton = forwardRef<HTMLButtonElement, PinButtonProps>(
   ({hint, pinned, icon, pinHintIcon, unpinHintIcon, ...props}, ref) => {
+    const [hovered, setHovered] = useState(false)
+
+    const showHint = hovered || hint
+
     return (
-      <Container {...props} pinned={pinned} ref={ref}>
-        {hint && !pinned ? pinHintIcon : hint && pinned ? unpinHintIcon : icon}
+      <Container
+        {...props}
+        pinned={pinned}
+        ref={ref}
+        onMouseOver={() => setHovered(true)}
+        onMouseOut={() => setHovered(false)}
+      >
+        {showHint && !pinned
+          ? pinHintIcon
+          : showHint && pinned
+          ? unpinHintIcon
+          : icon}
       </Container>
     )
   },

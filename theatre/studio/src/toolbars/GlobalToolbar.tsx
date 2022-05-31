@@ -9,13 +9,9 @@ import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 import {val} from '@theatre/dataverse'
 import ExtensionToolbar from './ExtensionToolbar/ExtensionToolbar'
 import PinButton from './PinButton'
-import {
-  ChevronLeft,
-  ChevronRight,
-  Details,
-  Outline,
-} from '@theatre/studio/uiComponents/icons'
-import {shouldShowDetailD} from '@theatre/studio/panels/DetailPanel/DetailPanel'
+import {Details, Outline} from '@theatre/studio/uiComponents/icons'
+import DoubleChevronLeft from '@theatre/studio/uiComponents/icons/DoubleChevronLeft'
+import DoubleChevronRight from '@theatre/studio/uiComponents/icons/DoubleChevronRight'
 
 const Container = styled.div`
   height: 36px;
@@ -76,8 +72,6 @@ const GlobalToolbar: React.FC = () => {
 
   const outlinePinned = useVal(getStudio().atomP.ahistoric.pinOutline)
   const detailsPinned = useVal(getStudio().atomP.ahistoric.pinDetails)
-  const showOutline = useVal(getStudio().atomP.ephemeral.showOutline)
-  const showDetails = useVal(shouldShowDetailD)
 
   return (
     <Container>
@@ -94,10 +88,9 @@ const GlobalToolbar: React.FC = () => {
             })
           }}
           icon={<Outline />}
-          pinHintIcon={<ChevronRight />}
-          unpinHintIcon={<ChevronLeft />}
+          pinHintIcon={<DoubleChevronRight />}
+          unpinHintIcon={<DoubleChevronLeft />}
           pinned={outlinePinned}
-          hint={showOutline}
         />
         {conflicts.length > 0 ? (
           <NumberOfConflictsIndicator>
@@ -117,10 +110,9 @@ const GlobalToolbar: React.FC = () => {
             })
           }}
           icon={<Details />}
-          pinHintIcon={<ChevronLeft />}
-          unpinHintIcon={<ChevronRight />}
+          pinHintIcon={<DoubleChevronLeft />}
+          unpinHintIcon={<DoubleChevronRight />}
           pinned={detailsPinned}
-          hint={showDetails}
         />
       </SubContainer>
     </Container>
