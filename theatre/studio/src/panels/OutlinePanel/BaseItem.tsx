@@ -3,7 +3,7 @@ import React from 'react'
 import styled, {css} from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import {ChevronRight, Package} from '@theatre/studio/uiComponents/icons'
+import {ChevronDown, Package} from '@theatre/studio/uiComponents/icons'
 
 export const Container = styled.li`
   margin: 0;
@@ -25,7 +25,7 @@ const Header = styled(BaseHeader)`
   padding-left: 8px;
   padding-right: 8px;
   gap: 8px;
-  height: 23px;
+  height: 21px;
   line-height: 0;
   box-sizing: border-box;
   display: flex;
@@ -106,7 +106,6 @@ const Head_Icon_WithDescendants = styled.span<{isOpen: boolean}>`
   font-size: 9px;
   position: relative;
   display: block;
-  transform: rotateZ(${(props) => (props.isOpen ? 90 : 0)}deg);
 `
 
 const ChildrenContainer = styled.ul`
@@ -141,7 +140,7 @@ const BaseItem: React.FC<{
         <Head_IconContainer>
           {canContainChildren ? (
             <Head_Icon_WithDescendants isOpen={true}>
-              <ChevronRight />
+              <ChevronDown />
             </Head_Icon_WithDescendants>
           ) : (
             <Package />
