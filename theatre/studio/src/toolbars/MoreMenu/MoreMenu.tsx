@@ -1,5 +1,5 @@
 import {useVal} from '@theatre/react'
-import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import React from 'react'
 import styled from 'styled-components'
@@ -102,7 +102,7 @@ const UpdateDot = styled.div`
   border-radius: 50%;
 `
 
-const version: string = process.env.version as $FixMe
+const version: string = process.env.version ?? '0.4.0'
 
 const untaggedVersion: string = version.match(/^[^\-]+/)![0]
 
