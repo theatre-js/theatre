@@ -22,9 +22,9 @@ const Header = styled(BaseHeader)`
   margin-top: 2px;
   margin-bottom: 2px;
   margin-left: calc(4px + var(--depth) * 16px);
-  padding-left: 8px;
+  padding-left: 4px;
   padding-right: 8px;
-  gap: 8px;
+  gap: 4px;
   height: 21px;
   line-height: 0;
   box-sizing: border-box;
