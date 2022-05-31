@@ -21,7 +21,7 @@ const Container = styled.button`
 
   color: #a8a8a9;
 
-  background: rgba(40, 43, 47, 0.45);
+  background: rgba(40, 43, 47, 0.8);
   backdrop-filter: blur(14px);
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -39,8 +39,8 @@ const Container = styled.button`
   }
 
   &.selected {
-    background: rgba(40, 43, 47, 0.9);
-    color: white;
+    color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7);
   }
 
   // Don't blur if in a button group, because it already blurs. We need to blur
@@ -58,22 +58,6 @@ const Container = styled.button`
     &:last-child {
       border-bottom-right-radius: 2px;
       border-top-right-radius: 2px;
-    }
-  }
-
-  @supports not (backdrop-filter: blur()) {
-    background: rgba(40, 43, 47, 0.8);
-
-    &:hover {
-      background: rgba(59, 63, 69, 0.8);
-    }
-
-    &:active {
-      background: rgba(82, 88, 96, 0.7);
-    }
-
-    &.selected {
-      background: rgb(27, 32, 35);
     }
   }
 `

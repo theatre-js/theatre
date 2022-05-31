@@ -17,11 +17,12 @@ const Container = styled.button<{pinned?: boolean}>`
 
   color: ${({pinned}) => (pinned ? 'rgba(255, 255, 255, 0.8)' : '#A8A8A9')};
 
-  background: ${({pinned}) =>
-    pinned ? 'rgba(40, 43, 47, 0.8)' : 'rgba(40, 43, 47, 0.45)'};
+  background: rgba(40, 43, 47, 0.8);
   backdrop-filter: blur(14px);
   border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid
+    ${({pinned}) =>
+      pinned ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.08)'};
   border-radius: 2px;
 
   &:hover {
@@ -30,19 +31,6 @@ const Container = styled.button<{pinned?: boolean}>`
 
   &:active {
     background: rgba(82, 88, 96, 0.8);
-  }
-
-  @supports not (backdrop-filter: blur()) {
-    background: ${({pinned}) =>
-      pinned ? 'rgba(40, 43, 47, 1)' : 'rgba(40, 43, 47, 0.8)'};
-
-    &:hover {
-      background: rgba(59, 63, 69, 0.8);
-    }
-
-    &:active {
-      background: rgba(82, 88, 96, 0.7);
-    }
   }
 `
 
