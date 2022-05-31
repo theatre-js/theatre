@@ -4,7 +4,7 @@ type accepts = string | number | object
 export function invariant(
   cond: any,
   /** Pass a message or function producing a message */
-  message: (() => accepts) | accepts,
+  message: (() => accepts) | accepts | undefined,
   /** Pass a value for what we found instead */
   found?: any,
 ): asserts cond {
