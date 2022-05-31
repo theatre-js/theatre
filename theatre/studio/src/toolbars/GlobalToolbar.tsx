@@ -1,6 +1,6 @@
 import {usePrism, useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
-import React from 'react'
+import React, {useRef} from 'react'
 import styled from 'styled-components'
 import type {$IntentionalAny} from '@theatre/dataverse/dist/types'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
@@ -13,9 +13,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Details,
+  Ellipsis,
   Outline,
 } from '@theatre/studio/uiComponents/icons'
 import {shouldShowDetailD} from '@theatre/studio/panels/DetailPanel/DetailPanel'
+import ToolbarIconButton from '@theatre/studio/uiComponents/toolbar/ToolbarIconButton'
+import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
+import MoreMenu from './MoreMenu/MoreMenu'
 
 const Container = styled.div`
   height: 36px;
@@ -48,6 +52,16 @@ const SubContainer = styled.div`
   gap: 8px;
 `
 
+const HasUpdatesBadge = styled.div`
+  position: absolute;
+  background: #40aaa4;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  right: -2px;
+  top: -2px;
+`
+
 const GlobalToolbar: React.FC = () => {
   const conflicts = usePrism(() => {
     const ephemeralStateOfAllProjects = val(
@@ -78,6 +92,27 @@ const GlobalToolbar: React.FC = () => {
   const detailsPinned = useVal(getStudio().atomP.ahistoric.pinDetails)
   const showOutline = useVal(getStudio().atomP.ephemeral.showOutline)
   const showDetails = useVal(shouldShowDetailD)
+  const hasUpdates =
+    useVal(getStudio().atomP.ahistoric.updateChecker.result.hasUpdates) === true
+
+  const [moreMenu, openMoreMenu] = usePopover(
+    () => {
+      const triggerBounds = moreMenuTriggerRef.current!.getBoundingClientRect()
+      return {
+        debugName: 'More Menu',
+
+        constraints: {
+          maxX: triggerBounds.right,
+          maxY: 8,
+        },
+        verticalGap: 2,
+      }
+    },
+    () => {
+      return <MoreMenu />
+    },
+  )
+  const moreMenuTriggerRef = useRef<HTMLButtonElement>(null)
 
   return (
     <Container>
@@ -107,6 +142,17 @@ const GlobalToolbar: React.FC = () => {
         <ExtensionToolbar toolbarId="global" />
       </SubContainer>
       <SubContainer>
+        {moreMenu}
+        <ToolbarIconButton
+          ref={moreMenuTriggerRef}
+          onClick={(e) => {
+            openMoreMenu(e, moreMenuTriggerRef.current!)
+          }}
+        >
+          <Ellipsis />
+          {hasUpdates && <HasUpdatesBadge />}
+        </ToolbarIconButton>
+
         <PinButton
           ref={triggerButtonRef as $IntentionalAny}
           onClick={() => {
