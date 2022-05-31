@@ -7,7 +7,7 @@ import type {
   IAggregateKeyframeEditorProps,
   AggregatedKeyframeConnection,
 } from './AggregateKeyframeEditor'
-import {iif} from './iif'
+import {iif} from '@theatre/studio/utils/iif'
 
 export type IAggregateKeyframeEditorUtils = ReturnType<
   typeof useAggregateKeyframeEditorUtils
