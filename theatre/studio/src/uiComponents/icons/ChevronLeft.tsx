@@ -12,8 +12,7 @@ function ChevronLeft(props: React.SVGProps<SVGSVGElement>) {
     >
       <path
         d="M10.45 2.266l.956.954-4.763 4.763 4.763 4.762-.955.954-5.712-5.716 5.712-5.717z"
-        fill="#fff"
-        fillOpacity={0.6}
+        fill="currentColor"
       />
     </svg>
   )

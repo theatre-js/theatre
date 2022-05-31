@@ -14,8 +14,7 @@ function ChevronDown(props: React.SVGProps<SVGSVGElement>) {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M8 10.5L4 6.654 5.2 5.5 8 8.385 10.8 5.5 12 6.654 8 10.5z"
-        fill="#fff"
-        fillOpacity={0.6}
+        fill="currentColor"
       />
     </svg>
   )
