@@ -126,7 +126,7 @@ type _VMErrors<T, Path extends string> =
         T,
         Path,
         VMValidMarker,
-        `reactive values must themselves be view values`
+        `reactive values must themselves be view values (as VM<T> which can be created via .vm$)`
       >
     : //
     // array
