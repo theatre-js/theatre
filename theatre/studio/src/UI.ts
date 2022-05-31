@@ -8,7 +8,7 @@ import {getMounter} from './utils/renderInPortalInContext'
 import {withStyledShadow} from './css'
 import ExtensionToolbar from './toolbars/ExtensionToolbar/ExtensionToolbar'
 // "@theatre/studio/utils/rxjs-mvvm" (and the ./rxjs nearby) augment declarations in rxjs package, so we load it early
-import '@theatre/studio/utils/rxjs-mvvm'
+import '@theatre/studio/utils/mvvm/rxjs-mvvm'
 
 export default class UI {
   readonly containerEl = document.createElement('div')

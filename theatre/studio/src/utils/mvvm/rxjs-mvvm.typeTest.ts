@@ -1,28 +1,28 @@
 import {BehaviorSubject, Observable} from 'rxjs'
-import type {DevString} from './DevString'
+import type {DevString} from '@theatre/studio/utils/DevString'
 import type {Outcome} from './rxjs-mvvm'
 
 declare function check<T>(value: T): Observable<T>
 
 function nestedTypeChecks() {
   // good
-  check(new BehaviorSubject<1>(null!).view$()).view$()
-  check(new Observable<1>(null!).view$()).view$()
+  check(new BehaviorSubject<1>(null!).vm$()).vm$()
+  check(new Observable<1>(null!).vm$()).vm$()
 
   // bad
   check(new BehaviorSubject<1>(null!))
     // @ts-expect-error
-    .view$()
+    .vm$()
 
   const hmm = new Observable<{set(id: string): void}>(null!)
     // @ts-expect-error for complicated set
-    .view$()
+    .vm$()
 
   check({
     a: hmm,
   })
     // @ts-expect-error for hmm is any
-    .view$()
+    .vm$()
 }
 
 function typeChecks() {
@@ -30,7 +30,7 @@ function typeChecks() {
 
   check({
     takesNoArg() {},
-  }).view$()
+  }).vm$()
 
   const rx = new Observable<number>(null!)
   const a = check({
@@ -40,8 +40,8 @@ function typeChecks() {
       return null!
     },
 
-    rx: rx.view$(),
-  }).view$()
+    rx: rx.vm$(),
+  }).vm$()
 
   // bad
 
@@ -51,7 +51,7 @@ function typeChecks() {
     },
   })
     //@ts-expect-error
-    .view$()
+    .vm$()
 
   check({
     // promise: Promise.resolve(1),
@@ -61,25 +61,25 @@ function typeChecks() {
     },
   })
     //@ts-expect-error
-    .view$()
+    .vm$()
 
-  check([]).view$()
+  check([]).vm$()
 
   check({
     promise: Promise.resolve(1),
   })
     // @ts-expect-error
-    .view$()
+    .vm$()
 
   check({
     takesNonReasonArg(itemId: string) {},
   })
     //@ts-expect-error
-    .view$()
+    .vm$()
 
   check({
     takesReasonArgPlusExtra(reason: DevString, itemId: string) {},
   })
     //@ts-expect-error
-    .view$()
+    .vm$()
 }

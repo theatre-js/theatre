@@ -5,7 +5,7 @@ import {isObservable} from 'rxjs'
 import {dev} from '@theatre/studio/utils/DevString'
 import {invariant} from '@theatre/studio/utils/invariant'
 import {combineLatestObj} from './combineLatestObj'
-import type {TSErrors} from '@theatre/studio/utils/rxjs-mvvm'
+import type {TSErrors} from '@theatre/studio/utils/mvvm/rxjs-mvvm'
 
 type React$<Props extends {}> = (
   props: {
