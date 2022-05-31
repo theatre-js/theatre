@@ -26576,6 +26576,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"rxjs@npm:8.0.0-alpha.3":
+  version: 8.0.0-alpha.3
+  resolution: "rxjs@npm:8.0.0-alpha.3"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: 1ef4ac1e20e31afe23f62843ec95a997cc2d08086bd8c00f4065a9f0b5c16a16b92ab564c529819aba9ca81726e38c99b8464dd25a0f5f270568ac70cf8ec268
+  languageName: node
+  linkType: hard
+
 "rxjs@npm:^6.6.7":
   version: 6.6.7
   resolution: "rxjs@npm:6.6.7"
@@ -28755,6 +28764,7 @@ fsevents@^1.2.7:
     rimraf: ^3.0.2
     rollup: ^2.56.3
     rollup-plugin-dts: ^4.0.0
+    rxjs: 8.0.0-alpha.3
     shallowequal: ^1.1.0
     styled-components: ^5.3.0
     svg-inline-loader: ^0.8.2

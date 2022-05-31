@@ -7,6 +7,8 @@ import {val} from '@theatre/dataverse'
 import {getMounter} from './utils/renderInPortalInContext'
 import {withStyledShadow} from './css'
 import ExtensionToolbar from './toolbars/ExtensionToolbar/ExtensionToolbar'
+// "@theatre/studio/utils/rxjs" augments declarations in rxjs package, so we load it early
+import '@theatre/studio/utils/rxjs'
 
 export default class UI {
   readonly containerEl = document.createElement('div')
