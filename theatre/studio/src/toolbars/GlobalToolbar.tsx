@@ -100,13 +100,12 @@ const GlobalToolbar: React.FC = () => {
       const triggerBounds = moreMenuTriggerRef.current!.getBoundingClientRect()
       return {
         debugName: 'More Menu',
-        // closeOnClickOutside: false,
-        // pointerDistanceThreshold: 100,
-        // closeWhenPointerIsDistant: false,
+
         constraints: {
           maxX: triggerBounds.right,
           maxY: 8,
         },
+        verticalGap: 2,
       }
     },
     () => {

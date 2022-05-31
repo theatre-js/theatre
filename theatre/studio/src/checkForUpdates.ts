@@ -25,7 +25,9 @@ export default async function checkForUpdates() {
     }
     try {
       const response = await fetch(
-        new Request(`https://updates.theatrejs.com/updates/${'0.4.8'}`),
+        new Request(
+          `https://updates.theatrejs.com/updates/${process.env.version}`,
+        ),
       )
       if (response.ok) {
         const json = await response.json()
