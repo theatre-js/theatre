@@ -1,6 +1,11 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
 import {usePrism, useVal} from '@theatre/react'
-import React, {useEffect, useLayoutEffect} from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+} from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
 import {
@@ -15,6 +20,7 @@ import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
 import {Box, prism, val} from '@theatre/dataverse'
 import EmptyState from './EmptyState'
+import useLockSet from '@theatre/studio/uiComponents/useLockSet'
 
 const headerHeight = `32px`
 
@@ -71,6 +77,10 @@ const Body = styled.div`
   user-select: none;
 `
 
+export const contextMenuShownContext = createContext<
+  ReturnType<typeof useLockSet>
+>(null!)
+
 const DetailPanel: React.FC<{}> = (props) => {
   const pin = useVal(getStudio().atomP.ahistoric.pinDetails) !== false
 
@@ -88,6 +98,10 @@ const DetailPanel: React.FC<{}> = (props) => {
     }
   }, [])
 
+  const [isContextMenuShown] = useContext(contextMenuShownContext)
+
+  const showDetailsPanel = pin || hotspotActive || isContextMenuShown
+
   return usePrism(() => {
     const selection = getOutlineSelection()
 
@@ -96,7 +110,7 @@ const DetailPanel: React.FC<{}> = (props) => {
       return (
         <Container
           data-testid="DetailPanel-Object"
-          pin={pin || hotspotActive}
+          pin={showDetailsPanel}
           onMouseEnter={() => {
             isDetailPanelHoveredB.set(true)
           }}
@@ -128,7 +142,7 @@ const DetailPanel: React.FC<{}> = (props) => {
     const project = selection.find(isProject)
     if (project) {
       return (
-        <Container pin={pin || hotspotActive}>
+        <Container pin={showDetailsPanel}>
           <Header>
             <Title title={`${project.address.projectId}`}>
               <TitleBar_Piece>{project.address.projectId} </TitleBar_Piece>
@@ -143,7 +157,7 @@ const DetailPanel: React.FC<{}> = (props) => {
 
     return (
       <Container
-        pin={pin || hotspotActive}
+        pin={showDetailsPanel}
         onMouseEnter={() => {
           isDetailPanelHoveredB.set(true)
         }}
@@ -154,10 +168,18 @@ const DetailPanel: React.FC<{}> = (props) => {
         <EmptyState />
       </Container>
     )
-  }, [pin, hotspotActive])
+  }, [showDetailsPanel])
 }
 
-export default DetailPanel
+export default () => {
+  const lockSet = useLockSet()
+
+  return (
+    <contextMenuShownContext.Provider value={lockSet}>
+      <DetailPanel />
+    </contextMenuShownContext.Provider>
+  )
+}
 
 const isDetailPanelHotspotActiveB = new Box<boolean>(false)
 const isDetailPanelHoveredB = new Box<boolean>(false)
