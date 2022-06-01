@@ -10,8 +10,6 @@ test.describe('setting-static-props', () => {
   })
 
   test('Undo/redo', async ({page}) => {
-    await page.locator('[data-testid="OutlinePanel-TriggerButton"]').click()
-
     // https://github.com/microsoft/playwright/issues/12298
     // The div does in fact intercept pointer events, but it is meant to 🤦‍
     await page

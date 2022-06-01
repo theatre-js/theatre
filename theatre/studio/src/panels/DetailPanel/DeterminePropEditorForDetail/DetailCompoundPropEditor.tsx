@@ -18,8 +18,8 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import {useEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEditingToolsForCompoundProp'
 
 const Container = styled.div`
-  --step: 8px;
-  --left-pad: 0px;
+  --step: 15px;
+  --left-pad: 15px;
   ${pointerEventsAutoInNormalMode};
 `
 

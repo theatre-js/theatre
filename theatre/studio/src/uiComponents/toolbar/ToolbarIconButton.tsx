@@ -21,10 +21,11 @@ export const Container = styled.button`
 
   color: #a8a8a9;
 
-  background: rgba(40, 43, 47, 0.45);
+  background: rgba(40, 43, 47, 0.8);
   backdrop-filter: blur(14px);
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
 
   filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.25))
     drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.15));
@@ -38,18 +39,8 @@ export const Container = styled.button`
   }
 
   &.selected {
-    background: rgba(40, 43, 47, 0.9);
-    color: white;
-  }
-
-  &:first-child {
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
-  }
-
-  &:last-child {
-    border-bottom-right-radius: 2px;
-    border-top-right-radius: 2px;
+    color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7);
   }
 
   // Don't blur if in a button group, because it already blurs. We need to blur
@@ -57,21 +48,16 @@ export const Container = styled.button`
   ${ToolbarSwitchSelectContainer} > & {
     backdrop-filter: none;
     filter: none;
-  }
+    border-radius: 0;
 
-  @supports not (backdrop-filter: blur()) {
-    background: rgba(40, 43, 47, 0.8);
-
-    &:hover {
-      background: rgba(59, 63, 69, 0.8);
+    &:first-child {
+      border-top-left-radius: 2px;
+      border-bottom-left-radius: 2px;
     }
 
-    &:active {
-      background: rgba(82, 88, 96, 0.7);
-    }
-
-    &.selected {
-      background: rgb(27, 32, 35);
+    &:last-child {
+      border-bottom-right-radius: 2px;
+      border-top-right-radius: 2px;
     }
   }
 `

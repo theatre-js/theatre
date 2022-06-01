@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import type {ComponentPropsWithRef, ReactNode} from 'react'
-import React, {forwardRef} from 'react'
+import React, {forwardRef, useState} from 'react'
 
 const Container = styled.button<{pinned?: boolean}>`
   ${pointerEventsAutoInNormalMode};
@@ -15,13 +15,15 @@ const Container = styled.button<{pinned?: boolean}>`
   height: 32px;
   outline: none;
 
-  color: #a8a8a9;
+  color: ${({pinned}) => (pinned ? 'rgba(255, 255, 255, 0.8)' : '#A8A8A9')};
 
-  background: ${({pinned}) =>
-    pinned ? 'rgba(40, 43, 47, 0.9)' : 'rgba(40, 43, 47, 0.45)'};
+  background: rgba(40, 43, 47, 0.8);
   backdrop-filter: blur(14px);
   border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid
+    ${({pinned}) =>
+      pinned ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.08)'};
+  border-radius: 2px;
 
   &:hover {
     background: rgba(59, 63, 69, 0.8);
@@ -31,20 +33,8 @@ const Container = styled.button<{pinned?: boolean}>`
     background: rgba(82, 88, 96, 0.8);
   }
 
-  @supports not (backdrop-filter: blur()) {
-    background: rgba(40, 43, 47, 0.8);
-
-    &:hover {
-      background: rgba(59, 63, 69, 0.8);
-    }
-
-    &:active {
-      background: rgba(82, 88, 96, 0.7);
-    }
-
-    &.selected {
-      background: rgb(27, 32, 35);
-    }
+  svg {
+    display: block;
   }
 `
 
@@ -58,9 +48,33 @@ interface PinButtonProps extends ComponentPropsWithRef<'button'> {
 
 const PinButton = forwardRef<HTMLButtonElement, PinButtonProps>(
   ({hint, pinned, icon, pinHintIcon, unpinHintIcon, ...props}, ref) => {
+    const [hovered, setHovered] = useState(false)
+
+    const showHint = hovered || hint
+
     return (
-      <Container {...props} pinned={pinned} ref={ref}>
-        {hint && !pinned ? pinHintIcon : hint && pinned ? unpinHintIcon : icon}
+      <Container
+        {...props}
+        pinned={pinned}
+        ref={ref}
+        onMouseOver={() => setHovered(true)}
+        onMouseOut={() => setHovered(false)}
+      >
+        {/* Necessary for hover to work properly. */}
+        <div
+          style={{
+            pointerEvents: 'none',
+            width: 'fit-content',
+            height: 'fit-content',
+            inset: 0,
+          }}
+        >
+          {showHint && !pinned
+            ? pinHintIcon
+            : showHint && pinned
+            ? unpinHintIcon
+            : icon}
+        </div>
       </Container>
     )
   },

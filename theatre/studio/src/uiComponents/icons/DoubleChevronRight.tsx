@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-function ChevronDown(props: React.SVGProps<SVGSVGElement>) {
+function DoubleChevronRight(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       width={16}
@@ -13,11 +13,11 @@ function ChevronDown(props: React.SVGProps<SVGSVGElement>) {
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M8 10.5L4 6.654 5.2 5.5 8 8.385 10.8 5.5 12 6.654 8 10.5z"
+        d="M3.694 3.765l.792-.792 4.74 4.744-4.74 4.744-.792-.793 3.951-3.951-3.951-3.952zm3.932 0l.792-.792 4.74 4.744-4.74 4.744-.792-.793 3.952-3.951-3.952-3.952z"
         fill="currentColor"
       />
     </svg>
   )
 }
 
-export default ChevronDown
+export default DoubleChevronRight

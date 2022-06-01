@@ -1,7 +1,7 @@
 import studio from '@theatre/studio'
 import type {UseDragOpts} from './useDrag'
 import useDrag from './useDrag'
-import React, {useLayoutEffect, useMemo, useState} from 'react'
+import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import type {IProject, ISheet} from '@theatre/core'
 import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
@@ -17,6 +17,17 @@ const textInterpolate = (left: string, right: string, progression: number) => {
     return left + right.slice(left.length, left.length + length)
   }
   return left
+}
+
+const globalConfig = {
+  background: {
+    type: types.stringLiteral('black', {
+      black: 'black',
+      white: 'white',
+      dynamic: 'dynamic',
+    }),
+    dynamic: types.rgba(),
+  },
 }
 
 const boxObjectConfig = {
@@ -162,8 +173,24 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
     })
   })
 
+  const containerRef = useRef<HTMLDivElement>(null!)
+
+  const globalObj = sheet.object('global', globalConfig)
+
+  useLayoutEffect(() => {
+    const unsubscribeFromChanges = onChange(globalObj.props, (newValues) => {
+      console.log(newValues)
+      containerRef.current.style.background =
+        newValues.background.type !== 'dynamic'
+          ? newValues.background.type
+          : newValues.background.dynamic.toString()
+    })
+    return unsubscribeFromChanges
+  }, [globalObj])
+
   return (
     <div
+      ref={containerRef}
       style={{
         position: 'absolute',
         left: '0',
