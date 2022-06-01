@@ -14,6 +14,7 @@ import ProjectDetails from './ProjectDetails'
 import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
 import {Box, prism, val} from '@theatre/dataverse'
+import EmptyState from './EmptyState'
 
 const headerHeight = `32px`
 
@@ -140,7 +141,19 @@ const DetailPanel: React.FC<{}> = (props) => {
       )
     }
 
-    return <></>
+    return (
+      <Container
+        pin={pin || hotspotActive}
+        onMouseEnter={() => {
+          isDetailPanelHoveredB.set(true)
+        }}
+        onMouseLeave={() => {
+          isDetailPanelHoveredB.set(false)
+        }}
+      >
+        <EmptyState />
+      </Container>
+    )
   }, [pin, hotspotActive])
 }
 
