@@ -79,7 +79,7 @@ const Body = styled.div`
 
 export const contextMenuShownContext = createContext<
   ReturnType<typeof useLockSet>
->(null!)
+>([false, () => () => {}])
 
 const DetailPanel: React.FC<{}> = (props) => {
   const pin = useVal(getStudio().atomP.ahistoric.pinDetails) !== false
