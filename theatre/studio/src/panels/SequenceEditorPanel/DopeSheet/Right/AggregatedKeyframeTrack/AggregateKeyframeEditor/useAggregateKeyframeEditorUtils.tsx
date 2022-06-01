@@ -24,7 +24,26 @@ export function useAggregateKeyframeEditorUtils(
   const {index, aggregateKeyframes, selection} = props
   const sheetObjectAddress = props.viewModel.sheetObject.address
 
-  return usePrism(() => {
+  return usePrism(getAggregateKeyframeEditorUtilsPrismFn(props), [
+    index,
+    aggregateKeyframes,
+    selection,
+    sheetObjectAddress,
+  ])
+}
+
+// I think this was pulled out for performance
+// 1/10: Not sure this is properly split up
+export function getAggregateKeyframeEditorUtilsPrismFn(
+  props: Pick<
+    IAggregateKeyframeEditorProps,
+    'index' | 'aggregateKeyframes' | 'selection' | 'viewModel'
+  >,
+) {
+  const {index, aggregateKeyframes, selection} = props
+  const sheetObjectAddress = props.viewModel.sheetObject.address
+
+  return () => {
     const cur = aggregateKeyframes[index]
     const next = aggregateKeyframes[index + 1]
 
@@ -80,5 +99,5 @@ export function useAggregateKeyframeEditorUtils(
       isAggregateEditingInCurvePopover,
       allConnections,
     }
-  }, [index, aggregateKeyframes, selection, sheetObjectAddress])
+  }
 }

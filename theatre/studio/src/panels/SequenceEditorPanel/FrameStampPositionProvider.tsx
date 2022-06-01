@@ -123,6 +123,39 @@ const FrameStampPositionProvider: React.FC<{
 
 export const useFrameStampPositionD = () => useContext(context).currentD
 
+/** Version of {@link useLockFrameStampPosition} which allows you to directly set status of a lock. */
+export const useLockFrameStampPositionRef = () => {
+  const {getLock} = useContext(context)
+  const lockRef = useRef<undefined | ReturnType<typeof getLock>>()
+
+  useLayoutEffect(() => {
+    return () => {
+      lockRef.current!.unlock()
+    }
+  }, [val])
+
+  return useMemo(() => {
+    let prevShouldLock: false | {pos: number} = false
+    return (shouldLock: boolean, posValue: number) => {
+      if (shouldLock === prevShouldLock) return
+      if (shouldLock) {
+        if (!prevShouldLock) {
+          lockRef.current = getLock()
+          lockRef.current.set(posValue)
+          prevShouldLock = {pos: posValue}
+        } else if (prevShouldLock.pos !== posValue) {
+          lockRef.current?.set(posValue)
+        } else {
+          // all the same params
+        }
+      } else {
+        lockRef.current!.unlock()
+        prevShouldLock = false
+      }
+    }
+  }, [getLock])
+}
+
 export const useLockFrameStampPosition = (shouldLock: boolean, val: number) => {
   const {getLock} = useContext(context)
   const lockRef = useRef<undefined | ReturnType<typeof getLock>>()
@@ -179,7 +212,6 @@ const pointerPositionInUnitSpace = (
   return prism(() => {
     const rightDims = val(layoutP.rightDims)
     const clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)
-    const leftPadding = val(layoutP.scaledSpace.leftPadding)
 
     const mousePos = val(mousePositionD)
     if (!mousePos) return [-1, FrameStampPositionType.hidden]
