@@ -44,6 +44,7 @@ type Opts = {
   pointerDistanceThreshold?: number
   closeOnClickOutside?: boolean
   constraints?: AbsolutePlacementBoxConstraints
+  verticalGap?: number
 }
 
 export default function usePopover(
@@ -123,6 +124,7 @@ export default function usePopover(
           onClickOutside={state.onClickOutside}
           onPointerOutside={state.onPointerOutside}
           constraints={state.opts.constraints}
+          verticalGap={state.opts.verticalGap}
         />
       </PopoverAutoCloseLock.Provider>,
       portalLayer!,

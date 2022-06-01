@@ -21,6 +21,7 @@ import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import type {ProjectId} from '@theatre/shared/utils/ids'
+import checkForUpdates from './checkForUpdates'
 
 export type CoreExports = typeof _coreExports
 
@@ -96,6 +97,7 @@ export class Studio {
 
     if (process.env.NODE_ENV !== 'test') {
       this.ui.render()
+      checkForUpdates()
     }
   }
 
