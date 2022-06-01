@@ -32,6 +32,10 @@ const Container = styled.button<{pinned?: boolean}>`
   &:active {
     background: rgba(82, 88, 96, 0.8);
   }
+
+  svg {
+    display: block;
+  }
 `
 
 interface PinButtonProps extends ComponentPropsWithRef<'button'> {
@@ -56,11 +60,21 @@ const PinButton = forwardRef<HTMLButtonElement, PinButtonProps>(
         onMouseOver={() => setHovered(true)}
         onMouseOut={() => setHovered(false)}
       >
-        {showHint && !pinned
-          ? pinHintIcon
-          : showHint && pinned
-          ? unpinHintIcon
-          : icon}
+        {/* Necessary for hover to work properly. */}
+        <div
+          style={{
+            pointerEvents: 'none',
+            width: 'fit-content',
+            height: 'fit-content',
+            inset: 0,
+          }}
+        >
+          {showHint && !pinned
+            ? pinHintIcon
+            : showHint && pinned
+            ? unpinHintIcon
+            : icon}
+        </div>
       </Container>
     )
   },

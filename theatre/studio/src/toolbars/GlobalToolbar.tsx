@@ -70,8 +70,8 @@ const GlobalToolbar: React.FC = () => {
       ),
   )
 
-  const outlinePinned = useVal(getStudio().atomP.ahistoric.pinOutline)
-  const detailsPinned = useVal(getStudio().atomP.ahistoric.pinDetails)
+  const outlinePinned = useVal(getStudio().atomP.ahistoric.pinOutline) ?? true
+  const detailsPinned = useVal(getStudio().atomP.ahistoric.pinDetails) ?? true
 
   return (
     <Container>
@@ -83,7 +83,7 @@ const GlobalToolbar: React.FC = () => {
           onClick={() => {
             getStudio().transaction(({stateEditors, drafts}) => {
               stateEditors.studio.ahistoric.setPinOutline(
-                !drafts.ahistoric.pinOutline,
+                !(drafts.ahistoric.pinOutline ?? true),
               )
             })
           }}
@@ -105,7 +105,7 @@ const GlobalToolbar: React.FC = () => {
           onClick={() => {
             getStudio().transaction(({stateEditors, drafts}) => {
               stateEditors.studio.ahistoric.setPinDetails(
-                !drafts.ahistoric.pinDetails,
+                !(drafts.ahistoric.pinDetails ?? true),
               )
             })
           }}
