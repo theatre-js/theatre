@@ -15,6 +15,7 @@ import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/Do
 import type {IAggregateKeyframeEditorProps} from './AggregateKeyframeEditor'
 import type {IAggregateKeyframeEditorUtils} from './useAggregateKeyframeEditorUtils'
 import {AggregateKeyframeVisualDot, HitZone} from './AggregateKeyframeVisualDot'
+import {draggedKeyframesB, draggedKeyframesUtils} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/draggedKeyframes'
 
 type IAggregateKeyframeDotProps = {
   editorProps: IAggregateKeyframeEditorProps
@@ -97,6 +98,11 @@ function useDragForAggregateKeyframeDot(
         const props = propsRef.current
         const keyframes = keyframesRef.current
 
+        const kfIds = props.aggregateKeyframes[props.index].keyframes.map(
+          (kfWithTrackData) => kfWithTrackData.kf.id,
+        )
+        draggedKeyframesUtils.addKeyframeIdsToDragged(kfIds)
+
         if (
           props.selection &&
           props.aggregateKeyframes[props.index].selected ===
@@ -122,6 +128,7 @@ function useDragForAggregateKeyframeDot(
 
         return {
           onDrag(dx, dy, event) {
+            console.log(draggedKeyframesB.get())
             const newPosition = Math.max(
               // check if our event hoversover a [data-pos] element
               DopeSnap.checkIfMouseEventSnapToPos(event, {
@@ -152,6 +159,7 @@ function useDragForAggregateKeyframeDot(
             })
           },
           onDragEnd(dragHappened) {
+            draggedKeyframesUtils.resetDraggedKeyframes()
             if (dragHappened) {
               tempTransaction?.commit()
             } else {

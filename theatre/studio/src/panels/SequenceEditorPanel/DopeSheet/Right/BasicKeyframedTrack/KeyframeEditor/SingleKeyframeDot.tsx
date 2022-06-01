@@ -25,6 +25,7 @@ import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import type {ILogger} from '@theatre/shared/logger'
+import { draggedKeyframesUtils} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/draggedKeyframes'
 
 export const DOT_SIZE_PX = 6
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
@@ -180,6 +181,7 @@ function useDragForSingleKeyframeDot(
       debugName: 'KeyframeDot/useDragKeyframe',
       onDragStart(event) {
         const props = propsRef.current
+        draggedKeyframesUtils.addKeyframeIdsToDragged([props.keyframe.id])
         if (props.selection) {
           const {selection, leaf} = props
           const {sheetObject} = leaf
@@ -231,6 +233,7 @@ function useDragForSingleKeyframeDot(
             })
           },
           onDragEnd(dragHappened) {
+            draggedKeyframesUtils.resetDraggedKeyframes()
             if (dragHappened) {
               tempTransaction?.commit()
             } else {
