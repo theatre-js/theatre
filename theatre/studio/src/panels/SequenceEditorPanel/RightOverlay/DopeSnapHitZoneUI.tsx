@@ -32,7 +32,6 @@ export const DopeSnapHitZoneUI = {
     // notice that "," is "or" in css
     &.${RELATIVE_DRAGGED_CLASS} {
       pointer-events: none !important;
-      z-index: 0;
     }
   `,
   CSS_WHEN_SOMETHING_DRAGGING: css`

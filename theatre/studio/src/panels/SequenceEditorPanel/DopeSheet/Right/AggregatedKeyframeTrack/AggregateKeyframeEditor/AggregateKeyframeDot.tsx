@@ -43,13 +43,14 @@ export function AggregateKeyframeDot(
   /* const kfIds = props.editorProps.aggregateKeyframes[
     props.editorProps.index
   ].keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id) */
-  const kfIds = useMemo(
-    () =>
-      props.editorProps.aggregateKeyframes[
-        props.editorProps.index
-      ].keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id),
-    [props.editorProps],
-  )
+  // const kfIds = useMemo(
+  //   () =>
+  //     props.editorProps.aggregateKeyframes[
+  //       props.editorProps.index
+  //     ].keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id),
+  //   [props.editorProps.index, props.utils.cur.keyframes],
+  // )
+  const kfIds = cur.keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id)
 
   const draggedKeyframes = draggedKeyframesB.derivation.getValue()
 
@@ -118,9 +119,10 @@ function useDragForAggregateKeyframeDot(
         const props = propsRef.current
         const keyframes = keyframesRef.current
 
-        const kfIds = props.aggregateKeyframes[props.index].keyframes.map(
+        /* const kfIds = props.aggregateKeyframes[props.index].keyframes.map(
           (kfWithTrackData) => kfWithTrackData.kf.id,
-        )
+        ) */
+        const kfIds = keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id)
         draggedKeyframesUtils.addKeyframeIdsToDragged(kfIds)
 
         if (
