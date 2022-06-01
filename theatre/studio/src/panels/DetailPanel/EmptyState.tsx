@@ -1,4 +1,4 @@
-import type {FC} from 'react';
+import type {FC} from 'react'
 import React from 'react'
 import styled from 'styled-components'
 import {Outline} from '@theatre/studio/uiComponents/icons'
@@ -40,6 +40,8 @@ const EmptyState: FC = () => {
           properties.
         </div>
       </Message>
+      {/* Links like this should probably be managed centrally so that we can
+      have a process for updating them when the docs change. */}
       <LinkToDoc
         href="https://docs.theatrejs.com/in-depth/#objects"
         target="_blank"
