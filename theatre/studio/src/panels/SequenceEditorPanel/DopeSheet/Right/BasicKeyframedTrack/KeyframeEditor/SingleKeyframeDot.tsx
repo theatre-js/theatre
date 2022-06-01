@@ -25,7 +25,10 @@ import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import type {ILogger} from '@theatre/shared/logger'
-import { draggedKeyframesUtils} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/draggedKeyframes'
+import {
+  draggedKeyframesB,
+  draggedKeyframesUtils,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/draggedKeyframes'
 
 export const DOT_SIZE_PX = 6
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
@@ -64,6 +67,9 @@ const HitZone = styled.div`
     + ${Diamond},
     // notice , "or" in CSS
     &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS}
+    + ${Diamond},
+    // still , "or"
+    &.${DopeSnapHitZoneUI.RELATIVE_DRAGGED_CLASS}
     + ${Diamond} {
     ${absoluteDims(DOT_HOVER_SIZE_PX)}
   }
@@ -85,12 +91,16 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
     },
   })
 
+  const draggedKeyframes = draggedKeyframesB.derivation.getValue()
+  const isChildDragging = draggedKeyframes.has(props.keyframe.id)
+
   return (
     <>
       <HitZone
         ref={ref}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging,
+          isChildDragging,
           position: props.keyframe.position,
         })}
       />

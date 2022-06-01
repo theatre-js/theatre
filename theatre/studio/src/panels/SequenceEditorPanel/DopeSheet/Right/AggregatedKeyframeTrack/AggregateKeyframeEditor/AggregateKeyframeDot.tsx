@@ -15,7 +15,10 @@ import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/Do
 import type {IAggregateKeyframeEditorProps} from './AggregateKeyframeEditor'
 import type {IAggregateKeyframeEditorUtils} from './useAggregateKeyframeEditorUtils'
 import {AggregateKeyframeVisualDot, HitZone} from './AggregateKeyframeVisualDot'
-import {draggedKeyframesB, draggedKeyframesUtils} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/draggedKeyframes'
+import {
+  draggedKeyframesB,
+  draggedKeyframesUtils,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/draggedKeyframes'
 
 type IAggregateKeyframeDotProps = {
   editorProps: IAggregateKeyframeEditorProps
@@ -36,6 +39,22 @@ export function AggregateKeyframeDot(
     },
   })
 
+  // TODO: maybe use a `useMemo(() => {<fn>}, [])`
+  /* const kfIds = props.editorProps.aggregateKeyframes[
+    props.editorProps.index
+  ].keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id) */
+  const kfIds = useMemo(
+    () =>
+      props.editorProps.aggregateKeyframes[
+        props.editorProps.index
+      ].keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id),
+    [props.editorProps],
+  )
+
+  const draggedKeyframes = draggedKeyframesB.derivation.getValue()
+
+  const isChildDragging = kfIds.some((kfId) => draggedKeyframes.has(kfId))
+
   const [contextMenu] = useAggregateKeyframeContextMenu(node, () =>
     logger._debug('Show Aggregate Keyframe', props),
   )
@@ -46,6 +65,7 @@ export function AggregateKeyframeDot(
         ref={ref}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging,
+          isChildDragging,
           position: cur.position,
         })}
       />
@@ -128,7 +148,6 @@ function useDragForAggregateKeyframeDot(
 
         return {
           onDrag(dx, dy, event) {
-            console.log(draggedKeyframesB.get())
             const newPosition = Math.max(
               // check if our event hoversover a [data-pos] element
               DopeSnap.checkIfMouseEventSnapToPos(event, {

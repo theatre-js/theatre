@@ -8,20 +8,31 @@ import {includeLockFrameStampAttrs} from '@theatre/studio/panels/SequenceEditorP
 
 const HIT_ZONE_SIZE_PX = 12
 const SNAP_CURSOR_SIZE_PX = 34
+/**
+ * The keyframe itself is being dragged
+ * */
 const BEING_DRAGGED_CLASS = 'beingDragged'
+/**
+ * One of the parent or child keyframes is being dragged
+ */
+const RELATIVE_DRAGGED_CLASS = 'relativeBeingDragged'
 
 /**
  * Helper CSS for consistent display of the `⸢⸤⸣⸥` thing
  */
 export const DopeSnapHitZoneUI = {
   BEING_DRAGGED_CLASS,
+  RELATIVE_DRAGGED_CLASS,
   CSS: css`
     position: absolute;
     ${absoluteDims(HIT_ZONE_SIZE_PX)};
     ${pointerEventsAutoInNormalMode};
 
-    &.${BEING_DRAGGED_CLASS} {
+    &.${BEING_DRAGGED_CLASS},
+    // notice that "," is "or" in css
+    &.${RELATIVE_DRAGGED_CLASS} {
       pointer-events: none !important;
+      z-index: 0;
     }
   `,
   CSS_WHEN_SOMETHING_DRAGGING: css`
@@ -44,7 +55,11 @@ export const DopeSnapHitZoneUI = {
     }
   `,
   /** Intrinsic element props for `<HitZone/>`s */
-  reactProps(config: {position: number; isDragging: boolean}) {
+  reactProps(config: {
+    position: number
+    isDragging: boolean
+    isChildDragging?: boolean
+  }) {
     return {
       // `data-pos` and `includeLockFrameStampAttrs` are used by FrameStampPositionProvider
       // in order to handle snapping the playhead. Adding these props effectively
@@ -53,7 +68,11 @@ export const DopeSnapHitZoneUI = {
       // used to make this behave correctly.
       ...includeLockFrameStampAttrs(config.position),
       ...DopeSnap.includePositionSnapAttrs(config.position),
-      className: config.isDragging ? DopeSnapHitZoneUI.BEING_DRAGGED_CLASS : '',
+      className: config.isDragging
+        ? DopeSnapHitZoneUI.BEING_DRAGGED_CLASS
+        : config.isChildDragging
+        ? DopeSnapHitZoneUI.RELATIVE_DRAGGED_CLASS
+        : '',
     }
   },
 }
