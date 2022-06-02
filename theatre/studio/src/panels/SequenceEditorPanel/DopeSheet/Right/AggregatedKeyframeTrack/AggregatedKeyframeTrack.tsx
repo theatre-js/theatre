@@ -21,7 +21,13 @@ import AggregateKeyframeEditor from './AggregateKeyframeEditor/AggregateKeyframe
 import type {AggregatedKeyframes} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import getStudio from '@theatre/studio/getStudio'
-import {encodePathToProp} from '@theatre/shared/utils/addresses'
+import type {
+  SheetObjectAddress} from '@theatre/shared/utils/addresses';
+import {
+  decodePathToProp,
+  doesPathStartWith,
+  encodePathToProp
+} from '@theatre/shared/utils/addresses'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import type Sequence from '@theatre/core/sequences/Sequence'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
@@ -244,42 +250,124 @@ function pasteKeyframes(
       .sequence.tracksByObject[objectKey],
   ).getValue()
 
-  const trackIdByPropPath = tracksByObject?.trackIdByPropPath || {}
+  const areKeyframesAllOnSingleTrack = keyframes.every(
+    ({pathToProp}) => pathToProp.length === 0,
+  )
 
-  const rootPath =
-    viewModel.type === 'propWithChildren' ? viewModel.pathToProp : []
+  if (areKeyframesAllOnSingleTrack) {
+    const trackIdsOnObject = Object.keys(tracksByObject?.trackData ?? {})
 
-  const placeableKeyframes = keyframes
-    .map(({keyframe, pathToProp: relativePathToProp}) => {
-      const pathToPropEncoded = encodePathToProp([
-        ...rootPath,
-        ...relativePathToProp,
-      ])
+    if (viewModel.type === 'sheetObject') {
+      pasteKeyframesToMultipleTracks(
+        viewModel.sheetObject.address,
+        trackIdsOnObject,
+        keyframes,
+        sequence,
+      )
+    } else {
+      const trackIdByPropPath = tracksByObject?.trackIdByPropPath || {}
 
-      const maybeTrackId = trackIdByPropPath[pathToPropEncoded]
+      const trackIdsOnCompoundProp = Object.entries(trackIdByPropPath)
+        .filter(
+          ([encodedPath, trackId]) =>
+            trackId !== undefined &&
+            doesPathStartWith(
+              // e.g. a track with path `['position', 'x']` is under the compound track with path `['position']`
+              decodePathToProp(encodedPath),
+              viewModel.pathToProp,
+            ),
+        )
+        .map(([encodedPath, trackId]) => trackId) as SequenceTrackId[]
 
-      return maybeTrackId
-        ? {
-            keyframe,
-            trackId: maybeTrackId,
-          }
-        : null
-    })
-    .filter((result) => result !== null) as {
-    keyframe: Keyframe
-    trackId: SequenceTrackId
-  }[]
+      pasteKeyframesToMultipleTracks(
+        viewModel.sheetObject.address,
+        trackIdsOnCompoundProp,
+        keyframes,
+        sequence,
+      )
+    }
+  } else {
+    const trackIdByPropPath = tracksByObject?.trackIdByPropPath || {}
 
+    const rootPath =
+      viewModel.type === 'propWithChildren' ? viewModel.pathToProp : []
+
+    const placeableKeyframes = keyframes
+      .map(({keyframe, pathToProp: relativePathToProp}) => {
+        const pathToPropEncoded = encodePathToProp([
+          ...rootPath,
+          ...relativePathToProp,
+        ])
+
+        const maybeTrackId = trackIdByPropPath[pathToPropEncoded]
+
+        return maybeTrackId
+          ? {
+              keyframe,
+              trackId: maybeTrackId,
+            }
+          : null
+      })
+      .filter((result) => result !== null) as {
+      keyframe: Keyframe
+      trackId: SequenceTrackId
+    }[]
+
+    pasteKeyframesToSpecificTracks(
+      viewModel.sheetObject.address,
+      placeableKeyframes,
+      sequence,
+    )
+  }
+}
+
+function pasteKeyframesToMultipleTracks(
+  address: SheetObjectAddress,
+  trackIds: SequenceTrackId[],
+  keyframes: KeyframeWithPathToPropFromCommonRoot[],
+  sequence: Sequence,
+) {
   sequence.position = sequence.closestGridPosition(sequence.position)
   const keyframeOffset = earliestKeyframe(
-    placeableKeyframes.map(({keyframe}) => keyframe),
+    keyframes.map(({keyframe}) => keyframe),
   )?.position!
 
   getStudio()!.transaction(({stateEditors}) => {
-    for (const {keyframe, trackId} of placeableKeyframes) {
+    for (const trackId of trackIds) {
+      for (const {keyframe} of keyframes) {
+        stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
+          {
+            ...address,
+            trackId,
+            position: sequence.position + keyframe.position - keyframeOffset,
+            handles: keyframe.handles,
+            value: keyframe.value,
+            snappingFunction: sequence.closestGridPosition,
+          },
+        )
+      }
+    }
+  })
+}
+
+function pasteKeyframesToSpecificTracks(
+  address: SheetObjectAddress,
+  keyframesWithTracksToPlaceThemIn: {
+    keyframe: Keyframe
+    trackId: SequenceTrackId
+  }[],
+  sequence: Sequence,
+) {
+  sequence.position = sequence.closestGridPosition(sequence.position)
+  const keyframeOffset = earliestKeyframe(
+    keyframesWithTracksToPlaceThemIn.map(({keyframe}) => keyframe),
+  )?.position!
+
+  getStudio()!.transaction(({stateEditors}) => {
+    for (const {keyframe, trackId} of keyframesWithTracksToPlaceThemIn) {
       stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
         {
-          ...viewModel.sheetObject.address,
+          ...address,
           trackId,
           position: sequence.position + keyframe.position - keyframeOffset,
           handles: keyframe.handles,

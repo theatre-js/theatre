@@ -112,6 +112,13 @@ export const getValueByPropPath = (
   return cur
 }
 
+export function doesPathStartWith(
+  path: (string | number)[],
+  pathPrefix: (string | number)[],
+) {
+  return pathPrefix.every((pathPart, i) => pathPart === path[i])
+}
+
 export function arePathsEqual(
   pathToPropA: (string | number)[],
   pathToPropB: (string | number)[],
@@ -133,14 +140,14 @@ export function arePathsEqual(
  *  ]) // = ['a','b']
  * ```
  */
-export function commonRootOfPathsToProps(pathToProps: (string | number)[][]) {
+export function commonRootOfPathsToProps(pathsToProps: (string | number)[][]) {
   const commonPathToProp: (string | number)[] = []
   while (true) {
     const i = commonPathToProp.length
-    let candidatePathPart = pathToProps[0]?.[i]
+    let candidatePathPart = pathsToProps[0]?.[i]
     if (candidatePathPart === undefined) return commonPathToProp
 
-    for (const pathToProp of pathToProps) {
+    for (const pathToProp of pathsToProps) {
       if (candidatePathPart !== pathToProp[i]) {
         return commonPathToProp
       }
