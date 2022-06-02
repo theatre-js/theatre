@@ -12,6 +12,7 @@ import type {
   SheetObjectAddress,
   WithoutSheetInstance,
 } from '@theatre/shared/utils/addresses'
+import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
 import type {
   StudioSheetItemKey,
@@ -39,6 +40,7 @@ import set from 'lodash-es/set'
 import sortBy from 'lodash-es/sortBy'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import type {
+  KeyframeWithPathToPropFromCommonRoot,
   OutlineSelectable,
   OutlineSelectionState,
   PanelPosition,
@@ -422,13 +424,28 @@ namespace stateEditors {
       ) {
         drafts().ahistoric.visibilityState = visibilityState
       }
-      export function setClipboardKeyframes(keyframes: Keyframe[]) {
+      export function setClipboardKeyframes(
+        keyframes: KeyframeWithPathToPropFromCommonRoot[],
+      ) {
+        const commonPath = commonRootOfPathsToProps(
+          keyframes.map((kf) => kf.pathToProp),
+        )
+
+        const keyframesWithCommonRootPath = keyframes.map(
+          ({keyframe, pathToProp}) => ({
+            keyframe,
+            pathToProp: pathToProp.slice(commonPath.length),
+          }),
+        )
+
+        // save selection
         const draft = drafts()
         if (draft.ahistoric.clipboard) {
-          draft.ahistoric.clipboard.keyframes = keyframes
+          draft.ahistoric.clipboard.keyframesWithRelativePaths =
+            keyframesWithCommonRootPath
         } else {
           draft.ahistoric.clipboard = {
-            keyframes,
+            keyframesWithRelativePaths: keyframesWithCommonRootPath,
           }
         }
       }
