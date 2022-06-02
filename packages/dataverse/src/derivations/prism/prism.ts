@@ -92,7 +92,14 @@ export class PrismDerivation<V> extends AbstractDerivation<V> {
   }
 
   _keepHot() {
-    this._prismScope = new PrismScope()
+    /**
+     * The following line is now commented out: `this._prismScope = new PrismScope()`
+     *
+     * The reason is, the prism gets `_recalculate()`ed before it gets hot, which means we're throwing
+     * out the scope for the same hot prism, which makes prism.memo() for example, be unstable,
+     * or prism.effect() not to get cleaned up.
+     */
+    // this._prismScope = new PrismScope()
     startIgnoringDependencies()
     this.getValue()
     stopIgnoringDependencies()
