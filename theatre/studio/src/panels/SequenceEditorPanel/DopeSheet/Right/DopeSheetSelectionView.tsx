@@ -236,7 +236,7 @@ namespace utils {
     selectionByObjectKey: DopeSheetSelection['byObjectKey'],
   ) {
     // don't collect from non rendered
-    if (!leaf.shouldRender) return
+    if (!leaf.hasNoCollapsedAncestor) return
 
     if (
       bounds.ys[0] > leaf.top + leaf.heightIncludingChildren ||

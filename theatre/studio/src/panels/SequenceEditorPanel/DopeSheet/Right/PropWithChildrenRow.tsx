@@ -59,9 +59,9 @@ const RightPropWithChildrenRow: React.VFC<{
           node={node}
           isCollapsed={viewModel.isCollapsed}
         >
-          {viewModel.children.map((propLeaf) =>
-            decideRowByPropType(propLeaf, layoutP),
-          )}
+          {viewModel.children
+            .filter((vm) => vm.hasNoCollapsedAncestor)
+            .map((propLeaf) => decideRowByPropType(propLeaf, layoutP))}
         </RightRow>
       </ProvideLogger>
     )

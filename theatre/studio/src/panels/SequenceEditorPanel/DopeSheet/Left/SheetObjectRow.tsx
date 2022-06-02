@@ -18,7 +18,9 @@ const LeftSheetObjectRow: React.VFC<{
           setCollapsedSheetObjectOrCompoundProp(!leaf.isCollapsed, leaf)
         }
       >
-        {leaf.children.map((leaf) => decideRowByPropType(leaf))}
+        {leaf.children
+          .filter(({hasNoCollapsedAncestor}) => hasNoCollapsedAncestor)
+          .map((leaf) => decideRowByPropType(leaf))}
       </AnyCompositeRow>
     )
   }, [leaf])

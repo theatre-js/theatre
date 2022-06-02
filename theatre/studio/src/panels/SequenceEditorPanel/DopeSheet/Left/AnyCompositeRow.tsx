@@ -85,7 +85,7 @@ const AnyCompositeRow: React.FC<{
 }) => {
   const hasChildren = Array.isArray(children) && children.length > 0
 
-  return leaf.shouldRender ? (
+  return (
     <LeftRowContainer depth={leaf.depth}>
       <LeftRowHeader
         style={{
@@ -103,7 +103,7 @@ const AnyCompositeRow: React.FC<{
       </LeftRowHeader>
       {hasChildren && <LeftRowChildren>{children}</LeftRowChildren>}
     </LeftRowContainer>
-  ) : null
+  )
 }
 
 export default AnyCompositeRow

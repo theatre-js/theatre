@@ -54,7 +54,7 @@ const RightRow: React.FC<{
 }> = ({leaf, children, node, isCollapsed}) => {
   const hasChildren = Array.isArray(children) && children.length > 0
 
-  return leaf.shouldRender ? (
+  return (
     <RightRowContainer>
       <RightRowNodeWrapper
         style={{height: leaf.nodeHeight + 'px'}}
@@ -64,7 +64,7 @@ const RightRow: React.FC<{
       </RightRowNodeWrapper>
       {hasChildren && <RightRowChildren>{children}</RightRowChildren>}
     </RightRowContainer>
-  ) : null
+  )
 }
 
 export default RightRow

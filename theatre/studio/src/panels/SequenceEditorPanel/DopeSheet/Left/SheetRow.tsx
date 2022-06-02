@@ -9,12 +9,16 @@ const SheetRow: React.VFC<{
   return usePrism(() => {
     return (
       <>
-        {leaf.children.map((sheetObjectLeaf) => (
-          <LeftSheetObjectRow
-            key={'sheetObject-' + sheetObjectLeaf.sheetObject.address.objectKey}
-            leaf={sheetObjectLeaf}
-          />
-        ))}
+        {leaf.children
+          .filter(({hasNoCollapsedAncestor: shouldRender}) => shouldRender)
+          .map((sheetObjectLeaf) => (
+            <LeftSheetObjectRow
+              key={
+                'sheetObject-' + sheetObjectLeaf.sheetObject.address.objectKey
+              }
+              leaf={sheetObjectLeaf}
+            />
+          ))}
       </>
     )
   }, [leaf])

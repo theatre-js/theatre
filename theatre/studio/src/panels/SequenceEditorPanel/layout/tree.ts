@@ -31,14 +31,15 @@ export type SequenceEditorTree_Row<TypeName extends string> = {
   /** Visual indentation */
   depth: number
   /**
-   * This is a part of the tree, but it is not rendered at all,
-   * and it doesn't contribute to height.
+   * This is a part of the tree, that should be rendered, because
+   * it has no collapsed ancestors. The parts that do have collapsed
+   * acestors should not be rendered, and should not contribute to height.
    *
    * In the future, if we have a filtering mechanism like "show only position props",
-   * this would not be the place to make false, that node should just not be included
+   * this would not be the place to make true, that node should just not be included
    * in the tree at all, so it doesn't affect aggregate keyframes.
    */
-  shouldRender: boolean
+  hasNoCollapsedAncestor: boolean
   /**
    * Distance in pixels from the top of this row to the row container's top
    * This can be used to help figure out what's being box selected (marquee).
@@ -107,7 +108,7 @@ export const calculateSequenceEditorTree = (
     type: 'sheet',
     sheet,
     children: [],
-    shouldRender: rootShouldRender,
+    hasNoCollapsedAncestor: rootShouldRender,
     top: topSoFar,
     depth: -1,
     n: nSoFar,
@@ -151,7 +152,7 @@ export const calculateSequenceEditorTree = (
     const row: SequenceEditorTree_SheetObject = {
       type: 'sheetObject',
       isCollapsed,
-      shouldRender,
+      hasNoCollapsedAncestor: shouldRender,
       top: topSoFar,
       children: [],
       depth: level,
@@ -271,7 +272,7 @@ export const calculateSequenceEditorTree = (
       isCollapsed,
       pathToProp,
       sheetObject: sheetObject,
-      shouldRender,
+      hasNoCollapsedAncestor: shouldRender,
       top: topSoFar,
       children: [],
       nodeHeight: shouldRender ? HEIGHT_OF_ANY_TITLE : 0,
@@ -318,7 +319,7 @@ export const calculateSequenceEditorTree = (
       depth: level,
       sheetObject: sheetObject,
       pathToProp,
-      shouldRender,
+      hasNoCollapsedAncestor: shouldRender,
       top: topSoFar,
       nodeHeight: shouldRender ? HEIGHT_OF_ANY_TITLE : 0,
       heightIncludingChildren: shouldRender ? HEIGHT_OF_ANY_TITLE : 0,

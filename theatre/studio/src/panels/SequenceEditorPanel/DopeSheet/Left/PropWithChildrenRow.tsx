@@ -12,14 +12,10 @@ export const decideRowByPropType = (
   leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp,
 ): React.ReactElement => {
   const key = 'prop' + leaf.pathToProp[leaf.pathToProp.length - 1]
-  return leaf.shouldRender ? (
-    leaf.type === 'propWithChildren' ? (
-      <PropWithChildrenRow leaf={leaf} key={key} />
-    ) : (
-      <PrimitivePropRow leaf={leaf} key={key} />
-    )
+  return leaf.type === 'propWithChildren' ? (
+    <PropWithChildrenRow leaf={leaf} key={key} />
   ) : (
-    <React.Fragment key={key} />
+    <PrimitivePropRow leaf={leaf} key={key} />
   )
 }
 
@@ -36,7 +32,9 @@ const PropWithChildrenRow: React.VFC<{
           setCollapsedSheetObjectOrCompoundProp(!leaf.isCollapsed, leaf)
         }
       >
-        {leaf.children.map((propLeaf) => decideRowByPropType(propLeaf))}
+        {leaf.children
+          .filter(({hasNoCollapsedAncestor: shouldRender}) => shouldRender)
+          .map((propLeaf) => decideRowByPropType(propLeaf))}
       </AnyCompositeRow>
     )
   }, [leaf])

@@ -12,13 +12,17 @@ const SheetRow: React.FC<{
   return usePrism(() => {
     return (
       <>
-        {leaf.children.map((sheetObjectLeaf) => (
-          <RightSheetObjectRow
-            layoutP={layoutP}
-            key={'sheetObject-' + sheetObjectLeaf.sheetObject.address.objectKey}
-            leaf={sheetObjectLeaf}
-          />
-        ))}
+        {leaf.children
+          .filter(({hasNoCollapsedAncestor}) => hasNoCollapsedAncestor)
+          .map((sheetObjectLeaf) => (
+            <RightSheetObjectRow
+              layoutP={layoutP}
+              key={
+                'sheetObject-' + sheetObjectLeaf.sheetObject.address.objectKey
+              }
+              leaf={sheetObjectLeaf}
+            />
+          ))}
       </>
     )
   }, [leaf, layoutP])

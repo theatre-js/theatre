@@ -33,7 +33,9 @@ const RightSheetObjectRow: React.VFC<{
 
     return (
       <RightRow leaf={leaf} node={node} isCollapsed={leaf.isCollapsed}>
-        {leaf.children.map((leaf) => decideRowByPropType(leaf, layoutP))}
+        {leaf.children
+          .filter(({hasNoCollapsedAncestor}) => hasNoCollapsedAncestor)
+          .map((leaf) => decideRowByPropType(leaf, layoutP))}
       </RightRow>
     )
   }, [leaf, layoutP])
