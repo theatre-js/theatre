@@ -29,9 +29,7 @@ export const HitZone = styled.div`
   &:hover + ${DotContainer},
   #pointer-root.draggingPositionInSequenceEditor &:hover + ${DotContainer},
   // notice "," css "or"
-  &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS} + ${DotContainer},
-  // still "," css "or"
-  &.${DopeSnapHitZoneUI.RELATIVE_DRAGGED_CLASS} + ${DotContainer} {
+  &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS} + ${DotContainer} {
     ${absoluteDims(DOT_HOVER_SIZE_PX)}
   }
 `
