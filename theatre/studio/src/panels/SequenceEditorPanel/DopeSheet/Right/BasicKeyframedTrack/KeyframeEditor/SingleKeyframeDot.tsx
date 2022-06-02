@@ -67,7 +67,7 @@ const HitZone = styled.div`
     + ${Diamond},
     // notice , "or" in CSS
     &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS}
-    + ${Diamond}
+    + ${Diamond} {
     ${absoluteDims(DOT_HOVER_SIZE_PX)}
   }
 `
