@@ -16,7 +16,7 @@ import type {IAggregateKeyframeEditorProps} from './AggregateKeyframeEditor'
 import type {IAggregateKeyframeEditorUtils} from './useAggregateKeyframeEditorUtils'
 import {AggregateKeyframeVisualDot, HitZone} from './AggregateKeyframeVisualDot'
 import {
-  draggedKeyframesB,
+  draggedKeyframes,
   draggedKeyframesUtils,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/draggedKeyframes'
 
@@ -39,22 +39,9 @@ export function AggregateKeyframeDot(
     },
   })
 
-  // TODO: maybe use a `useMemo(() => {<fn>}, [])`
-  /* const kfIds = props.editorProps.aggregateKeyframes[
-    props.editorProps.index
-  ].keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id) */
-  // const kfIds = useMemo(
-  //   () =>
-  //     props.editorProps.aggregateKeyframes[
-  //       props.editorProps.index
-  //     ].keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id),
-  //   [props.editorProps.index, props.utils.cur.keyframes],
-  // )
   const kfIds = cur.keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id)
 
-  const draggedKeyframes = draggedKeyframesB.derivation.getValue()
-
-  const isChildDragging = kfIds.some((kfId) => draggedKeyframes.has(kfId))
+  const isRelativeDragging = kfIds.some((kfId) => draggedKeyframes.has(kfId))
 
   const [contextMenu] = useAggregateKeyframeContextMenu(node, () =>
     logger._debug('Show Aggregate Keyframe', props),
@@ -66,7 +53,7 @@ export function AggregateKeyframeDot(
         ref={ref}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging,
-          isChildDragging,
+          isChildDragging: isRelativeDragging,
           position: cur.position,
         })}
       />
@@ -119,9 +106,6 @@ function useDragForAggregateKeyframeDot(
         const props = propsRef.current
         const keyframes = keyframesRef.current
 
-        /* const kfIds = props.aggregateKeyframes[props.index].keyframes.map(
-          (kfWithTrackData) => kfWithTrackData.kf.id,
-        ) */
         const kfIds = keyframes.map((kfWithTrackData) => kfWithTrackData.kf.id)
         draggedKeyframesUtils.addKeyframeIdsToDragged(kfIds)
 

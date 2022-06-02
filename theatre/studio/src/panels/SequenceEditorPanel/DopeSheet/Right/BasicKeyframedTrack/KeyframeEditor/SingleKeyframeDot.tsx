@@ -26,7 +26,7 @@ import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/Righ
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import type {ILogger} from '@theatre/shared/logger'
 import {
-  draggedKeyframesB,
+  draggedKeyframes,
   draggedKeyframesUtils,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/draggedKeyframes'
 
@@ -88,8 +88,7 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
     },
   })
 
-  const draggedKeyframes = draggedKeyframesB.derivation.getValue()
-  const isChildDragging = draggedKeyframes.has(props.keyframe.id)
+  const isRelativeDragging = draggedKeyframes.has(props.keyframe.id)
 
   return (
     <>
@@ -97,7 +96,7 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
         ref={ref}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging,
-          isChildDragging,
+          isChildDragging: isRelativeDragging,
           position: props.keyframe.position,
         })}
       />
