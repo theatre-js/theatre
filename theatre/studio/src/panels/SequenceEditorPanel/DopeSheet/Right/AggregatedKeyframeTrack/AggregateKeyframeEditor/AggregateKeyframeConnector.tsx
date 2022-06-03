@@ -231,7 +231,7 @@ function useConnectorContextMenu(
         {
           label: 'Copy aggregated Keyframes',
           callback: () => {
-            getStudio!().transaction((api) => {
+            getStudio().transaction((api) => {
               api.stateEditors.studio.ahistoric.setClipboardKeyframes(
                 keyframesWithCommonRootPath,
               )
@@ -241,7 +241,7 @@ function useConnectorContextMenu(
         {
           label: 'Delete aggregated Keyframes',
           callback: () => {
-            getStudio()!.transaction(({stateEditors}) => {
+            getStudio().transaction(({stateEditors}) => {
               for (const con of props.utils.allConnections) {
                 stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
                   {
@@ -267,7 +267,7 @@ function useConnectorContextMenu(
           label: 'Copy Selection',
           enabled: copyableKeyframes.length > 0,
           callback: () => {
-            getStudio!().transaction((api) => {
+            getStudio().transaction((api) => {
               api.stateEditors.studio.ahistoric.setClipboardKeyframes(
                 copyableKeyframes,
               )

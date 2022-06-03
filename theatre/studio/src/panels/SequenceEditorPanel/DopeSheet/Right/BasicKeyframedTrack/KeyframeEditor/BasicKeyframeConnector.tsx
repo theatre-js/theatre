@@ -88,6 +88,8 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
       >
         {popoverNode}
       </ConnectorLine>
+      {/* contextMenu is placed outside of the ConnectorLine so that clicking on
+      the contextMenu does not count as clicking on the ConnectorLine */}
       {contextMenu}
     </>
   )
@@ -236,7 +238,7 @@ function useConnectorContextMenu(
         {
           label: 'Copy both Keyframes',
           callback: () => {
-            getStudio!().transaction((api) => {
+            getStudio().transaction((api) => {
               api.stateEditors.studio.ahistoric.setClipboardKeyframes([
                 {keyframe: cur, pathToProp: props.leaf.pathToProp},
                 {keyframe: next, pathToProp: props.leaf.pathToProp},
@@ -247,7 +249,7 @@ function useConnectorContextMenu(
         {
           label: 'Delete both Keyframes',
           callback: () => {
-            getStudio()!.transaction(({stateEditors}) => {
+            getStudio().transaction(({stateEditors}) => {
               stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
                 {
                   ...props.leaf.sheetObject.address,
@@ -271,7 +273,7 @@ function useConnectorContextMenu(
           label: 'Copy Selection',
           enabled: copyableKeyframes.length > 0,
           callback: () => {
-            getStudio!().transaction((api) => {
+            getStudio().transaction((api) => {
               api.stateEditors.studio.ahistoric.setClipboardKeyframes(
                 copyableKeyframes,
               )
