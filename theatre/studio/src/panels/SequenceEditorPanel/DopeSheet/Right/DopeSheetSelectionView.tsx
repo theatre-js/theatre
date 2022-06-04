@@ -290,8 +290,6 @@ namespace utils {
       selectionByObjectKey,
     )
 
-    console.log(selectionByObjectKey)
-
     const sheet = layout.tree.sheet
     return {
       type: 'DopeSheetSelection',
