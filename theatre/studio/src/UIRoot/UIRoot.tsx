@@ -19,6 +19,7 @@ import {
   TheatreLoggerLevel,
 } from '@theatre/shared/logger'
 import {ProvideLogger} from '@theatre/studio/uiComponents/useLogger'
+import {pipe} from 'rxjs'
 
 const MakeRootHostContainStatic =
   typeof window !== 'undefined'
@@ -79,37 +80,47 @@ export default function UIRoot() {
 
     const initialised = val(studio.atomP.ephemeral.initialised)
 
-    return !initialised ? null : (
-      <ProvideLogger logger={logger}>
-        <TooltipContext>
-          <ProvidePointerCapturing>
-            <MountExtensionComponents />
-            <PortalContext.Provider value={portalLayer}>
-              <ProvideStyles
-                target={
-                  window.__IS_VISUAL_REGRESSION_TESTING === true
-                    ? undefined
-                    : getStudio()!.ui.containerShadow
-                }
-              >
-                <>
-                  <MakeRootHostContainStatic />
-                  <Container
-                    className={
-                      visiblityState === 'everythingIsHidden' ? 'invisible' : ''
-                    }
-                  >
-                    <PortalLayer ref={portalLayerRef} />
-                    <GlobalToolbar />
-                    <PanelsRoot />
-                  </Container>
-                </>
-              </ProvideStyles>
-            </PortalContext.Provider>
-          </ProvidePointerCapturing>
-        </TooltipContext>
-      </ProvideLogger>
-    )
+    return !initialised
+      ? null
+      : // we've wrapped this so we can add providers without
+        // worrying about changing all the lines of code due
+        // via indentation
+        wrap(
+          // inner most
+          <>
+            <MakeRootHostContainStatic />
+            <Container
+              className={
+                visiblityState === 'everythingIsHidden' ? 'invisible' : ''
+              }
+            >
+              <PortalLayer ref={portalLayerRef} />
+              <GlobalToolbar />
+              <PanelsRoot />
+            </Container>
+          </>,
+          // wrap above
+          (c) => (
+            <ProvideStyles
+              target={
+                window.__IS_VISUAL_REGRESSION_TESTING === true
+                  ? undefined
+                  : getStudio().ui.containerShadow
+              }
+              children={c}
+            />
+          ),
+          (c) => (
+            <>
+              <MountExtensionComponents />
+              <PortalContext.Provider value={portalLayer} children={c} />
+            </>
+          ),
+          (c) => <ProvidePointerCapturing children={c} />,
+          (c) => <TooltipContext children={c} />,
+          // outer most wrap
+          (c) => <ProvideLogger logger={logger} children={c} />,
+        )
   }, [studio, portalLayerRef, portalLayer])
 
   return inside
@@ -117,4 +128,9 @@ export default function UIRoot() {
 
 const MountExtensionComponents: React.FC<{}> = () => {
   return <MountAll />
+}
+
+type WrapFn<T> = (c: T) => T
+function wrap<T>(innerMost: T, ...wrapFns: WrapFn<T>[]): T {
+  return pipe(...(wrapFns as [WrapFn<T>, WrapFn<T>]))(innerMost)
 }
