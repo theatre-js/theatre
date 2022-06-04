@@ -36,7 +36,7 @@ const DopeSheetSelectionView: React.FC<{
     null,
   )
   const isShiftDown = useKeyDown('Shift')
-  const selectionBounds = useCaptureSelection(layoutP, containerNode)
+  const selectionBounds = useCaptureSelection(val(layoutP), containerNode)
   const selectionBoundsRef = useRef<typeof selectionBounds>(selectionBounds)
   selectionBoundsRef.current = selectionBounds
 
@@ -50,13 +50,22 @@ const DopeSheetSelectionView: React.FC<{
   )
 }
 
+/**
+ * The horizontal and vertical bounds of the selection, each represented by a tuple in the form of [from, to].
+ */
 type SelectionBounds = {
-  positions: [from: number, to: number]
-  ys: [from: number, to: number]
+  /**
+   * The horizontal bounds of the selection as a tuple of "from" and "to" coordinates, "from" representing the start of the drag.
+   */
+  h: [from: number, to: number]
+  /**
+   * The vertical bounds of the selection as a tuple of "from" and "to" coordinates, "from" representing the start of the drag.
+   */
+  v: [from: number, to: number]
 }
 
 function useCaptureSelection(
-  layoutP: Pointer<SequenceEditorPanelLayout>,
+  layout: SequenceEditorPanelLayout,
   containerNode: HTMLDivElement | null,
 ) {
   const [ref, state] = useRefAndState<SelectionBounds | null>(null)
@@ -75,41 +84,47 @@ function useCaptureSelection(
           }
           const rect = containerNode!.getBoundingClientRect()
 
-          const posInScaledSpace = event.clientX - rect.left
+          const posInScaledSpace =
+            event.clientX -
+            rect.left -
+            // selection is happening in left padded space, convert it to normal space
+            layout.scaledSpace.leftPadding
 
-          const posInUnitSpace = val(layoutP.scaledSpace.toUnitSpace)(
-            posInScaledSpace,
-          )
+          const posInUnitSpace =
+            layout.scaledSpace.toUnitSpace(posInScaledSpace)
 
           ref.current = {
-            positions: [posInUnitSpace, posInUnitSpace],
-            ys: [event.clientY - rect.top, event.clientY - rect.top],
+            h: [posInUnitSpace, posInUnitSpace],
+            v: [event.clientY - rect.top, event.clientY - rect.top],
           }
 
-          val(layoutP.selectionAtom).setState({current: undefined})
+          layout.selectionAtom.setState({current: undefined})
 
           return {
             onDrag(_dx, _dy, event) {
               // const state = ref.current!
               const rect = containerNode!.getBoundingClientRect()
 
-              const posInScaledSpace = event.clientX - rect.left
+              const posInScaledSpace =
+                event.clientX -
+                rect.left -
+                // selection is happening in left padded space, convert it to normal space
+                layout.scaledSpace.leftPadding
 
-              const posInUnitSpace = val(layoutP.scaledSpace.toUnitSpace)(
-                posInScaledSpace,
-              )
+              const posInUnitSpace =
+                layout.scaledSpace.toUnitSpace(posInScaledSpace)
 
               ref.current = {
-                positions: [ref.current!.positions[0], posInUnitSpace],
-                ys: [ref.current!.ys[0], event.clientY - rect.top],
+                h: [ref.current!.h[0], posInUnitSpace],
+                v: [ref.current!.v[0], event.clientY - rect.top],
               }
 
               const selection = utils.boundsToSelection(
                 logger,
-                layoutP,
+                layout,
                 ref.current,
               )
-              val(layoutP.selectionAtom).setState({current: selection})
+              layout.selectionAtom.setState({current: selection})
             },
             onDragEnd(_dragHappened) {
               ref.current = null
@@ -117,7 +132,7 @@ function useCaptureSelection(
           }
         },
       }
-    }, [layoutP, containerNode, ref]),
+    }, [layout, containerNode, ref]),
   )
 
   return state
@@ -126,7 +141,7 @@ function useCaptureSelection(
 namespace utils {
   const collectForAggregatedChildren = (
     logger: IUtilLogger,
-    layoutP: Pointer<SequenceEditorPanelLayout>,
+    layout: SequenceEditorPanelLayout,
     leaf: SequenceEditorTree_SheetObject | SequenceEditorTree_PropWithChildren,
     bounds: SelectionBounds,
     selectionByObjectKey: DopeSheetSelection['byObjectKey'],
@@ -135,10 +150,10 @@ namespace utils {
     const aggregatedKeyframes = collectAggregateKeyframesInPrism(logger, leaf)
 
     const bottom = leaf.top + leaf.nodeHeight
-    if (bottom > bounds.ys[0]) {
+    if (bottom > bounds.v[0]) {
       for (const [position, keyframes] of aggregatedKeyframes.byPosition) {
-        if (position <= bounds.positions[0]) continue
-        if (position >= bounds.positions[1]) break
+        if (position <= bounds.h[0]) continue
+        if (position >= bounds.h[1]) break
 
         // yes selected
 
@@ -157,37 +172,37 @@ namespace utils {
       }
     }
 
-    collectChildren(logger, layoutP, leaf, bounds, selectionByObjectKey)
+    collectChildren(logger, layout, leaf, bounds, selectionByObjectKey)
   }
 
   const collectorByLeafType: {
     [K in SequenceEditorTree_AllRowTypes['type']]?: (
       logger: IUtilLogger,
-      layoutP: Pointer<SequenceEditorPanelLayout>,
+      layout: SequenceEditorPanelLayout,
       leaf: Extract<SequenceEditorTree_AllRowTypes, {type: K}>,
       bounds: SelectionBounds,
       selectionByObjectKey: DopeSheetSelection['byObjectKey'],
     ) => void
   } = {
-    propWithChildren(logger, layoutP, leaf, bounds, selectionByObjectKey) {
+    propWithChildren(logger, layout, leaf, bounds, selectionByObjectKey) {
       collectForAggregatedChildren(
         logger,
-        layoutP,
+        layout,
         leaf,
         bounds,
         selectionByObjectKey,
       )
     },
-    sheetObject(logger, layoutP, leaf, bounds, selectionByObjectKey) {
+    sheetObject(logger, layout, leaf, bounds, selectionByObjectKey) {
       collectForAggregatedChildren(
         logger,
-        layoutP,
+        layout,
         leaf,
         bounds,
         selectionByObjectKey,
       )
     },
-    primitiveProp(logger, layoutP, leaf, bounds, selectionByObjectKey) {
+    primitiveProp(logger, layout, leaf, bounds, selectionByObjectKey) {
       const {sheetObject, trackId} = leaf
       const trackData = val(
         getStudio().atomP.historic.coreByProject[sheetObject.address.projectId]
@@ -197,8 +212,8 @@ namespace utils {
       )!
 
       for (const kf of trackData.keyframes) {
-        if (kf.position <= bounds.positions[0]) continue
-        if (kf.position >= bounds.positions[1]) break
+        if (kf.position <= bounds.h[0]) continue
+        if (kf.position >= bounds.h[1]) break
 
         mutableSetDeep(
           selectionByObjectKey,
@@ -216,21 +231,21 @@ namespace utils {
 
   const collectChildren = (
     logger: IUtilLogger,
-    layoutP: Pointer<SequenceEditorPanelLayout>,
+    layout: SequenceEditorPanelLayout,
     leaf: SequenceEditorTree_AllRowTypes,
     bounds: SelectionBounds,
     selectionByObjectKey: DopeSheetSelection['byObjectKey'],
   ) => {
     if ('children' in leaf) {
       for (const sub of leaf.children) {
-        collectFromAnyLeaf(logger, layoutP, sub, bounds, selectionByObjectKey)
+        collectFromAnyLeaf(logger, layout, sub, bounds, selectionByObjectKey)
       }
     }
   }
 
   function collectFromAnyLeaf(
     logger: IUtilLogger,
-    layoutP: Pointer<SequenceEditorPanelLayout>,
+    layout: SequenceEditorPanelLayout,
     leaf: SequenceEditorTree_AllRowTypes,
     bounds: SelectionBounds,
     selectionByObjectKey: DopeSheetSelection['byObjectKey'],
@@ -239,8 +254,8 @@ namespace utils {
     if (!leaf.shouldRender) return
 
     if (
-      bounds.ys[0] > leaf.top + leaf.heightIncludingChildren ||
-      leaf.top > bounds.ys[1]
+      bounds.v[0] > leaf.top + leaf.heightIncludingChildren ||
+      leaf.top > bounds.v[1]
     ) {
       return
     }
@@ -248,34 +263,36 @@ namespace utils {
     if (collector) {
       collector(
         logger,
-        layoutP,
+        layout,
         leaf as $IntentionalAny,
         bounds,
         selectionByObjectKey,
       )
     } else {
-      collectChildren(logger, layoutP, leaf, bounds, selectionByObjectKey)
+      collectChildren(logger, layout, leaf, bounds, selectionByObjectKey)
     }
   }
 
   export function boundsToSelection(
     logger: ILogger,
-    layoutP: Pointer<SequenceEditorPanelLayout>,
+    layout: SequenceEditorPanelLayout,
     bounds: SelectionBounds,
   ): DopeSheetSelection {
     const selectionByObjectKey: DopeSheetSelection['byObjectKey'] = {}
     bounds = sortBounds(bounds)
 
-    const tree = val(layoutP.tree)
+    const tree = layout.tree
     collectFromAnyLeaf(
       logger.utilFor.internal(),
-      layoutP,
+      layout,
       tree,
       bounds,
       selectionByObjectKey,
     )
 
-    const sheet = val(layoutP.tree.sheet)
+    console.log(selectionByObjectKey)
+
+    const sheet = layout.tree.sheet
     return {
       type: 'DopeSheetSelection',
       byObjectKey: selectionByObjectKey,
@@ -285,7 +302,7 @@ namespace utils {
           onDragStart() {
             let tempTransaction: CommitOrDiscard | undefined
 
-            const toUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+            const toUnitSpace = layout.scaledSpace.toUnitSpace
 
             return {
               onDrag(dx, _, event) {
@@ -371,10 +388,8 @@ const SelectionRectangleDiv = styled.div`
 
 const sortBounds = (b: SelectionBounds): SelectionBounds => {
   return {
-    positions: [...b.positions].sort(
-      (a, b) => a - b,
-    ) as SelectionBounds['positions'],
-    ys: [...b.ys].sort((a, b) => a - b) as SelectionBounds['ys'],
+    h: [...b.h].sort((a, b) => a - b) as SelectionBounds['h'],
+    v: [...b.v].sort((a, b) => a - b) as SelectionBounds['v'],
   }
 }
 
@@ -389,11 +404,15 @@ const SelectionRectangle: React.VFC<{
     const sorted = sortBounds(state)
 
     const unitSpaceToScaledSpace = val(layoutP.scaledSpace.fromUnitSpace)
+    const leftPadding = val(layoutP.scaledSpace.leftPadding)
 
-    const positionsInScaledSpace = sorted.positions.map(unitSpaceToScaledSpace)
+    const positionsInScaledSpace = sorted.h
+      .map(unitSpaceToScaledSpace)
+      // bounds are in normal space, convert them left-padded space
+      .map((coord) => coord + leftPadding)
 
-    const top = sorted.ys[0]
-    const height = sorted.ys[1] - sorted.ys[0]
+    const top = sorted.v[0]
+    const height = sorted.v[1] - sorted.v[0]
 
     const left = positionsInScaledSpace[0]
     const width = positionsInScaledSpace[1] - positionsInScaledSpace[0]
