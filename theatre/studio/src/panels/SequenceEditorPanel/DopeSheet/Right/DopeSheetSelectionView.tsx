@@ -408,7 +408,7 @@ const SelectionRectangleDiv = styled.div`
   position: absolute;
   background: rgba(255, 255, 255, 0.1);
   border: 1px dashed rgba(255, 255, 255, 0.4);
-  box-size: border-box;
+  box-sizing: border-box;
 `
 
 const sortBounds = (b: SelectionBounds): SelectionBounds => {
