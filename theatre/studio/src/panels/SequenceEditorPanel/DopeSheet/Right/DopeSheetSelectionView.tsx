@@ -25,6 +25,8 @@ import {collectAggregateKeyframesInPrism} from './collectAggregateKeyframes'
 import type {ILogger, IUtilLogger} from '@theatre/shared/logger'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 
+const HITBOX_SIZE_PX = 5
+
 const Container = styled.div<{isShiftDown: boolean}>`
   cursor: ${(props) => (props.isShiftDown ? 'cell' : 'default')};
 `
@@ -149,13 +151,21 @@ namespace utils {
     const sheetObject = leaf.sheetObject
     const aggregatedKeyframes = collectAggregateKeyframesInPrism(logger, leaf)
 
-    const bottom = leaf.top + leaf.nodeHeight
-    if (bottom > bounds.v[0]) {
+    if (
+      leaf.top + leaf.nodeHeight / 2 + HITBOX_SIZE_PX > bounds.v[0] &&
+      leaf.top + leaf.nodeHeight / 2 - HITBOX_SIZE_PX < bounds.v[1]
+    ) {
       for (const [position, keyframes] of aggregatedKeyframes.byPosition) {
-        if (position <= bounds.h[0]) continue
-        if (position >= bounds.h[1]) break
-
-        // yes selected
+        if (
+          position + layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX) <=
+          bounds.h[0]
+        )
+          continue
+        if (
+          position - layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX) >=
+          bounds.h[1]
+        )
+          break
 
         for (const keyframeWithTrack of keyframes) {
           mutableSetDeep(
@@ -211,9 +221,26 @@ namespace utils {
         ].trackData[trackId],
       )!
 
+      if (
+        bounds.v[0] >
+          leaf.top + leaf.heightIncludingChildren / 2 + HITBOX_SIZE_PX ||
+        leaf.top + leaf.heightIncludingChildren / 2 - HITBOX_SIZE_PX >
+          bounds.v[1]
+      ) {
+        return
+      }
+
       for (const kf of trackData.keyframes) {
-        if (kf.position <= bounds.h[0]) continue
-        if (kf.position >= bounds.h[1]) break
+        if (
+          kf.position + layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX) <=
+          bounds.h[0]
+        )
+          continue
+        if (
+          kf.position - layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX) >=
+          bounds.h[1]
+        )
+          break
 
         mutableSetDeep(
           selectionByObjectKey,
