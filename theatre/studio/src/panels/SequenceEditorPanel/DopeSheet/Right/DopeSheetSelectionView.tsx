@@ -38,7 +38,7 @@ const DopeSheetSelectionView: React.FC<{
     null,
   )
   const isShiftDown = useKeyDown('Shift')
-  const selectionBounds = useCaptureSelection(val(layoutP), containerNode)
+  const selectionBounds = useCaptureSelection(layoutP, containerNode)
   const selectionBoundsRef = useRef<typeof selectionBounds>(selectionBounds)
   selectionBoundsRef.current = selectionBounds
 
@@ -58,6 +58,8 @@ const DopeSheetSelectionView: React.FC<{
 type SelectionBounds = {
   /**
    * The horizontal bounds of the selection as a tuple of "from" and "to" coordinates, "from" representing the start of the drag.
+   *
+   * TODO - use nominal types here to clarify which space these numbers are in
    */
   h: [from: number, to: number]
   /**
@@ -67,12 +69,13 @@ type SelectionBounds = {
 }
 
 function useCaptureSelection(
-  layout: SequenceEditorPanelLayout,
+  layoutP: Pointer<SequenceEditorPanelLayout>,
   containerNode: HTMLDivElement | null,
 ) {
   const [ref, state] = useRefAndState<SelectionBounds | null>(null)
 
   const logger = useLogger('useCaptureSelection')
+
   useDrag(
     containerNode,
     useMemo((): Parameters<typeof useDrag>[1] => {
@@ -86,21 +89,24 @@ function useCaptureSelection(
           }
           const rect = containerNode!.getBoundingClientRect()
 
+          // all the `val()` calls here are meant to be read cold
+
           const posInScaledSpace =
             event.clientX -
             rect.left -
             // selection is happening in left padded space, convert it to normal space
-            layout.scaledSpace.leftPadding
+            val(layoutP.scaledSpace.leftPadding)
 
-          const posInUnitSpace =
-            layout.scaledSpace.toUnitSpace(posInScaledSpace)
+          const posInUnitSpace = val(layoutP.scaledSpace.toUnitSpace)(
+            posInScaledSpace,
+          )
 
           ref.current = {
             h: [posInUnitSpace, posInUnitSpace],
             v: [event.clientY - rect.top, event.clientY - rect.top],
           }
 
-          layout.selectionAtom.setState({current: undefined})
+          val(layoutP.selectionAtom).setState({current: undefined})
 
           return {
             onDrag(_dx, _dy, event) {
@@ -111,10 +117,11 @@ function useCaptureSelection(
                 event.clientX -
                 rect.left -
                 // selection is happening in left padded space, convert it to normal space
-                layout.scaledSpace.leftPadding
+                val(layoutP.scaledSpace.leftPadding)
 
-              const posInUnitSpace =
-                layout.scaledSpace.toUnitSpace(posInScaledSpace)
+              const posInUnitSpace = val(layoutP.scaledSpace.toUnitSpace)(
+                posInScaledSpace,
+              )
 
               ref.current = {
                 h: [ref.current!.h[0], posInUnitSpace],
@@ -123,10 +130,10 @@ function useCaptureSelection(
 
               const selection = utils.boundsToSelection(
                 logger,
-                layout,
+                val(layoutP),
                 ref.current,
               )
-              layout.selectionAtom.setState({current: selection})
+              val(layoutP.selectionAtom).setState({current: selection})
             },
             onDragEnd(_dragHappened) {
               ref.current = null
@@ -134,7 +141,7 @@ function useCaptureSelection(
           }
         },
       }
-    }, [layout, containerNode, ref]),
+    }, [layoutP, containerNode, ref]),
   )
 
   return state

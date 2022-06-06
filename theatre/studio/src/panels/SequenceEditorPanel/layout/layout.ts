@@ -141,6 +141,9 @@ export type SequenceEditorPanelLayout = {
   }
   unitSpace: {}
   scaledSpace: {
+    /**
+     * TODO - scaledSpace with and without leftPadding are two different spaces. See if we can divide them so
+     */
     leftPadding: number
     fromUnitSpace(u: number): number
     toUnitSpace(s: number): number
