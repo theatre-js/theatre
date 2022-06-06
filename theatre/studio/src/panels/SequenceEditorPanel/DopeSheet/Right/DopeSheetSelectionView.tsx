@@ -33,7 +33,8 @@ const Container = styled.div<{isShiftDown: boolean}>`
 
 const DopeSheetSelectionView: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
-}> = ({layoutP, children}) => {
+  height: number
+}> = ({layoutP, children, height}) => {
   const [containerRef, containerNode] = useRefAndState<HTMLDivElement | null>(
     null,
   )
@@ -43,7 +44,12 @@ const DopeSheetSelectionView: React.FC<{
   selectionBoundsRef.current = selectionBounds
 
   return (
-    <Container ref={containerRef} isShiftDown={isShiftDown}>
+    <Container
+      style={{height: height + 'px'}}
+      ref={containerRef}
+      isShiftDown={isShiftDown}
+      className="selectionview"
+    >
       {selectionBounds && (
         <SelectionRectangle state={selectionBounds} layoutP={layoutP} />
       )}

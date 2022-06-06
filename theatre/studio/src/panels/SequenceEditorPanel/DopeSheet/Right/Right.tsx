@@ -40,6 +40,7 @@ const Right: React.FC<{
     const tree = val(layoutP.tree)
     const height =
       val(layoutP.tree.top) +
+      // stretch the height of the dope sheet in case the rows don't cover its whole vertical space
       Math.max(
         val(layoutP.tree.heightIncludingChildren),
         val(layoutP.dopeSheetDims.height),
@@ -48,7 +49,7 @@ const Right: React.FC<{
     return (
       <>
         <HorizontallyScrollableArea layoutP={layoutP} height={height}>
-          <DopeSheetSelectionView layoutP={layoutP}>
+          <DopeSheetSelectionView layoutP={layoutP} height={height}>
             <ListContainer style={{top: tree.top + 'px'}}>
               <SheetRow leaf={tree} layoutP={layoutP} />
             </ListContainer>
