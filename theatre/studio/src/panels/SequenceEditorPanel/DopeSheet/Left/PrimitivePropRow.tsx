@@ -13,6 +13,8 @@ import {nextPrevCursorsTheme} from '@theatre/studio/propEditors/NextPrevKeyframe
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import {BaseHeader, LeftRowContainer as BaseContainer} from './AnyCompositeRow'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import {useRevealPropInDetailsPanel} from '@theatre/studio/extensions/RevealPropInDetailsPanel'
+import {dev} from '@theatre/studio/utils/DevString'
 
 const theme = {
   label: {
@@ -81,6 +83,9 @@ const PrimitivePropRowHead_Label = styled.span`
 const PrimitivePropRow: React.FC<{
   leaf: SequenceEditorTree_PrimitiveProp
 }> = ({leaf}) => {
+  const revealPropInDetailsPanel = useRevealPropInDetailsPanel(
+    dev`PrimitivePropRow`,
+  )
   const pointerToProp = pointerDeep(
     leaf.sheetObject.propsP,
     leaf.pathToProp,
@@ -140,7 +145,16 @@ const PrimitivePropRow: React.FC<{
         }}
         isSelected={isSelected === true}
       >
-        <PrimitivePropRowHead_Label>{label}</PrimitivePropRowHead_Label>
+        <PrimitivePropRowHead_Label
+          onClick={() => {
+            revealPropInDetailsPanel.reveal({
+              ...leaf.sheetObject.address,
+              pathToProp: leaf.pathToProp,
+            })
+          }}
+        >
+          {label}
+        </PrimitivePropRowHead_Label>
         {controlIndicators}
         <PrimitivePropRowIconContainer
           onClick={toggleSelect}

@@ -1,10 +1,15 @@
 import {theme} from '@theatre/studio/css'
-import type {SequenceEditorTree_Row} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import type {
+  SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_SheetObject,
+} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {VoidFn} from '@theatre/shared/utils/types'
 import React from 'react'
 import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import {dev} from '@theatre/studio/utils/DevString'
+import {useRevealPropInDetailsPanel} from '@theatre/studio/extensions/RevealPropInDetailsPanel'
 
 export const LeftRowContainer = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -66,7 +71,7 @@ const LeftRowChildren = styled.ul`
 `
 
 const AnyCompositeRow: React.FC<{
-  leaf: SequenceEditorTree_Row<string>
+  leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_SheetObject
   label: React.ReactNode
   toggleSelect?: VoidFn
   toggleCollapsed: VoidFn
@@ -84,6 +89,9 @@ const AnyCompositeRow: React.FC<{
   isCollapsed,
 }) => {
   const hasChildren = Array.isArray(children) && children.length > 0
+  const revealPropInDetailsPanel = useRevealPropInDetailsPanel(
+    dev`AnyCompositeRow`,
+  )
 
   return leaf.shouldRender ? (
     <LeftRowContainer depth={leaf.depth}>
@@ -99,7 +107,18 @@ const AnyCompositeRow: React.FC<{
         <LeftRowHead_Icon isCollapsed={isCollapsed} onClick={toggleCollapsed}>
           <HiOutlineChevronRight />
         </LeftRowHead_Icon>
-        <LeftRowHead_Label>{label}</LeftRowHead_Label>
+        <LeftRowHead_Label
+          onClick={() => {
+            if (leaf.type === 'propWithChildren') {
+              revealPropInDetailsPanel.reveal({
+                ...leaf.sheetObject.address,
+                pathToProp: leaf.pathToProp,
+              })
+            }
+          }}
+        >
+          {label}
+        </LeftRowHead_Label>
       </LeftRowHeader>
       {hasChildren && <LeftRowChildren>{children}</LeftRowChildren>}
     </LeftRowContainer>

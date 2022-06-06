@@ -1,6 +1,6 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
 import {usePrism, useVal} from '@theatre/react'
-import React, {useEffect, useLayoutEffect} from 'react'
+import React, {useEffect, useLayoutEffect, useState} from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
 import {
@@ -14,6 +14,8 @@ import ProjectDetails from './ProjectDetails'
 import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
 import {Box, prism, val} from '@theatre/dataverse'
+import {useRevealPropInDetailsPanelRevealer} from '@theatre/studio/extensions/RevealPropInDetailsPanel'
+import type {Observable} from 'rxjs'
 
 const headerHeight = `32px`
 
@@ -70,6 +72,7 @@ const Body = styled.div`
 
 const DetailPanel: React.FC<{}> = (props) => {
   const pin = useVal(getStudio().atomP.ahistoric.pinDetails) !== false
+  const receiveRevealProp$ = useRevealPropInDetailsPanelRevealer()
 
   const hostspotActive = useHotspot('right')
 
@@ -85,11 +88,17 @@ const DetailPanel: React.FC<{}> = (props) => {
     }
   }, [])
 
+  const focus = useObservable(receiveRevealProp$)
+
   return usePrism(() => {
     const selection = getOutlineSelection()
 
     const obj = selection.find(isSheetObject)
     if (obj) {
+      if (focus && obj.address.objectKey !== focus.objectKey) {
+        console.log('switch to correct focus?', focus)
+      }
+
       return (
         <Container
           data-testid="DetailPanel-Object"
@@ -153,3 +162,20 @@ export const shouldShowDetailD = prism<boolean>(() => {
 
   return isHovered || isHotspotActive
 })
+
+const notInit = Symbol()
+function useObservable<T>(obs$: Observable<T>): T | null {
+  const [value, setValue] = useState<T | null>(null)
+  useEffect(() => {
+    let lastValue: T | typeof notInit = notInit
+    const sub = obs$.subscribe((v) => {
+      if (v === lastValue) return
+      setValue(v)
+      lastValue = v
+    })
+    return () => {
+      sub.unsubscribe()
+    }
+  }, [obs$])
+  return value
+}

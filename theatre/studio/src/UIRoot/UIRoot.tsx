@@ -20,6 +20,7 @@ import {
 } from '@theatre/shared/logger'
 import {ProvideLogger} from '@theatre/studio/uiComponents/useLogger'
 import {pipe} from 'rxjs'
+import {ProvideRevealPropInDetailsPanel} from '@theatre/studio/extensions/RevealPropInDetailsPanel'
 
 const MakeRootHostContainStatic =
   typeof window !== 'undefined'
@@ -100,6 +101,7 @@ export default function UIRoot() {
             </Container>
           </>,
           // wrap above
+          (c) => <ProvideRevealPropInDetailsPanel children={c} />,
           (c) => (
             <ProvideStyles
               target={

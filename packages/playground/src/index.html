@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Playground – Theatre.js</title>
     <style>
       body {
@@ -18,12 +18,28 @@
       a {
         color: inherit;
       }
+
+      .env-tag[data-origin='localhost']::after {
+        content: attr(data-origin);
+        position: absolute;
+        bottom: 0px;
+        padding: 0.5em;
+        border-radius: 3px;
+        font-size: 9px;
+        font-weight: bold;
+        text-transform: uppercase;
+        background: rgb(6, 122, 122);
+      }
     </style>
   </head>
 
   <body>
     <div id="root"></div>
-
     <script type="module" src="./index.tsx"></script>
+    <div class="env-tag">
+      <script>
+        document.currentScript.parentElement.dataset.origin = location.hostname
+      </script>
+    </div>
   </body>
 </html>
