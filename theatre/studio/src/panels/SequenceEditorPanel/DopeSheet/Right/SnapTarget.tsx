@@ -18,11 +18,6 @@ const HitZone = styled.div`
 
 const Container = styled.div`
   position: absolute;
-  &::after {
-    content: 'snap';
-    background: red;
-    pointer-events: none;
-  }
 `
 
 export type ISnapTargetPRops = {
