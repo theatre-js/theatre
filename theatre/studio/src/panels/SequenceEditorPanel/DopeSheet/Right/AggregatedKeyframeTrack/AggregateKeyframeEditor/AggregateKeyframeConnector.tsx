@@ -197,12 +197,6 @@ function useConnectorContextMenu(
 ) {
   return useContextMenu(node, {
     menuItems: () => {
-      const copyableKeyframes = copyableKeyframesFromSelection(
-        props.editorProps.viewModel.sheetObject.address.projectId,
-        props.editorProps.viewModel.sheetObject.address.sheetId,
-        props.editorProps.selection,
-      )
-
       // see AGGREGATE_COPY_PASTE.md for explanation of this
       // code that makes some keyframes with paths for copying
       // to clipboard
@@ -229,49 +223,46 @@ function useConnectorContextMenu(
 
       return [
         {
-          label: 'Copy aggregated Keyframes',
+          label: 'Copy',
           callback: () => {
-            getStudio().transaction((api) => {
-              api.stateEditors.studio.ahistoric.setClipboardKeyframes(
-                keyframesWithCommonRootPath,
+            if (props.editorProps.selection) {
+              const copyableKeyframes = copyableKeyframesFromSelection(
+                props.editorProps.viewModel.sheetObject.address.projectId,
+                props.editorProps.viewModel.sheetObject.address.sheetId,
+                props.editorProps.selection,
               )
-            })
-          },
-        },
-        {
-          label: 'Delete aggregated Keyframes',
-          callback: () => {
-            getStudio().transaction(({stateEditors}) => {
-              for (const con of props.utils.allConnections) {
-                stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
-                  {
-                    ...props.editorProps.viewModel.sheetObject.address,
-                    keyframeIds: [con.left.id, con.right.id],
-                    trackId: con.trackId,
-                  },
+              getStudio().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes(
+                  copyableKeyframes,
                 )
-              }
-            })
+              })
+            } else {
+              getStudio().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes(
+                  keyframesWithCommonRootPath,
+                )
+              })
+            }
           },
         },
         {
-          label: 'Delete Selection',
-          enabled: props.editorProps.selection !== undefined,
+          label: 'Delete',
           callback: () => {
-            if (!props.editorProps.selection) return
-
-            props.editorProps.selection.delete()
-          },
-        },
-        {
-          label: 'Copy Selection',
-          enabled: copyableKeyframes.length > 0,
-          callback: () => {
-            getStudio().transaction((api) => {
-              api.stateEditors.studio.ahistoric.setClipboardKeyframes(
-                copyableKeyframes,
-              )
-            })
+            if (props.editorProps.selection) {
+              props.editorProps.selection.delete()
+            } else {
+              getStudio().transaction(({stateEditors}) => {
+                for (const con of props.utils.allConnections) {
+                  stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+                    {
+                      ...props.editorProps.viewModel.sheetObject.address,
+                      keyframeIds: [con.left.id, con.right.id],
+                      trackId: con.trackId,
+                    },
+                  )
+                }
+              })
+            }
           },
         },
       ]
