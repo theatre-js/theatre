@@ -32,7 +32,7 @@ import type Sequence from '@theatre/core/sequences/Sequence'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
 import {collectAggregateSnapPositions} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import SnapTarget, {
-  snapPositionsD,
+  snapPositionsB,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
 import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
 
@@ -92,7 +92,7 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
       }),
     )
 
-  const snapPositions = useVal(snapPositionsD)
+  const snapPositions = useVal(snapPositionsB.derivation)
   const snapToAllKeyframes = useVal(snapToAllKeyframesB.derivation)
 
   const aggregateSnapPositions = useMemo(

@@ -15,7 +15,7 @@ import getStudio from '@theatre/studio/getStudio'
 import {arePathsEqual} from '@theatre/shared/utils/addresses'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
 import SnapTarget, {
-  snapPositionsD,
+  snapPositionsB,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
 import {uniq} from 'lodash-es'
 import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
@@ -64,7 +64,7 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
     )
 
     const snapPositions = uniq(
-      useVal(snapPositionsD)[leaf.sheetObject.address.objectKey]?.[
+      useVal(snapPositionsB.derivation)[leaf.sheetObject.address.objectKey]?.[
         leaf.trackId
       ] ?? [],
     )

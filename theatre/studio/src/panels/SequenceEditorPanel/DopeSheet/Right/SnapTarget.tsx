@@ -57,7 +57,6 @@ export default SnapTarget
 export const snapPositionsB = new Box<{
   [key: string]: {[key: string]: number[]}
 }>({})
-export const snapPositionsD = snapPositionsB.derivation
 
 // A convenience flag to specify that we want to snap everywhere where there's currently a keyframe.
 export const snapToAllKeyframesB = new Box(false)
