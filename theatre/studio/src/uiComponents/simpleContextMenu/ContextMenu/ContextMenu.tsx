@@ -78,7 +78,9 @@ const ContextMenu: React.FC<{
 
     const preferredAnchorPoint = {
       left: rect.width / 2,
-      top: itemHeight / 2,
+      // if there is a displayName, make sure to move the context menu up by one item,
+      // so that the first active item is the one the mouse is hovering over
+      top: itemHeight / 2 + (props.displayName ? itemHeight : 0),
     }
 
     const pos = {
