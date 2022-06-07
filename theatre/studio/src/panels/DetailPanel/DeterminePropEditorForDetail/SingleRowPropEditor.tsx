@@ -1,6 +1,6 @@
 import type * as propTypes from '@theatre/core/propTypes'
 import {getPointerParts} from '@theatre/dataverse'
-import type {Pointer} from '@theatre/dataverse'
+import type {Pointer, IDerivation} from '@theatre/dataverse'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {last} from 'lodash-es'
@@ -9,10 +9,14 @@ import type {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/p
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
+import {deriver} from '@theatre/studio/utils/derive-utils'
+import {rowIndentationFormulaCSS} from './rowIndentationFormulaCSS'
+import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground'
 
-export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
-
-const Container = styled.div`
+const Container = deriver(styled.div<{
+  isHighlighted: PropHighlighted
+}>`
   display: flex;
   height: 30px;
   justify-content: flex-start;
@@ -28,11 +32,13 @@ const Container = styled.div`
   --right-width: 60%;
   position: relative;
   ${pointerEventsAutoInNormalMode};
-`
+
+  background-color: ${getDetailRowHighlightBackground};
+`)
 
 const Left = styled.div`
   box-sizing: border-box;
-  padding-left: ${indentationFormula};
+  padding-left: ${rowIndentationFormulaCSS};
   padding-right: 4px;
   display: flex;
   flex-direction: row;
@@ -84,6 +90,7 @@ type ISingleRowPropEditorProps<T> = {
   propConfig: propTypes.PropTypeConfig
   pointerToProp: Pointer<T>
   editingTools: ReturnType<typeof useEditingToolsForSimplePropInDetailsPanel>
+  isPropHighlightedD: IDerivation<PropHighlighted>
 }
 
 export function SingleRowPropEditor<T>({
@@ -91,6 +98,7 @@ export function SingleRowPropEditor<T>({
   pointerToProp,
   editingTools,
   children,
+  isPropHighlightedD,
 }: React.PropsWithChildren<ISingleRowPropEditorProps<T>>): React.ReactElement<
   any,
   any
@@ -105,11 +113,10 @@ export function SingleRowPropEditor<T>({
   })
 
   return (
-    <Container>
+    <Container isHighlighted={isPropHighlightedD}>
       {contextMenu}
       <Left>
         <ControlsContainer>{editingTools.controlIndicators}</ControlsContainer>
-
         <PropNameContainer
           ref={propNameContainerRef}
           title={['obj', 'props', ...getPointerParts(pointerToProp).path].join(

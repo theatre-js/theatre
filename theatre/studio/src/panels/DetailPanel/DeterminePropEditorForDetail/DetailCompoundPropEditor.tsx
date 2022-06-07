@@ -5,9 +5,9 @@ import {getPointerParts} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
-import React from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
-import {indentationFormula} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/SingleRowPropEditor'
+import {rowIndentationFormulaCSS} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/rowIndentationFormulaCSS'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -16,6 +16,10 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import {useEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEditingToolsForCompoundProp'
+import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
+import {whatPropIsHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
+import {deriver} from '@theatre/studio/utils/derive-utils'
+import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground'
 
 const Container = styled.div`
   --step: 15px;
@@ -23,15 +27,17 @@ const Container = styled.div`
   ${pointerEventsAutoInNormalMode};
 `
 
-const Header = styled.div`
+const Header = deriver(styled.div<{isHighlighted: PropHighlighted}>`
   height: 30px;
   display: flex;
   align-items: stretch;
   position: relative;
-`
+
+  background-color: ${getDetailRowHighlightBackground};
+`)
 
 const Padding = styled.div`
-  padding-left: ${indentationFormula};
+  padding-left: ${rowIndentationFormulaCSS};
   display: flex;
   align-items: center;
 `
@@ -99,12 +105,22 @@ function DetailCompoundPropEditor<
 
   const lastSubPropIsComposite = compositeSubs.length > 0
 
+  const isPropHighlightedD = useMemo(
+    () =>
+      whatPropIsHighlighted.getIsPropHighlightedD({
+        ...obj.address,
+        pathToProp: getPointerParts(pointerToProp).path,
+      }),
+    [pointerToProp],
+  )
+
   // previous versions of the DetailCompoundPropEditor had a context menu item for "Reset values".
 
   return (
     <Container>
       {contextMenu}
       <Header
+        isHighlighted={isPropHighlightedD}
         // @ts-ignore
         style={{'--depth': visualIndentation - 1}}
       >
@@ -138,4 +154,4 @@ function DetailCompoundPropEditor<
   )
 }
 
-export default DetailCompoundPropEditor
+export default React.memo(DetailCompoundPropEditor)
