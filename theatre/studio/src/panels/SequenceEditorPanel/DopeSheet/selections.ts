@@ -99,13 +99,18 @@ export function selectedKeyframeConnections(
  * all the following tracks:
  * - exObject.transform.position.x
  * - exObject.transform.position.y
- * - exObject.transform.rotation.x
+ * - exObject.transform.scale.x
  * then the result will be
  * ```
- * [{ keyframe, pathToProp: ['position', 'x']},
- * { keyframe, pathToProp: ['position', 'y']},
- * { keyframe, pathToProp: ['rotation', 'y']}]
+ * [
+ *   {keyframe, pathToProp: ['position', 'x']},
+ *   {keyframe, pathToProp: ['position', 'y']},
+ *   {keyframe, pathToProp: ['scale',    'x']},
+ * ]
  * ```
+ *
+ * TODO - we don't yet support copying/pasting keyframes from multiple objects to multiple objects.
+ * The main reason is that we don't yet have an aggregate track for several objects.
  */
 export function copyableKeyframesFromSelection(
   projectId: ProjectId,
