@@ -4,7 +4,6 @@ import getStudio from '@theatre/studio/getStudio'
 import type {PathToProp} from '@theatre/shared/utils/addresses'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
-// discriminated union
 export function setCollapsedSheetObjectOrCompoundProp(
   isCollapsed: boolean,
   toCollapse:
