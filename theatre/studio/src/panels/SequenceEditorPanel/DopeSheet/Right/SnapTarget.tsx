@@ -54,3 +54,5 @@ export const snapPositionsB = new Box<{
   [key: string]: {[key: string]: number[]}
 }>({})
 export const snapPositionsD = snapPositionsB.derivation
+
+export const snapToAllKeyframesB = new Box(false)

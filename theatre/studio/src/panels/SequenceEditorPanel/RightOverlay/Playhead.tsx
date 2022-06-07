@@ -27,6 +27,7 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import getStudio from '@theatre/studio/getStudio'
 import {generateSequenceMarkerId} from '@theatre/shared/utils/ids'
 import DopeSnap from './DopeSnap'
+import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -214,6 +215,9 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
         const setIsSeeking = val(layoutP.seeker.setIsSeeking)
         setIsSeeking(true)
 
+        snapToAllKeyframesB.set(true)
+        console.log('hello')
+
         return {
           onDrag(dx, _, event) {
             const deltaPos = scaledSpaceToUnitSpace(dx)
@@ -227,6 +231,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
           },
           onDragEnd(dragHappened) {
             setIsSeeking(false)
+            snapToAllKeyframesB.set(false)
           },
           onClick(e) {
             openPopover(e, thumbRef.current!)

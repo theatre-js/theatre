@@ -5,7 +5,7 @@ import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Histo
 import {usePrism, useVal} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React from 'react'
+import React, {Fragment} from 'react'
 import styled from 'styled-components'
 import SingleKeyframeEditor from './KeyframeEditor/SingleKeyframeEditor'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -14,8 +14,11 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import getStudio from '@theatre/studio/getStudio'
 import {arePathsEqual} from '@theatre/shared/utils/addresses'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
-import SnapTarget, {snapPositionsD} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+import SnapTarget, {
+  snapPositionsD,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
 import {uniq} from 'lodash-es'
+import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
 
 const Container = styled.div`
   position: relative;
@@ -65,17 +68,24 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
         leaf.trackId
       ] ?? [],
     )
+    const snapToAllKeyframes = useVal(snapToAllKeyframesB.derivation)
 
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
-      <SingleKeyframeEditor
-        keyframe={kf}
-        index={index}
-        trackData={trackData}
-        layoutP={layoutP}
-        leaf={leaf}
-        key={'keyframe-' + kf.id}
-        selection={selectedKeyframeIds[kf.id] === true ? selection : undefined}
-      />
+      <Fragment key={'keyframe-' + kf.id}>
+        {snapToAllKeyframes && (
+          <SnapTarget layoutP={layoutP} leaf={leaf} position={kf.position} />
+        )}
+        <SingleKeyframeEditor
+          keyframe={kf}
+          index={index}
+          trackData={trackData}
+          layoutP={layoutP}
+          leaf={leaf}
+          selection={
+            selectedKeyframeIds[kf.id] === true ? selection : undefined
+          }
+        />
+      </Fragment>
     ))
 
     const snapTargets = snapPositions.map((position) => (

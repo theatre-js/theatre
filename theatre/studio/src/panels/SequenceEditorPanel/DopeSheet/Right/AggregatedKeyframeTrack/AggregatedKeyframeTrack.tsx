@@ -11,7 +11,7 @@ import {usePrism, useVal} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {valueDerivation} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React, {useMemo} from 'react'
+import React, {Fragment, useMemo} from 'react'
 import styled from 'styled-components'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -31,7 +31,10 @@ import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import type Sequence from '@theatre/core/sequences/Sequence'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
 import {collectAggregateSnapPositions} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
-import SnapTarget, {snapPositionsD} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+import SnapTarget, {
+  snapPositionsD,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
 
 const AggregatedKeyframeTrackContainer = styled.div`
   position: relative;
@@ -90,6 +93,7 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
     )
 
   const snapPositions = useVal(snapPositionsD)
+  const snapToAllKeyframes = useVal(snapToAllKeyframesB.derivation)
 
   const aggregateSnapPositions = useMemo(
     () => collectAggregateSnapPositions(viewModel, snapPositions),
@@ -106,18 +110,20 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
   ))
 
   const keyframeEditors = posKfs.map(({position, keyframes}, index) => (
-    <AggregateKeyframeEditor
-      index={index}
-      layoutP={layoutP}
-      viewModel={viewModel}
-      aggregateKeyframes={posKfs}
-      // To ensure that while dragging, we don't lose reference to the
-      // aggregate we're trying to drag.
-      key={'agg-' + keyframes[0].kf.id}
-      selection={
-        selectedPositions.has(position) === true ? selection : undefined
-      }
-    />
+    <Fragment key={'agg-' + keyframes[0].kf.id}>
+      {snapToAllKeyframes && (
+        <SnapTarget layoutP={layoutP} leaf={viewModel} position={position} />
+      )}
+      <AggregateKeyframeEditor
+        index={index}
+        layoutP={layoutP}
+        viewModel={viewModel}
+        aggregateKeyframes={posKfs}
+        selection={
+          selectedPositions.has(position) === true ? selection : undefined
+        }
+      />
+    </Fragment>
   ))
 
   return (

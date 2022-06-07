@@ -12,6 +12,7 @@ import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import type {IRange} from '@theatre/shared/utils/types'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
+import {snapToAllKeyframesB} from './SnapTarget'
 
 const Container = styled.div`
   position: absolute;
@@ -115,6 +116,8 @@ function useDragPlayheadHandlers(
         const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
         setIsSeeking(true)
 
+        snapToAllKeyframesB.set(true)
+
         return {
           onDrag(dx: number, _, event) {
             const deltaPos = scaledSpaceToUnitSpace(dx)
@@ -135,6 +138,7 @@ function useDragPlayheadHandlers(
           },
           onDragEnd() {
             setIsSeeking(false)
+            snapToAllKeyframesB.set(false)
           },
         }
       },
