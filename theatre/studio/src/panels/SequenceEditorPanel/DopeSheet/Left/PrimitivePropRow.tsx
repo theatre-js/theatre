@@ -13,6 +13,7 @@ import {nextPrevCursorsTheme} from '@theatre/studio/propEditors/NextPrevKeyframe
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import {BaseHeader, LeftRowContainer as BaseContainer} from './AnyCompositeRow'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import {usePropHighlightMouseEnter} from './usePropHighlightMouseEnter'
 
 const theme = {
   label: {
@@ -131,8 +132,12 @@ const PrimitivePropRow: React.FC<{
   const label = leaf.pathToProp[leaf.pathToProp.length - 1]
   const isSelectable = true
 
+  const containerRef = useRef<HTMLLIElement | null>(null)
+
+  usePropHighlightMouseEnter(containerRef.current, leaf)
+
   return (
-    <PrimitivePropRowContainer depth={leaf.depth}>
+    <PrimitivePropRowContainer depth={leaf.depth} ref={containerRef}>
       <PrimitivePropRowHead
         isEven={leaf.n % 2 === 0}
         style={{

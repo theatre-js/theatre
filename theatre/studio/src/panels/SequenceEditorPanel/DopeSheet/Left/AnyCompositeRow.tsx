@@ -1,10 +1,15 @@
 import {theme} from '@theatre/studio/css'
-import type {SequenceEditorTree_Row} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import type {
+  SequenceEditorTree_PrimitiveProp,
+  SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_SheetObject,
+} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {VoidFn} from '@theatre/shared/utils/types'
-import React from 'react'
+import React, {useRef} from 'react'
 import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import {usePropHighlightMouseEnter} from './usePropHighlightMouseEnter'
 
 export const LeftRowContainer = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -66,7 +71,10 @@ const LeftRowChildren = styled.ul`
 `
 
 const AnyCompositeRow: React.FC<{
-  leaf: SequenceEditorTree_Row<string>
+  leaf:
+    | SequenceEditorTree_PrimitiveProp
+    | SequenceEditorTree_PropWithChildren
+    | SequenceEditorTree_SheetObject
   label: React.ReactNode
   toggleSelect?: VoidFn
   toggleCollapsed: VoidFn
@@ -85,8 +93,12 @@ const AnyCompositeRow: React.FC<{
 }) => {
   const hasChildren = Array.isArray(children) && children.length > 0
 
+  const containerRef = useRef<HTMLLIElement | null>(null)
+
+  usePropHighlightMouseEnter(containerRef.current, leaf)
+
   return leaf.shouldRender ? (
-    <LeftRowContainer depth={leaf.depth}>
+    <LeftRowContainer depth={leaf.depth} ref={containerRef}>
       <LeftRowHeader
         style={{
           height: leaf.nodeHeight + 'px',
