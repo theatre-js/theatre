@@ -1,3 +1,5 @@
+import {clamp} from 'lodash-es'
+
 export function parseRgbaFromHex(rgba: string) {
   rgba = rgba.trim().toLowerCase()
   const hex = rgba.match(/^#?([0-9a-f]{8})$/i)
@@ -42,6 +44,12 @@ export function decorateRgba(rgba: Rgba) {
   }
 }
 
+export function clampRgba(rgba: Rgba) {
+  return Object.fromEntries(
+    Object.entries(rgba).map(([key, value]) => [key, clamp(value, 0, 1)]),
+  ) as Rgba
+}
+
 export function linearSrgbToSrgb(rgba: Rgba) {
   function compress(x: number) {
     // This looks funky because sRGB uses a linear scale below 0.0031308 in
@@ -50,12 +58,12 @@ export function linearSrgbToSrgb(rgba: Rgba) {
     if (x >= 0.0031308) return 1.055 * x ** (1.0 / 2.4) - 0.055
     else return 12.92 * x
   }
-  return {
+  return clampRgba({
     r: compress(rgba.r),
     g: compress(rgba.g),
     b: compress(rgba.b),
     a: rgba.a,
-  }
+  })
 }
 
 export function srgbToLinearSrgb(rgba: Rgba) {
