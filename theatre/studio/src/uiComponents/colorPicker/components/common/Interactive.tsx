@@ -1,9 +1,9 @@
 import React, {useRef, useMemo, useEffect} from 'react'
 
 import {useEventCallback} from '@theatre/studio/uiComponents/colorPicker/hooks/useEventCallback'
-import {clamp} from '@theatre/studio/uiComponents/colorPicker/utils/clamp'
 import styled from 'styled-components'
 import {useEditing} from '@theatre/studio/uiComponents/colorPicker/components/EditingProvider'
+import {clamp} from 'lodash-es'
 
 export interface Interaction {
   left: number
@@ -44,10 +44,14 @@ const getRelativePosition = (
     left: clamp(
       (pointer.pageX - (rect.left + getParentWindow(node).pageXOffset)) /
         rect.width,
+      0,
+      1,
     ),
     top: clamp(
       (pointer.pageY - (rect.top + getParentWindow(node).pageYOffset)) /
         rect.height,
+      0,
+      1,
     ),
   }
 }

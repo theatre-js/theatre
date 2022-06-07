@@ -4,9 +4,9 @@ import {Interactive} from './Interactive'
 import {Pointer} from './Pointer'
 import type {HsvaColor} from '@theatre/studio/uiComponents/colorPicker/types'
 import {hsvaToHslString} from '@theatre/studio/uiComponents/colorPicker/utils/convert'
-import {clamp} from '@theatre/studio/uiComponents/colorPicker/utils/clamp'
 import {round} from '@theatre/studio/uiComponents/colorPicker/utils/round'
 import styled from 'styled-components'
+import {clamp} from 'lodash-es'
 
 const Container = styled.div`
   position: relative;
