@@ -50,9 +50,14 @@ const SnapTarget: React.VFC<ISnapTargetPRops> = (props) => {
 
 export default SnapTarget
 
+// The following boxes are read by BasicKeyframeTrack and AggregateKeyframeTrack
+// to place snap targets in the keyframe tracks.
+
+// A box holding all the valid snap positions per track per object.
 export const snapPositionsB = new Box<{
   [key: string]: {[key: string]: number[]}
 }>({})
 export const snapPositionsD = snapPositionsB.derivation
 
+// A convenience flag to specify that we want to snap everywhere where there's currently a keyframe.
 export const snapToAllKeyframesB = new Box(false)
