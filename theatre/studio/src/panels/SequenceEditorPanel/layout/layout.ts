@@ -61,7 +61,7 @@ export type DopeSheetSelection = {
       positionAtStartOfDrag: number
       domNode: Element
     },
-  ): Parameters<typeof useDrag>[1]
+  ): Omit<Parameters<typeof useDrag>[1], 'onClick'>
   delete(): void
 }
 

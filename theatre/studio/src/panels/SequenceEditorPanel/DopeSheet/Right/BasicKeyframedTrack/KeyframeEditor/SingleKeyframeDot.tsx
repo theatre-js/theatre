@@ -221,7 +221,7 @@ function useDragForSingleKeyframeDot(
         if (props.selection) {
           const {selection, leaf} = props
           const {sheetObject} = leaf
-          return selection
+          const handlers = selection
             .getDragHandlers({
               ...sheetObject.address,
               domNode: node!,
@@ -229,6 +229,12 @@ function useDragForSingleKeyframeDot(
                 props.trackData.keyframes[props.index].position,
             })
             .onDragStart(event)
+
+          // this opens the regular inline keyframe editor on click.
+          // in the future, we may want to show an multi-editor, like in the
+          // single tween editor, so that selected keyframes' values can be changed
+          // together
+          return handlers && {...handlers, onClick: options.onClickFromDrag}
         }
 
         const propsAtStartOfDrag = props
@@ -273,8 +279,10 @@ function useDragForSingleKeyframeDot(
               tempTransaction?.commit()
             } else {
               tempTransaction?.discard()
-              options.onClickFromDrag(event)
             }
+          },
+          onClick(ev) {
+            options.onClickFromDrag(ev)
           },
         }
       },

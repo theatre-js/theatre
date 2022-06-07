@@ -104,13 +104,15 @@ function useDragForAggregateKeyframeDot(
         ) {
           const {selection, viewModel} = props
           const {sheetObject} = viewModel
-          return selection
+          const hanlders = selection
             .getDragHandlers({
               ...sheetObject.address,
               domNode: node!,
               positionAtStartOfDrag: keyframes[0].kf.position,
             })
             .onDragStart(event)
+
+          return hanlders && {...hanlders, onClick: options.onClickFromDrag}
         }
 
         const propsAtStartOfDrag = props
@@ -156,8 +158,10 @@ function useDragForAggregateKeyframeDot(
               tempTransaction?.commit()
             } else {
               tempTransaction?.discard()
-              options.onClickFromDrag(event)
             }
+          },
+          onClick(ev) {
+            options.onClickFromDrag(ev)
           },
         }
       },
