@@ -258,10 +258,10 @@ function useConnectorContextMenu(
         {
           label: props.selection ? 'Delete (selection)' : 'Delete',
           callback: () => {
-            getStudio().transaction(({stateEditors}) => {
-              if (props.selection) {
-                props.selection.delete()
-              } else {
+            if (props.selection) {
+              props.selection.delete()
+            } else {
+              getStudio().transaction(({stateEditors}) => {
                 stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
                   {
                     ...props.leaf.sheetObject.address,
@@ -269,8 +269,8 @@ function useConnectorContextMenu(
                     trackId: props.leaf.trackId,
                   },
                 )
-              }
-            })
+              })
+            }
           },
         },
       ]
