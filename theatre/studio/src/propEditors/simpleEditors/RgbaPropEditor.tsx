@@ -1,5 +1,6 @@
 import type {PropTypeConfig_Rgba} from '@theatre/core/propTypes'
-import type {Rgba} from '@theatre/shared/utils/color'
+import type {Rgba} from '@theatre/shared/utils/color';
+import { validHexRegExp} from '@theatre/shared/utils/color'
 import {
   decorateRgba,
   rgba2hex,
@@ -114,7 +115,7 @@ function RgbaPropEditor({
           temporarilySetValue={noop}
           discardTemporaryValue={noop}
           permanentlySetValue={onChange}
-          isValid={(v) => !!v.match(/^#?([0-9a-f]{8})$/i)}
+          isValid={(v) => !!v.match(validHexRegExp)}
         />
       </RowContainer>
       {popoverNode}
