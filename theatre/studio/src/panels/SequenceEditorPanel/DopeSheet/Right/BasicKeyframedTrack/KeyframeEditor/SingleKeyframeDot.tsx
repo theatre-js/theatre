@@ -5,8 +5,8 @@ import last from 'lodash-es/last'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
+import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
@@ -19,10 +19,11 @@ import {useTempTransactionEditingTools} from './useTempTransactionEditingTools'
 import {DeterminePropEditorForSingleKeyframe} from './DeterminePropEditorForSingleKeyframe'
 import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
-import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import type {ILogger} from '@theatre/shared/logger'
 import {copyableKeyframesFromSelection} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import {snapPositionsB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
 
 export const DOT_SIZE_PX = 6
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
@@ -49,17 +50,11 @@ const HitZone = styled.div`
   z-index: 1;
   cursor: ew-resize;
 
-  ${DopeSnapHitZoneUI.CSS}
+  position: absolute;
+  ${absoluteDims(12)};
+  ${pointerEventsAutoInNormalMode};
 
-  #pointer-root.draggingPositionInSequenceEditor & {
-    ${DopeSnapHitZoneUI.CSS_WHEN_SOMETHING_DRAGGING}
-  }
-
-  &:hover
-    + ${Diamond},
-    // notice , "or" in CSS
-    &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS}
-    + ${Diamond} {
+  &:hover + ${Diamond} {
     ${absoluteDims(DOT_HOVER_SIZE_PX)}
   }
 `
@@ -82,13 +77,7 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
 
   return (
     <>
-      <HitZone
-        ref={ref}
-        {...DopeSnapHitZoneUI.reactProps({
-          isDragging,
-          position: props.keyframe.position,
-        })}
-      />
+      <HitZone ref={ref} />
       <Diamond isSelected={!!props.selection} />
       {inlineEditorPopover}
       {contextMenu}
@@ -210,6 +199,41 @@ function useDragForSingleKeyframeDot(
       debugName: 'KeyframeDot/useDragKeyframe',
       onDragStart(event) {
         const props = propsRef.current
+
+        const tracksByObject = val(
+          getStudio()!.atomP.historic.coreByProject[
+            props.leaf.sheetObject.address.projectId
+          ].sheetsById[props.leaf.sheetObject.address.sheetId].sequence
+            .tracksByObject,
+        )!
+
+        // Calculate all the valid snap positions in the sequence editor,
+        // excluding this keyframe, and any selection it is part of.
+        const snapPositions = Object.fromEntries(
+          Object.entries(tracksByObject).map(([objectKey, value]) => [
+            objectKey,
+            Object.fromEntries(
+              Object.entries(value!.trackData).map(([trackId, value]) => [
+                trackId,
+                value!.keyframes
+                  .filter(
+                    (keyframe) =>
+                      keyframe.id !== props.keyframe.id &&
+                      !(
+                        props.selection &&
+                        props.selection.byObjectKey[objectKey]?.byTrackId[
+                          trackId
+                        ]?.byKeyframeId[keyframe.id]
+                      ),
+                  )
+                  .map((keyframe) => keyframe.position),
+              ]),
+            ),
+          ]),
+        )
+
+        snapPositionsB.set(snapPositions)
+
         if (props.selection) {
           const {selection, leaf} = props
           const {sheetObject} = leaf
@@ -226,7 +250,16 @@ function useDragForSingleKeyframeDot(
           // in the future, we may want to show an multi-editor, like in the
           // single tween editor, so that selected keyframes' values can be changed
           // together
-          return handlers && {...handlers, onClick: options.onClickFromDrag}
+          return (
+            handlers && {
+              ...handlers,
+              onClick: options.onClickFromDrag,
+              onDragEnd: (...args) => {
+                handlers.onDragEnd?.(...args)
+                snapPositionsB.set({})
+              },
+            }
+          )
         }
 
         const propsAtStartOfDrag = props
@@ -272,6 +305,8 @@ function useDragForSingleKeyframeDot(
             } else {
               tempTransaction?.discard()
             }
+
+            snapPositionsB.set({})
           },
           onClick(ev) {
             options.onClickFromDrag(ev)

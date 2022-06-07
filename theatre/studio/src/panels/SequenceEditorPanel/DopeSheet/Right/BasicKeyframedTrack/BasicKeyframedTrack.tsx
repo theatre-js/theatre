@@ -2,7 +2,7 @@ import type {TrackData} from '@theatre/core/projects/store/types/SheetState_Hist
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
-import {usePrism} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
@@ -14,6 +14,8 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import getStudio from '@theatre/studio/getStudio'
 import {arePathsEqual} from '@theatre/shared/utils/addresses'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
+import SnapTarget, {snapPositionsD} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+import {uniq} from 'lodash-es'
 
 const Container = styled.div`
   position: relative;
@@ -58,6 +60,12 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
       props,
     )
 
+    const snapPositions = uniq(
+      useVal(snapPositionsD)[leaf.sheetObject.address.objectKey]?.[
+        leaf.trackId
+      ] ?? [],
+    )
+
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
       <SingleKeyframeEditor
         keyframe={kf}
@@ -70,6 +78,15 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
       />
     ))
 
+    const snapTargets = snapPositions.map((position) => (
+      <SnapTarget
+        key={'snap-target-' + position}
+        layoutP={layoutP}
+        leaf={leaf}
+        position={position}
+      />
+    ))
+
     return (
       <Container
         ref={containerRef}
@@ -78,6 +95,7 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
         }}
       >
         {keyframeEditors}
+        {snapTargets}
         {contextMenu}
       </Container>
     )

@@ -1,7 +1,6 @@
 import {val} from '@theatre/dataverse'
 import React, {useMemo, useRef} from 'react'
 import {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregatedKeyframeTrack'
-import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
@@ -21,6 +20,8 @@ import {
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types/ahistoric'
 import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
+import type {ILogger} from '@theatre/shared/logger'
+import {snapPositionsB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
 
 type IAggregateKeyframeDotProps = {
   editorProps: IAggregateKeyframeEditorProps
@@ -41,17 +42,11 @@ export function AggregateKeyframeDot(
     },
   })
 
-  const [contextMenu] = useAggregateKeyframeContextMenu(props, node)
+  const [contextMenu] = useAggregateKeyframeContextMenu(props, logger, node)
 
   return (
     <>
-      <HitZone
-        ref={ref}
-        {...DopeSnapHitZoneUI.reactProps({
-          isDragging,
-          position: cur.position,
-        })}
-      />
+      <HitZone ref={ref} />
       <AggregateKeyframeVisualDot
         isAllHere={cur.allHere}
         isSelected={cur.selected}
@@ -63,6 +58,7 @@ export function AggregateKeyframeDot(
 
 function useAggregateKeyframeContextMenu(
   props: IAggregateKeyframeDotProps,
+  logger: ILogger,
   target: HTMLDivElement | null,
 ) {
   return useContextMenu(target, {
@@ -138,6 +134,9 @@ function useAggregateKeyframeContextMenu(
         },
       ]
     },
+    onOpen() {
+      logger._debug('Show aggregate keyframe', props)
+    },
   })
 }
 
@@ -165,6 +164,42 @@ function useDragForAggregateKeyframeDot(
         const props = propsRef.current
         const keyframes = keyframesRef.current
 
+        const tracksByObject = val(
+          getStudio()!.atomP.historic.coreByProject[
+            props.viewModel.sheetObject.address.projectId
+          ].sheetsById[props.viewModel.sheetObject.address.sheetId].sequence
+            .tracksByObject,
+        )!
+
+        // Calculate all the valid snap positions in the sequence editor,
+        // excluding the child keyframes of this aggregate, and any selection it is part of.
+        const snapPositions = Object.fromEntries(
+          Object.entries(tracksByObject).map(([key, value]) => [
+            key,
+            Object.fromEntries(
+              Object.entries(value!.trackData).map(([key, value]) => [
+                key,
+                value!.keyframes
+                  .filter(
+                    (keyframe) =>
+                      keyframes.every(
+                        (kfWithTrack) => keyframe.id !== kfWithTrack.kf.id,
+                      ) &&
+                      !(
+                        props.selection &&
+                        props.selection.byObjectKey[
+                          props.viewModel.sheetObject.address.objectKey
+                        ]?.byTrackId[key]?.byKeyframeId[keyframe.id]
+                      ),
+                  )
+                  .map((keyframe) => keyframe.position),
+              ]),
+            ),
+          ]),
+        )
+
+        snapPositionsB.set(snapPositions)
+
         if (
           props.selection &&
           props.aggregateKeyframes[props.index].selected ===
@@ -172,7 +207,7 @@ function useDragForAggregateKeyframeDot(
         ) {
           const {selection, viewModel} = props
           const {sheetObject} = viewModel
-          const hanlders = selection
+          const handlers = selection
             .getDragHandlers({
               ...sheetObject.address,
               domNode: node!,
@@ -180,7 +215,16 @@ function useDragForAggregateKeyframeDot(
             })
             .onDragStart(event)
 
-          return hanlders && {...hanlders, onClick: options.onClickFromDrag}
+          return (
+            handlers && {
+              ...handlers,
+              onClick: options.onClickFromDrag,
+              onDragEnd: (...args) => {
+                handlers.onDragEnd?.(...args)
+                snapPositionsB.set({})
+              },
+            }
+          )
         }
 
         const propsAtStartOfDrag = props
@@ -227,6 +271,8 @@ function useDragForAggregateKeyframeDot(
             } else {
               tempTransaction?.discard()
             }
+
+            snapPositionsB.set({})
           },
           onClick(ev) {
             options.onClickFromDrag(ev)
