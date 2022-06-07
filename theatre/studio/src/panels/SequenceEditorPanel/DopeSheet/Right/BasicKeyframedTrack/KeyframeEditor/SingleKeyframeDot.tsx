@@ -117,45 +117,40 @@ function useSingleKeyframeContextMenu(
 
       return [
         {
-          label: 'Copy Keyframe',
+          label: copyableKeyframes.length > 0 ? 'Copy (selection)' : 'Copy',
           callback: () => {
-            getStudio!().transaction((api) => {
-              api.stateEditors.studio.ahistoric.setClipboardKeyframes([
-                {keyframe: props.keyframe, pathToProp: props.leaf.pathToProp},
-              ])
-            })
+            if (copyableKeyframes.length > 0) {
+              getStudio!().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes(
+                  copyableKeyframes,
+                )
+              })
+            } else {
+              getStudio!().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes([
+                  {keyframe: props.keyframe, pathToProp: props.leaf.pathToProp},
+                ])
+              })
+            }
           },
         },
         {
-          label: 'Delete Keyframe',
+          label:
+            props.selection !== undefined ? 'Delete (selection)' : 'Delete',
           callback: () => {
-            getStudio()!.transaction(({stateEditors}) => {
-              stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
-                {
-                  ...props.leaf.sheetObject.address,
-                  keyframeIds: [props.keyframe.id],
-                  trackId: props.leaf.trackId,
-                },
-              )
-            })
-          },
-        },
-        {
-          label: 'Copy Selection',
-          enabled: copyableKeyframes.length > 0,
-          callback: () => {
-            getStudio!().transaction((api) => {
-              api.stateEditors.studio.ahistoric.setClipboardKeyframes(
-                copyableKeyframes,
-              )
-            })
-          },
-        },
-        {
-          label: 'Delete Selection',
-          enabled: props.selection !== undefined,
-          callback: () => {
-            props.selection?.delete()
+            if (props.selection) {
+              props.selection.delete()
+            } else {
+              getStudio()!.transaction(({stateEditors}) => {
+                stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+                  {
+                    ...props.leaf.sheetObject.address,
+                    keyframeIds: [props.keyframe.id],
+                    trackId: props.leaf.trackId,
+                  },
+                )
+              })
+            }
           },
         },
       ]
