@@ -55,7 +55,7 @@ export function AggregateKeyframeVisualDot(props: {
 type IDotThemeValues = {
   isSelected: AggregateKeyframePositionIsSelected | undefined
 }
-const SELECTED_COLOR = '#b8e4e2'
+const SELECTED_COLOR = '#F2C95C'
 const DEFAULT_PRIMARY_COLOR = '#40AAA4'
 const DEFAULT_SECONDARY_COLOR = '#45747C'
 const selectionColorAll = (theme: IDotThemeValues) =>

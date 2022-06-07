@@ -1,4 +1,3 @@
-import {lighten} from 'polished'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import last from 'lodash-es/last'
@@ -30,9 +29,7 @@ const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
 
 const dotTheme = {
   normalColor: '#40AAA4',
-  get selectedColor() {
-    return lighten(0.35, dotTheme.normalColor)
-  },
+  selectedColor: '#F2C95C',
 }
 
 /** The keyframe diamond ◆ */
