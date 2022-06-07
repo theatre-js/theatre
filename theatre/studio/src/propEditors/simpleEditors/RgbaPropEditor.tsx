@@ -1,6 +1,6 @@
 import type {PropTypeConfig_Rgba} from '@theatre/core/propTypes'
-import type {Rgba} from '@theatre/shared/utils/color';
-import { validHexRegExp} from '@theatre/shared/utils/color'
+import type {Rgba} from '@theatre/shared/utils/color'
+import {validHexRegExp} from '@theatre/shared/utils/color'
 import {
   decorateRgba,
   rgba2hex,
