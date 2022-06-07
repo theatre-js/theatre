@@ -15,11 +15,10 @@
       }
     ]
   },
-  "files": ["./globals.d.ts"],
   "references": [
     {"path": "../packages/dataverse"},
     {"path": "../packages/react"}
   ],
-  "include": ["./*/src/**/*", "./devEnv/**/*"],
+  "include": ["./globals.d.ts", "./*/src/**/*", "./devEnv/**/*"],
   "exclude": ["**/node_modules", "**/.*", "**/xeno", "**/dist", "**/.temp"]
 }
