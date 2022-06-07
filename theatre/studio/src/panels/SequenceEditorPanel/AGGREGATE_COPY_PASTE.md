@@ -1,3 +1,6 @@
+## The keyframe copy/paste algorithm
+
+```
 copy algorithm: find the closest common acnestor for the tracks selected
 
 - obj1.props.transform.position.x => simple
@@ -22,3 +25,4 @@ paste:
     - {x, y} => {object(not a prop): {x, y}} => {x, y}
       - What this means is that, in case of objects and sheets, we do a forEach
         at each object, then try pasting onto its object.props
+```
