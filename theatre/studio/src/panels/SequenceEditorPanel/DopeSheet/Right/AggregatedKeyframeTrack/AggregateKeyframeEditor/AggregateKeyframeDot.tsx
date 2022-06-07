@@ -15,6 +15,12 @@ import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/Do
 import type {IAggregateKeyframeEditorProps} from './AggregateKeyframeEditor'
 import type {IAggregateKeyframeEditorUtils} from './useAggregateKeyframeEditorUtils'
 import {AggregateKeyframeVisualDot, HitZone} from './AggregateKeyframeVisualDot'
+import {
+  copyableKeyframesFromSelection,
+  keyframesWithPaths,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types/ahistoric'
+import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
 
 type IAggregateKeyframeDotProps = {
   editorProps: IAggregateKeyframeEditorProps
@@ -35,9 +41,7 @@ export function AggregateKeyframeDot(
     },
   })
 
-  const [contextMenu] = useAggregateKeyframeContextMenu(node, () =>
-    logger._debug('Show Aggregate Keyframe', props),
-  )
+  const [contextMenu] = useAggregateKeyframeContextMenu(props, node)
 
   return (
     <>
@@ -58,17 +62,81 @@ export function AggregateKeyframeDot(
 }
 
 function useAggregateKeyframeContextMenu(
+  props: IAggregateKeyframeDotProps,
   target: HTMLDivElement | null,
-  debugOnOpen: () => void,
 ) {
-  // TODO: missing features: delete, copy + paste
   return useContextMenu(target, {
     displayName: 'Aggregate Keyframe',
     menuItems: () => {
-      return []
-    },
-    onOpen() {
-      debugOnOpen()
+      // see AGGREGATE_COPY_PASTE.md for explanation of this
+      // code that makes some keyframes with paths for copying
+      // to clipboard
+      const kfs = props.utils.cur.keyframes.reduce(
+        (acc, kfWithTrack) =>
+          acc.concat(
+            keyframesWithPaths({
+              ...props.editorProps.viewModel.sheetObject.address,
+              trackId: kfWithTrack.track.id,
+              keyframeIds: [kfWithTrack.kf.id],
+            }) ?? [],
+          ),
+        [] as KeyframeWithPathToPropFromCommonRoot[],
+      )
+
+      const commonPath = commonRootOfPathsToProps(
+        kfs.map((kf) => kf.pathToProp),
+      )
+
+      const keyframesWithCommonRootPath = kfs.map(({keyframe, pathToProp}) => ({
+        keyframe,
+        pathToProp: pathToProp.slice(commonPath.length),
+      }))
+
+      return [
+        {
+          label: props.editorProps.selection ? 'Copy (selection)' : 'Copy',
+          callback: () => {
+            if (props.editorProps.selection) {
+              const copyableKeyframes = copyableKeyframesFromSelection(
+                props.editorProps.viewModel.sheetObject.address.projectId,
+                props.editorProps.viewModel.sheetObject.address.sheetId,
+                props.editorProps.selection,
+              )
+              getStudio().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes(
+                  copyableKeyframes,
+                )
+              })
+            } else {
+              getStudio().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes(
+                  keyframesWithCommonRootPath,
+                )
+              })
+            }
+          },
+        },
+        {
+          label: props.editorProps.selection ? 'Delete (selection)' : 'Delete',
+          callback: () => {
+            if (props.editorProps.selection) {
+              props.editorProps.selection.delete()
+            } else {
+              getStudio().transaction(({stateEditors}) => {
+                for (const kfWithTrack of props.utils.cur.keyframes) {
+                  stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+                    {
+                      ...props.editorProps.viewModel.sheetObject.address,
+                      keyframeIds: [kfWithTrack.kf.id],
+                      trackId: kfWithTrack.track.id,
+                    },
+                  )
+                }
+              })
+            }
+          },
+        },
+      ]
     },
   })
 }
@@ -104,13 +172,15 @@ function useDragForAggregateKeyframeDot(
         ) {
           const {selection, viewModel} = props
           const {sheetObject} = viewModel
-          return selection
+          const hanlders = selection
             .getDragHandlers({
               ...sheetObject.address,
               domNode: node!,
               positionAtStartOfDrag: keyframes[0].kf.position,
             })
             .onDragStart(event)
+
+          return hanlders && {...hanlders, onClick: options.onClickFromDrag}
         }
 
         const propsAtStartOfDrag = props
@@ -156,8 +226,10 @@ function useDragForAggregateKeyframeDot(
               tempTransaction?.commit()
             } else {
               tempTransaction?.discard()
-              options.onClickFromDrag(event)
             }
+          },
+          onClick(ev) {
+            options.onClickFromDrag(ev)
           },
         }
       },

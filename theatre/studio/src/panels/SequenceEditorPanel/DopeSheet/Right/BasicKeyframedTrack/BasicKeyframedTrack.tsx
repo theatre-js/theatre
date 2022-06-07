@@ -12,6 +12,8 @@ import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextM
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import getStudio from '@theatre/studio/getStudio'
+import {arePathsEqual} from '@theatre/shared/utils/addresses'
+import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
 
 const Container = styled.div`
   position: relative;
@@ -92,7 +94,9 @@ function useBasicKeyframedTrackContextMenu(
     displayName: 'Keyframe Track',
     menuItems: () => {
       const selectionKeyframes =
-        val(getStudio()!.atomP.ahistoric.clipboard.keyframes) || []
+        val(
+          getStudio()!.atomP.ahistoric.clipboard.keyframesWithRelativePaths,
+        ) ?? []
 
       return [pasteKeyframesContextMenuItem(props, selectionKeyframes)]
     },
@@ -101,7 +105,7 @@ function useBasicKeyframedTrackContextMenu(
 
 function pasteKeyframesContextMenuItem(
   props: BasicKeyframedTracksProps,
-  keyframes: Keyframe[],
+  keyframes: KeyframeWithPathToPropFromCommonRoot[],
 ): IContextMenuItem {
   return {
     label: 'Paste Keyframes',
@@ -110,11 +114,18 @@ function pasteKeyframesContextMenuItem(
       const sheet = val(props.layoutP.sheet)
       const sequence = sheet.getSequence()
 
+      const firstPath = keyframes[0]?.pathToProp
+      const singleTrackKeyframes = keyframes
+        .filter(({keyframe, pathToProp}) =>
+          arePathsEqual(firstPath, pathToProp),
+        )
+        .map(({keyframe, pathToProp}) => keyframe)
+
       getStudio()!.transaction(({stateEditors}) => {
         sequence.position = sequence.closestGridPosition(sequence.position)
-        const keyframeOffset = earliestKeyframe(keyframes)?.position!
+        const keyframeOffset = earliestKeyframe(singleTrackKeyframes)?.position!
 
-        for (const keyframe of keyframes) {
+        for (const keyframe of singleTrackKeyframes) {
           stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
             {
               ...props.leaf.sheetObject.address,

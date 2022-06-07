@@ -6,14 +6,12 @@ import last from 'lodash-es/last'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
-import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 
@@ -25,6 +23,7 @@ import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import type {ILogger} from '@theatre/shared/logger'
+import {copyableKeyframesFromSelection} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
 export const DOT_SIZE_PX = 6
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
@@ -107,20 +106,54 @@ function useSingleKeyframeContextMenu(
   logger: ILogger,
   props: ISingleKeyframeDotProps,
 ) {
-  const maybeSelectedKeyframeIds = selectedKeyframeIdsIfInSingleTrack(
-    props.selection,
-  )
-
-  const keyframeSelectionItem = maybeSelectedKeyframeIds
-    ? copyKeyFrameContextMenuItem(props, maybeSelectedKeyframeIds)
-    : copyKeyFrameContextMenuItem(props, [props.keyframe.id])
-
-  const deleteItem = deleteSelectionOrKeyframeContextMenuItem(props)
-
   return useContextMenu(target, {
     displayName: 'Keyframe',
     menuItems: () => {
-      return [keyframeSelectionItem, deleteItem]
+      const copyableKeyframes = copyableKeyframesFromSelection(
+        props.leaf.sheetObject.address.projectId,
+        props.leaf.sheetObject.address.sheetId,
+        props.selection,
+      )
+
+      return [
+        {
+          label: copyableKeyframes.length > 0 ? 'Copy (selection)' : 'Copy',
+          callback: () => {
+            if (copyableKeyframes.length > 0) {
+              getStudio!().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes(
+                  copyableKeyframes,
+                )
+              })
+            } else {
+              getStudio!().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes([
+                  {keyframe: props.keyframe, pathToProp: props.leaf.pathToProp},
+                ])
+              })
+            }
+          },
+        },
+        {
+          label:
+            props.selection !== undefined ? 'Delete (selection)' : 'Delete',
+          callback: () => {
+            if (props.selection) {
+              props.selection.delete()
+            } else {
+              getStudio()!.transaction(({stateEditors}) => {
+                stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+                  {
+                    ...props.leaf.sheetObject.address,
+                    keyframeIds: [props.keyframe.id],
+                    trackId: props.leaf.trackId,
+                  },
+                )
+              })
+            }
+          },
+        },
+      ]
     },
     onOpen() {
       logger._debug('Show keyframe', props)
@@ -183,7 +216,7 @@ function useDragForSingleKeyframeDot(
         if (props.selection) {
           const {selection, leaf} = props
           const {sheetObject} = leaf
-          return selection
+          const handlers = selection
             .getDragHandlers({
               ...sheetObject.address,
               domNode: node!,
@@ -191,6 +224,12 @@ function useDragForSingleKeyframeDot(
                 props.trackData.keyframes[props.index].position,
             })
             .onDragStart(event)
+
+          // this opens the regular inline keyframe editor on click.
+          // in the future, we may want to show an multi-editor, like in the
+          // single tween editor, so that selected keyframes' values can be changed
+          // together
+          return handlers && {...handlers, onClick: options.onClickFromDrag}
         }
 
         const propsAtStartOfDrag = props
@@ -235,8 +274,10 @@ function useDragForSingleKeyframeDot(
               tempTransaction?.commit()
             } else {
               tempTransaction?.discard()
-              options.onClickFromDrag(event)
             }
+          },
+          onClick(ev) {
+            options.onClickFromDrag(ev)
           },
         }
       },
@@ -252,48 +293,4 @@ function useDragForSingleKeyframeDot(
   useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   return [isDragging]
-}
-
-function deleteSelectionOrKeyframeContextMenuItem(
-  props: ISingleKeyframeDotProps,
-): IContextMenuItem {
-  return {
-    label: props.selection ? 'Delete Selection' : 'Delete Keyframe',
-    callback: () => {
-      if (props.selection) {
-        props.selection.delete()
-      } else {
-        getStudio()!.transaction(({stateEditors}) => {
-          stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
-            {
-              ...props.leaf.sheetObject.address,
-              keyframeIds: [props.keyframe.id],
-              trackId: props.leaf.trackId,
-            },
-          )
-        })
-      }
-    },
-  }
-}
-
-function copyKeyFrameContextMenuItem(
-  props: ISingleKeyframeDotProps,
-  keyframeIds: string[],
-): IContextMenuItem {
-  return {
-    label: keyframeIds.length > 1 ? 'Copy Selection' : 'Copy Keyframe',
-    callback: () => {
-      const keyframes = keyframeIds.map(
-        (keyframeId) =>
-          props.trackData.keyframes.find(
-            (keyframe) => keyframe.id === keyframeId,
-          )!,
-      )
-
-      getStudio!().transaction((api) => {
-        api.stateEditors.studio.ahistoric.setClipboardKeyframes(keyframes)
-      })
-    },
-  }
 }
