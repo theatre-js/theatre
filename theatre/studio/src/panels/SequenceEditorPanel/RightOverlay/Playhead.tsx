@@ -216,7 +216,6 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
         setIsSeeking(true)
 
         snapToAllKeyframesB.set(true)
-        console.log('hello')
 
         return {
           onDrag(dx, _, event) {
