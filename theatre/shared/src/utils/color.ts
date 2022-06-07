@@ -6,7 +6,7 @@ import {clamp} from 'lodash-es'
  * @remarks
  *
  * Supports all the syntax variants of <hex-color>
- * {@link https://google.com}:
+ * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/hex-color#syntax}:
  *
  *
  * ```javascript
