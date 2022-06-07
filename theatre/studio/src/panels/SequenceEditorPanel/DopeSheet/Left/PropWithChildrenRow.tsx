@@ -2,7 +2,6 @@ import type {
   SequenceEditorTree_PrimitiveProp,
   SequenceEditorTree_PropWithChildren,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import {usePrism} from '@theatre/react'
 import React from 'react'
 import AnyCompositeRow from './AnyCompositeRow'
 import PrimitivePropRow from './PrimitivePropRow'
@@ -26,20 +25,18 @@ export const decideRowByPropType = (
 const PropWithChildrenRow: React.VFC<{
   leaf: SequenceEditorTree_PropWithChildren
 }> = ({leaf}) => {
-  return usePrism(() => {
-    return (
-      <AnyCompositeRow
-        leaf={leaf}
-        label={leaf.pathToProp[leaf.pathToProp.length - 1]}
-        isCollapsed={leaf.isCollapsed}
-        toggleCollapsed={() =>
-          setCollapsedSheetObjectOrCompoundProp(!leaf.isCollapsed, leaf)
-        }
-      >
-        {leaf.children.map((propLeaf) => decideRowByPropType(propLeaf))}
-      </AnyCompositeRow>
-    )
-  }, [leaf])
+  return (
+    <AnyCompositeRow
+      leaf={leaf}
+      label={leaf.pathToProp[leaf.pathToProp.length - 1]}
+      isCollapsed={leaf.isCollapsed}
+      toggleCollapsed={() =>
+        setCollapsedSheetObjectOrCompoundProp(!leaf.isCollapsed, leaf)
+      }
+    >
+      {leaf.children.map((propLeaf) => decideRowByPropType(propLeaf))}
+    </AnyCompositeRow>
+  )
 }
 
 export default PropWithChildrenRow
