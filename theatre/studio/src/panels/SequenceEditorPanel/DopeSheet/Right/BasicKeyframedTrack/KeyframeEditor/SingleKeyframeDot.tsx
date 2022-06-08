@@ -23,7 +23,10 @@ import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import type {ILogger} from '@theatre/shared/logger'
 import {copyableKeyframesFromSelection} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import {snapPositionsB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import {
+  collectKeyframeSnapPositions,
+  snapPositionsB,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 export const DOT_SIZE_PX = 6
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
@@ -207,29 +210,25 @@ function useDragForSingleKeyframeDot(
             .tracksByObject,
         )!
 
-        // Calculate all the valid snap positions in the sequence editor,
-        // excluding this keyframe, and any selection it is part of.
-        const snapPositions = Object.fromEntries(
-          Object.entries(tracksByObject).map(([objectKey, value]) => [
-            objectKey,
-            Object.fromEntries(
-              Object.entries(value!.trackData).map(([trackId, value]) => [
-                trackId,
-                value!.keyframes
-                  .filter(
-                    (keyframe) =>
-                      keyframe.id !== props.keyframe.id &&
-                      !(
-                        props.selection &&
-                        props.selection.byObjectKey[objectKey]?.byTrackId[
-                          trackId
-                        ]?.byKeyframeId[keyframe.id]
-                      ),
-                  )
-                  .map((keyframe) => keyframe.position),
-              ]),
-            ),
-          ]),
+        const snapPositions = collectKeyframeSnapPositions(
+          tracksByObject,
+          // Calculate all the valid snap positions in the sequence editor,
+          // excluding this keyframe, and any selection it is part of.
+          function shouldIncludeKeyfram(keyframe, {trackId, objectKey}) {
+            return (
+              // we exclude this keyframe from being a snap target
+              keyframe.id !== props.keyframe.id &&
+              !(
+                // if the current dragged keyframe is in the selection,
+                (
+                  props.selection &&
+                  // then we exclude it and all other keyframes in the selection from being snap targets
+                  props.selection.byObjectKey[objectKey]?.byTrackId[trackId]
+                    ?.byKeyframeId[keyframe.id]
+                )
+              )
+            )
+          },
         )
 
         snapPositionsB.set(snapPositions)

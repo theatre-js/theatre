@@ -21,7 +21,11 @@ import {
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types/ahistoric'
 import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
 import type {ILogger} from '@theatre/shared/logger'
-import {snapPositionsB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import {
+  collectKeyframeSnapPositions,
+  snapPositionsB,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 type IAggregateKeyframeDotProps = {
   editorProps: IAggregateKeyframeEditorProps
@@ -173,29 +177,25 @@ function useDragForAggregateKeyframeDot(
 
         // Calculate all the valid snap positions in the sequence editor,
         // excluding the child keyframes of this aggregate, and any selection it is part of.
-        const snapPositions = Object.fromEntries(
-          Object.entries(tracksByObject).map(([key, value]) => [
-            key,
-            Object.fromEntries(
-              Object.entries(value!.trackData).map(([key, value]) => [
-                key,
-                value!.keyframes
-                  .filter(
-                    (keyframe) =>
-                      keyframes.every(
-                        (kfWithTrack) => keyframe.id !== kfWithTrack.kf.id,
-                      ) &&
-                      !(
-                        props.selection &&
-                        props.selection.byObjectKey[
-                          props.viewModel.sheetObject.address.objectKey
-                        ]?.byTrackId[key]?.byKeyframeId[keyframe.id]
-                      ),
-                  )
-                  .map((keyframe) => keyframe.position),
-              ]),
-            ),
-          ]),
+        const snapPositions = collectKeyframeSnapPositions(
+          tracksByObject,
+          function shouldIncludeKeyfram(keyframe, {trackId, objectKey}) {
+            return (
+              // we exclude all the child keyframes of this aggregate keyframe from being a snap target
+              keyframes.every(
+                (kfWithTrack) => keyframe.id !== kfWithTrack.kf.id,
+              ) &&
+              !(
+                // if all of the children of the current aggregate keyframe are in a selection,
+                (
+                  props.selection &&
+                  // then we exclude them and all other keyframes in the selection from being snap targets
+                  props.selection.byObjectKey[objectKey]?.byTrackId[trackId]
+                    ?.byKeyframeId[keyframe.id]
+                )
+              )
+            )
+          },
         )
 
         snapPositionsB.set(snapPositions)
