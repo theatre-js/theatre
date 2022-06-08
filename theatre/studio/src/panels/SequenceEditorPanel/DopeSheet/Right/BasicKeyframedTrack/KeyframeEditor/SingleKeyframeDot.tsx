@@ -35,7 +35,8 @@ const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
 const dotTheme = {
   normalColor: '#40AAA4',
   selectedColor: '#F2C95C',
-  selectedAndPopOverOpen: '#E08318',
+  inlineEditorOpenColor: '#FCF3DC',
+  selectedAndInlineEditorOpenColor: '#CBEBEA',
 }
 
 const selectBacgroundForDiamond = ({
@@ -43,11 +44,11 @@ const selectBacgroundForDiamond = ({
   isInlineEditorPopoverOpen,
 }: IDiamond) => {
   if (isSelected && isInlineEditorPopoverOpen) {
-    return dotTheme.selectedAndPopOverOpen
+    return dotTheme.inlineEditorOpenColor
   } else if (isSelected) {
     return dotTheme.selectedColor
   } else if (isInlineEditorPopoverOpen) {
-    return dotTheme.selectedColor
+    return dotTheme.selectedAndInlineEditorOpenColor
   } else {
     return dotTheme.normalColor
   }
@@ -67,13 +68,18 @@ const Diamond = styled.div<IDiamond>`
   pointer-events: none;
 `
 
-const HitZone = styled.div`
+const HitZone = styled.div<{isInlineEditorPopoverOpen: boolean}>`
   z-index: 1;
   cursor: ew-resize;
 
   position: absolute;
   ${absoluteDims(12)};
   ${pointerEventsAutoInNormalMode};
+
+  & + ${Diamond} {
+    ${(props) =>
+      props.isInlineEditorPopoverOpen ? absoluteDims(DOT_HOVER_SIZE_PX) : ''}
+  }
 
   &:hover + ${Diamond} {
     ${absoluteDims(DOT_HOVER_SIZE_PX)}
@@ -98,7 +104,10 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
 
   return (
     <>
-      <HitZone ref={ref} />
+      <HitZone
+        ref={ref}
+        isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+      />
       <Diamond
         isSelected={!!props.selection}
         isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
