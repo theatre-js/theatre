@@ -71,7 +71,7 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
-  const [inlineEditorPopover, openEditor] =
+  const [inlineEditorPopover, openEditor, _, isOpen] =
     useSingleKeyframeInlineEditorPopover(props)
   const [isDragging] = useDragForSingleKeyframeDot(node, props, {
     onClickFromDrag(dragStartEvent) {
@@ -82,7 +82,7 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   return (
     <>
       <HitZone ref={ref} />
-      <Diamond isSelected={!!props.selection} />
+      <Diamond isSelected={!!props.selection || isOpen} />
       {inlineEditorPopover}
       {contextMenu}
     </>
