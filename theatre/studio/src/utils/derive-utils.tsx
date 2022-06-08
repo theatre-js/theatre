@@ -52,7 +52,8 @@ function DeriveElement(props: {der: IDerivation<React.ReactNode>}) {
   return <>{node}</>
 }
 
-class TSErrors<M> extends Error {}
+/** This is only used for type checking to make sure the APIs are used properly */
+interface TSErrors<M> extends Error {}
 
 type ReactDeriver<Props extends {}> = (
   props: {
