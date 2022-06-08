@@ -62,14 +62,35 @@ export type KeyframeSnapPositions = {
   }
 }
 
-// The following boxes are read by BasicKeyframeTrack and AggregateKeyframeTrack
-// to place snap targets in the keyframe tracks.
+const stateB = new Box<
+  | {
+      // all keyframes must be snap targets
+      mode: 'snapToAll'
+    }
+  | {
+      // only these keyframes must be snap targets
+      mode: 'snapToSome'
+      positions: KeyframeSnapPositions
+    }
+  | {
+      // no keyframe should be a snap target
+      mode: 'snapToNone'
+    }
+>({mode: 'snapToNone'})
 
-// A box holding all the valid snap positions per track per object.
-export const snapPositionsB = new Box<KeyframeSnapPositions>({})
+export const snapPositionsStateD = stateB.derivation
 
-// A convenience flag to specify that we want to snap everywhere where there's currently a keyframe.
-export const snapToAllKeyframesB = new Box(false)
+export function snapToAll() {
+  stateB.set({mode: 'snapToAll'})
+}
+
+export function snapToNone() {
+  stateB.set({mode: 'snapToNone'})
+}
+
+export function snapToSome(positions: KeyframeSnapPositions) {
+  stateB.set({mode: 'snapToSome', positions})
+}
 
 export function collectKeyframeSnapPositions(
   tracksByObject: HistoricPositionalSequence['tracksByObject'],

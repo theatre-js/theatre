@@ -32,9 +32,9 @@ import type Sequence from '@theatre/core/sequences/Sequence'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
 import {collectAggregateSnapPositions} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import KeyframeSnapTarget, {
-  snapPositionsB,
+  snapPositionsStateD,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
-import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import {emptyObject} from '@theatre/shared/utils'
 
 const AggregatedKeyframeTrackContainer = styled.div`
   position: relative;
@@ -92,8 +92,14 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
       }),
     )
 
-  const snapPositions = useVal(snapPositionsB.derivation)
-  const snapToAllKeyframes = useVal(snapToAllKeyframesB.derivation)
+  const snapPositionsState = useVal(snapPositionsStateD)
+
+  const snapToAllKeyframes = snapPositionsState.mode === 'snapToAll'
+
+  const snapPositions =
+    snapPositionsState.mode === 'snapToSome'
+      ? snapPositionsState.positions
+      : emptyObject
 
   const aggregateSnapPositions = useMemo(
     () => collectAggregateSnapPositions(viewModel, snapPositions),

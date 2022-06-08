@@ -23,7 +23,8 @@ import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
 import type {ILogger} from '@theatre/shared/logger'
 import {
   collectKeyframeSnapPositions,
-  snapPositionsB,
+  snapToNone,
+  snapToSome,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 
@@ -198,7 +199,7 @@ function useDragForAggregateKeyframeDot(
           },
         )
 
-        snapPositionsB.set(snapPositions)
+        snapToSome(snapPositions)
 
         if (
           props.selection &&
@@ -221,7 +222,7 @@ function useDragForAggregateKeyframeDot(
               onClick: options.onClickFromDrag,
               onDragEnd: (...args) => {
                 handlers.onDragEnd?.(...args)
-                snapPositionsB.set({})
+                snapToNone()
               },
             }
           )
@@ -272,7 +273,7 @@ function useDragForAggregateKeyframeDot(
               tempTransaction?.discard()
             }
 
-            snapPositionsB.set({})
+            snapToNone()
           },
           onClick(ev) {
             options.onClickFromDrag(ev)

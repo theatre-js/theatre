@@ -22,7 +22,10 @@ import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEdito
 import DopeSnap from './DopeSnap'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {DopeSnapHitZoneUI} from './DopeSnapHitZoneUI'
-import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import {
+  snapToAll,
+  snapToNone,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 const MARKER_SIZE_W_PX = 12
 const MARKER_SIZE_H_PX = 12
@@ -222,7 +225,7 @@ function useDragMarker(
         const toUnitSpace = val(props.layoutP.scaledSpace.toUnitSpace)
         let tempTransaction: CommitOrDiscard | undefined
 
-        snapToAllKeyframesB.set(true)
+        snapToAll()
 
         return {
           onDrag(dx, _dy, event) {
@@ -254,7 +257,7 @@ function useDragMarker(
             if (dragHappened) tempTransaction?.commit()
             else tempTransaction?.discard()
 
-            snapToAllKeyframesB.set(false)
+            snapToNone()
           },
         }
       },

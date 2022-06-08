@@ -25,7 +25,8 @@ import {copyableKeyframesFromSelection} from '@theatre/studio/panels/SequenceEdi
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {
   collectKeyframeSnapPositions,
-  snapPositionsB,
+  snapToNone,
+  snapToSome,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 export const DOT_SIZE_PX = 6
@@ -231,7 +232,7 @@ function useDragForSingleKeyframeDot(
           },
         )
 
-        snapPositionsB.set(snapPositions)
+        snapToSome(snapPositions)
 
         if (props.selection) {
           const {selection, leaf} = props
@@ -255,7 +256,7 @@ function useDragForSingleKeyframeDot(
               onClick: options.onClickFromDrag,
               onDragEnd: (...args) => {
                 handlers.onDragEnd?.(...args)
-                snapPositionsB.set({})
+                snapToNone()
               },
             }
           )
@@ -305,7 +306,7 @@ function useDragForSingleKeyframeDot(
               tempTransaction?.discard()
             }
 
-            snapPositionsB.set({})
+            snapToNone()
           },
           onClick(ev) {
             options.onClickFromDrag(ev)
