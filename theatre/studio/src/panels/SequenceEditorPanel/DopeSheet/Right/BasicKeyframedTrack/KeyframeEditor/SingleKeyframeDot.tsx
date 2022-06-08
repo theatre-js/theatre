@@ -30,7 +30,7 @@ import {
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 export const DOT_SIZE_PX = 6
-const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
+const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 2
 
 const dotTheme = {
   normalColor: '#40AAA4',

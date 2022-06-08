@@ -5,7 +5,7 @@ import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const DOT_SIZE_PX = 16
-const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
+const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 2
 
 /** The keyframe diamond ◆ */
 const DotContainer = styled.div`
