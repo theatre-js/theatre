@@ -7,11 +7,11 @@ import type {
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
-import {usePrism} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {valueDerivation} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React from 'react'
+import React, {Fragment, useMemo} from 'react'
 import styled from 'styled-components'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -21,16 +21,20 @@ import AggregateKeyframeEditor from './AggregateKeyframeEditor/AggregateKeyframe
 import type {AggregatedKeyframes} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import getStudio from '@theatre/studio/getStudio'
-import type {
-  SheetObjectAddress} from '@theatre/shared/utils/addresses';
+import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 import {
   decodePathToProp,
   doesPathStartWith,
-  encodePathToProp
+  encodePathToProp,
 } from '@theatre/shared/utils/addresses'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import type Sequence from '@theatre/core/sequences/Sequence'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
+import {collectAggregateSnapPositions} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
+import KeyframeSnapTarget, {
+  snapPositionsStateD,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import {emptyObject} from '@theatre/shared/utils'
 
 const AggregatedKeyframeTrackContainer = styled.div`
   position: relative;
@@ -88,19 +92,48 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
       }),
     )
 
-  const keyframeEditors = posKfs.map(({position, keyframes}, index) => (
-    <AggregateKeyframeEditor
-      index={index}
+  const snapPositionsState = useVal(snapPositionsStateD)
+
+  const snapToAllKeyframes = snapPositionsState.mode === 'snapToAll'
+
+  const snapPositions =
+    snapPositionsState.mode === 'snapToSome'
+      ? snapPositionsState.positions
+      : emptyObject
+
+  const aggregateSnapPositions = useMemo(
+    () => collectAggregateSnapPositions(viewModel, snapPositions),
+    [snapPositions],
+  )
+
+  const snapTargets = aggregateSnapPositions.map((position) => (
+    <KeyframeSnapTarget
+      key={'snap-target-' + position}
       layoutP={layoutP}
-      viewModel={viewModel}
-      aggregateKeyframes={posKfs}
-      // To ensure that while dragging, we don't lose reference to the
-      // aggregate we're trying to drag.
-      key={'agg-' + keyframes[0].kf.id}
-      selection={
-        selectedPositions.has(position) === true ? selection : undefined
-      }
+      leaf={viewModel}
+      position={position}
     />
+  ))
+
+  const keyframeEditors = posKfs.map(({position, keyframes}, index) => (
+    <Fragment key={'agg-' + keyframes[0].kf.id}>
+      {snapToAllKeyframes && (
+        <KeyframeSnapTarget
+          layoutP={layoutP}
+          leaf={viewModel}
+          position={position}
+        />
+      )}
+      <AggregateKeyframeEditor
+        index={index}
+        layoutP={layoutP}
+        viewModel={viewModel}
+        aggregateKeyframes={posKfs}
+        selection={
+          selectedPositions.has(position) === true ? selection : undefined
+        }
+      />
+    </Fragment>
   ))
 
   return (
@@ -111,6 +144,7 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
       }}
     >
       {keyframeEditors}
+      {snapTargets}
       {contextMenu}
     </AggregatedKeyframeTrackContainer>
   )
