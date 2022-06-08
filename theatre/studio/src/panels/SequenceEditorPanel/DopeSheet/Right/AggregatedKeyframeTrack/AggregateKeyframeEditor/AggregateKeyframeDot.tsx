@@ -16,7 +16,6 @@ import type {ILogger} from '@theatre/shared/logger'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 
 type IAggregateKeyframeDotProps = {
-  isDragging: boolean
   editorProps: IAggregateKeyframeEditorProps
   utils: IAggregateKeyframeEditorUtils
 }
