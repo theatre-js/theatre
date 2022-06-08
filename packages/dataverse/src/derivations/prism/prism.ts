@@ -70,18 +70,18 @@ export class PrismDerivation<V> extends AbstractDerivation<V> {
 
     popCollector(collector)
 
-    this._dependencies.forEach((dep) => {
+    for (const dep of this._dependencies) {
       if (!newDeps.has(dep)) {
         this._removeDependency(dep)
       }
-    })
+    }
 
     this._dependencies = newDeps
 
     startIgnoringDependencies()
-    newDeps.forEach((dep) => {
+    for (const dep of newDeps) {
       this._cacheOfDendencyValues.set(dep, dep.getValue())
-    })
+    }
     stopIgnoringDependencies()
 
     return value!

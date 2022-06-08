@@ -170,9 +170,9 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
     this._didMarkDependentsAsStale = true
     this._isFresh = false
 
-    this._dependents.forEach((dependent) => {
+    for (const dependent of this._dependents) {
       dependent(this)
-    })
+    }
   }
 
   /**
@@ -228,14 +228,14 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
     this._didMarkDependentsAsStale = false
     this._isFresh = false
     if (shouldBecomeHot) {
-      this._dependencies.forEach((d) => {
+      for (const d of this._dependencies) {
         d.addDependent(this._internal_markAsStale)
-      })
+      }
       this._keepHot()
     } else {
-      this._dependencies.forEach((d) => {
+      for (const d of this._dependencies) {
         d.removeDependent(this._internal_markAsStale)
-      })
+      }
       this._becomeCold()
     }
   }
