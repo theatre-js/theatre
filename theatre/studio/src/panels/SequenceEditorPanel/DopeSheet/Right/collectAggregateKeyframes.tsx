@@ -11,6 +11,7 @@ import type {
 } from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {IUtilLogger} from '@theatre/shared/logger'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
+import {uniq} from 'lodash-es'
 
 /**
  * An index over a series of keyframes that have been collected from different tracks.
@@ -127,4 +128,46 @@ export function collectAggregateKeyframesInPrism(
     byPosition,
     tracks,
   }
+}
+
+/**
+ * Collects all the snap positions for an aggregate track.
+ */
+export function collectAggregateSnapPositions(
+  leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_SheetObject,
+  snapTargetPositions: {[key: string]: {[key: string]: number[]}},
+): number[] {
+  const sheetObject = leaf.sheetObject
+
+  const projectId = sheetObject.address.projectId
+
+  const sheetObjectTracksP =
+    getStudio().atomP.historic.coreByProject[projectId].sheetsById[
+      sheetObject.address.sheetId
+    ].sequence.tracksByObject[sheetObject.address.objectKey]
+
+  const positions: number[] = []
+  for (const childLeaf of leaf.children) {
+    if (childLeaf.type === 'primitiveProp') {
+      const trackId = val(
+        sheetObjectTracksP.trackIdByPropPath[
+          encodePathToProp(childLeaf.pathToProp)
+        ],
+      )
+      if (!trackId) {
+        continue
+      }
+
+      positions.push(
+        ...(snapTargetPositions[sheetObject.address.objectKey]?.[trackId] ??
+          []),
+      )
+    } else if (childLeaf.type === 'propWithChildren') {
+      positions.push(
+        ...collectAggregateSnapPositions(childLeaf, snapTargetPositions),
+      )
+    }
+  }
+
+  return uniq(positions)
 }
