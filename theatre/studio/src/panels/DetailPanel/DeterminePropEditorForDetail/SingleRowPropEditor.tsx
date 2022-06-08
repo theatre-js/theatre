@@ -12,11 +12,19 @@ import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS
 
 export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
 
-const LeftRow = styled.div`
+const Container = styled.div`
   display: flex;
   height: 30px;
   justify-content: flex-start;
   align-items: stretch;
+  // We cannot calculate both the container (details panel) width and the descendant
+  // (this) width dynamically. This leads to the container width being calculated
+  // without this percentage being taken into consideration leads to horizontal
+  // clipping/scrolling--the same way as if we explicitly fixed either the container
+  // width, or the descendant width.
+  // The correct solution for tabulated UIs with dynamic container widths is to use
+  // CSS grid. For now I fixed this issue by just giving a great enough width
+  // to the details panel so most things don't break.
   --right-width: 60%;
   position: relative;
   ${pointerEventsAutoInNormalMode};
@@ -97,7 +105,7 @@ export function SingleRowPropEditor<T>({
   })
 
   return (
-    <LeftRow>
+    <Container>
       {contextMenu}
       <Left>
         <ControlsContainer>{editingTools.controlIndicators}</ControlsContainer>
@@ -113,6 +121,6 @@ export function SingleRowPropEditor<T>({
       </Left>
 
       <InputContainer>{children}</InputContainer>
-    </LeftRow>
+    </Container>
   )
 }

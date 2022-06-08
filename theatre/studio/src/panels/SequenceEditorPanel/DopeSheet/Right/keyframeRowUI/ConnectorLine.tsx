@@ -1,4 +1,4 @@
-import {lighten} from 'polished'
+import {lighten, saturate} from 'polished'
 import React from 'react'
 import styled from 'styled-components'
 import {DOT_SIZE_PX} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/SingleKeyframeDot'
@@ -13,18 +13,20 @@ export type IConnectorThemeValues = {
 
 export const CONNECTOR_THEME = {
   normalColor: `#365b59`, // (greenish-blueish)ish
-  popoverOpenColor: `#817720`, // orangey yellowish
+  selectedColor: `#8A7842`,
   barColor: (values: IConnectorThemeValues) => {
-    const base = values.isPopoverOpen
-      ? CONNECTOR_THEME.popoverOpenColor
+    const base = values.isSelected
+      ? CONNECTOR_THEME.selectedColor
       : CONNECTOR_THEME.normalColor
-    return values.isSelected ? lighten(0.2, base) : base
+    return values.isPopoverOpen ? saturate(0.2, lighten(0.2, base)) : base
   },
   hoverColor: (values: IConnectorThemeValues) => {
-    const base = values.isPopoverOpen
-      ? CONNECTOR_THEME.popoverOpenColor
+    const base = values.isSelected
+      ? CONNECTOR_THEME.selectedColor
       : CONNECTOR_THEME.normalColor
-    return values.isSelected ? lighten(0.4, base) : lighten(0.1, base)
+    return values.isPopoverOpen
+      ? saturate(0.2, lighten(0.2, base))
+      : saturate(0.1, lighten(0.1, base))
   },
 }
 

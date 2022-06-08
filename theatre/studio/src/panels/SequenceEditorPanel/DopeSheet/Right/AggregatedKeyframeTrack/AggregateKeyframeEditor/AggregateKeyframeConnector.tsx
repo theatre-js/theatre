@@ -14,6 +14,13 @@ import {useAggregateKeyframeEditorUtils} from './useAggregateKeyframeEditorUtils
 import type {IAggregateKeyframeEditorProps} from './AggregateKeyframeEditor'
 import styled from 'styled-components'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
+import {
+  copyableKeyframesFromSelection,
+  keyframesWithPaths,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
+import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
+import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
 
 const POPOVER_MARGIN_PX = 5
 const EasingPopoverWrapper = styled(BasicPopover)`
@@ -45,6 +52,7 @@ export const AggregateKeyframeConnector: React.VFC<IAggregateKeyframeConnectorPr
     const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
     const {editorProps} = props
 
+    const [contextMenu] = useConnectorContextMenu(props, node)
     const [isDragging] = useDragKeyframe(node, props.editorProps)
 
     const [popoverNode, openPopover, closePopover] = usePopover(
@@ -85,6 +93,7 @@ export const AggregateKeyframeConnector: React.VFC<IAggregateKeyframeConnectorPr
           }}
         />
         {popoverNode}
+        {contextMenu}
       </>
     ) : (
       <></>
@@ -180,4 +189,84 @@ function useDragKeyframe(
   }, [])
 
   return useDrag(node, gestureHandlers)
+}
+
+function useConnectorContextMenu(
+  props: IAggregateKeyframeConnectorProps,
+  node: HTMLDivElement | null,
+) {
+  return useContextMenu(node, {
+    displayName: 'Aggregate Tween',
+    menuItems: () => {
+      // see AGGREGATE_COPY_PASTE.md for explanation of this
+      // code that makes some keyframes with paths for copying
+      // to clipboard
+      const kfs = props.utils.allConnections.reduce(
+        (acc, con) =>
+          acc.concat(
+            keyframesWithPaths({
+              ...props.editorProps.viewModel.sheetObject.address,
+              trackId: con.trackId,
+              keyframeIds: [con.left.id, con.right.id],
+            }) ?? [],
+          ),
+        [] as KeyframeWithPathToPropFromCommonRoot[],
+      )
+
+      const commonPath = commonRootOfPathsToProps(
+        kfs.map((kf) => kf.pathToProp),
+      )
+
+      const keyframesWithCommonRootPath = kfs.map(({keyframe, pathToProp}) => ({
+        keyframe,
+        pathToProp: pathToProp.slice(commonPath.length),
+      }))
+
+      return [
+        {
+          label: 'Copy',
+          callback: () => {
+            if (props.editorProps.selection) {
+              const copyableKeyframes = copyableKeyframesFromSelection(
+                props.editorProps.viewModel.sheetObject.address.projectId,
+                props.editorProps.viewModel.sheetObject.address.sheetId,
+                props.editorProps.selection,
+              )
+              getStudio().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes(
+                  copyableKeyframes,
+                )
+              })
+            } else {
+              getStudio().transaction((api) => {
+                api.stateEditors.studio.ahistoric.setClipboardKeyframes(
+                  keyframesWithCommonRootPath,
+                )
+              })
+            }
+          },
+        },
+        {
+          label: 'Delete',
+          callback: () => {
+            if (props.editorProps.selection) {
+              props.editorProps.selection.delete()
+            } else {
+              getStudio().transaction(({stateEditors}) => {
+                for (const con of props.utils.allConnections) {
+                  stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+                    {
+                      ...props.editorProps.viewModel.sheetObject.address,
+                      keyframeIds: [con.left.id, con.right.id],
+                      trackId: con.trackId,
+                    },
+                  )
+                }
+              })
+            }
+          },
+        },
+      ]
+    },
+  })
 }

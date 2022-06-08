@@ -1,6 +1,6 @@
 {
   "name": "@theatre/core",
-  "version": "0.4.8-dev.3",
+  "version": "0.5.0-rc.1",
   "license": "Apache-2.0",
   "description": "Motion design editor for the web",
   "repository": {

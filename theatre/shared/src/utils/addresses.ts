@@ -111,3 +111,48 @@ export const getValueByPropPath = (
 
   return cur
 }
+
+export function doesPathStartWith(
+  path: (string | number)[],
+  pathPrefix: (string | number)[],
+) {
+  return pathPrefix.every((pathPart, i) => pathPart === path[i])
+}
+
+export function arePathsEqual(
+  pathToPropA: (string | number)[],
+  pathToPropB: (string | number)[],
+) {
+  if (pathToPropA.length !== pathToPropB.length) return false
+  for (let i = 0; i < pathToPropA.length; i++) {
+    if (pathToPropA[i] !== pathToPropB[i]) return false
+  }
+  return true
+}
+
+/**
+ * e.g.
+ * ```
+ * commonRootOfPathsToProps([
+ *   ['a','b','c','d','e'],
+ *   ['a','b','x','y','z'],
+ *   ['a','b','c']
+ *  ]) // = ['a','b']
+ * ```
+ */
+export function commonRootOfPathsToProps(pathsToProps: (string | number)[][]) {
+  const commonPathToProp: (string | number)[] = []
+  while (true) {
+    const i = commonPathToProp.length
+    let candidatePathPart = pathsToProps[0]?.[i]
+    if (candidatePathPart === undefined) return commonPathToProp
+
+    for (const pathToProp of pathsToProps) {
+      if (candidatePathPart !== pathToProp[i]) {
+        return commonPathToProp
+      }
+    }
+
+    commonPathToProp.push(candidatePathPart)
+  }
+}

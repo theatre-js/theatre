@@ -1,8 +1,29 @@
+import {clamp} from 'lodash-es'
+
+/**
+ * Robust check for a valid hex value (without the "#") in a string
+ *
+ * @remarks
+ *
+ * Supports all the syntax variants of <hex-color>
+ * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/hex-color#syntax}:
+ *
+ *
+ * ```javascript
+ * #RGB        // The three-value syntax
+ * #RGBA       // The four-value syntax
+ * #RRGGBB     // The six-value syntax
+ * #RRGGBBAA   // The eight-value syntax
+ * ```
+ */
+export const validHexRegExp = /^#*([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i
+
 export function parseRgbaFromHex(rgba: string) {
   rgba = rgba.trim().toLowerCase()
-  const hex = rgba.match(/^#?([0-9a-f]{8})$/i)
 
-  if (!hex) {
+  const match = rgba.match(validHexRegExp)
+
+  if (!match) {
     return {
       r: 0,
       g: 0,
@@ -11,12 +32,13 @@ export function parseRgbaFromHex(rgba: string) {
     }
   }
 
-  const match = hex[1]
+  const hex = _hexInEightValueSyntax(match[1])
+
   return {
-    r: parseInt(match.substr(0, 2), 16) / 255,
-    g: parseInt(match.substr(2, 2), 16) / 255,
-    b: parseInt(match.substr(4, 2), 16) / 255,
-    a: parseInt(match.substr(6, 2), 16) / 255,
+    r: parseInt(hex.substr(0, 2), 16) / 255,
+    g: parseInt(hex.substr(2, 2), 16) / 255,
+    b: parseInt(hex.substr(4, 2), 16) / 255,
+    a: parseInt(hex.substr(6, 2), 16) / 255,
   }
 }
 
@@ -42,6 +64,12 @@ export function decorateRgba(rgba: Rgba) {
   }
 }
 
+export function clampRgba(rgba: Rgba) {
+  return Object.fromEntries(
+    Object.entries(rgba).map(([key, value]) => [key, clamp(value, 0, 1)]),
+  ) as Rgba
+}
+
 export function linearSrgbToSrgb(rgba: Rgba) {
   function compress(x: number) {
     // This looks funky because sRGB uses a linear scale below 0.0031308 in
@@ -50,12 +78,12 @@ export function linearSrgbToSrgb(rgba: Rgba) {
     if (x >= 0.0031308) return 1.055 * x ** (1.0 / 2.4) - 0.055
     else return 12.92 * x
   }
-  return {
+  return clampRgba({
     r: compress(rgba.r),
     g: compress(rgba.g),
     b: compress(rgba.b),
     a: rgba.a,
-  }
+  })
 }
 
 export function srgbToLinearSrgb(rgba: Rgba) {
@@ -117,4 +145,22 @@ export type Laba = {
   a: number
   b: number
   alpha: number
+}
+
+/**
+ * Returns a hex string in the eight-value syntax
+ */
+function _hexInEightValueSyntax(hex: string): string {
+  switch (hex.length) {
+    case 3:
+      return `${hex.repeat(2)}ff`
+    case 4:
+      const rgb = hex.substr(0, 3)
+      const alpha = hex[3]
+      return `${rgb.repeat(2)}${alpha.repeat(2)}`
+    case 6:
+      return `${hex}ff`
+  }
+
+  return hex
 }

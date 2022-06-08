@@ -45,8 +45,8 @@ const SingleKeyframePropLabel = styled.span`
 /**
  * Given a propConfig, this function gives the corresponding prop editor for
  * use in the dope sheet inline prop editor on a keyframe.
- * {@link DetailDeterminePropEditor} does the same thing for the details panel. The main difference
- * between this function and {@link DetailDeterminePropEditor} is that this
+ * {@link DeterminePropEditorForDetail} does the same thing for the details panel. The main difference
+ * between this function and {@link DeterminePropEditorForDetail} is that this
  * one shows prop editors *without* keyframe navigation controls (that look
  * like `< ・ >`).
  *

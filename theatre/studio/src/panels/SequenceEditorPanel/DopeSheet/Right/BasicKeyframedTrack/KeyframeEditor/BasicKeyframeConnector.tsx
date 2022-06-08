@@ -11,8 +11,6 @@ import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover, {
   isConnectionEditingInCurvePopover,
 } from './CurveEditorPopover/CurveEditorPopover'
-import selectedKeyframeIdsIfInSingleTrack from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/selectedKeyframeIdsIfInSingleTrack'
-import type {OpenFn} from '@theatre/studio/src/uiComponents/Popover/usePopover'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
 import type {IConnectorThemeValues} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
@@ -20,6 +18,7 @@ import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeShee
 import {COLOR_POPOVER_BACK} from './CurveEditorPopover/colors'
 import {usePrism} from '@theatre/react'
 import type {KeyframeConnectionWithAddress} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import {copyableKeyframesFromSelection} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 import {selectedKeyframeConnections} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
 import styled from 'styled-components'
@@ -56,13 +55,7 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
     () => <SingleCurveEditorPopover {...props} closePopover={closePopover} />,
   )
 
-  const [contextMenu] = useConnectorContextMenu(
-    props,
-    node,
-    cur,
-    next,
-    openPopover,
-  )
+  const [contextMenu] = useConnectorContextMenu(props, node, cur, next)
   useDragKeyframe(node, props)
 
   const connectorLengthInUnitSpace = next.position - cur.position
@@ -84,17 +77,21 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
   }
 
   return (
-    <ConnectorLine
-      ref={nodeRef}
-      connectorLengthInUnitSpace={connectorLengthInUnitSpace}
-      {...themeValues}
-      openPopover={(e) => {
-        if (node) openPopover(e, node)
-      }}
-    >
-      {popoverNode}
+    <>
+      <ConnectorLine
+        ref={nodeRef}
+        connectorLengthInUnitSpace={connectorLengthInUnitSpace}
+        {...themeValues}
+        openPopover={(e) => {
+          if (node) openPopover(e, node)
+        }}
+      >
+        {popoverNode}
+      </ConnectorLine>
+      {/* contextMenu is placed outside of the ConnectorLine so that clicking on
+      the contextMenu does not count as clicking on the ConnectorLine */}
       {contextMenu}
-    </ConnectorLine>
+    </>
   )
 }
 export default BasicKeyframeConnector
@@ -220,50 +217,51 @@ function useDragKeyframe(
 
   useDrag(node, gestureHandlers)
 }
+
 function useConnectorContextMenu(
   props: IBasicKeyframeConnectorProps,
   node: HTMLDivElement | null,
   cur: Keyframe,
   next: Keyframe,
-  openPopover: OpenFn,
 ) {
-  const maybeKeyframeIds = selectedKeyframeIdsIfInSingleTrack(props.selection)
+  // TODO?: props.selection is undefined if only one of the connected keyframes is selected
+
   return useContextMenu(node, {
+    displayName: 'Tween',
     menuItems: () => {
+      const copyableKeyframes = copyableKeyframesFromSelection(
+        props.leaf.sheetObject.address.projectId,
+        props.leaf.sheetObject.address.sheetId,
+        props.selection,
+      )
+
       return [
         {
-          label: maybeKeyframeIds ? 'Copy Selection' : 'Copy both Keyframes',
+          label: copyableKeyframes.length > 0 ? 'Copy (selection)' : 'Copy',
           callback: () => {
-            if (maybeKeyframeIds) {
-              const keyframes = maybeKeyframeIds.map(
-                (keyframeId) =>
-                  props.trackData.keyframes.find(
-                    (keyframe) => keyframe.id === keyframeId,
-                  )!,
-              )
-
-              getStudio!().transaction((api) => {
+            if (copyableKeyframes.length > 0) {
+              getStudio().transaction((api) => {
                 api.stateEditors.studio.ahistoric.setClipboardKeyframes(
-                  keyframes,
+                  copyableKeyframes,
                 )
               })
             } else {
-              getStudio!().transaction((api) => {
+              getStudio().transaction((api) => {
                 api.stateEditors.studio.ahistoric.setClipboardKeyframes([
-                  cur,
-                  next,
+                  {keyframe: cur, pathToProp: props.leaf.pathToProp},
+                  {keyframe: next, pathToProp: props.leaf.pathToProp},
                 ])
               })
             }
           },
         },
         {
-          label: props.selection ? 'Delete Selection' : 'Delete both Keyframes',
+          label: props.selection ? 'Delete (selection)' : 'Delete',
           callback: () => {
             if (props.selection) {
               props.selection.delete()
             } else {
-              getStudio()!.transaction(({stateEditors}) => {
+              getStudio().transaction(({stateEditors}) => {
                 stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
                   {
                     ...props.leaf.sheetObject.address,
@@ -273,12 +271,6 @@ function useConnectorContextMenu(
                 )
               })
             }
-          },
-        },
-        {
-          label: 'Open Easing Palette',
-          callback: (e) => {
-            openPopover(e, node!)
           },
         },
       ]

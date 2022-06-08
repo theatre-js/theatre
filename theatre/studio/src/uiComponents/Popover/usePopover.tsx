@@ -5,6 +5,7 @@ import {createPortal} from 'react-dom'
 import {PortalContext} from 'reakit'
 import type {AbsolutePlacementBoxConstraints} from './TooltipWrapper'
 import TooltipWrapper from './TooltipWrapper'
+import {contextMenuShownContext} from '@theatre/studio/panels/DetailPanel/DetailPanel'
 
 export type OpenFn = (
   e: React.MouseEvent | MouseEvent | {clientX: number; clientY: number},
@@ -112,6 +113,18 @@ export default function usePopover(
     _debug,
     state,
   })
+
+  // TODO: this lock is now exported from the detail panel, do refactor it when you get the chance
+  const [, addContextMenu] = useContext(contextMenuShownContext)
+
+  useEffect(() => {
+    let removeContextMenu: () => void | undefined
+    if (state.isOpen) {
+      removeContextMenu = addContextMenu()
+    }
+
+    return () => removeContextMenu?.()
+  }, [state.isOpen])
 
   const portalLayer = useContext(PortalContext)
 

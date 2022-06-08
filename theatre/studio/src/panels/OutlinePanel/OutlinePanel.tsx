@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useLayoutEffect} from 'react'
 import styled from 'styled-components'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import ProjectsList from './ProjectsList/ProjectsList'
@@ -6,6 +6,7 @@ import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
+import {Box, prism, val} from '@theatre/dataverse'
 
 const headerHeight = `44px`
 
@@ -43,26 +44,31 @@ const Container = styled.div<{pin: boolean}>`
   }
 `
 
-const OutlinePanel: React.FC<{}> = (props) => {
-  const pin = useVal(getStudio().atomP.ahistoric.pinOutline) !== false
-  const show = useVal(getStudio().atomP.ephemeral.showOutline)
+const OutlinePanel: React.FC<{}> = () => {
+  const pin = useVal(getStudio().atomP.ahistoric.pinOutline) ?? true
+  const show = useVal(shouldShowOutlineD)
   const active = useHotspot('left')
-  const [hovered, setHovered] = useState(false)
 
+  useLayoutEffect(() => {
+    isOutlinePanelHotspotActiveB.set(active)
+  }, [active])
+
+  // cleanup
   useEffect(() => {
-    getStudio().transaction(({stateEditors, drafts}) => {
-      stateEditors.studio.ephemeral.setShowOutline(active || hovered)
-    })
-  }, [active, hovered])
+    return () => {
+      isOutlinePanelHoveredB.set(false)
+      isOutlinePanelHotspotActiveB.set(false)
+    }
+  }, [])
 
   return (
     <Container
       pin={pin || show}
       onMouseEnter={() => {
-        setHovered(true)
+        isOutlinePanelHoveredB.set(true)
       }}
       onMouseLeave={() => {
-        setHovered(false)
+        isOutlinePanelHoveredB.set(false)
       }}
     >
       <ProjectsList />
@@ -71,3 +77,13 @@ const OutlinePanel: React.FC<{}> = (props) => {
 }
 
 export default OutlinePanel
+
+const isOutlinePanelHotspotActiveB = new Box<boolean>(false)
+const isOutlinePanelHoveredB = new Box<boolean>(false)
+
+export const shouldShowOutlineD = prism<boolean>(() => {
+  const isHovered = val(isOutlinePanelHoveredB.derivation)
+  const isHotspotActive = val(isOutlinePanelHotspotActiveB.derivation)
+
+  return isHovered || isHotspotActive
+})

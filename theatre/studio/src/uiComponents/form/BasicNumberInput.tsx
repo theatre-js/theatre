@@ -251,9 +251,6 @@ const BasicNumberInput: React.FC<{
           if (!happened) {
             propsRef.current.discardTemporaryValue()
             stateRef.current = {mode: 'noFocus'}
-
-            inputRef.current!.focus()
-            inputRef.current!.setSelectionRange(0, 100)
           } else {
             if (valueBeforeDragging === valueDuringDragging) {
               propsRef.current.discardTemporaryValue()
@@ -262,6 +259,10 @@ const BasicNumberInput: React.FC<{
             }
             stateRef.current = {mode: 'noFocus'}
           }
+        },
+        onClick() {
+          inputRef.current!.focus()
+          inputRef.current!.setSelectionRange(0, 100)
         },
       }
     }

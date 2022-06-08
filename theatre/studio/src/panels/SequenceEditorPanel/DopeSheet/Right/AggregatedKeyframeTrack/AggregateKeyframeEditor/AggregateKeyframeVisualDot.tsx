@@ -2,7 +2,7 @@ import React from 'react'
 import {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregatedKeyframeTrack'
 import styled from 'styled-components'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
-import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const DOT_SIZE_PX = 16
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
@@ -20,16 +20,15 @@ export const HitZone = styled.div`
   z-index: 2;
   cursor: ew-resize;
 
-  ${DopeSnapHitZoneUI.CSS}
+  position: absolute;
+  ${absoluteDims(12)};
+  ${pointerEventsAutoInNormalMode};
 
-  #pointer-root.draggingPositionInSequenceEditor & {
-    ${DopeSnapHitZoneUI.CSS_WHEN_SOMETHING_DRAGGING}
-  }
-
-  &:hover + ${DotContainer},
-  #pointer-root.draggingPositionInSequenceEditor &:hover + ${DotContainer},
-  // notice "," css "or"
-  &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS} + ${DotContainer} {
+  &:hover
+    + ${DotContainer},
+    #pointer-root.draggingPositionInSequenceEditor
+    &:hover
+    + ${DotContainer} {
     ${absoluteDims(DOT_HOVER_SIZE_PX)}
   }
 `
@@ -55,7 +54,7 @@ export function AggregateKeyframeVisualDot(props: {
 type IDotThemeValues = {
   isSelected: AggregateKeyframePositionIsSelected | undefined
 }
-const SELECTED_COLOR = '#b8e4e2'
+const SELECTED_COLOR = '#F2C95C'
 const DEFAULT_PRIMARY_COLOR = '#40AAA4'
 const DEFAULT_SECONDARY_COLOR = '#45747C'
 const selectionColorAll = (theme: IDotThemeValues) =>

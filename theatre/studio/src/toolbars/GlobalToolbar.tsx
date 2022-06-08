@@ -9,14 +9,9 @@ import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 import {val} from '@theatre/dataverse'
 import ExtensionToolbar from './ExtensionToolbar/ExtensionToolbar'
 import PinButton from './PinButton'
-import {
-  ChevronLeft,
-  ChevronRight,
-  Details,
-  Ellipsis,
-  Outline,
-} from '@theatre/studio/uiComponents/icons'
-import {shouldShowDetailD} from '@theatre/studio/panels/DetailPanel/DetailPanel'
+import {Details, Ellipsis, Outline} from '@theatre/studio/uiComponents/icons'
+import DoubleChevronLeft from '@theatre/studio/uiComponents/icons/DoubleChevronLeft'
+import DoubleChevronRight from '@theatre/studio/uiComponents/icons/DoubleChevronRight'
 import ToolbarIconButton from '@theatre/studio/uiComponents/toolbar/ToolbarIconButton'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import MoreMenu from './MoreMenu/MoreMenu'
@@ -88,10 +83,8 @@ const GlobalToolbar: React.FC = () => {
       ),
   )
 
-  const outlinePinned = useVal(getStudio().atomP.ahistoric.pinOutline)
-  const detailsPinned = useVal(getStudio().atomP.ahistoric.pinDetails)
-  const showOutline = useVal(getStudio().atomP.ephemeral.showOutline)
-  const showDetails = useVal(shouldShowDetailD)
+  const outlinePinned = useVal(getStudio().atomP.ahistoric.pinOutline) ?? true
+  const detailsPinned = useVal(getStudio().atomP.ahistoric.pinDetails) ?? true
   const hasUpdates =
     useVal(getStudio().atomP.ahistoric.updateChecker.result.hasUpdates) === true
 
@@ -124,15 +117,14 @@ const GlobalToolbar: React.FC = () => {
           onClick={() => {
             getStudio().transaction(({stateEditors, drafts}) => {
               stateEditors.studio.ahistoric.setPinOutline(
-                !drafts.ahistoric.pinOutline,
+                !(drafts.ahistoric.pinOutline ?? true),
               )
             })
           }}
           icon={<Outline />}
-          pinHintIcon={<ChevronRight />}
-          unpinHintIcon={<ChevronLeft />}
+          pinHintIcon={<DoubleChevronRight />}
+          unpinHintIcon={<DoubleChevronLeft />}
           pinned={outlinePinned}
-          hint={showOutline}
         />
         {conflicts.length > 0 ? (
           <NumberOfConflictsIndicator>
@@ -158,15 +150,14 @@ const GlobalToolbar: React.FC = () => {
           onClick={() => {
             getStudio().transaction(({stateEditors, drafts}) => {
               stateEditors.studio.ahistoric.setPinDetails(
-                !drafts.ahistoric.pinDetails,
+                !(drafts.ahistoric.pinDetails ?? true),
               )
             })
           }}
           icon={<Details />}
-          pinHintIcon={<ChevronLeft />}
-          unpinHintIcon={<ChevronRight />}
+          pinHintIcon={<DoubleChevronLeft />}
+          unpinHintIcon={<DoubleChevronRight />}
           pinned={detailsPinned}
-          hint={showDetails}
         />
       </SubContainer>
     </Container>

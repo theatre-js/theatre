@@ -10,6 +10,12 @@ import type {
 import getStudio from '@theatre/studio/getStudio'
 import type {DopeSheetSelection} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import {
+  commonRootOfPathsToProps,
+  decodePathToProp,
+} from '@theatre/shared/utils/addresses'
+import type {StrictRecord} from '@theatre/shared/utils/types'
+import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
 
 /**
  * Keyframe connections are considered to be selected if the first
@@ -76,6 +82,119 @@ export function selectedKeyframeConnections(
     }
     return ckfs
   })
+}
+
+/**
+ * Given a selection, returns a list of keyframes and paths
+ * that are relative to a common root path. For example, if
+ * the selection contains a keyframe on both the following tracks:
+ * - exObject.transform.position.x
+ * - exObject.transform.position.y
+ * then the result will be
+ * ```
+ * [{ keyframe, pathToProp: ['x']}, { keyframe, pathToProp: ['y']}]
+ * ```
+ *
+ * If the selection contains a keyframe on
+ * all the following tracks:
+ * - exObject.transform.position.x
+ * - exObject.transform.position.y
+ * - exObject.transform.scale.x
+ * then the result will be
+ * ```
+ * [
+ *   {keyframe, pathToProp: ['position', 'x']},
+ *   {keyframe, pathToProp: ['position', 'y']},
+ *   {keyframe, pathToProp: ['scale',    'x']},
+ * ]
+ * ```
+ *
+ * TODO - we don't yet support copying/pasting keyframes from multiple objects to multiple objects.
+ * The main reason is that we don't yet have an aggregate track for several objects.
+ */
+export function copyableKeyframesFromSelection(
+  projectId: ProjectId,
+  sheetId: SheetId,
+  selection: DopeSheetSelection | undefined,
+): KeyframeWithPathToPropFromCommonRoot[] {
+  if (selection === undefined) return []
+
+  let kfs: KeyframeWithPathToPropFromCommonRoot[] = []
+
+  for (const {objectKey, trackId, keyframeIds} of flatSelectionTrackIds(
+    selection,
+  )) {
+    kfs = kfs.concat(
+      keyframesWithPaths({
+        projectId,
+        sheetId,
+        objectKey,
+        trackId,
+        keyframeIds,
+      }) ?? [],
+    )
+  }
+
+  const commonPath = commonRootOfPathsToProps(kfs.map((kf) => kf.pathToProp))
+
+  const keyframesWithCommonRootPath = kfs.map(({keyframe, pathToProp}) => ({
+    keyframe,
+    pathToProp: pathToProp.slice(commonPath.length),
+  }))
+
+  return keyframesWithCommonRootPath
+}
+
+/**
+ * @see copyableKeyframesFromSelection
+ */
+export function keyframesWithPaths({
+  projectId,
+  sheetId,
+  objectKey,
+  trackId,
+  keyframeIds,
+}: {
+  projectId: ProjectId
+  sheetId: SheetId
+  objectKey: ObjectAddressKey
+  trackId: SequenceTrackId
+  keyframeIds: KeyframeId[]
+}): KeyframeWithPathToPropFromCommonRoot[] | null {
+  const tracksByObject = val(
+    getStudio().atomP.historic.coreByProject[projectId].sheetsById[sheetId]
+      .sequence.tracksByObject[objectKey],
+  )
+  const track = tracksByObject?.trackData[trackId]
+
+  if (!track) return null
+
+  const propPathByTrackId = swapKeyAndValue(
+    tracksByObject?.trackIdByPropPath || {},
+  )
+  const encodedPropPath = propPathByTrackId[trackId]
+
+  if (!encodedPropPath) return null
+  const pathToProp = decodePathToProp(encodedPropPath)
+
+  return keyframeIds
+    .map((keyframeId) => ({
+      keyframe: track.keyframes.find((keyframe) => keyframe.id === keyframeId),
+      pathToProp,
+    }))
+    .filter(
+      ({keyframe}) => keyframe !== undefined,
+    ) as KeyframeWithPathToPropFromCommonRoot[]
+}
+
+function swapKeyAndValue<K extends string, V extends string>(
+  obj: StrictRecord<K, V>,
+): StrictRecord<V, K> {
+  const result: StrictRecord<V, K> = {}
+  for (const [key, value] of Object.entries(obj)) {
+    result[value as V] = key
+  }
+  return result
 }
 
 export function keyframeConnections(

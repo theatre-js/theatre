@@ -61,7 +61,7 @@ export type DopeSheetSelection = {
       positionAtStartOfDrag: number
       domNode: Element
     },
-  ): Parameters<typeof useDrag>[1]
+  ): Omit<Parameters<typeof useDrag>[1], 'onClick'>
   delete(): void
 }
 
@@ -141,6 +141,9 @@ export type SequenceEditorPanelLayout = {
   }
   unitSpace: {}
   scaledSpace: {
+    /**
+     * TODO - scaledSpace with and without leftPadding are two different spaces. See if we can divide them so
+     */
     leftPadding: number
     fromUnitSpace(u: number): number
     toUnitSpace(s: number): number

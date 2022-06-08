@@ -2,16 +2,21 @@ import type {TrackData} from '@theatre/core/projects/store/types/SheetState_Hist
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
-import {usePrism} from '@theatre/react'
+import {usePrism, useVal} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React from 'react'
+import React, {Fragment} from 'react'
 import styled from 'styled-components'
 import SingleKeyframeEditor from './KeyframeEditor/SingleKeyframeEditor'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import getStudio from '@theatre/studio/getStudio'
+import {arePathsEqual} from '@theatre/shared/utils/addresses'
+import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
+import KeyframeSnapTarget, {
+  snapPositionsStateD,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 const Container = styled.div`
   position: relative;
@@ -56,15 +61,45 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
       props,
     )
 
+    const snapPositionsState = useVal(snapPositionsStateD)
+
+    const snapPositions =
+      snapPositionsState.mode === 'snapToSome'
+        ? snapPositionsState.positions[leaf.sheetObject.address.objectKey]?.[
+            leaf.trackId
+          ]
+        : [] ?? []
+
+    const snapToAllKeyframes = snapPositionsState.mode === 'snapToAll'
+
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
-      <SingleKeyframeEditor
-        keyframe={kf}
-        index={index}
-        trackData={trackData}
+      <Fragment key={'keyframe-' + kf.id}>
+        {snapToAllKeyframes && (
+          <KeyframeSnapTarget
+            layoutP={layoutP}
+            leaf={leaf}
+            position={kf.position}
+          />
+        )}
+        <SingleKeyframeEditor
+          keyframe={kf}
+          index={index}
+          trackData={trackData}
+          layoutP={layoutP}
+          leaf={leaf}
+          selection={
+            selectedKeyframeIds[kf.id] === true ? selection : undefined
+          }
+        />
+      </Fragment>
+    ))
+
+    const snapTargets = snapPositions.map((position) => (
+      <KeyframeSnapTarget
+        key={'snap-target-' + position}
         layoutP={layoutP}
         leaf={leaf}
-        key={'keyframe-' + kf.id}
-        selection={selectedKeyframeIds[kf.id] === true ? selection : undefined}
+        position={position}
       />
     ))
 
@@ -76,6 +111,7 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
         }}
       >
         {keyframeEditors}
+        {snapTargets}
         {contextMenu}
       </Container>
     )
@@ -92,7 +128,9 @@ function useBasicKeyframedTrackContextMenu(
     displayName: 'Keyframe Track',
     menuItems: () => {
       const selectionKeyframes =
-        val(getStudio()!.atomP.ahistoric.clipboard.keyframes) || []
+        val(
+          getStudio()!.atomP.ahistoric.clipboard.keyframesWithRelativePaths,
+        ) ?? []
 
       return [pasteKeyframesContextMenuItem(props, selectionKeyframes)]
     },
@@ -101,7 +139,7 @@ function useBasicKeyframedTrackContextMenu(
 
 function pasteKeyframesContextMenuItem(
   props: BasicKeyframedTracksProps,
-  keyframes: Keyframe[],
+  keyframes: KeyframeWithPathToPropFromCommonRoot[],
 ): IContextMenuItem {
   return {
     label: 'Paste Keyframes',
@@ -110,11 +148,18 @@ function pasteKeyframesContextMenuItem(
       const sheet = val(props.layoutP.sheet)
       const sequence = sheet.getSequence()
 
+      const firstPath = keyframes[0]?.pathToProp
+      const singleTrackKeyframes = keyframes
+        .filter(({keyframe, pathToProp}) =>
+          arePathsEqual(firstPath, pathToProp),
+        )
+        .map(({keyframe, pathToProp}) => keyframe)
+
       getStudio()!.transaction(({stateEditors}) => {
         sequence.position = sequence.closestGridPosition(sequence.position)
-        const keyframeOffset = earliestKeyframe(keyframes)?.position!
+        const keyframeOffset = earliestKeyframe(singleTrackKeyframes)?.position!
 
-        for (const keyframe of keyframes) {
+        for (const keyframe of singleTrackKeyframes) {
           stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
             {
               ...props.leaf.sheetObject.address,

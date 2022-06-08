@@ -63,6 +63,8 @@ const Link = styled(Item)`
 `
 
 const VersionContainer = styled(Item)`
+  height: auto;
+  min-height: 32px;
   padding-top: 12px;
   padding-bottom: 10px;
   flex-direction: column;

@@ -9,6 +9,11 @@ export type UpdateCheckerResponse =
   | {hasUpdates: true; newVersion: string; releasePage: string}
   | {hasUpdates: false}
 
+export type KeyframeWithPathToPropFromCommonRoot = {
+  pathToProp: (string | number)[]
+  keyframe: Keyframe
+}
+
 export type StudioAhistoricState = {
   /**
    * undefined means the outline menu is pinned
@@ -20,7 +25,7 @@ export type StudioAhistoricState = {
   pinDetails?: boolean
   visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
   clipboard?: {
-    keyframes?: Keyframe[]
+    keyframesWithRelativePaths?: KeyframeWithPathToPropFromCommonRoot[]
     // future clipboard data goes here
   }
   theTrigger: {
