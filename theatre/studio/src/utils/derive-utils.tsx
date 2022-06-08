@@ -66,6 +66,11 @@ type ReactDeriver<Props extends {}> = (
 /**
  * Wrap up the component to enable it to take derivable properties.
  * Invoked similarly to `React.memo`.
+ *
+ * @remarks
+ * This is an experimental interface for wrapping components in a version
+ * which allows you to pass in derivations for any of the properties that
+ * previously took only values.
  */
 export function deriver<Props extends {}>(
   Component: React.ComponentType<Props>,
