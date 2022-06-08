@@ -35,15 +35,32 @@ const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
 const dotTheme = {
   normalColor: '#40AAA4',
   selectedColor: '#F2C95C',
+  selectedAndPopOverOpen: '#E08318',
 }
 
+const selectBacgroundForDiamond = ({
+  isSelected,
+  isInlineEditorPopoverOpen,
+}: IDiamond) => {
+  if (isSelected && isInlineEditorPopoverOpen) {
+    return dotTheme.selectedAndPopOverOpen
+  } else if (isSelected) {
+    return dotTheme.selectedColor
+  } else if (isInlineEditorPopoverOpen) {
+    return dotTheme.selectedColor
+  } else {
+    return dotTheme.normalColor
+  }
+}
+
+type IDiamond = {isSelected: boolean; isInlineEditorPopoverOpen: boolean}
+
 /** The keyframe diamond ◆ */
-const Diamond = styled.div<{isSelected: boolean}>`
+const Diamond = styled.div<IDiamond>`
   position: absolute;
   ${absoluteDims(DOT_SIZE_PX)}
 
-  background: ${(props) =>
-    props.isSelected ? dotTheme.selectedColor : dotTheme.normalColor};
+  background: ${(props) => selectBacgroundForDiamond(props)};
   transform: rotateZ(45deg);
 
   z-index: 1;
@@ -71,7 +88,7 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
-  const [inlineEditorPopover, openEditor, _, isOpen] =
+  const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
     useSingleKeyframeInlineEditorPopover(props)
   const [isDragging] = useDragForSingleKeyframeDot(node, props, {
     onClickFromDrag(dragStartEvent) {
@@ -82,7 +99,10 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   return (
     <>
       <HitZone ref={ref} />
-      <Diamond isSelected={!!props.selection || isOpen} />
+      <Diamond
+        isSelected={!!props.selection}
+        isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+      />
       {inlineEditorPopover}
       {contextMenu}
     </>
