@@ -32,6 +32,7 @@ import getStudio from '@theatre/studio/getStudio'
 import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 import {
   decodePathToProp,
+  doesPathStartWith,
   encodePathToProp,
 } from '@theatre/shared/utils/addresses'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
@@ -41,6 +42,13 @@ import KeyframeSnapTarget, {
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 import {emptyObject} from '@theatre/shared/utils'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
+import {
+  collectKeyframeSnapPositions,
+  snapToNone,
+  snapToSome,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import {collectAggregateSnapPositions} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 const AggregatedKeyframeTrackContainer = styled.div`
   position: relative;
@@ -473,9 +481,11 @@ function useDragForAggregateKeyframeDot(
       debugName: 'AggregateKeyframeDot/useDragKeyframe',
       onDragStart(event) {
         logger._debug('onDragStart', {target: event.target})
+        console.log(event.target)
         const positionToFind = Number((event.target as HTMLElement).dataset.pos)
         const props = getPropsForPosition(positionToFind)
         if (!props) {
+          console.log('exit')
           logger._debug('no props found for ', {positionToFind})
           return false
         }
@@ -485,6 +495,38 @@ function useDragForAggregateKeyframeDot(
           getAggregateKeyframeEditorUtilsPrismFn(props),
         ).getValue().cur.keyframes
 
+        const tracksByObject = val(
+          getStudio()!.atomP.historic.coreByProject[
+            props.viewModel.sheetObject.address.projectId
+          ].sheetsById[props.viewModel.sheetObject.address.sheetId].sequence
+            .tracksByObject,
+        )!
+
+        // Calculate all the valid snap positions in the sequence editor,
+        // excluding the child keyframes of this aggregate, and any selection it is part of.
+        const snapPositions = collectKeyframeSnapPositions(
+          tracksByObject,
+          function shouldIncludeKeyfram(keyframe, {trackId, objectKey}) {
+            return (
+              // we exclude all the child keyframes of this aggregate keyframe from being a snap target
+              keyframes.every(
+                (kfWithTrack) => keyframe.id !== kfWithTrack.kf.id,
+              ) &&
+              !(
+                // if all of the children of the current aggregate keyframe are in a selection,
+                (
+                  props.selection &&
+                  // then we exclude them and all other keyframes in the selection from being snap targets
+                  props.selection.byObjectKey[objectKey]?.byTrackId[trackId]
+                    ?.byKeyframeId[keyframe.id]
+                )
+              )
+            )
+          },
+        )
+
+        snapToSome(snapPositions)
+
         if (
           props.selection &&
           props.aggregateKeyframes[props.index].selected ===
@@ -492,13 +534,24 @@ function useDragForAggregateKeyframeDot(
         ) {
           const {selection, viewModel} = props
           const {sheetObject} = viewModel
-          return selection
+          const handlers = selection
             .getDragHandlers({
               ...sheetObject.address,
               domNode: containerNode!,
               positionAtStartOfDrag: keyframes[0].kf.position,
             })
             .onDragStart(event)
+
+          return (
+            handlers && {
+              ...handlers,
+              onClick: options.onClickFromDrag,
+              onDragEnd: (...args) => {
+                handlers.onDragEnd?.(...args)
+                snapToNone()
+              },
+            }
+          )
         }
 
         const propsAtStartOfDrag = props
@@ -549,6 +602,11 @@ function useDragForAggregateKeyframeDot(
               tempTransaction?.discard()
               options.onClickFromDrag(event)
             }
+
+            snapToNone()
+          },
+          onClick(ev) {
+            options.onClickFromDrag(ev)
           },
         }
       },
