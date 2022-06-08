@@ -21,7 +21,7 @@ import {
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types/ahistoric'
 import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
 import type {ILogger} from '@theatre/shared/logger'
-import {snapPositionsB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+import {snapPositionsB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 type IAggregateKeyframeDotProps = {
   editorProps: IAggregateKeyframeEditorProps

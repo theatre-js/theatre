@@ -4,6 +4,7 @@ import {Box, val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
+import type {ObjectAddressKey, SequenceTrackId} from '@theatre/shared/utils/ids'
 
 const HitZone = styled.div`
   z-index: 1;
@@ -26,7 +27,7 @@ export type ISnapTargetPRops = {
   position: number
 }
 
-const SnapTarget: React.VFC<ISnapTargetPRops> = (props) => {
+const KeyframeSnapTarget: React.VFC<ISnapTargetPRops> = (props) => {
   return (
     <Container
       style={{
@@ -48,14 +49,14 @@ const SnapTarget: React.VFC<ISnapTargetPRops> = (props) => {
   )
 }
 
-export default SnapTarget
+export default KeyframeSnapTarget
 
 // The following boxes are read by BasicKeyframeTrack and AggregateKeyframeTrack
 // to place snap targets in the keyframe tracks.
 
 // A box holding all the valid snap positions per track per object.
 export const snapPositionsB = new Box<{
-  [key: string]: {[key: string]: number[]}
+  [objectKey: ObjectAddressKey]: {[trackId: SequenceTrackId]: number[]}
 }>({})
 
 // A convenience flag to specify that we want to snap everywhere where there's currently a keyframe.

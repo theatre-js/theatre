@@ -27,7 +27,7 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import getStudio from '@theatre/studio/getStudio'
 import {generateSequenceMarkerId} from '@theatre/shared/utils/ids'
 import DopeSnap from './DopeSnap'
-import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;

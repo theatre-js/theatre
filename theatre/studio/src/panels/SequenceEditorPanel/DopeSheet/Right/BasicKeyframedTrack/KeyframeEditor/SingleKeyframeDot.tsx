@@ -23,7 +23,7 @@ import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import type {ILogger} from '@theatre/shared/logger'
 import {copyableKeyframesFromSelection} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import {snapPositionsB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+import {snapPositionsB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 export const DOT_SIZE_PX = 6
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5

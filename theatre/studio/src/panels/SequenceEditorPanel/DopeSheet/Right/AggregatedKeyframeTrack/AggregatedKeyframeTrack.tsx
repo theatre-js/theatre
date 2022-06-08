@@ -31,10 +31,10 @@ import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import type Sequence from '@theatre/core/sequences/Sequence'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
 import {collectAggregateSnapPositions} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
-import SnapTarget, {
+import KeyframeSnapTarget, {
   snapPositionsB,
-} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
-import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 const AggregatedKeyframeTrackContainer = styled.div`
   position: relative;
@@ -101,7 +101,7 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
   )
 
   const snapTargets = aggregateSnapPositions.map((position) => (
-    <SnapTarget
+    <KeyframeSnapTarget
       key={'snap-target-' + position}
       layoutP={layoutP}
       leaf={viewModel}
@@ -112,7 +112,11 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
   const keyframeEditors = posKfs.map(({position, keyframes}, index) => (
     <Fragment key={'agg-' + keyframes[0].kf.id}>
       {snapToAllKeyframes && (
-        <SnapTarget layoutP={layoutP} leaf={viewModel} position={position} />
+        <KeyframeSnapTarget
+          layoutP={layoutP}
+          leaf={viewModel}
+          position={position}
+        />
       )}
       <AggregateKeyframeEditor
         index={index}

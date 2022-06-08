@@ -12,7 +12,7 @@ import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import type {IRange} from '@theatre/shared/utils/types'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
-import {snapToAllKeyframesB} from './SnapTarget'
+import {snapToAllKeyframesB} from './KeyframeSnapTarget'
 
 const Container = styled.div`
   position: absolute;

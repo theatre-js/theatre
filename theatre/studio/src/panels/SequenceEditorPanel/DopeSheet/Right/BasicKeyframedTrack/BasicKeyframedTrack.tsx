@@ -14,11 +14,11 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import getStudio from '@theatre/studio/getStudio'
 import {arePathsEqual} from '@theatre/shared/utils/addresses'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
-import SnapTarget, {
+import KeyframeSnapTarget, {
   snapPositionsB,
-} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 import {uniq} from 'lodash-es'
-import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 const Container = styled.div`
   position: relative;
@@ -73,7 +73,11 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
       <Fragment key={'keyframe-' + kf.id}>
         {snapToAllKeyframes && (
-          <SnapTarget layoutP={layoutP} leaf={leaf} position={kf.position} />
+          <KeyframeSnapTarget
+            layoutP={layoutP}
+            leaf={leaf}
+            position={kf.position}
+          />
         )}
         <SingleKeyframeEditor
           keyframe={kf}
@@ -89,7 +93,7 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
     ))
 
     const snapTargets = snapPositions.map((position) => (
-      <SnapTarget
+      <KeyframeSnapTarget
         key={'snap-target-' + position}
         layoutP={layoutP}
         leaf={leaf}

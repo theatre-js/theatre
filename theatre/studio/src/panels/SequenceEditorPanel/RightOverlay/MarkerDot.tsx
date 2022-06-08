@@ -22,7 +22,7 @@ import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEdito
 import DopeSnap from './DopeSnap'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {DopeSnapHitZoneUI} from './DopeSnapHitZoneUI'
-import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/SnapTarget'
+import {snapToAllKeyframesB} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 const MARKER_SIZE_W_PX = 12
 const MARKER_SIZE_H_PX = 12
