@@ -5,10 +5,10 @@ import {Interactive} from './Interactive'
 import {Pointer} from './Pointer'
 
 import {hsvaToHslaString} from '@theatre/studio/uiComponents/colorPicker/utils/convert'
-import {clamp} from '@theatre/studio/uiComponents/colorPicker/utils/clamp'
 import {round} from '@theatre/studio/uiComponents/colorPicker/utils/round'
 import type {HsvaColor} from '@theatre/studio/uiComponents/colorPicker/types'
 import styled from 'styled-components'
+import {clamp} from 'lodash-es'
 
 const Container = styled.div`
   position: relative;
@@ -61,7 +61,7 @@ export const Alpha = ({className, hsva, onChange}: Props): JSX.Element => {
 
   const handleKey = (offset: Interaction) => {
     // Alpha always fit into [0, 1] range
-    onChange({a: clamp(hsva.a + offset.left)})
+    onChange({a: clamp(hsva.a + offset.left, 0, 1)})
   }
 
   // We use `Object.assign` instead of the spread operator

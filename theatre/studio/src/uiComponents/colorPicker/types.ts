@@ -61,13 +61,3 @@ export interface ColorPickerBaseProps<T extends AnyColor>
   permanentlySetValue: (newColor: T) => void
   discardTemporaryValue: () => void
 }
-
-type ColorInputHTMLAttributes = Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  'onChange' | 'value'
->
-
-export interface ColorInputBaseProps extends ColorInputHTMLAttributes {
-  color?: string
-  onChange?: (newColor: string) => void
-}
