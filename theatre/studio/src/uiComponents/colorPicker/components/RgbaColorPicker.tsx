@@ -43,12 +43,6 @@ export const RgbaColorPicker = (
   props: ColorPickerBaseProps<RgbaColor>,
 ): JSX.Element => (
   <EditingProvider>
-    <AlphaColorPicker
-      {...props}
-      permanentlySetValue={(newColor) => {
-        props.permanentlySetValue!(newColor)
-      }}
-      colorModel={colorModel}
-    />
+    <AlphaColorPicker {...props} colorModel={colorModel} />
   </EditingProvider>
 )

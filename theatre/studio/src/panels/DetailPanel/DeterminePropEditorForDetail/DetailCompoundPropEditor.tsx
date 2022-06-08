@@ -15,7 +15,8 @@ import DeterminePropEditorForDetail from '@theatre/studio/panels/DetailPanel/Det
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import {useEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEditingToolsForCompoundProp'
+import {getEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEditingToolsForCompoundProp'
+import {useReactPrism} from '@theatre/studio/utils/derive-utils'
 
 const Container = styled.div`
   --step: 15px;
@@ -87,19 +88,19 @@ function DetailCompoundPropEditor<
   const [propNameContainerRef, propNameContainer] =
     useRefAndState<HTMLDivElement | null>(null)
 
-  const tools = useEditingToolsForCompoundProp(
+  const toolsD = getEditingToolsForCompoundProp(
     pointerToProp as $FixMe,
     obj,
     propConfig,
   )
 
   const [contextMenu] = useContextMenu(propNameContainer, {
-    menuItems: tools.contextMenuItems,
+    menuItems: () => toolsD.getValue().contextMenuItems,
   })
 
   const lastSubPropIsComposite = compositeSubs.length > 0
 
-  // previous versions of the DetailCompoundPropEditor had a context menu item for "Reset values".
+  const controlsElt = useReactPrism(() => toolsD.getValue().controlIndicators)
 
   return (
     <Container>
@@ -109,7 +110,7 @@ function DetailCompoundPropEditor<
         style={{'--depth': visualIndentation - 1}}
       >
         <Padding>
-          {tools.controlIndicators}
+          {controlsElt}
           <PropName ref={propNameContainerRef}>{propName || 'Props'}</PropName>
         </Padding>
       </Header>

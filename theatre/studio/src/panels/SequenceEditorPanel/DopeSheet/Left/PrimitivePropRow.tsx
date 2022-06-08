@@ -8,11 +8,12 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useCallback, useRef} from 'react'
 import styled from 'styled-components'
-import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
 import {nextPrevCursorsTheme} from '@theatre/studio/propEditors/NextPrevKeyframeCursors'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import {BaseHeader, LeftRowContainer as BaseContainer} from './AnyCompositeRow'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import {getEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
+import {useReactPrism} from '@theatre/studio/utils/derive-utils'
 
 const theme = {
   label: {
@@ -87,7 +88,7 @@ const PrimitivePropRow: React.FC<{
   ) as Pointer<$IntentionalAny>
 
   const obj = leaf.sheetObject
-  const {controlIndicators} = useEditingToolsForSimplePropInDetailsPanel(
+  const toolsD = getEditingToolsForSimplePropInDetailsPanel(
     pointerToProp,
     obj,
     leaf.propConf,
@@ -141,7 +142,7 @@ const PrimitivePropRow: React.FC<{
         isSelected={isSelected === true}
       >
         <PrimitivePropRowHead_Label>{label}</PrimitivePropRowHead_Label>
-        {controlIndicators}
+        {useReactPrism(() => toolsD.getValue().controlIndicators)}
         <PrimitivePropRowIconContainer
           onClick={toggleSelect}
           isSelected={isSelected === true}

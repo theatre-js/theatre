@@ -1,14 +1,15 @@
 import type * as propTypes from '@theatre/core/propTypes'
 import {getPointerParts} from '@theatre/dataverse'
-import type {Pointer} from '@theatre/dataverse'
+import type {Pointer, IDerivation} from '@theatre/dataverse'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {last} from 'lodash-es'
 import React from 'react'
-import type {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import type {EditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
+import {useReactPrism} from '@theatre/studio/utils/derive-utils'
 
 export const indentationFormula = `calc(var(--left-pad) + var(--depth) * var(--step))`
 
@@ -83,13 +84,13 @@ const InputContainer = styled.div`
 type ISingleRowPropEditorProps<T> = {
   propConfig: propTypes.PropTypeConfig
   pointerToProp: Pointer<T>
-  editingTools: ReturnType<typeof useEditingToolsForSimplePropInDetailsPanel>
+  editingToolsD: IDerivation<EditingToolsForSimplePropInDetailsPanel<T>>
 }
 
 export function SingleRowPropEditor<T>({
   propConfig,
   pointerToProp,
-  editingTools,
+  editingToolsD,
   children,
 }: React.PropsWithChildren<ISingleRowPropEditorProps<T>>): React.ReactElement<
   any,
@@ -101,14 +102,18 @@ export function SingleRowPropEditor<T>({
     useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useContextMenu(propNameContainer, {
-    menuItems: editingTools.contextMenuItems,
+    menuItems: () => editingToolsD.getValue().contextMenuItems,
   })
+
+  const coltrolsElt = useReactPrism(
+    () => editingToolsD.getValue().controlIndicators,
+  )
 
   return (
     <Container>
       {contextMenu}
       <Left>
-        <ControlsContainer>{editingTools.controlIndicators}</ControlsContainer>
+        <ControlsContainer>{coltrolsElt}</ControlsContainer>
 
         <PropNameContainer
           ref={propNameContainerRef}

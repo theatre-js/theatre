@@ -28,7 +28,11 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import getStudio from '@theatre/studio/getStudio'
 import {generateSequenceMarkerId} from '@theatre/shared/utils/ids'
 import DopeSnap from './DopeSnap'
-import {deriver, reactPrism} from '@theatre/studio/utils/derive-utils'
+import {
+  deriver,
+  reactPrism,
+  useReactPrism,
+} from '@theatre/studio/utils/derive-utils'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -280,6 +284,12 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
     return {stateD, isVisibleD, posInClippedSpaceD, posInUnitSpaceD}
   }, [layoutP, sequence, thumbRef, popoverNode])
 
+  const tooltip = useReactPrism(() =>
+    sequence.positionFormatter.formatForPlayhead(
+      sequence.closestGridPosition(dvs.posInUnitSpaceD.getValue()),
+    ),
+  )
+
   return (
     <>
       {contextMenu}
@@ -303,13 +313,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
         >
           <RoomToClick room={8} />
           <Squinch />
-          <Tooltip>
-            {reactPrism(() =>
-              sequence.positionFormatter.formatForPlayhead(
-                sequence.closestGridPosition(dvs.posInUnitSpaceD.getValue()),
-              ),
-            )}
-          </Tooltip>
+          <Tooltip>{tooltip}</Tooltip>
         </ThumbD>
         <RodD
           {...DopeSnap.includePositionSnapAttrs(dvs.posInUnitSpaceD)}

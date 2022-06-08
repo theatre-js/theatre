@@ -1,13 +1,17 @@
 import type {PropTypeConfig_Number} from '@theatre/core/propTypes'
+import {useDerivation} from '@theatre/react'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import React, {useCallback} from 'react'
 import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
 
 function NumberPropEditor({
   propConfig,
-  editingTools,
-  value,
+  editingToolsD,
+  valueD,
 }: ISimplePropEditorReactProps<PropTypeConfig_Number>) {
+  const value = useDerivation(valueD)
+  const editingTools = useDerivation(editingToolsD)
+
   const nudge = useCallback(
     (params: {deltaX: number; deltaFraction: number; magnitude: number}) => {
       return propConfig.nudgeFn({...params, config: propConfig})

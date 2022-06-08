@@ -3,12 +3,13 @@ import type {ISimplePropEditorReactProps} from '@theatre/studio/propEditors/simp
 import styled from 'styled-components'
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import type {IEditingTools} from '@theatre/studio/propEditors/utils/IEditingTools'
+import type {IDerivation} from '@theatre/dataverse'
 
 export type ISingleKeyframeSimplePropEditorProps<
   TPropTypeConfig extends PropTypeConfig_AllSimples,
 > = {
   propConfig: TPropTypeConfig
-  editingTools: IEditingTools<TPropTypeConfig['valueType']>
+  editingToolsD: IDerivation<IEditingTools<TPropTypeConfig['valueType']>>
   keyframeValue: TPropTypeConfig['valueType']
   SimpleEditorComponent: React.VFC<ISimplePropEditorReactProps<TPropTypeConfig>>
 }
@@ -27,16 +28,16 @@ function SingleKeyframeSimplePropEditor<
   TPropTypeConfig extends PropTypeConfig_AllSimples,
 >({
   propConfig,
-  editingTools,
+  editingToolsD,
   keyframeValue: value,
   SimpleEditorComponent: EditorComponent,
 }: ISingleKeyframeSimplePropEditorProps<TPropTypeConfig>) {
   return (
     <SingleKeyframeSimplePropEditorContainer>
       <EditorComponent
-        editingTools={editingTools}
+        editingToolsD={editingToolsD}
         propConfig={propConfig}
-        value={value}
+        valueD={value}
       />
     </SingleKeyframeSimplePropEditorContainer>
   )

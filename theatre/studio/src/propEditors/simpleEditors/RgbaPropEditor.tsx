@@ -12,6 +12,10 @@ import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
 import {popoverBackgroundColor} from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
+import {deriver} from '@theatre/studio/utils/derive-utils'
+import {useDerivation} from '@theatre/react'
+import type {IDerivation} from '@theatre/dataverse'
+import type {IEditingTools} from '@theatre/studio/propEditors/utils/IEditingTools'
 
 const RowContainer = styled.div`
   display: flex;
@@ -24,21 +28,23 @@ interface ColorPreviewPuckProps {
   rgbaColor: Rgba
 }
 
-const ColorPreviewPuck = styled.div.attrs<ColorPreviewPuckProps>((props) => ({
-  style: {
-    // weirdly, rgba2hex is needed to ensure initial render was correct background?
-    // huge head scratcher.
-    background: rgba2hex(props.rgbaColor),
-  },
-}))<ColorPreviewPuckProps>`
+const ColorPreviewPuck = deriver(styled.div.attrs<ColorPreviewPuckProps>(
+  (props) => ({
+    style: {
+      // weirdly, rgba2hex is needed to ensure initial render was correct background?
+      // huge head scratcher.
+      background: rgba2hex(props.rgbaColor),
+    },
+  }),
+)<ColorPreviewPuckProps>`
   height: 18px;
   aspect-ratio: 1;
   border-radius: 99999px;
-`
+`)
 
-const HexInput = styled(BasicStringInput)`
+const HexInput = deriver(styled(BasicStringInput)`
   flex: 1;
-`
+`)
 
 const noop = () => {}
 
@@ -60,57 +66,36 @@ const RgbaPopover = styled.div`
 `
 
 function RgbaPropEditor({
-  editingTools,
-  value,
+  editingToolsD,
+  valueD,
 }: ISimplePropEditorReactProps<PropTypeConfig_Rgba>) {
   const containerRef = useRef<HTMLDivElement>(null!)
 
   const onChange = useCallback(
     (color: string) => {
       const rgba = decorateRgba(parseRgbaFromHex(color))
-      editingTools.permanentlySetValue(rgba)
+      editingToolsD.getValue().permanentlySetValue(rgba)
     },
-    [editingTools],
+    [editingToolsD],
   )
 
   const [popoverNode, openPopover] = usePopover(
     {debugName: 'RgbaPropEditor'},
-    () => (
-      <RgbaPopover>
-        <RgbaColorPicker
-          color={{
-            r: value.r,
-            g: value.g,
-            b: value.b,
-            a: value.a,
-          }}
-          temporarilySetValue={(color) => {
-            const rgba = decorateRgba(color)
-            editingTools.temporarilySetValue(rgba)
-          }}
-          permanentlySetValue={(color) => {
-            // console.log('perm')
-            const rgba = decorateRgba(color)
-            editingTools.permanentlySetValue(rgba)
-          }}
-          discardTemporaryValue={editingTools.discardTemporaryValue}
-        />
-      </RgbaPopover>
-    ),
+    () => <RgbaEditorPopoverD editingToolsD={editingToolsD} valueD={valueD} />,
   )
 
   return (
     <>
       <RowContainer>
         <ColorPreviewPuck
-          rgbaColor={value}
+          rgbaColor={valueD}
           ref={containerRef}
           onClick={(e) => {
             openPopover(e, containerRef.current)
           }}
         />
         <HexInput
-          value={rgba2hex(value)}
+          value={valueD.map(rgba2hex)}
           temporarilySetValue={noop}
           discardTemporaryValue={noop}
           permanentlySetValue={onChange}
@@ -119,6 +104,36 @@ function RgbaPropEditor({
       </RowContainer>
       {popoverNode}
     </>
+  )
+}
+
+function RgbaEditorPopoverD(props: {
+  valueD: IDerivation<Rgba>
+  editingToolsD: IDerivation<IEditingTools<Rgba>>
+}) {
+  const value = useDerivation(props.valueD)
+  const editingTools = useDerivation(props.editingToolsD)
+  return (
+    <RgbaPopover>
+      <RgbaColorPicker
+        color={{
+          r: value.r,
+          g: value.g,
+          b: value.b,
+          a: value.a,
+        }}
+        temporarilySetValue={(color) => {
+          const rgba = decorateRgba(color)
+          editingTools.temporarilySetValue(rgba)
+        }}
+        permanentlySetValue={(color) => {
+          // console.log('perm')
+          const rgba = decorateRgba(color)
+          editingTools.permanentlySetValue(rgba)
+        }}
+        discardTemporaryValue={editingTools.discardTemporaryValue}
+      />
+    </RgbaPopover>
   )
 }
 

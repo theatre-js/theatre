@@ -3,12 +3,16 @@ import React, {useCallback} from 'react'
 import BasicSwitch from '@theatre/studio/uiComponents/form/BasicSwitch'
 import BasicSelect from '@theatre/studio/uiComponents/form/BasicSelect'
 import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
+import {useDerivation} from '@theatre/react'
 
 function StringLiteralPropEditor<TLiteralOptions extends string>({
   propConfig,
-  editingTools,
-  value,
+  editingToolsD,
+  valueD,
 }: ISimplePropEditorReactProps<PropTypeConfig_StringLiteral<TLiteralOptions>>) {
+  const value = useDerivation(valueD)
+  const editingTools = useDerivation(editingToolsD)
+
   const onChange = useCallback(
     (val: TLiteralOptions) => {
       editingTools.permanentlySetValue(val)

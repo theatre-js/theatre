@@ -100,7 +100,7 @@ export type BasicNumberInputNudgeFn = (params: {
   magnitude: number
 }) => number
 
-const BasicNumberInput: React.FC<{
+const BasicNumberInput: React.VFC<{
   value: number
   temporarilySetValue: (v: number) => void
   discardTemporaryValue: () => void

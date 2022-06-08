@@ -2,13 +2,9 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getDeep from '@theatre/shared/utils/getDeep'
-import {usePrism} from '@theatre/react'
-import type {
-  $IntentionalAny,
-  SerializablePrimitive,
-} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
-import type {Pointer} from '@theatre/dataverse'
+import type {Pointer, IDerivation} from '@theatre/dataverse'
 import get from 'lodash-es/get'
 import React from 'react'
 import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
@@ -24,6 +20,7 @@ import pointerDeep from '@theatre/shared/utils/pointerDeep'
 import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
+import {reactPrism} from '@theatre/studio/utils/derive-utils'
 
 interface CommonStuff {
   beingScrubbed: boolean
@@ -47,12 +44,12 @@ interface HasSequences extends CommonStuff {
 
 type Stuff = AllStatic | HasSequences
 
-export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
+export function getEditingToolsForCompoundProp(
   pointerToProp: Pointer<{}>,
   obj: SheetObject,
   propConfig: PropTypeConfig_Compound<{}>,
-): Stuff {
-  return usePrism((): Stuff => {
+): IDerivation<Stuff> {
+  return prism(() => {
     // if the compound has no simple descendants, then there isn't much the user can do with it
     if (!compoundHasSimpleDescendants(propConfig)) {
       return {
@@ -184,117 +181,116 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
 
     if (hasOneOrMoreSequencedTracks) {
       const sequenceTrackId = possibleSequenceTrackIds
-      const nearbyKeyframeControls = prism.sub(
+      const nearbyKeyframeControlsD = prism.memo(
         'lcr',
-        (): NearbyKeyframesControls => {
-          const sequencePosition = val(
-            obj.sheet.getSequence().positionDerivation,
-          )
+        (): IDerivation<NearbyKeyframesControls> =>
+          prism(() => {
+            const sequencePosition = val(
+              obj.sheet.getSequence().positionDerivation,
+            )
 
-          /* 
-          2/10 perf concern: 
-          When displaying a hierarchy like {props: {transform: {position: {x, y, z}}}},
-          we'd be recalculating this variable for both `position` and `transform`. While
-          we _could_ be re-using the calculation of `transform` in `position`, I think
-          it's unlikely that this optimization would matter.
-          */
-          const nearbyKeyframesInEachTrack = listOfDescendantTrackIds
-            .map((trackId) => ({
-              trackId,
-              track: val(
-                obj.template.project.pointers.historic.sheetsById[
-                  obj.address.sheetId
-                ].sequence.tracksByObject[obj.address.objectKey].trackData[
-                  trackId
-                ],
-              ),
-            }))
-            .filter(({track}) => !!track)
-            .map((s) => ({
-              ...s,
-              nearbies: getNearbyKeyframesOfTrack(s.track, sequencePosition),
-            }))
+            // 2/10 perf concern:
+            // When displaying a hierarchy like {props: {transform: {position: {x, y, z}}}},
+            // we'd be recalculating this variable for both `position` and `transform`. While
+            // we _could_ be re-using the calculation of `transform` in `position`, I think
+            // it's unlikely that this optimization would matter.
+            const nearbyKeyframesInEachTrack = listOfDescendantTrackIds
+              .map((trackId) => ({
+                trackId,
+                track: val(
+                  obj.template.project.pointers.historic.sheetsById[
+                    obj.address.sheetId
+                  ].sequence.tracksByObject[obj.address.objectKey].trackData[
+                    trackId
+                  ],
+                ),
+              }))
+              .filter(({track}) => !!track)
+              .map((s) => ({
+                ...s,
+                nearbies: getNearbyKeyframesOfTrack(s.track, sequencePosition),
+              }))
 
-          const hasCur = nearbyKeyframesInEachTrack.find(
-            ({nearbies}) => !!nearbies.cur,
-          )
-          const allCur = nearbyKeyframesInEachTrack.every(
-            ({nearbies}) => !!nearbies.cur,
-          )
+            const hasCur = nearbyKeyframesInEachTrack.find(
+              ({nearbies}) => !!nearbies.cur,
+            )
+            const allCur = nearbyKeyframesInEachTrack.every(
+              ({nearbies}) => !!nearbies.cur,
+            )
 
-          const closestPrev = nearbyKeyframesInEachTrack.reduce<
-            undefined | number
-          >((acc, s) => {
-            if (s.nearbies.prev) {
-              if (acc === undefined) {
-                return s.nearbies.prev.position
-              } else {
-                return Math.max(s.nearbies.prev.position, acc)
-              }
-            } else {
-              return acc
-            }
-          }, undefined)
-
-          const closestNext = nearbyKeyframesInEachTrack.reduce<
-            undefined | number
-          >((acc, s) => {
-            if (s.nearbies.next) {
-              if (acc === undefined) {
-                return s.nearbies.next.position
-              } else {
-                return Math.min(s.nearbies.next.position, acc)
-              }
-            } else {
-              return acc
-            }
-          }, undefined)
-
-          return {
-            cur: {
-              type: hasCur ? 'on' : 'off',
-              toggle: () => {
-                if (allCur) {
-                  getStudio().transaction((api) => {
-                    api.unset(pointerToProp)
-                  })
-                } else if (hasCur) {
-                  getStudio().transaction((api) => {
-                    api.set(pointerToProp, val(pointerToProp))
-                  })
+            const closestPrev = nearbyKeyframesInEachTrack.reduce<
+              undefined | number
+            >((acc, s) => {
+              if (s.nearbies.prev) {
+                if (acc === undefined) {
+                  return s.nearbies.prev.position
                 } else {
-                  getStudio().transaction((api) => {
-                    api.set(pointerToProp, val(pointerToProp))
-                  })
+                  return Math.max(s.nearbies.prev.position, acc)
                 }
+              } else {
+                return acc
+              }
+            }, undefined)
+
+            const closestNext = nearbyKeyframesInEachTrack.reduce<
+              undefined | number
+            >((acc, s) => {
+              if (s.nearbies.next) {
+                if (acc === undefined) {
+                  return s.nearbies.next.position
+                } else {
+                  return Math.min(s.nearbies.next.position, acc)
+                }
+              } else {
+                return acc
+              }
+            }, undefined)
+
+            return {
+              cur: {
+                type: hasCur ? 'on' : 'off',
+                toggle: () => {
+                  if (allCur) {
+                    getStudio().transaction((api) => {
+                      api.unset(pointerToProp)
+                    })
+                  } else if (hasCur) {
+                    getStudio().transaction((api) => {
+                      api.set(pointerToProp, val(pointerToProp))
+                    })
+                  } else {
+                    getStudio().transaction((api) => {
+                      api.set(pointerToProp, val(pointerToProp))
+                    })
+                  }
+                },
               },
-            },
-            prev:
-              closestPrev !== undefined
-                ? {
-                    position: closestPrev,
-                    jump: () => {
-                      obj.sheet.getSequence().position = closestPrev
-                    },
-                  }
-                : undefined,
-            next:
-              closestNext !== undefined
-                ? {
-                    position: closestNext,
-                    jump: () => {
-                      obj.sheet.getSequence().position = closestNext
-                    },
-                  }
-                : undefined,
-          }
-        },
+              prev:
+                closestPrev !== undefined
+                  ? {
+                      position: closestPrev,
+                      jump: () => {
+                        obj.sheet.getSequence().position = closestPrev
+                      },
+                    }
+                  : undefined,
+              next:
+                closestNext !== undefined
+                  ? {
+                      position: closestNext,
+                      jump: () => {
+                        obj.sheet.getSequence().position = closestNext
+                      },
+                    }
+                  : undefined,
+            }
+          }),
         [sequenceTrackId],
       )
 
-      const nextPrevKeyframeCursors = (
-        <NextPrevKeyframeCursors {...nearbyKeyframeControls} />
-      )
+      const nextPrevKeyframeCursors = reactPrism(() => (
+        <NextPrevKeyframeCursors {...nearbyKeyframeControlsD.getValue()} />
+      ))
 
       const ret: HasSequences = {
         ...common,
@@ -312,5 +308,5 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
         ),
       }
     }
-  }, [])
+  })
 }

@@ -8,7 +8,7 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import {val} from '@theatre/dataverse'
+import {Box, val} from '@theatre/dataverse'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
@@ -163,12 +163,21 @@ function useSingleKeyframeInlineEditorPopover(props: ISingleKeyframeDotProps) {
   const editingTools = useEditingToolsForKeyframeEditorPopover(props)
   const label = props.leaf.propConf.label ?? last(props.leaf.pathToProp)
 
+  const editingToolsD = useMemo(
+    () => new Box(editingTools).derivation,
+    [editingTools],
+  )
+  const valueD = useMemo(
+    () => new Box(props.keyframe.value).derivation,
+    [props.keyframe.value],
+  )
+
   return usePopover({debugName: 'useKeyframeInlineEditorPopover'}, () => (
     <BasicPopover showPopoverEdgeTriangle>
       <DeterminePropEditorForSingleKeyframe
         propConfig={props.leaf.propConf}
-        editingTools={editingTools}
-        keyframeValue={props.keyframe.value}
+        editingToolsD={editingToolsD}
+        keyframeValueD={valueD}
         displayLabel={label != null ? String(label) : undefined}
       />
     </BasicPopover>

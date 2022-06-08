@@ -51,7 +51,7 @@ type IState = IState_NoFocus | IState_EditingViaKeyboard
 
 const alwaysValid = (v: string) => true
 
-const BasicStringInput: React.FC<{
+const BasicStringInput: React.VFC<{
   value: string
   temporarilySetValue: (v: string) => void
   discardTemporaryValue: () => void

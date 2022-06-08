@@ -11,13 +11,14 @@ import type {ISimplePropEditorReactProps} from '@theatre/studio/propEditors/simp
 import {simplePropEditorByPropType} from '@theatre/studio/propEditors/simpleEditors/simplePropEditorByPropType'
 
 import SingleKeyframeSimplePropEditor from './DeterminePropEditorForSingleKeyframe/SingleKeyframeSimplePropEditor'
+import type {IDerivation} from '@theatre/dataverse'
 
 type IDeterminePropEditorForSingleKeyframeProps<
   K extends PropTypeConfig['type'],
 > = {
-  editingTools: IEditingTools<PropConfigForType<K>['valueType']>
+  editingToolsD: IDerivation<IEditingTools<PropConfigForType<K>['valueType']>>
   propConfig: PropConfigForType<K>
-  keyframeValue: PropConfigForType<K>['valueType']
+  keyframeValueD: IDerivation<PropConfigForType<K>['valueType']>
   displayLabel?: string
 }
 
@@ -77,8 +78,8 @@ export function DeterminePropEditorForSingleKeyframe(
             >
           }
           propConfig={propConfig}
-          editingTools={p.editingTools}
-          keyframeValue={p.keyframeValue}
+          editingToolsD={p.editingToolsD}
+          keyframeValue={p.keyframeValueD}
         />
       </SingleKeyframePropEditorContainer>
     )

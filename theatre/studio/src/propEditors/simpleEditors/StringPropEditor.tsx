@@ -2,11 +2,14 @@ import React from 'react'
 import type {PropTypeConfig_String} from '@theatre/core/propTypes'
 import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
 import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
+import {useDerivation} from '@theatre/react'
 
 function StringPropEditor({
-  editingTools,
-  value,
+  editingToolsD,
+  valueD,
 }: ISimplePropEditorReactProps<PropTypeConfig_String>) {
+  const value = useDerivation(valueD)
+  const editingTools = useDerivation(editingToolsD)
   return (
     <BasicStringInput
       value={value}

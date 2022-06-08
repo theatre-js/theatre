@@ -1,13 +1,12 @@
 import get from 'lodash-es/get'
 import React from 'react'
-import type {Pointer} from '@theatre/dataverse'
+import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import type Scrub from '@theatre/studio/Scrub'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getDeep from '@theatre/shared/utils/getDeep'
-import {usePrism} from '@theatre/react'
 import type {SerializablePrimitive as SerializablePrimitive} from '@theatre/shared/utils/types'
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import {isPropConfSequencable} from '@theatre/shared/propTypes/utils'
@@ -17,10 +16,11 @@ import type {NearbyKeyframes} from './getNearbyKeyframesOfTrack'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
+import {reactPrism} from '@theatre/studio/utils/derive-utils'
 
 interface EditingToolsCommon<T> {
-  value: T
-  beingScrubbed: boolean
+  value: IDerivation<T>
+  beingScrubbed: IDerivation<boolean>
   contextMenuItems: Array<IContextMenuItem>
   /** e.g. `< • >` or `<   >` for {@link EditingToolsSequenced} */
   controlIndicators: React.ReactElement
@@ -42,12 +42,12 @@ interface EditingToolsStatic<T> extends EditingToolsCommon<T> {
 
 interface EditingToolsSequenced<T> extends EditingToolsCommon<T> {
   type: 'Sequenced'
-  shade: Shade
+  shade: IDerivation<Shade>
   /** based on the position of the playhead */
-  nearbyKeyframes: NearbyKeyframes
+  nearbyKeyframes: IDerivation<NearbyKeyframes>
 }
 
-type EditingTools<T> =
+export type EditingToolsForSimplePropInDetailsPanel<T> =
   | EditingToolsDefault<T>
   | EditingToolsStatic<T>
   | EditingToolsSequenced<T>
@@ -60,17 +60,15 @@ type EditingTools<T> =
  * for the UI to be able to recognize. (e.g. to highlight the
  * item in r3f as you change its scale).
  */
-export function useEditingToolsForSimplePropInDetailsPanel<
+export function getEditingToolsForSimplePropInDetailsPanel<
   T extends SerializablePrimitive,
 >(
   pointerToProp: Pointer<T>,
   obj: SheetObject,
   propConfig: PropTypeConfig_AllSimples,
-): EditingTools<T> {
-  return usePrism(() => {
+): IDerivation<EditingToolsForSimplePropInDetailsPanel<T>> {
+  return prism(() => {
     const pathToProp = getPointerParts(pointerToProp).path
-
-    const final = obj.getValueByPointer(pointerToProp) as T
 
     const editPropValue = prism.memo(
       'editPropValue',
@@ -110,23 +108,26 @@ export function useEditingToolsForSimplePropInDetailsPanel<
       [],
     )
 
-    const beingScrubbed =
-      val(
-        get(
-          getStudio()!.atomP.ephemeral.projects.stateByProjectId[
-            obj.address.projectId
-          ].stateBySheetId[obj.address.sheetId].stateByObjectKey[
-            obj.address.objectKey
-          ].valuesBeingScrubbed,
-          getPointerParts(pointerToProp).path,
-        ),
-      ) === true
+    const beingScrubbed = prism(() => {
+      return (
+        val(
+          get(
+            getStudio()!.atomP.ephemeral.projects.stateByProjectId[
+              obj.address.projectId
+            ].stateBySheetId[obj.address.sheetId].stateByObjectKey[
+              obj.address.objectKey
+            ].valuesBeingScrubbed,
+            getPointerParts(pointerToProp).path,
+          ),
+        ) === true
+      )
+    })
 
     const contextMenuItems: IContextMenuItem[] = []
 
     const common: EditingToolsCommon<T> = {
       ...editPropValue,
-      value: final,
+      value: prism(() => obj.getValueByPointer(pointerToProp) as T),
       beingScrubbed,
       contextMenuItems,
       controlIndicators: <></>,
@@ -159,84 +160,96 @@ export function useEditingToolsForSimplePropInDetailsPanel<
         })
 
         const sequenceTrackId = possibleSequenceTrackId as SequenceTrackId
-        const nearbyKeyframes = prism.sub(
-          'lcr',
-          (): NearbyKeyframes => {
-            const track = val(
-              obj.template.project.pointers.historic.sheetsById[
-                obj.address.sheetId
-              ].sequence.tracksByObject[obj.address.objectKey].trackData[
-                sequenceTrackId
-              ],
+        const nearbyKeyframesD = prism(() =>
+          prism
+            .memo(
+              'lcr',
+              (): IDerivation<NearbyKeyframes> =>
+                prism(() => {
+                  const track = val(
+                    obj.template.project.pointers.historic.sheetsById[
+                      obj.address.sheetId
+                    ].sequence.tracksByObject[obj.address.objectKey].trackData[
+                      sequenceTrackId
+                    ],
+                  )
+                  const sequencePosition = val(
+                    obj.sheet.getSequence().positionDerivation,
+                  )
+                  return getNearbyKeyframesOfTrack(track, sequencePosition)
+                }),
+              [sequenceTrackId],
             )
-            const sequencePosition = val(
-              obj.sheet.getSequence().positionDerivation,
-            )
-            return getNearbyKeyframesOfTrack(track, sequencePosition)
-          },
-          [sequenceTrackId],
+            .getValue(),
         )
 
-        let shade: Shade
-
-        if (common.beingScrubbed) {
-          shade = 'Sequenced_OnKeyframe_BeingScrubbed'
-        } else {
-          if (nearbyKeyframes.cur) {
-            shade = 'Sequenced_OnKeyframe'
-          } else if (nearbyKeyframes.prev?.connectedRight === true) {
-            shade = 'Sequenced_BeingInterpolated'
+        const shadeD = prism((): Shade => {
+          if (common.beingScrubbed) {
+            return 'Sequenced_OnKeyframe_BeingScrubbed'
           } else {
-            shade = 'Sequened_NotBeingInterpolated'
+            const nearbyKeyframes = nearbyKeyframesD.getValue()
+            if (nearbyKeyframes.cur) {
+              return 'Sequenced_OnKeyframe'
+            } else if (nearbyKeyframes.prev?.connectedRight === true) {
+              return 'Sequenced_BeingInterpolated'
+            } else {
+              return 'Sequened_NotBeingInterpolated'
+            }
           }
-        }
+        })
 
-        const controls: NearbyKeyframesControls = {
-          cur: {
-            type: nearbyKeyframes.cur ? 'on' : 'off',
-            toggle: () => {
-              if (nearbyKeyframes.cur) {
-                getStudio()!.transaction((api) => {
-                  api.unset(pointerToProp)
-                })
-              } else {
-                getStudio()!.transaction((api) => {
-                  api.set(pointerToProp, common.value)
-                })
-              }
+        const controlsD = prism(() => {
+          const nearbyKeyframes = nearbyKeyframesD.getValue()
+
+          const controls: NearbyKeyframesControls = {
+            cur: {
+              type: nearbyKeyframes.cur ? 'on' : 'off',
+              toggle: () => {
+                if (nearbyKeyframes.cur) {
+                  getStudio()!.transaction((api) => {
+                    api.unset(pointerToProp)
+                  })
+                } else {
+                  getStudio()!.transaction((api) => {
+                    api.set(pointerToProp, common.value.getValue())
+                  })
+                }
+              },
             },
-          },
-          prev:
-            nearbyKeyframes.prev !== undefined
-              ? {
-                  position: nearbyKeyframes.prev.position,
-                  jump: () => {
-                    obj.sheet.getSequence().position =
-                      nearbyKeyframes.prev!.position
-                  },
-                }
-              : undefined,
-          next:
-            nearbyKeyframes.next !== undefined
-              ? {
-                  position: nearbyKeyframes.next.position,
-                  jump: () => {
-                    obj.sheet.getSequence().position =
-                      nearbyKeyframes.next!.position
-                  },
-                }
-              : undefined,
-        }
+            prev:
+              nearbyKeyframes.prev !== undefined
+                ? {
+                    position: nearbyKeyframes.prev.position,
+                    jump: () => {
+                      obj.sheet.getSequence().position =
+                        nearbyKeyframes.prev!.position
+                    },
+                  }
+                : undefined,
+            next:
+              nearbyKeyframes.next !== undefined
+                ? {
+                    position: nearbyKeyframes.next.position,
+                    jump: () => {
+                      obj.sheet.getSequence().position =
+                        nearbyKeyframes.next!.position
+                    },
+                  }
+                : undefined,
+          }
 
-        const nextPrevKeyframeCursors = (
-          <NextPrevKeyframeCursors {...controls} />
-        )
+          return controls
+        })
+
+        const nextPrevKeyframeCursors = reactPrism(() => (
+          <NextPrevKeyframeCursors {...controlsD.getValue()} />
+        ))
 
         const ret: EditingToolsSequenced<T> = {
           ...common,
           type: 'Sequenced',
-          shade,
-          nearbyKeyframes,
+          shade: shadeD,
+          nearbyKeyframes: nearbyKeyframesD,
           controlIndicators: nextPrevKeyframeCursors,
         }
 
@@ -293,7 +306,7 @@ export function useEditingToolsForSimplePropInDetailsPanel<
     }
 
     return ret
-  }, [])
+  })
 }
 
 type Shade =
