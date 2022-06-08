@@ -13,5 +13,15 @@ describe('tightJsonStringify', () => {
     expect(tightJsonStringify('Already a string')).toMatchInlineSnapshot(
       `"\\"Already a string\\""`,
     )
+    expect(tightJsonStringify({a: 1, b: {c: [1, 2, {d: 4}], e: 8}}))
+      .toMatchInlineSnapshot(`
+      "{ \\"a\\": 1,
+        \\"b\\": {
+          \\"c\\": [
+            1,
+            2,
+            { \\"d\\": 4 } ],
+          \\"e\\": 8 } }"
+    `)
   })
 })
