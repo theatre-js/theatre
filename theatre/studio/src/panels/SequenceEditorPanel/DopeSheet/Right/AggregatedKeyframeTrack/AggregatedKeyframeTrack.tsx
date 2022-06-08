@@ -166,7 +166,7 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
         <KeyframeSnapTarget
           layoutP={layoutP}
           leaf={viewModel}
-          position={posKfs[i].position}
+          position={props.position}
         />
       )}
       <AggregateKeyframeEditor {...props.editorProps} />
