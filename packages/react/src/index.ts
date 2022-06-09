@@ -179,7 +179,7 @@ function queueIfNeeded() {
  *
  * I'm happy with how little bookkeeping we ended up doing here.
  */
-function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
+export function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
   const _forceUpdate = useForceUpdate(debugLabel)
 
   const refs = useRef<{queueItem: QueueItem; unmounted: boolean}>(

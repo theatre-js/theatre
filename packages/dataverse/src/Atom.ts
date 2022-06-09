@@ -201,7 +201,9 @@ export default class Atom<State extends {}>
 
   private _checkUpdates(scope: Scope, oldState: unknown, newState: unknown) {
     if (oldState === newState) return
-    scope.identityChangeListeners.forEach((cb) => cb(newState))
+    for (const cb of scope.identityChangeListeners) {
+      cb(newState)
+    }
 
     if (scope.children.size === 0) return
 
@@ -212,11 +214,11 @@ export default class Atom<State extends {}>
     if (oldValueType === ValueTypes.Other && oldValueType === newValueType)
       return
 
-    scope.children.forEach((childScope, childKey) => {
+    for (const [childKey, childScope] of scope.children) {
       const oldChildVal = getKeyOfValue(oldState, childKey, oldValueType)
       const newChildVal = getKeyOfValue(newState, childKey, newValueType)
       this._checkUpdates(childScope, oldChildVal, newChildVal)
-    })
+    }
   }
 
   private _getOrCreateScopeForPath(path: (string | number)[]): Scope {

@@ -20,17 +20,14 @@ export default class Emitter<V> {
     this._lastTapperId = 0
     this._tappers = new Map()
     this.tappable = new Tappable({
-      tapToSource: (cb: Tapper<V>) => {
-        return this._tap(cb)
-      },
+      tapToSource: (cb: Tapper<V>) => this._tap(cb),
     })
   }
 
   _tap(cb: Tapper<V>): Untap {
     const tapperId = this._lastTapperId++
     this._tappers.set(tapperId, cb)
-    this._onNumberOfTappersChangeListener &&
-      this._onNumberOfTappersChangeListener(this._tappers.size)
+    this._onNumberOfTappersChangeListener?.(this._tappers.size)
     return () => {
       this._removeTapperById(tapperId)
     }
@@ -41,8 +38,7 @@ export default class Emitter<V> {
     this._tappers.delete(id)
     const newSize = this._tappers.size
     if (oldSize !== newSize) {
-      this._onNumberOfTappersChangeListener &&
-        this._onNumberOfTappersChangeListener(this._tappers.size)
+      this._onNumberOfTappersChangeListener?.(newSize)
     }
   }
 
@@ -52,9 +48,9 @@ export default class Emitter<V> {
    * @param payload - The value to be emitted.
    */
   emit(payload: V) {
-    this._tappers.forEach((cb) => {
+    for (const cb of this._tappers.values()) {
       cb(payload)
-    })
+    }
   }
 
   /**

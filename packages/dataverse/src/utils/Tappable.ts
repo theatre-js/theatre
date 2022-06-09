@@ -53,9 +53,9 @@ export default class Tappable<V> {
   }
 
   private _cb: any = (arg: any): void => {
-    this._tappers.forEach((cb) => {
+    for (const cb of this._tappers.values()) {
       cb(arg)
-    })
+    }
   }
 
   /**

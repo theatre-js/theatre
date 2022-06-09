@@ -121,9 +121,10 @@ export default class Ticker {
   tick(t: number = performance.now()) {
     this._ticking = true
     this._timeAtCurrentTick = t
-    this._scheduledForNextTick.forEach((v) =>
-      this._scheduledForThisOrNextTick.add(v),
-    )
+    for (const v of this._scheduledForNextTick) {
+      this._scheduledForThisOrNextTick.add(v)
+    }
+
     this._scheduledForNextTick.clear()
     this._tick(0)
     this._ticking = false
@@ -142,9 +143,9 @@ export default class Ticker {
 
     const oldSet = this._scheduledForThisOrNextTick
     this._scheduledForThisOrNextTick = new Set()
-    oldSet.forEach((fn) => {
+    for (const fn of oldSet) {
       fn(time)
-    })
+    }
 
     if (this._scheduledForThisOrNextTick.size > 0) {
       return this._tick(iterationNumber + 1)
