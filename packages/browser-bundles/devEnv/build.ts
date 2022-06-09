@@ -4,6 +4,7 @@ import type {Plugin} from 'esbuild'
 
 const definedGlobals = {
   global: 'window',
+  'process.env.version': JSON.stringify(require('../package.json').version),
 }
 
 function createBundles(watch: boolean) {

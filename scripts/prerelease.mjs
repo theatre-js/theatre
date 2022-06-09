@@ -61,13 +61,17 @@ function getNewVersionName(packageName, commitHash) {
 }
 
 /**
- * Assigns the new versions to the packages
+ * Assigns the latest version names ({@link getNewVersionName}) to the packages' `package.json`s
  *
  * @param {{name: string, location: string}[]} workspacesListObjects - An Array of objects containing information about the workspaces
  * @param {string} latestCommitHash - Hash of the latest commit
  * @returns {Promise<Record<string, string>>} - A record of {[packageId]: assignedVersion}
  */
-async function assignVersions(workspacesListObjects, latestCommitHash) {
+async function writeVersionsToPackageJSONs(
+  workspacesListObjects,
+  latestCommitHash,
+) {
+  /** @type {Record<string, string>} */
   const assignedVersionByPackageName = {}
   for (const workspaceData of workspacesListObjects) {
     const pathToPackage = path.resolve(
@@ -130,6 +134,11 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
   const fakeMergeCommitHashLength = (await $`git log -1 --pretty=format:%h`)
     .stdout.length
 
+  if (!process.env.GITHUB_SHA)
+    throw new Error(
+      'expected `process.env.GITHUB_SHA` to be defined but it was not',
+    )
+
   const latestCommitHash = process.env.GITHUB_SHA.slice(
     0,
     fakeMergeCommitHashLength,
@@ -142,7 +151,7 @@ async function assignVersions(workspacesListObjects, latestCommitHash) {
     .filter(Boolean)
     .map((x) => JSON.parse(x))
 
-  const assignedVersionByPackageName = await assignVersions(
+  const assignedVersionByPackageName = await writeVersionsToPackageJSONs(
     workspacesListObjects,
     latestCommitHash,
   )

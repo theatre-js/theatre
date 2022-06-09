@@ -134,7 +134,7 @@ const packagesWhoseVersionsShouldBump = [
   const skipTypescriptEmit = argv['skip-ts'] === true
 
   console.log('Assigning versions')
-  await assignVersions(version)
+  await writeVersionsToPackageJSONs(version)
 
   console.log('Building all packages')
   await Promise.all(
@@ -163,7 +163,7 @@ const packagesWhoseVersionsShouldBump = [
 
   $.verbose = true
 
-  await assignVersions(version)
+  await writeVersionsToPackageJSONs(version)
 
   console.log('Committing/tagging')
 
@@ -188,7 +188,7 @@ const packagesWhoseVersionsShouldBump = [
 })()
 
 /** @param {string} monorepoVersion */
-async function assignVersions(monorepoVersion) {
+async function writeVersionsToPackageJSONs(monorepoVersion) {
   for (const packagePathRelativeFromRoot of packagesWhoseVersionsShouldBump) {
     const pathToPackage = path.resolve(
       __dirname,
