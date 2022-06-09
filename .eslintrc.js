@@ -73,6 +73,7 @@ module.exports = {
       rules: {
         'react/jsx-uses-react': 'error',
         'react/jsx-uses-vars': 'error',
+        'tsdoc/syntax': 'off',
       },
       parser: 'espree',
       parserOptions: {

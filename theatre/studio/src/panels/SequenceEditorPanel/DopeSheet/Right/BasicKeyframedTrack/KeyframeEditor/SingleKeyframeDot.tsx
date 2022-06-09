@@ -5,8 +5,8 @@ import last from 'lodash-es/last'
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
+import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {val} from '@theatre/dataverse'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
@@ -19,47 +19,69 @@ import {useTempTransactionEditingTools} from './useTempTransactionEditingTools'
 import {DeterminePropEditorForSingleKeyframe} from './DeterminePropEditorForSingleKeyframe'
 import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
-import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import type {ILogger} from '@theatre/shared/logger'
 import {copyableKeyframesFromSelection} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import {
+  collectKeyframeSnapPositions,
+  snapToNone,
+  snapToSome,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 export const DOT_SIZE_PX = 6
-const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 5
+const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 2
 
 const dotTheme = {
   normalColor: '#40AAA4',
   selectedColor: '#F2C95C',
+  inlineEditorOpenColor: '#FCF3DC',
+  selectedAndInlineEditorOpenColor: '#CBEBEA',
 }
 
+const selectBacgroundForDiamond = ({
+  isSelected,
+  isInlineEditorPopoverOpen,
+}: IDiamond) => {
+  if (isSelected && isInlineEditorPopoverOpen) {
+    return dotTheme.inlineEditorOpenColor
+  } else if (isSelected) {
+    return dotTheme.selectedColor
+  } else if (isInlineEditorPopoverOpen) {
+    return dotTheme.selectedAndInlineEditorOpenColor
+  } else {
+    return dotTheme.normalColor
+  }
+}
+
+type IDiamond = {isSelected: boolean; isInlineEditorPopoverOpen: boolean}
+
 /** The keyframe diamond ◆ */
-const Diamond = styled.div<{isSelected: boolean}>`
+const Diamond = styled.div<IDiamond>`
   position: absolute;
   ${absoluteDims(DOT_SIZE_PX)}
 
-  background: ${(props) =>
-    props.isSelected ? dotTheme.selectedColor : dotTheme.normalColor};
+  background: ${(props) => selectBacgroundForDiamond(props)};
   transform: rotateZ(45deg);
 
   z-index: 1;
   pointer-events: none;
 `
 
-const HitZone = styled.div`
+const HitZone = styled.div<{isInlineEditorPopoverOpen: boolean}>`
   z-index: 1;
   cursor: ew-resize;
 
-  ${DopeSnapHitZoneUI.CSS}
+  position: absolute;
+  ${absoluteDims(12)};
+  ${pointerEventsAutoInNormalMode};
 
-  #pointer-root.draggingPositionInSequenceEditor & {
-    ${DopeSnapHitZoneUI.CSS_WHEN_SOMETHING_DRAGGING}
+  & + ${Diamond} {
+    ${(props) =>
+      props.isInlineEditorPopoverOpen ? absoluteDims(DOT_HOVER_SIZE_PX) : ''}
   }
 
-  &:hover
-    + ${Diamond},
-    // notice , "or" in CSS
-    &.${DopeSnapHitZoneUI.BEING_DRAGGED_CLASS}
-    + ${Diamond} {
+  &:hover + ${Diamond} {
     ${absoluteDims(DOT_HOVER_SIZE_PX)}
   }
 `
@@ -72,7 +94,7 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
-  const [inlineEditorPopover, openEditor] =
+  const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
     useSingleKeyframeInlineEditorPopover(props)
   const [isDragging] = useDragForSingleKeyframeDot(node, props, {
     onClickFromDrag(dragStartEvent) {
@@ -84,12 +106,12 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
     <>
       <HitZone
         ref={ref}
-        {...DopeSnapHitZoneUI.reactProps({
-          isDragging,
-          position: props.keyframe.position,
-        })}
+        isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
       />
-      <Diamond isSelected={!!props.selection} />
+      <Diamond
+        isSelected={!!props.selection}
+        isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+      />
       {inlineEditorPopover}
       {contextMenu}
     </>
@@ -210,6 +232,37 @@ function useDragForSingleKeyframeDot(
       debugName: 'KeyframeDot/useDragKeyframe',
       onDragStart(event) {
         const props = propsRef.current
+
+        const tracksByObject = val(
+          getStudio()!.atomP.historic.coreByProject[
+            props.leaf.sheetObject.address.projectId
+          ].sheetsById[props.leaf.sheetObject.address.sheetId].sequence
+            .tracksByObject,
+        )!
+
+        const snapPositions = collectKeyframeSnapPositions(
+          tracksByObject,
+          // Calculate all the valid snap positions in the sequence editor,
+          // excluding this keyframe, and any selection it is part of.
+          function shouldIncludeKeyfram(keyframe, {trackId, objectKey}) {
+            return (
+              // we exclude this keyframe from being a snap target
+              keyframe.id !== props.keyframe.id &&
+              !(
+                // if the current dragged keyframe is in the selection,
+                (
+                  props.selection &&
+                  // then we exclude it and all other keyframes in the selection from being snap targets
+                  props.selection.byObjectKey[objectKey]?.byTrackId[trackId]
+                    ?.byKeyframeId[keyframe.id]
+                )
+              )
+            )
+          },
+        )
+
+        snapToSome(snapPositions)
+
         if (props.selection) {
           const {selection, leaf} = props
           const {sheetObject} = leaf
@@ -226,7 +279,16 @@ function useDragForSingleKeyframeDot(
           // in the future, we may want to show an multi-editor, like in the
           // single tween editor, so that selected keyframes' values can be changed
           // together
-          return handlers && {...handlers, onClick: options.onClickFromDrag}
+          return (
+            handlers && {
+              ...handlers,
+              onClick: options.onClickFromDrag,
+              onDragEnd: (...args) => {
+                handlers.onDragEnd?.(...args)
+                snapToNone()
+              },
+            }
+          )
         }
 
         const propsAtStartOfDrag = props
@@ -272,6 +334,8 @@ function useDragForSingleKeyframeDot(
             } else {
               tempTransaction?.discard()
             }
+
+            snapToNone()
           },
           onClick(ev) {
             options.onClickFromDrag(ev)

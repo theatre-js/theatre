@@ -2,7 +2,9 @@ import path = require('path')
 import {build} from 'esbuild'
 
 const definedGlobals = {
-  'process.env.version': JSON.stringify(require('../package.json').version),
+  'process.env.THEATRE_VERSION': JSON.stringify(
+    require('../package.json').version,
+  ),
   'process.env.NODE_ENV': JSON.stringify('production'),
 }
 

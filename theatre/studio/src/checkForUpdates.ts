@@ -26,7 +26,7 @@ export default async function checkForUpdates() {
     try {
       const response = await fetch(
         new Request(
-          `https://updates.theatrejs.com/updates/${process.env.version}`,
+          `https://updates.theatrejs.com/updates/${process.env.THEATRE_VERSION}`,
         ),
       )
       if (response.ok) {

@@ -5,12 +5,7 @@
     "checkJs": true,
     "noEmit": true,
     "resolveJsonModule": true,
-    "types": [
-      "zx"
-    ]
+    "types": ["zx", "node"]
   },
-  "include": [
-    "*.mjs",
-    "**/*.mjs",
-  ]
+  "include": ["*.mjs", "**/*.mjs"]
 }
