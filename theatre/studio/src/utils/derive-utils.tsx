@@ -4,6 +4,7 @@ import {useDerivation} from '@theatre/react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import React, {useMemo, useRef} from 'react'
 import {invariant} from './invariant'
+import {emptyArray} from '@theatre/shared/utils'
 
 type DeriveAll<T> = IDerivation<
   {
@@ -37,9 +38,9 @@ function deriveAllD<T extends Record<string, $<any>> | $<any>[]>(
 
 export function useReactPrism(
   fn: () => React.ReactNode,
-  deps?: any[],
+  deps: readonly any[] = emptyArray,
 ): React.ReactElement {
-  const derivation = useMemo(() => prism(fn), deps ?? [])
+  const derivation = useMemo(() => prism(fn), deps)
   return <DeriveElement der={derivation} />
 }
 
