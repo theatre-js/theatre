@@ -30,8 +30,10 @@ function registerCoreBundle() {
   if (typeof window == 'undefined') return
 
   // another core bundle may already be registered
-  // @ts-ignore ignore
-  const existingBundle = window[globalVariableNames.coreBundle]
+
+  const existingBundle: CoreBundle | undefined =
+    // @ts-ignore ignore
+    window[globalVariableNames.coreBundle]
 
   if (typeof existingBundle !== 'undefined') {
     if (

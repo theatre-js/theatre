@@ -2,7 +2,7 @@ import path from 'path'
 import {build} from 'esbuild'
 
 export const definedGlobals = {
-  'process.env.version': JSON.stringify(
+  'process.env.THEATRE_VERSION': JSON.stringify(
     require('../studio/package.json').version,
   ),
   // json-touch-patch (an unmaintained package) reads this value. We patch it to just 'Set', becauce

@@ -109,7 +109,7 @@ const packagesToPublish = [
  * @param {string} hash - Hash of the latest commit (or any other string)
  * @returns {Promise<() => void>} - An async function that restores the package.json files to their original version
  */
-async function assignVersions(workspacesListObjects, hash) {
+async function writeVersionsToPackageJSONs(workspacesListObjects, hash) {
   /**
    * An array of functions each of which restores a certain package.json to its original state
    * @type {Array<() => void>}
@@ -181,7 +181,10 @@ async function releaseToVerdaccio() {
     .filter(Boolean)
     .map((x) => JSON.parse(x))
 
-  const restorePackages = await assignVersions(workspacesListObjects, version)
+  const restorePackages = await writeVersionsToPackageJSONs(
+    workspacesListObjects,
+    version,
+  )
 
   process.on('SIGINT', async function cleanup(a) {
     restorePackages()

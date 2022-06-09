@@ -104,7 +104,7 @@ const UpdateDot = styled.div`
   border-radius: 50%;
 `
 
-const version: string = process.env.version ?? '0.4.0'
+const version: string = process.env.THEATRE_VERSION ?? '0.4.0'
 
 const untaggedVersion: string = version.match(/^[^\-]+/)![0]
 
