@@ -18,7 +18,7 @@ export default class CoreBundle {
   }
 
   get version() {
-    return process.env.version
+    return process.env.THEATRE_VERSION
   }
 
   getBitsForStudio(studio: Studio, callback: (bits: CoreBits) => void) {
