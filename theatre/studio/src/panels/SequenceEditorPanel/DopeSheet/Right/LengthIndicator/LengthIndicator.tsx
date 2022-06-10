@@ -138,17 +138,19 @@ const RENDER_OUT_OF_VIEW_X = -10000
 const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
   const [isDragging] = useDragBulge(node, {layoutP})
-  const {
-    node: popoverNode,
-    toggle: togglePopover,
-    close: closePopover,
-  } = usePopover({debugName: 'LengthIndicator'}, () => {
-    return (
-      <BasicPopover>
-        <LengthEditorPopover layoutP={layoutP} onRequestClose={closePopover} />
-      </BasicPopover>
-    )
-  })
+  const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
+    {debugName: 'LengthIndicator'},
+    () => {
+      return (
+        <BasicPopover>
+          <LengthEditorPopover
+            layoutP={layoutP}
+            onRequestClose={closePopover}
+          />
+        </BasicPopover>
+      )
+    },
+  )
 
   return usePrism(() => {
     const sheet = val(layoutP.sheet)
@@ -189,7 +191,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
               ref={nodeRef}
               // title="Length of the sequence. Drag or click to change."
               onClick={(e) => {
-                togglePopover(e, node!)
+                openPopover(e, node!)
               }}
               {...includeLockFrameStampAttrs('hide')}
             >

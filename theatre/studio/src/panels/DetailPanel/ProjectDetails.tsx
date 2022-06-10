@@ -55,7 +55,7 @@ const ProjectDetails: React.FC<{
     }, 40000)
   }, [])
 
-  const {node: tooltip, open: openExportTooltip} = usePopover(
+  const [tooltip, openExportTooltip] = usePopover(
     {debugName: 'ProjectDetails', pointerDistanceThreshold: 50},
     () => (
       <ExportTooltip>

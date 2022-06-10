@@ -41,11 +41,7 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
 
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
 
-  const {
-    node: popoverNode,
-    toggle: togglePopover,
-    close: closePopover,
-  } = usePopover(
+  const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     () => {
       const rightDims = val(props.layoutP.rightDims)
       return {
@@ -87,7 +83,7 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
         connectorLengthInUnitSpace={connectorLengthInUnitSpace}
         {...themeValues}
         openPopover={(e) => {
-          if (node) togglePopover(e, node)
+          if (node) openPopover(e, node)
         }}
       >
         {popoverNode}
