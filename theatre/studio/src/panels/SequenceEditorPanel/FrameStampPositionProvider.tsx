@@ -130,28 +130,31 @@ export const useLockFrameStampPositionRef = () => {
 
   useLayoutEffect(() => {
     return () => {
-      lockRef.current!.unlock()
+      lockRef.current?.unlock()
     }
-  }, [val])
+  }, [])
 
   return useMemo(() => {
-    let prevShouldLock: false | {pos: number} = false
+    let prevLock: {shouldLock: boolean; pos: number} | undefined = undefined
     return (shouldLock: boolean, posValue: number) => {
-      if (shouldLock === prevShouldLock) return
-      if (shouldLock) {
-        if (!prevShouldLock) {
+      // Do if shouldLock changed
+      if (prevLock?.shouldLock !== shouldLock) {
+        if (shouldLock) {
           lockRef.current = getLock()
-          lockRef.current.set(posValue)
-          prevShouldLock = {pos: posValue}
-        } else if (prevShouldLock.pos !== posValue) {
-          lockRef.current?.set(posValue)
         } else {
-          // all the same params
+          lockRef.current?.unlock()
         }
-      } else {
-        lockRef.current!.unlock()
-        prevShouldLock = false
       }
+
+      // Do if position changed
+      if (prevLock?.pos !== posValue) {
+        if (shouldLock) {
+          lockRef.current?.set(posValue)
+        }
+      }
+
+      // Set arguments we are going to diff against next time
+      prevLock = {shouldLock, pos: posValue}
     }
   }, [getLock])
 }
