@@ -81,16 +81,18 @@ const Box: React.FC<{
 
   const isSelected = selection.includes(obj)
 
-  const [state, setState] = useState<State>(obj.value)
+  const boxRef = useRef<HTMLDivElement>(null!)
+  const preRef = useRef<HTMLPreElement>(null!)
+  const colorRef = useRef<HTMLDivElement>(null!)
 
   useLayoutEffect(() => {
     const unsubscribeFromChanges = onChange(obj.props, (newValues) => {
-      setState(newValues)
+      boxRef.current.style.transform = `translate(${newValues.x}px, ${newValues.y}px)`
+      preRef.current.innerText = JSON.stringify(newValues, null, 2)
+      colorRef.current.style.background = newValues.color.toString()
     })
     return unsubscribeFromChanges
-  }, [id])
-
-  const [divRef, setDivRef] = useState<HTMLElement | null>(null)
+  }, [])
 
   const dragOpts = useMemo((): UseDragOpts => {
     let scrub: IScrub | undefined
@@ -126,32 +128,28 @@ const Box: React.FC<{
     }
   }, [])
 
-  useDrag(divRef, dragOpts)
+  useDrag(boxRef.current, dragOpts)
 
   return (
     <div
       onClick={() => {
         studio.setSelection([obj])
       }}
-      ref={setDivRef}
+      ref={boxRef}
       style={{
         width: 300,
         height: 300,
         color: 'white',
         position: 'absolute',
-        left: state.x + 'px',
-        top: state.y + 'px',
         boxSizing: 'border-box',
         border: isSelected ? '1px solid #5a92fa' : '1px solid white',
       }}
     >
-      <pre style={{margin: 0, padding: '1rem'}}>
-        {JSON.stringify(state, null, 4)}
-      </pre>
+      <pre style={{margin: 0, padding: '1rem'}} ref={preRef}></pre>
       <div
+        ref={colorRef}
         style={{
           height: 50,
-          background: state.color.toString(),
         }}
       />
     </div>
@@ -179,7 +177,6 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
 
   useLayoutEffect(() => {
     const unsubscribeFromChanges = onChange(globalObj.props, (newValues) => {
-      console.log(newValues)
       containerRef.current.style.background =
         newValues.background.type !== 'dynamic'
           ? newValues.background.type
