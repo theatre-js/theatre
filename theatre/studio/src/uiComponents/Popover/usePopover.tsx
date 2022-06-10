@@ -9,7 +9,7 @@ import {contextMenuShownContext} from '@theatre/studio/panels/DetailPanel/Detail
 
 export type OpenFn = (
   e: React.MouseEvent | MouseEvent | {clientX: number; clientY: number},
-  target: HTMLElement,
+  target: HTMLElement | SVGElement | Element,
 ) => void
 type CloseFn = (reason: string) => void
 type State =
@@ -20,7 +20,7 @@ type State =
         clientX: number
         clientY: number
       }
-      target: HTMLElement
+      target: HTMLElement | SVGElement | Element
       opts: Opts
       onPointerOutside?: {
         threshold: number

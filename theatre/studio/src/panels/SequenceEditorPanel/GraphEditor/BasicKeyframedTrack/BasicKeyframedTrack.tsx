@@ -94,6 +94,7 @@ const BasicKeyframedTrack: React.VFC<{
 
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
       <KeyframeEditor
+        pathToProp={pathToProp}
         propConfig={propConfig}
         keyframe={kf}
         index={index}

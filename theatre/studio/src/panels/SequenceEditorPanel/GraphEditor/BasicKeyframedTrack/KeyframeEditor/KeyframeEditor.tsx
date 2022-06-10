@@ -16,6 +16,7 @@ import GraphEditorDotScalar from './GraphEditorDotScalar'
 import GraphEditorDotNonScalar from './GraphEditorDotNonScalar'
 import GraphEditorNonScalarDash from './GraphEditorNonScalarDash'
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
+import type {PathToProp} from '@theatre/shared/utils/addresses'
 
 const Container = styled.g`
   /* position: absolute; */
@@ -30,6 +31,7 @@ type IKeyframeEditorProps = {
   layoutP: Pointer<SequenceEditorPanelLayout>
   trackId: SequenceTrackId
   sheetObject: SheetObject
+  pathToProp: PathToProp
   extremumSpace: ExtremumSpace
   isScalar: boolean
   color: keyof typeof graphEditorColors
