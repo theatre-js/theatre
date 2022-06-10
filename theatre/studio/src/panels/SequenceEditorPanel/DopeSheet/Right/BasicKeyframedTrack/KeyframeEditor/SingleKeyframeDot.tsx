@@ -94,11 +94,14 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
-  const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
-    useSingleKeyframeInlineEditorPopover(props)
+  const {
+    node: inlineEditorPopover,
+    toggle: toggleEditor,
+    isOpen: isInlineEditorPopoverOpen,
+  } = useSingleKeyframeInlineEditorPopover(props)
   const [isDragging] = useDragForSingleKeyframeDot(node, props, {
     onClickFromDrag(dragStartEvent) {
-      openEditor(dragStartEvent, ref.current!)
+      toggleEditor(dragStartEvent, ref.current!)
     },
   })
 
@@ -227,6 +230,8 @@ function useDragForSingleKeyframeDot(
   const propsRef = useRef(props)
   propsRef.current = props
 
+  const {onClickFromDrag} = options
+
   const useDragOpts = useMemo<UseDragOpts>(() => {
     return {
       debugName: 'KeyframeDot/useDragKeyframe',
@@ -282,7 +287,7 @@ function useDragForSingleKeyframeDot(
           return (
             handlers && {
               ...handlers,
-              onClick: options.onClickFromDrag,
+              onClick: onClickFromDrag,
               onDragEnd: (...args) => {
                 handlers.onDragEnd?.(...args)
                 snapToNone()
@@ -338,12 +343,12 @@ function useDragForSingleKeyframeDot(
             snapToNone()
           },
           onClick(ev) {
-            options.onClickFromDrag(ev)
+            onClickFromDrag(ev)
           },
         }
       },
     }
-  }, [])
+  }, [onClickFromDrag])
 
   const [isDragging] = useDrag(node, useDragOpts)
 

@@ -33,7 +33,7 @@ const PlayheadPositionPopover: React.FC<{
    * Called when user hits enter/escape
    */
   onRequestClose: (reason: string) => void
-}> = ({layoutP, onRequestClose}) => {
+}> = ({layoutP}) => {
   const sheet = val(layoutP.sheet)
   const sequence = sheet.getSequence()
 
@@ -80,7 +80,6 @@ const PlayheadPositionPopover: React.FC<{
           {...fns}
           isValid={greaterThanZero}
           inputRef={inputRef}
-          onBlur={onRequestClose.bind(null, 'number input blur')}
           nudge={nudge}
         />
       </Container>

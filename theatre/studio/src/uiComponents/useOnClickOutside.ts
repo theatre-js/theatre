@@ -2,15 +2,24 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {useEffect} from 'react'
 
 export default function useOnClickOutside(
-  container: Element | null,
+  container: Element | null | (Element | null)[],
   onOutside: (e: MouseEvent) => void,
   enabled?: boolean,
+  // Can be used e.g. to prevent unexpected closing-reopening when clicking on a
+  // popover's trigger.
 ) {
   useEffect(() => {
     if (!container || enabled === false) return
 
+    const containers = Array.isArray(container)
+      ? (container.filter((container) => container) as Element[])
+      : [container]
+
     const onMouseDown = (e: MouseEvent) => {
-      if (!e.composedPath().includes(container)) {
+      if (
+        containers.every((container) => !e.composedPath().includes(container))
+      ) {
+        console.log('outside')
         onOutside(e)
       }
     }

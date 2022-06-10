@@ -74,7 +74,7 @@ function RgbaPropEditor({
     [editingTools],
   )
 
-  const [popoverNode, openPopover] = usePopover(
+  const {node: popoverNode, toggle: togglePopover} = usePopover(
     {debugName: 'RgbaPropEditor'},
     () => (
       <RgbaPopover>
@@ -107,7 +107,7 @@ function RgbaPropEditor({
           rgbaColor={value}
           ref={containerRef}
           onClick={(e) => {
-            openPopover(e, containerRef.current)
+            togglePopover(e, containerRef.current)
           }}
         />
         <HexInput
