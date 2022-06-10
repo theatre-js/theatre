@@ -481,11 +481,9 @@ function useDragForAggregateKeyframeDot(
       debugName: 'AggregateKeyframeDot/useDragKeyframe',
       onDragStart(event) {
         logger._debug('onDragStart', {target: event.target})
-        console.log(event.target)
         const positionToFind = Number((event.target as HTMLElement).dataset.pos)
         const props = getPropsForPosition(positionToFind)
         if (!props) {
-          console.log('exit')
           logger._debug('no props found for ', {positionToFind})
           return false
         }
