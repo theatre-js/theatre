@@ -138,7 +138,10 @@ const TooltipWrapper: React.FC<{
     props.onPointerOutside,
   ])
 
-  useOnClickOutside(container, props.onClickOutside ?? noop)
+  useOnClickOutside(
+    [container, props.target ?? null],
+    props.onClickOutside ?? noop,
+  )
 
   return (
     <ArrowContext.Provider value={arrowContextValue}>

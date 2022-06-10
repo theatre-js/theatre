@@ -51,7 +51,13 @@ type Opts = {
 export default function usePopover(
   opts: Opts | (() => Opts),
   render: () => React.ReactElement,
-): [node: React.ReactNode, open: OpenFn, close: CloseFn, isOpen: boolean] {
+): {
+  node: React.ReactNode
+  open: OpenFn
+  close: CloseFn
+  toggle: OpenFn
+  isOpen: boolean
+} {
   const _debug = (...args: any) => {}
 
   // want to make sure that we don't close a popover when dragging something (like a curve editor handle)
@@ -104,6 +110,14 @@ export default function usePopover(
     }
   }, [])
 
+  const toggle = useCallback<OpenFn>((...args) => {
+    if (stateRef.current.isOpen) {
+      close('toggled')
+    } else {
+      open(...args)
+    }
+  }, [])
+
   /**
    * See doc comment on {@link useAutoCloseLockState}.
    * Used to ensure that moving far away from a parent popover doesn't
@@ -146,7 +160,7 @@ export default function usePopover(
     <></>
   )
 
-  return [node, open, close, state.isOpen]
+  return {node, open, close, toggle, isOpen: state.isOpen}
 }
 
 /**

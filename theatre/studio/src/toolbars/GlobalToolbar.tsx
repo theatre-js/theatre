@@ -88,7 +88,7 @@ const GlobalToolbar: React.FC = () => {
   const hasUpdates =
     useVal(getStudio().atomP.ahistoric.updateChecker.result.hasUpdates) === true
 
-  const [moreMenu, openMoreMenu] = usePopover(
+  const {node: moreMenu, toggle: toggleMenu} = usePopover(
     () => {
       const triggerBounds = moreMenuTriggerRef.current!.getBoundingClientRect()
       return {
@@ -138,7 +138,7 @@ const GlobalToolbar: React.FC = () => {
         <ToolbarIconButton
           ref={moreMenuTriggerRef}
           onClick={(e) => {
-            openMoreMenu(e, moreMenuTriggerRef.current!)
+            toggleMenu(e, moreMenuTriggerRef.current!)
           }}
         >
           <Ellipsis />
