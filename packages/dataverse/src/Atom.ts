@@ -1,7 +1,7 @@
 import get from 'lodash-es/get'
 import isPlainObject from 'lodash-es/isPlainObject'
 import last from 'lodash-es/last'
-import DerivationFromSource from './derivations/DerivationFromSource'
+import deriveFromSource from './derivations/deriveFromSource'
 import type {IDerivation} from './derivations/IDerivation'
 import {isDerivation} from './derivations/IDerivation'
 import type {Pointer, PointerType} from './pointer'
@@ -247,7 +247,7 @@ export default class Atom<State extends {}>
    * @param path - The path to create the derivation at.
    */
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
-    return new DerivationFromSource<$IntentionalAny>(
+    return deriveFromSource<$IntentionalAny>(
       (listener) => this._onPathValueChange(path, listener),
       () => this.getIn(path),
     )

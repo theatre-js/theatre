@@ -1,3 +1,4 @@
+import type {IDerivation} from '..'
 import type {VoidFn} from '../types'
 import AbstractDerivation from './AbstractDerivation'
 
@@ -6,7 +7,7 @@ const noop = () => {}
 /**
  * Represents a derivation based on a tappable (subscribable) data source.
  */
-export default class DerivationFromSource<V> extends AbstractDerivation<V> {
+class DerivationFromSource<V> extends AbstractDerivation<V> {
   private _untapFromChanges: () => void
   private _cachedValue: undefined | V
   private _hasCachedValue: boolean
@@ -69,4 +70,11 @@ export default class DerivationFromSource<V> extends AbstractDerivation<V> {
    * @internal
    */
   _reactToDependencyBecomingStale() {}
+}
+
+export default function deriveFromSource<V>(
+  tapToSource: (listener: (newValue: V) => void) => VoidFn,
+  getValueFromSource: () => V,
+): IDerivation<V> {
+  return new DerivationFromSource(tapToSource, getValueFromSource)
 }

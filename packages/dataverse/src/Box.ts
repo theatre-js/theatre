@@ -1,4 +1,4 @@
-import DerivationFromSource from './derivations/DerivationFromSource'
+import deriveFromSource from './derivations/deriveFromSource'
 import type {IDerivation} from './derivations/IDerivation'
 import Emitter from './utils/Emitter'
 
@@ -51,7 +51,7 @@ export default class Box<V> implements IBox<V> {
      */
     protected _value: V,
   ) {
-    this._publicDerivation = new DerivationFromSource(
+    this._publicDerivation = deriveFromSource(
       (listener) => this._emitter.tappable.tap(listener),
       this.get.bind(this),
     )
