@@ -4,7 +4,7 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {SheetObjectPropTypeConfig} from '@theatre/core/sheets/TheatreSheet'
 import TheatreSheet from '@theatre/core/sheets/TheatreSheet'
 import type {SheetAddress} from '@theatre/shared/utils/addresses'
-import {Atom, valueDerivation} from '@theatre/dataverse'
+import {Atom, prism, val} from '@theatre/dataverse'
 import type SheetTemplate from './SheetTemplate'
 import type {ObjectAddressKey, SheetInstanceId} from '@theatre/shared/utils/ids'
 import type {StrictRecord} from '@theatre/shared/utils/types'
@@ -74,15 +74,21 @@ export default class Sheet {
 
   getSequence(): Sequence {
     if (!this._sequence) {
-      const lengthD = valueDerivation(
-        this.project.pointers.historic.sheetsById[this.address.sheetId].sequence
-          .length,
-      ).map((s) => (typeof s === 'number' ? s : 10))
+      const lengthD = prism(() => {
+        const length = val(
+          this.project.pointers.historic.sheetsById[this.address.sheetId]
+            .sequence.length,
+        )
+        return typeof length === 'number' ? length : 10
+      })
 
-      const subUnitsPerUnitD = valueDerivation(
-        this.project.pointers.historic.sheetsById[this.address.sheetId].sequence
-          .subUnitsPerUnit,
-      ).map((s) => (typeof s === 'number' ? s : 30))
+      const subUnitsPerUnitD = prism(() => {
+        const subUnitsPerUnit = val(
+          this.project.pointers.historic.sheetsById[this.address.sheetId]
+            .sequence.subUnitsPerUnit,
+        )
+        return typeof subUnitsPerUnit === 'number' ? subUnitsPerUnit : 30
+      })
 
       this._sequence = new Sequence(
         this.template.project,

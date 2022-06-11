@@ -4,7 +4,7 @@ import type {
   TrackData,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
-import {ConstantDerivation, prism, val} from '@theatre/dataverse'
+import {prism, val} from '@theatre/dataverse'
 import type {IUtilContext} from '@theatre/shared/logger'
 import type {SerializableValue} from '@theatre/shared/utils/types'
 import UnitBezier from 'timing-function/lib/UnitBezier'
@@ -36,12 +36,12 @@ export default function interpolationTripleAtPosition(
       'driver',
       () => {
         if (!track) {
-          return new ConstantDerivation(undefined)
+          return undefinedConstD
         } else if (track.type === 'BasicKeyframedTrack') {
           return _forKeyframedTrack(ctx, track, timeD)
         } else {
           ctx.logger.error(`Track type not yet supported.`)
-          return new ConstantDerivation(undefined)
+          return undefinedConstD
         }
       },
       [track],
@@ -79,7 +79,7 @@ function _forKeyframedTrack(
   })
 }
 
-const undefinedConstD = new ConstantDerivation(undefined)
+const undefinedConstD = prism(() => undefined)
 
 function updateState(
   ctx: IUtilContext,
@@ -159,7 +159,7 @@ const states = {
       started: true,
       validFrom: -Infinity,
       validTo: kf.position,
-      der: new ConstantDerivation({left: kf.value, progression: 0}),
+      der: prism(() => ({left: kf.value, progression: 0})),
     }
   },
   lastKeyframe(kf: Keyframe): IStartedState {
@@ -167,7 +167,7 @@ const states = {
       started: true,
       validFrom: kf.position,
       validTo: Infinity,
-      der: new ConstantDerivation({left: kf.value, progression: 0}),
+      der: prism(() => ({left: kf.value, progression: 0})),
     }
   },
   between(
@@ -180,7 +180,7 @@ const states = {
         started: true,
         validFrom: left.position,
         validTo: right.position,
-        der: new ConstantDerivation({left: left.value, progression: 0}),
+        der: prism(() => ({left: left.value, progression: 0})),
       }
     }
 

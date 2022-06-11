@@ -69,33 +69,6 @@ export interface IDerivation<V> {
    * Gets the current value of the derivation. If the value is stale, it causes the derivation to freshen.
    */
   getValue(): V
-
-  /**
-   * Creates a new derivation from this derivation using the provided mapping function. The new derivation's value will be
-   * `fn(thisDerivation.getValue())`.
-   *
-   * @param fn - The mapping function to use. Note: it accepts a plain value, not a derivation.
-   */
-  map<T>(fn: (v: V) => T): IDerivation<T>
-
-  /**
-   * Same as {@link IDerivation.map}, but the mapping function can also return a derivation, in which case the derivation returned
-   * by `flatMap` takes the value of that derivation.
-   *
-   * @example
-   * ```ts
-   * // Simply using map() here would return the inner derivation when we call getValue()
-   * new Box(3).derivation.map((value) => new Box(value).derivation).getValue()
-   *
-   * // Using flatMap() eliminates the inner derivation
-   * new Box(3).derivation.flatMap((value) => new Box(value).derivation).getValue()
-   * ```
-   *
-   * @param fn - The mapping function to use. Note: it accepts a plain value, not a derivation.
-   */
-  flatMap<R>(
-    fn: (v: V) => R,
-  ): IDerivation<R extends IDerivation<infer T> ? T : R>
 }
 
 /**

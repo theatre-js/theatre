@@ -6,7 +6,7 @@ import didYouMean from '@theatre/shared/utils/didYouMean'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import type {IBox, IDerivation, Pointer} from '@theatre/dataverse'
 import {pointer} from '@theatre/dataverse'
-import {Box, prism, val, valueDerivation} from '@theatre/dataverse'
+import {Box, prism, val} from '@theatre/dataverse'
 import {padStart} from 'lodash-es'
 import type {
   IPlaybackController,
@@ -65,16 +65,16 @@ export default class Sequence {
       playbackController ?? new DefaultPlaybackController(coreTicker),
     )
 
-    this._statePointerDerivation = this._playbackControllerBox.derivation.map(
-      (playbackController) => playbackController.statePointer,
+    this._statePointerDerivation = prism(
+      () => this._playbackControllerBox.derivation.getValue().statePointer,
     )
 
-    this._positionD = this._statePointerDerivation.flatMap((statePointer) =>
-      valueDerivation(statePointer.position),
+    this._positionD = prism(() =>
+      val(this._statePointerDerivation.getValue().position),
     )
 
-    this._positionFormatterD = this._subUnitsPerUnitD.map(
-      (subUnitsPerUnit) => new TimeBasedPositionFormatter(subUnitsPerUnit),
+    this._positionFormatterD = prism(
+      () => new TimeBasedPositionFormatter(this._subUnitsPerUnitD.getValue()),
     )
   }
 

@@ -203,7 +203,8 @@ export default class SheetObjectTemplate {
    */
   getMapOfValidSequenceTracks_forStudio(): IDerivation<IPropPathToTrackIdTree> {
     return this._cache.get('getMapOfValidSequenceTracks_forStudio', () =>
-      this.getArrayOfValidSequenceTracks().map((arr) => {
+      prism(() => {
+        const arr = this.getArrayOfValidSequenceTracks().getValue()
         let map = {}
 
         for (const {pathToProp, trackId} of arr) {

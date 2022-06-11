@@ -4,7 +4,6 @@
 import Atom, {val} from '../../Atom'
 import Ticker from '../../Ticker'
 import type {$FixMe, $IntentionalAny} from '../../types'
-import ConstantDerivation from '../ConstantDerivation'
 import iterateAndCountTicks from '../iterateAndCountTicks'
 import prism, {PrismDerivation} from './prism'
 
@@ -31,8 +30,8 @@ describe('prism', () => {
     expect(changes).toMatchObject(['foo2boo'])
   })
   it('should only collect immediate dependencies', () => {
-    const aD = new ConstantDerivation(1)
-    const bD = aD.map((v) => v * 2)
+    const aD = prism(() => 1)
+    const bD = prism(() => aD.getValue() * 2)
     const cD = prism(() => {
       return bD.getValue()
     })

@@ -109,7 +109,7 @@ export default function useKeyboardShortcuts() {
             )
 
             const playbackPromise = seq.playDynamicRange(
-              controlledPlaybackStateD.map(({range}) => range),
+              prism(() => controlledPlaybackStateD.getValue().range),
             )
 
             const playbackStateBox = getPlaybackStateBox(seq)

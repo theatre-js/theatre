@@ -3,15 +3,32 @@ import type {$IntentionalAny, VoidFn} from '../types'
 import type Tappable from '../utils/Tappable'
 import DerivationEmitter from './DerivationEmitter'
 import DerivationValuelessEmitter from './DerivationValuelessEmitter'
-import flatMap from './flatMap'
 import type {IDerivation} from './IDerivation'
-import map from './map'
 import {
   reportResolutionEnd,
   reportResolutionStart,
 } from './prism/discoveryMechanism'
 
 type IDependent = (msgComingFrom: IDerivation<$IntentionalAny>) => void
+
+type State<V> =
+  | {
+      hot: false
+    }
+  | {
+      hot: true
+      dependents: Set<IDependent>
+      freshness:
+        | {
+            isFresh: true
+            value: V
+          }
+        | {
+            isFresh: false
+            value: V | undefined
+            didMarkDepndentsAsStale: boolean
+          }
+    }
 
 /**
  * Represents a derivation whose changes can be tracked. To be used as the base class for all derivations.
@@ -21,20 +38,8 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
    * Whether the object is a derivation.
    */
   readonly isDerivation: true = true
-  private _didMarkDependentsAsStale: boolean = false
-  private _isHot: boolean = false
 
-  private _isFresh: boolean = false
-
-  /**
-   * @internal
-   */
-  protected _lastValue: undefined | V = undefined
-
-  /**
-   * @internal
-   */
-  protected _dependents: Set<IDependent> = new Set()
+  private _state: State<V> = {hot: false}
 
   /**
    * @internal
@@ -59,7 +64,7 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
    * Whether the derivation is hot.
    */
   get isHot(): boolean {
-    return this._isHot
+    return this._state.hot
   }
 
   /**
@@ -68,7 +73,7 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
   protected _addDependency(d: IDerivation<$IntentionalAny>) {
     if (this._dependencies.has(d)) return
     this._dependencies.add(d)
-    if (this._isHot) d.addDependent(this._internal_markAsStale)
+    if (this._state.hot) d.addDependent(this._internal_markAsStale)
   }
 
   /**
@@ -77,7 +82,7 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
   protected _removeDependency(d: IDerivation<$IntentionalAny>) {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
-    if (this._isHot) d.removeDependent(this._internal_markAsStale)
+    if (this._state.hot) d.removeDependent(this._internal_markAsStale)
   }
 
   /**
@@ -128,11 +133,22 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
    */
   // TODO: document this better, what are dependents?
   addDependent(d: IDependent) {
-    const hadDepsBefore = this._dependents.size > 0
-    this._dependents.add(d)
-    const hasDepsNow = this._dependents.size > 0
-    if (hadDepsBefore !== hasDepsNow) {
-      this._reactToNumberOfDependentsChange()
+    if (this._state.hot) {
+      this._state.dependents.add(d)
+    } else {
+      this._state = {
+        hot: true,
+        dependents: new Set([d]),
+        freshness: {
+          isFresh: false,
+          value: undefined,
+          didMarkDepndentsAsStale: false,
+        },
+      }
+      for (const dependency of this._dependencies) {
+        dependency.addDependent(this._internal_markAsStale)
+      }
+      this._keepHot()
     }
   }
 
@@ -144,11 +160,17 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
    * @see addDependent
    */
   removeDependent(d: IDependent) {
-    const hadDepsBefore = this._dependents.size > 0
-    this._dependents.delete(d)
-    const hasDepsNow = this._dependents.size > 0
-    if (hadDepsBefore !== hasDepsNow) {
-      this._reactToNumberOfDependentsChange()
+    if (this._state.hot) {
+      this._state.dependents.delete(d)
+      if (this._state.dependents.size === 0) {
+        this._state = {
+          hot: false,
+        }
+        for (const dependency of this._dependencies) {
+          dependency.removeDependent(this._internal_markAsStale)
+        }
+        this._becomeCold()
+      }
     }
   }
 
@@ -163,15 +185,27 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
   }
 
   private _internal_markAsStale = (which: IDerivation<$IntentionalAny>) => {
+    const state = this._state
+    if (!state.hot) return
     this._reactToDependencyBecomingStale(which)
 
-    if (this._didMarkDependentsAsStale) return
+    const self = this
+    function reportStalenessToDependents(dependents: Set<IDependent>) {
+      for (const dependent of dependents) {
+        dependent(self)
+      }
+    }
 
-    this._didMarkDependentsAsStale = true
-    this._isFresh = false
-
-    for (const dependent of this._dependents) {
-      dependent(this)
+    if (state.freshness.isFresh) {
+      state.freshness = {
+        isFresh: false,
+        didMarkDepndentsAsStale: true,
+        value: state.freshness.value,
+      }
+      reportStalenessToDependents(state.dependents)
+    } else if (!state.freshness.didMarkDepndentsAsStale) {
+      state.freshness.didMarkDepndentsAsStale = true
+      reportStalenessToDependents(state.dependents)
     }
   }
 
@@ -206,37 +240,23 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
      */
     reportResolutionStart(this)
 
-    if (!this._isFresh) {
-      const newValue = this._recalculate()
-      this._lastValue = newValue
-      if (this._isHot) {
-        this._isFresh = true
-        this._didMarkDependentsAsStale = false
+    const state = this._state
+
+    if (state.hot) {
+      const {freshness} = state
+      if (freshness.isFresh) {
+        reportResolutionEnd(this)
+        return freshness.value
+      } else {
+        const value = this._recalculate()
+        state.freshness = {isFresh: true, value}
+        reportResolutionEnd(this)
+        return value
       }
-    }
-
-    reportResolutionEnd(this)
-    return this._lastValue!
-  }
-
-  private _reactToNumberOfDependentsChange() {
-    const shouldBecomeHot = this._dependents.size > 0
-
-    if (shouldBecomeHot === this._isHot) return
-
-    this._isHot = shouldBecomeHot
-    this._didMarkDependentsAsStale = false
-    this._isFresh = false
-    if (shouldBecomeHot) {
-      for (const d of this._dependencies) {
-        d.addDependent(this._internal_markAsStale)
-      }
-      this._keepHot()
     } else {
-      for (const d of this._dependencies) {
-        d.removeDependent(this._internal_markAsStale)
-      }
-      this._becomeCold()
+      const value = this._recalculate()
+      reportResolutionEnd(this)
+      return value
     }
   }
 
@@ -249,35 +269,4 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
    * @internal
    */
   protected _becomeCold() {}
-
-  /**
-   * Creates a new derivation from this derivation using the provided mapping function. The new derivation's value will be
-   * `fn(thisDerivation.getValue())`.
-   *
-   * @param fn - The mapping function to use. Note: it accepts a plain value, not a derivation.
-   */
-  map<T>(fn: (v: V) => T): IDerivation<T> {
-    return map(this, fn)
-  }
-
-  /**
-   * Same as {@link AbstractDerivation.map}, but the mapping function can also return a derivation, in which case the derivation returned
-   * by `flatMap` takes the value of that derivation.
-   *
-   * @example
-   * ```ts
-   * // Simply using map() here would return the inner derivation when we call getValue()
-   * new Box(3).derivation.map((value) => new Box(value).derivation).getValue()
-   *
-   * // Using flatMap() eliminates the inner derivation
-   * new Box(3).derivation.flatMap((value) => new Box(value).derivation).getValue()
-   * ```
-   *
-   * @param fn - The mapping function to use. Note: it accepts a plain value, not a derivation.
-   */
-  flatMap<R>(
-    fn: (v: V) => R,
-  ): IDerivation<R extends IDerivation<infer T> ? T : R> {
-    return flatMap(this, fn)
-  }
 }

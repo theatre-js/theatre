@@ -37,9 +37,8 @@ export class PrismDerivation<V> extends AbstractDerivation<V> {
       stopIgnoringDependencies()
       this._possiblyStaleDeps.clear()
       if (!anActuallyStaleDepWasFound) {
-        // console.log('ok')
-
-        return this._lastValue!
+        // @ts-ignore
+        return this._state.freshness.value!
       }
     }
 
@@ -93,6 +92,7 @@ export class PrismDerivation<V> extends AbstractDerivation<V> {
 
   _keepHot() {
     this._prismScope = new PrismScope()
+    // probbaly we can defer this to a tick?
     startIgnoringDependencies()
     this.getValue()
     stopIgnoringDependencies()
