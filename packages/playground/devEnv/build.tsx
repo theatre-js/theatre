@@ -143,6 +143,8 @@ esbuild
       return
     }
 
+    // I think we are double-compiling by using both esbuild watch & esbuild serve
+    // but compilation times are so insignificant that it's not worth worrying about.
     esbuild
       .serve({servedir: path.join(playgroundDir, 'build')}, config)
       .then(({port: esbuildPort}) => {
