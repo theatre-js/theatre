@@ -1,4 +1,4 @@
-import {existsSync, readdirSync} from 'fs'
+import {readdirSync} from 'fs'
 import {writeFile, readFile} from 'fs/promises'
 import path from 'path'
 import type {BuildOptions} from 'esbuild'
@@ -23,28 +23,37 @@ const port = 8080
 
 const clients: ServerResponse[] = []
 
-console.time('collect groups')
+type Groups = {
+  [group: string]: {
+    [module: string]: {
+      entryDir: string
+      outDir: string
+    }
+  }
+}
 
 const groups = Object.fromEntries(
   [sharedDir, personalDir, testDir]
-    .filter((dir) => existsSync(dir))
     .map((groupDir) => {
-      return [
-        path.basename(groupDir),
-        Object.fromEntries(
-          readdirSync(groupDir).map((moduleDir) => [
-            path.basename(moduleDir),
-            {
-              entryDir: path.join(groupDir, moduleDir),
-              outDir: path.join(buildDir, path.basename(groupDir), moduleDir),
-            },
-          ]),
-        ),
-      ]
-    }),
-)
-
-console.timeEnd('collect groups')
+      try {
+        return [
+          path.basename(groupDir),
+          Object.fromEntries(
+            readdirSync(groupDir).map((moduleDir) => [
+              path.basename(moduleDir),
+              {
+                entryDir: path.join(groupDir, moduleDir),
+                outDir: path.join(buildDir, path.basename(groupDir), moduleDir),
+              },
+            ]),
+          ),
+        ]
+      } catch (e) {
+        return [path.basename(groupDir), undefined]
+      }
+    })
+    .filter((entry) => entry[1] !== undefined),
+) as Groups
 
 const entryPoints = Object.values(groups)
   .flatMap((group) => Object.values(group))
@@ -93,82 +102,81 @@ esbuild
     },
   })
   .then(async () => {
-    console.time('writing indexes')
     const index = await readFile(
       path.join(playgroundDir, 'src/index.html'),
       'utf8',
     )
-    writeFile(
-      path.join(buildDir, 'index.html'),
-      index.replace(/<body>[\s\S]*<\/body>/, `<body>${homeHtml}</body>`),
-    )
-    for (const entry of outDirs) {
+    await Promise.all([
       writeFile(
-        path.join(entry, 'index.html'),
-        index.replace(
-          '%ENTRYPOINT%',
-          path.join('/', path.relative(buildDir, entry), 'index.js'),
+        path.join(buildDir, 'index.html'),
+        index.replace(/<body>[\s\S]*<\/body>/, `<body>${homeHtml}</body>`),
+      ),
+      ...outDirs.map((outDir) =>
+        writeFile(
+          path.join(outDir, 'index.html'),
+          index.replace(
+            '%ENTRYPOINT%',
+            path.join('/', path.relative(buildDir, outDir), 'index.js'),
+          ),
         ),
-      )
-    }
-    console.timeEnd('writing indexes')
+      ),
+    ])
   })
   .catch((err) => {
     console.log(err)
     return process.exit(1)
   })
+  .then(() => {
+    if (dev) {
+      esbuild
+        .serve({servedir: path.join(playgroundDir, 'build')}, config)
+        .then(({port: esbuildPort}) => {
+          createServer((req, res) => {
+            const {url, method, headers} = req
+            if (req.url === '/esbuild') {
+              return clients.push(
+                res.writeHead(200, {
+                  'Content-Type': 'text/event-stream',
+                  'Cache-Control': 'no-cache',
+                  Connection: 'keep-alive',
+                }),
+              )
+            }
+            req.pipe(
+              request(
+                {
+                  hostname: '0.0.0.0',
+                  port: esbuildPort,
+                  path: url,
+                  method,
+                  headers,
+                },
+                (prxRes) => {
+                  res.writeHead(prxRes.statusCode!, prxRes.headers)
+                  prxRes.pipe(res, {end: true})
+                },
+              ),
+              {end: true},
+            )
+          }).listen(port, () => {
+            console.log('Playground running at', 'http://localhost:' + port)
+          })
 
-console.time('start server')
-if (dev) {
-  esbuild
-    .serve({servedir: path.join(playgroundDir, 'build')}, config)
-    .then(({port: esbuildPort}) => {
-      createServer((req, res) => {
-        const {url, method, headers} = req
-        if (req.url === '/esbuild') {
-          return clients.push(
-            res.writeHead(200, {
-              'Content-Type': 'text/event-stream',
-              'Cache-Control': 'no-cache',
-              Connection: 'keep-alive',
-            }),
-          )
-        }
-        req.pipe(
-          request(
-            {
-              hostname: '0.0.0.0',
-              port: esbuildPort,
-              path: url,
-              method,
-              headers,
-            },
-            (prxRes) => {
-              res.writeHead(prxRes.statusCode!, prxRes.headers)
-              prxRes.pipe(res, {end: true})
-            },
-          ),
-          {end: true},
-        )
-      }).listen(port, () => {
-        console.timeEnd('start server')
-        console.log('Playground running at', 'http://localhost:' + port)
-      })
-
-      if (!process.env.CI) {
-        setTimeout(() => {
-          const open = {
-            darwin: ['open'],
-            linux: ['xdg-open'],
-            win32: ['cmd', '/c', 'start'],
+          if (!process.env.CI) {
+            setTimeout(() => {
+              const open = {
+                darwin: ['open'],
+                linux: ['xdg-open'],
+                win32: ['cmd', '/c', 'start'],
+              }
+              const platform = process.platform as keyof typeof open
+              if (clients.length === 0)
+                spawn(open[platform][0], [
+                  ...open[platform].slice(1),
+                  `http://localhost:${port}`,
+                ])
+            }, 1000)
           }
-          const platform = process.platform as keyof typeof open
-          if (clients.length === 0)
-            spawn(open[platform][0], [
-              ...open[platform].slice(1),
-              `http://localhost:${port}`,
-            ])
-        }, 1000)
-      }
-    })
-}
+        })
+    }
+  })
