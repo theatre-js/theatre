@@ -10,6 +10,7 @@
   "scripts": {
     "serve": "node -r esbuild-register devEnv/build.tsx -d",
     "build": "node -r esbuild-register devEnv/build.tsx",
+    "build:static": "yarn build",
     "typecheck": "yarn run build",
     "test": "playwright test --config=devEnv/playwright.config.ts",
     "test:ci": "percy exec -- playwright test --reporter=dot --config=devEnv/playwright.config.ts --project=chromium"
