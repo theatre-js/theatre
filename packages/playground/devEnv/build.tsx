@@ -32,7 +32,8 @@ type Groups = {
   }
 }
 
-const groups = Object.fromEntries(
+// Collect all entry directories per module per group
+const groups: Groups = Object.fromEntries(
   [sharedDir, personalDir, testDir]
     .map((groupDir) => {
       try {
@@ -49,20 +50,25 @@ const groups = Object.fromEntries(
           ),
         ]
       } catch (e) {
+        // If the group dir doesn't exist, we just set its entry to undefined
         return [path.basename(groupDir), undefined]
       }
     })
+    // and then filter it out.
     .filter((entry) => entry[1] !== undefined),
-) as Groups
+)
 
+// Collect all entry files
 const entryPoints = Object.values(groups)
   .flatMap((group) => Object.values(group))
   .map((module) => path.join(module.entryDir, 'index.tsx'))
 
+// Collect all output directories
 const outDirs = Object.values(groups).flatMap((group) =>
   Object.values(group).map((module) => module.outDir),
 )
 
+// Render home page contents
 const homeHtml = renderToStaticMarkup(
   <Home groups={mapValues(groups, (group) => Object.keys(group))} />,
 )
@@ -95,6 +101,7 @@ esbuild
     ...config,
     watch: dev && {
       onRebuild(error) {
+        // Notify clients on rebuild
         clients.forEach((res) => res.write('data: update\n\n'))
         clients.length = 0
         console.log(error ? error : 'Reloading...')
@@ -102,18 +109,22 @@ esbuild
     },
   })
   .then(async () => {
+    // Read index.html template
     const index = await readFile(
       path.join(playgroundDir, 'src/index.html'),
       'utf8',
     )
     await Promise.all([
+      // Write home page
       writeFile(
         path.join(buildDir, 'index.html'),
         index.replace(/<body>[\s\S]*<\/body>/, `<body>${homeHtml}</body>`),
       ),
+      // Write module pages
       ...outDirs.map((outDir) =>
         writeFile(
           path.join(outDir, 'index.html'),
+          // Substitute %ENTRYPOINT% placeholder with the output file path
           index.replace(
             '%ENTRYPOINT%',
             path.join('/', path.relative(buildDir, outDir), 'index.js'),
@@ -127,56 +138,63 @@ esbuild
     return process.exit(1)
   })
   .then(() => {
-    if (dev) {
-      esbuild
-        .serve({servedir: path.join(playgroundDir, 'build')}, config)
-        .then(({port: esbuildPort}) => {
-          createServer((req, res) => {
-            const {url, method, headers} = req
-            if (req.url === '/esbuild') {
-              return clients.push(
-                res.writeHead(200, {
-                  'Content-Type': 'text/event-stream',
-                  'Cache-Control': 'no-cache',
-                  Connection: 'keep-alive',
-                }),
-              )
-            }
-            req.pipe(
-              request(
-                {
-                  hostname: '0.0.0.0',
-                  port: esbuildPort,
-                  path: url,
-                  method,
-                  headers,
-                },
-                (prxRes) => {
-                  res.writeHead(prxRes.statusCode!, prxRes.headers)
-                  prxRes.pipe(res, {end: true})
-                },
-              ),
-              {end: true},
-            )
-          }).listen(port, () => {
-            console.log('Playground running at', 'http://localhost:' + port)
-          })
-
-          if (!process.env.CI) {
-            setTimeout(() => {
-              const open = {
-                darwin: ['open'],
-                linux: ['xdg-open'],
-                win32: ['cmd', '/c', 'start'],
-              }
-              const platform = process.platform as keyof typeof open
-              if (clients.length === 0)
-                spawn(open[platform][0], [
-                  ...open[platform].slice(1),
-                  `http://localhost:${port}`,
-                ])
-            }, 1000)
-          }
-        })
+    // Only start dev server in dev, otherwise just run build and that's it
+    if (!dev) {
+      return
     }
+
+    esbuild
+      .serve({servedir: path.join(playgroundDir, 'build')}, config)
+      .then(({port: esbuildPort}) => {
+        // Create proxy
+        createServer((req, res) => {
+          const {url, method, headers} = req
+          // If special /esbuild url requested, subscribe clients to changes
+          if (req.url === '/esbuild') {
+            return clients.push(
+              res.writeHead(200, {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                Connection: 'keep-alive',
+              }),
+            )
+          }
+          // Otherwise forward requests to ESBuild server
+          req.pipe(
+            request(
+              {
+                hostname: '0.0.0.0',
+                port: esbuildPort,
+                path: url,
+                method,
+                headers,
+              },
+              (prxRes) => {
+                res.writeHead(prxRes.statusCode!, prxRes.headers)
+                prxRes.pipe(res, {end: true})
+              },
+            ),
+            {end: true},
+          )
+        }).listen(port, () => {
+          console.log('Playground running at', 'http://localhost:' + port)
+        })
+
+        // If not in CI, try to spawn a browser
+        if (!process.env.CI) {
+          setTimeout(() => {
+            const open = {
+              darwin: ['open'],
+              linux: ['xdg-open'],
+              win32: ['cmd', '/c', 'start'],
+            }
+            const platform = process.platform as keyof typeof open
+            if (clients.length === 0)
+              spawn(open[platform][0], [
+                ...open[platform].slice(1),
+                `http://localhost:${port}`,
+              ])
+          }, 1000)
+        }
+      })
   })
