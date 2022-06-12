@@ -8,13 +8,11 @@
     "dist/**/*"
   ],
   "scripts": {
-    "serve": "vite --config ./devEnv/vite.config.ts",
-    "build:static": "vite --config ./devEnv/vite.config.ts build",
-    "build:preview": "vite --config ./devEnv/vite.config.ts preview",
+    "serve": "node -r esbuild-register devEnv/build.tsx -d",
+    "build": "node -r esbuild-register devEnv/build.tsx",
     "typecheck": "yarn run build",
     "test": "playwright test --config=devEnv/playwright.config.ts",
-    "test:ci": "percy exec -- playwright test --reporter=dot --config=devEnv/playwright.config.ts --project=chromium",
-    "build": "tsc --build ./tsconfig.json"
+    "test:ci": "percy exec -- playwright test --reporter=dot --config=devEnv/playwright.config.ts --project=chromium"
   },
   "devDependencies": {
     "@percy/cli": "^1.3.0",
