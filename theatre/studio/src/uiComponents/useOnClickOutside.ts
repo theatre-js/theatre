@@ -19,7 +19,6 @@ export default function useOnClickOutside(
       if (
         containers.every((container) => !e.composedPath().includes(container))
       ) {
-        console.log('outside')
         onOutside(e)
       }
     }
