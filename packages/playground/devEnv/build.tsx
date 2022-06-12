@@ -1,4 +1,5 @@
-import {existsSync, readdirSync, readFileSync, writeFileSync} from 'fs'
+import {existsSync, readdirSync} from 'fs'
+import {writeFile, readFile} from 'fs/promises'
 import path from 'path'
 import type {BuildOptions} from 'esbuild'
 import esbuild from 'esbuild'
@@ -22,6 +23,8 @@ const port = 8080
 
 const clients: ServerResponse[] = []
 
+console.time('collect groups')
+
 const groups = Object.fromEntries(
   [sharedDir, personalDir, testDir]
     .filter((dir) => existsSync(dir))
@@ -40,6 +43,8 @@ const groups = Object.fromEntries(
       ]
     }),
 )
+
+console.timeEnd('collect groups')
 
 const entryPoints = Object.values(groups)
   .flatMap((group) => Object.values(group))
@@ -87,17 +92,18 @@ esbuild
       },
     },
   })
-  .then(() => {
-    const index = readFileSync(
+  .then(async () => {
+    console.time('writing indexes')
+    const index = await readFile(
       path.join(playgroundDir, 'src/index.html'),
       'utf8',
     )
-    writeFileSync(
+    writeFile(
       path.join(buildDir, 'index.html'),
       index.replace(/<body>[\s\S]*<\/body>/, `<body>${homeHtml}</body>`),
     )
     for (const entry of outDirs) {
-      writeFileSync(
+      writeFile(
         path.join(entry, 'index.html'),
         index.replace(
           '%ENTRYPOINT%',
@@ -105,12 +111,14 @@ esbuild
         ),
       )
     }
+    console.timeEnd('writing indexes')
   })
   .catch((err) => {
     console.log(err)
     return process.exit(1)
   })
 
+console.time('start server')
 if (dev) {
   esbuild
     .serve({servedir: path.join(playgroundDir, 'build')}, config)
@@ -143,6 +151,7 @@ if (dev) {
           {end: true},
         )
       }).listen(port, () => {
+        console.timeEnd('start server')
         console.log('Playground running at', 'http://localhost:' + port)
       })
 
