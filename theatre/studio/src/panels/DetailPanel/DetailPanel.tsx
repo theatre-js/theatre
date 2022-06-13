@@ -44,6 +44,10 @@ const Container = styled.div<{pin: boolean}>`
   &:hover {
     display: block;
   }
+
+  @supports not (backdrop-filter: blur()) {
+    background: rgba(40, 43, 47, 0.95);
+  }
 `
 
 const Title = styled.div`

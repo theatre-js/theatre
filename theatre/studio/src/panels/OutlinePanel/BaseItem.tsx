@@ -71,6 +71,10 @@ const Header = styled(BaseHeader)`
     z-index: 5;
     ${pointerEventsAutoInNormalMode};
   }
+
+  @supports not (backdrop-filter: blur()) {
+    background: rgba(40, 43, 47, 0.95);
+  }
 `
 
 export const outlineItemFont = css`
