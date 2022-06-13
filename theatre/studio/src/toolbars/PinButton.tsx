@@ -36,6 +36,10 @@ const Container = styled.button<{pinned?: boolean}>`
   svg {
     display: block;
   }
+
+  @supports not (backdrop-filter: blur()) {
+    background: rgba(40, 43, 47, 0.95);
+  }
 `
 
 interface PinButtonProps extends ComponentPropsWithRef<'button'> {
