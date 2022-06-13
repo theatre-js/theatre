@@ -7,6 +7,7 @@ import {definedGlobals} from '../../../theatre/devEnv/definedGlobals'
 import {mapValues} from 'lodash-es'
 import React from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
+import {ServerStyleSheet} from 'styled-components'
 import {Home} from './Home'
 import {timer} from './timer'
 import {openForOS} from './openForOS'
@@ -83,11 +84,31 @@ export async function start(options: {
   )
 
   // Render home page contents
-  const homeHtml = renderToStaticMarkup(
-    React.createElement(Home, {
-      groups: mapValues(groups, (group) => Object.keys(group)),
-    }),
-  )
+
+  // Render home page contents
+  const homeHtml = (() => {
+    const sheet = new ServerStyleSheet()
+    try {
+      const html = renderToStaticMarkup(
+        sheet.collectStyles(
+          React.createElement(Home, {
+            groups: mapValues(groups, (group) => Object.keys(group)),
+          }),
+        ),
+      )
+      const styleTags = sheet.getStyleTags() // or sheet.getStyleElement();
+      sheet.seal()
+      return {
+        head: styleTags,
+        html,
+      }
+    } catch (error) {
+      // handle error
+      console.error(error)
+      sheet.seal()
+      process.exit(1)
+    }
+  })()
 
   const _initialBuild = timer('esbuild initial playground entry point builds')
 
@@ -128,7 +149,9 @@ export async function start(options: {
         // Write home page
         writeFile(
           path.join(buildDir, 'index.html'),
-          index.replace(/<body>[\s\S]*<\/body>/, `<body>${homeHtml}</body>`),
+          index
+            .replace(/<\/head>/, `${homeHtml.head}<\/head>`)
+            .replace(/<body>/, `<body>${homeHtml.html}`),
           'utf-8',
         ),
         // Write module pages
