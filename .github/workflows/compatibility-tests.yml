@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  Test:
+  Compatibility-Tests:
     runs-on: ubuntu-latest
 
     strategy:
