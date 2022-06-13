@@ -1,5 +1,5 @@
 import {readdirSync} from 'fs'
-import {writeFile, readFile} from 'fs/promises'
+import {writeFile, readFile, mkdir} from 'fs/promises'
 import path from 'path'
 import type {BuildOptions} from 'esbuild'
 import esbuild from 'esbuild'
@@ -12,6 +12,7 @@ import React from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 import {Home} from './Home'
 import type {Server} from 'net'
+import puppeteer from 'puppeteer'
 
 const playgroundDir = (folder: string) => path.join(__dirname, '..', folder)
 const buildDir = playgroundDir('build')
@@ -20,6 +21,8 @@ const personalDir = playgroundDir('src/personal')
 const testDir = playgroundDir('src/tests')
 
 const dev = process.argv.find((arg) => ['--dev', '-d'].includes(arg)) != null
+const generateThumbnails =
+  process.argv.find((arg) => ['--thumbnails', '-t'].includes(arg)) != null
 const defaultPort = 8080
 
 const liveReload =
@@ -222,7 +225,6 @@ esbuild
     )
 
     const hostedAt = `http://localhost:${portChosen}`
-
     console.log('Playground running at', hostedAt)
 
     // If not in CI, try to spawn a browser
@@ -230,6 +232,48 @@ esbuild
       setTimeout(() => {
         if (!liveReload?.hasOpenConnections()) openForOS(hostedAt)
       }, 1000)
+    }
+
+    let thumbnailsExist = false
+    try {
+      await mkdir(path.join(buildDir, 'thumbnails'))
+    } catch {
+      thumbnailsExist = true
+    }
+
+    if (!thumbnailsExist || generateThumbnails) {
+      console.log('Generating thumbnails...')
+      try {
+        const browser = await puppeteer.launch()
+        const page = await browser.newPage()
+
+        for (const group of Object.keys(groups)) {
+          for (const module of Object.keys(groups[group])) {
+            try {
+              await page.goto(`http://localhost:8080/${group}/${module}`, {
+                waitUntil: 'networkidle2',
+                timeout: 0,
+              })
+
+              await page.screenshot({
+                path: path.join(
+                  buildDir,
+                  'thumbnails',
+                  `${group}-${module}.png`,
+                ),
+              })
+            } catch (e) {
+              console.log(
+                `Failed to generate thumbnail for ${group}/${module}.`,
+              )
+            }
+          }
+        }
+        await browser.close()
+        console.log('Generating thumbnails done.')
+      } catch (e) {
+        console.log(e)
+      }
     }
   })
 
