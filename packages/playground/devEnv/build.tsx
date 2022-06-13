@@ -108,10 +108,7 @@ esbuild
   .build(config)
   .then(async () => {
     // Read index.html template
-    const index = await readFile(
-      path.join(playgroundDir, 'src/index.html'),
-      'utf8',
-    )
+    const index = await readFile(path.join(__dirname, 'index.html'), 'utf8')
     await Promise.all([
       // Write home page
       writeFile(
