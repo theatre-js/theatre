@@ -33,7 +33,7 @@ const Container = deriver(styled.div<{
   position: relative;
   ${pointerEventsAutoInNormalMode};
 
-  background-color: ${getDetailRowHighlightBackground};
+  /* background-color: ${getDetailRowHighlightBackground}; */
 `)
 
 const Left = styled.div`
@@ -50,7 +50,9 @@ const Left = styled.div`
   width: calc(100% - var(--right-width));
 `
 
-const PropNameContainer = styled.div`
+const PropNameContainer = deriver(styled.div<{
+  isHighlighted: PropHighlighted
+}>`
   text-align: left;
   flex: 1 0;
   white-space: nowrap;
@@ -65,7 +67,7 @@ const PropNameContainer = styled.div`
   &:hover {
     color: white;
   }
-`
+`)
 
 const ControlsContainer = styled.div`
   flex-basis: 8px;
@@ -118,6 +120,7 @@ export function SingleRowPropEditor<T>({
       <Left>
         <ControlsContainer>{editingTools.controlIndicators}</ControlsContainer>
         <PropNameContainer
+          isHighlighted={isPropHighlightedD}
           ref={propNameContainerRef}
           title={['obj', 'props', ...getPointerParts(pointerToProp).path].join(
             '.',

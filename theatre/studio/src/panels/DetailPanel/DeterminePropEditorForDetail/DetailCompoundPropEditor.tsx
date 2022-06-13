@@ -33,7 +33,7 @@ const Header = deriver(styled.div<{isHighlighted: PropHighlighted}>`
   align-items: stretch;
   position: relative;
 
-  background-color: ${getDetailRowHighlightBackground};
+  /* background-color: ${getDetailRowHighlightBackground}; */
 `)
 
 const Padding = styled.div`
@@ -42,7 +42,7 @@ const Padding = styled.div`
   align-items: center;
 `
 
-const PropName = styled.div`
+const PropName = deriver(styled.div<{isHighlighted: PropHighlighted}>`
   margin-left: 4px;
   cursor: default;
   height: 100%;
@@ -54,7 +54,7 @@ const PropName = styled.div`
   }
 
   ${() => propNameTextCSS};
-`
+`)
 
 const color = transparentize(0.05, `#282b2f`)
 
@@ -114,8 +114,6 @@ function DetailCompoundPropEditor<
     [pointerToProp],
   )
 
-  // previous versions of the DetailCompoundPropEditor had a context menu item for "Reset values".
-
   return (
     <Container>
       {contextMenu}
@@ -126,7 +124,12 @@ function DetailCompoundPropEditor<
       >
         <Padding>
           {tools.controlIndicators}
-          <PropName ref={propNameContainerRef}>{propName || 'Props'}</PropName>
+          <PropName
+            isHighlighted={isPropHighlightedD}
+            ref={propNameContainerRef}
+          >
+            {propName || 'Props'}
+          </PropName>
         </Padding>
       </Header>
 
