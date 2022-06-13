@@ -70,7 +70,9 @@ const outDirs = Object.values(groups).flatMap((group) =>
 
 // Render home page contents
 const homeHtml = renderToStaticMarkup(
-  <Home groups={mapValues(groups, (group) => Object.keys(group))} />,
+  React.createElement(Home, {
+    groups: mapValues(groups, (group) => Object.keys(group)),
+  }),
 )
 
 const config: BuildOptions = {
