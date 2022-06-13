@@ -10,7 +10,7 @@ import {createServer, request} from 'http'
 import {spawn} from 'child_process'
 import React from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
-import {Home} from './buildIndex'
+import {Home} from './Home'
 
 const playgroundDir = path.join(__dirname, '..')
 const buildDir = path.join(playgroundDir, 'build')
