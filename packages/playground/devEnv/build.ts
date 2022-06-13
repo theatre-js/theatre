@@ -54,10 +54,14 @@ const liveReload =
       },
       esbuildWatch: {
         onRebuild(error) {
-          // Notify clients on rebuild
-          openResponses.forEach((res) => res.write('data: update\n\n'))
-          openResponses.length = 0
-          console.error(error ? error : 'Reloading...')
+          if (!error) {
+            console.error('Reloading...')
+            // Notify clients on rebuild
+            openResponses.forEach((res) => res.write('data: update\n\n'))
+            openResponses.length = 0
+          } else {
+            console.error('Rebuild had errors...')
+          }
         },
       },
     }
@@ -141,6 +145,10 @@ const config: BuildOptions = {
 
 esbuild
   .build(config)
+  .catch((err) => {
+    // if in dev mode, permit continuing to watch even if there was an error
+    return dev ? Promise.resolve() : Promise.reject(err)
+  })
   .then(async () => {
     // Read index.html template
     const index = await readFile(path.join(__dirname, 'index.html'), 'utf8')
