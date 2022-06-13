@@ -60,6 +60,10 @@ export const Container = styled.button`
       border-top-right-radius: 2px;
     }
   }
+
+  @supports not (backdrop-filter: blur()) {
+    background: rgba(40, 43, 47, 0.95);
+  }
 `
 
 const ToolbarIconButton: typeof Container = React.forwardRef(
