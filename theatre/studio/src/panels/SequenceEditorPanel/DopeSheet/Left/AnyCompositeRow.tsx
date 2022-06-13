@@ -45,6 +45,10 @@ const LeftRowHead_Label = styled.span`
   padding-right: 4px;
   line-height: 26px;
   flex-wrap: nowrap;
+
+  ${LeftRowHeader}:hover & {
+    color: #ccc;
+  }
 `
 
 const LeftRowHead_Icon = styled.span<{isCollapsed: boolean}>`
@@ -93,13 +97,14 @@ const AnyCompositeRow: React.FC<{
 }) => {
   const hasChildren = Array.isArray(children) && children.length > 0
 
-  const containerRef = useRef<HTMLLIElement | null>(null)
+  const rowHeaderRef = useRef<HTMLDivElement | null>(null)
 
-  usePropHighlightMouseEnter(containerRef.current, leaf)
+  usePropHighlightMouseEnter(rowHeaderRef.current, leaf)
 
   return leaf.shouldRender ? (
-    <LeftRowContainer depth={leaf.depth} ref={containerRef}>
+    <LeftRowContainer depth={leaf.depth}>
       <LeftRowHeader
+        ref={rowHeaderRef}
         style={{
           height: leaf.nodeHeight + 'px',
         }}
