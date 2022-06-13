@@ -10,13 +10,17 @@ export function usePropHighlightMouseEnter(
 ) {
   useLayoutEffect(() => {
     if (!node) return
-    if (leaf.type !== 'propWithChildren' && leaf.type !== 'primitiveProp')
+    if (
+      leaf.type !== 'propWithChildren' &&
+      leaf.type !== 'primitiveProp' &&
+      leaf.type !== 'sheetObject'
+    )
       return
 
     let unlock: null | (() => void) = null
     const propAddress: PropAddress = {
       ...leaf.sheetObject.address,
-      pathToProp: leaf.pathToProp,
+      pathToProp: leaf.type === 'sheetObject' ? [] : leaf.pathToProp,
     }
 
     function onMouseEnter() {
