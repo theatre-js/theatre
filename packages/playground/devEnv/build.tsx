@@ -143,10 +143,10 @@ esbuild
       return
     }
 
-    // I think we are double-compiling by using both esbuild watch & esbuild serve
-    // but compilation times are so insignificant that it's not worth worrying about.
+    // We start ESBuild serve with no build config because it doesn't need to build
+    // anything, we are already using ESBuild watch.
     esbuild
-      .serve({servedir: path.join(playgroundDir, 'build')}, config)
+      .serve({servedir: path.join(playgroundDir, 'build')}, {})
       .then(({port: esbuildPort}) => {
         // Create proxy
         createServer((req, res) => {
