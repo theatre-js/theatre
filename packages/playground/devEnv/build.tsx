@@ -94,20 +94,18 @@ const config: BuildOptions = {
         js: ' (() => new EventSource("/esbuild").onmessage = () => location.reload())();',
       }
     : undefined,
+  watch: dev && {
+    onRebuild(error) {
+      // Notify clients on rebuild
+      clients.forEach((res) => res.write('data: update\n\n'))
+      clients.length = 0
+      console.log(error ? error : 'Reloading...')
+    },
+  },
 }
 
 esbuild
-  .build({
-    ...config,
-    watch: dev && {
-      onRebuild(error) {
-        // Notify clients on rebuild
-        clients.forEach((res) => res.write('data: update\n\n'))
-        clients.length = 0
-        console.log(error ? error : 'Reloading...')
-      },
-    },
-  })
+  .build(config)
   .then(async () => {
     // Read index.html template
     const index = await readFile(
