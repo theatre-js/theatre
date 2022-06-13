@@ -8,8 +8,8 @@
     "dist/**/*"
   ],
   "scripts": {
-    "serve": "node -r esbuild-register devEnv/build.tsx -d",
-    "build": "node -r esbuild-register devEnv/build.tsx",
+    "serve": "node -r esbuild-register devEnv/build.ts --dev",
+    "build": "node -r esbuild-register devEnv/build.ts",
     "build:static": "yarn build",
     "typecheck": "yarn run build",
     "test": "playwright test --config=devEnv/playwright.config.ts",
