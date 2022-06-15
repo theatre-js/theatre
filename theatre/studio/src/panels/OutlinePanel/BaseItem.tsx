@@ -65,7 +65,7 @@ const Header = styled(BaseHeader)`
   // Hit zone
   &:before {
     position: absolute;
-    inset: -1px -20px;
+    inset: -1px 0;
     display: block;
     content: ' ';
     z-index: 5;
