@@ -120,7 +120,6 @@ type InternalPresenceContext = {
     itemKey: StudioSheetItemKey | undefined,
   ): PresenceFlag | undefined
   setUserHover(itemKey: StudioSheetItemKey | undefined): void
-  /**  */
   addRelatedFlags(
     itemKey: StudioSheetItemKey,
     config: Array<FlagRelationConfig>,
