@@ -95,9 +95,7 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({maxHeight, maxWidth}) => {
   const [ref, bounds] = useMeasure()
 
   const preserveDrawingBuffer =
-    (
-      gl?.domElement.getContext('webgl') ?? gl?.domElement.getContext('webgl2')
-    )?.getContextAttributes()?.preserveDrawingBuffer ?? false
+    gl?.getContextAttributes()?.preserveDrawingBuffer ?? false
 
   useLayoutEffect(() => {
     if (gl) {
