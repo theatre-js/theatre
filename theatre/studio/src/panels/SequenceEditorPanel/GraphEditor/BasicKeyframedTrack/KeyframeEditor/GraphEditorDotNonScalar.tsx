@@ -17,6 +17,9 @@ import {
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import {useSingleKeyframeInlineEditorPopover} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/useSingleKeyframeInlineEditorPopover'
+import usePresence, {
+  PresenceFlag,
+} from '@theatre/studio/uiComponents/usePresence'
 
 export const dotSize = 6
 
@@ -58,10 +61,12 @@ type IProps = Parameters<typeof KeyframeEditor>[0] & {which: 'left' | 'right'}
 const GraphEditorDotNonScalar: React.VFC<IProps> = (props) => {
   const [ref, node] = useRefAndState<SVGCircleElement | null>(null)
 
-  const {index, trackData} = props
+  const {index, trackData, itemKey} = props
   const cur = trackData.keyframes[index]
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
+
+  const presence = usePresence(itemKey)
 
   const curValue = props.which === 'left' ? 0 : 1
 
@@ -93,6 +98,7 @@ const GraphEditorDotNonScalar: React.VFC<IProps> = (props) => {
           cx: `calc(var(--unitSpaceToScaledSpaceMultiplier) * ${cur.position} * 1px)`,
           cy: `calc((var(--graphEditorVerticalSpace) - var(--graphEditorVerticalSpace) * ${cyInExtremumSpace}) * 1px)`,
         }}
+        {...presence.attrs}
         {...includeLockFrameStampAttrs(cur.position)}
         {...DopeSnap.includePositionSnapAttrs(cur.position)}
         className={isDragging ? 'beingDragged' : ''}
@@ -102,6 +108,7 @@ const GraphEditorDotNonScalar: React.VFC<IProps> = (props) => {
           // @ts-ignore
           cx: `calc(var(--unitSpaceToScaledSpaceMultiplier) * ${cur.position} * 1px)`,
           cy: `calc((var(--graphEditorVerticalSpace) - var(--graphEditorVerticalSpace) * ${cyInExtremumSpace}) * 1px)`,
+          fill: presence.flag === PresenceFlag.Primary ? 'white' : undefined,
         }}
       />
       {inlineEditorPopover}

@@ -5,6 +5,7 @@ import type {
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {PathToProp} from '@theatre/shared/utils/addresses'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import React, {useMemo, useRef, useState} from 'react'
@@ -96,6 +97,11 @@ const BasicKeyframedTrack: React.VFC<{
       <KeyframeEditor
         pathToProp={pathToProp}
         propConfig={propConfig}
+        itemKey={createStudioSheetItemKey.forTrackKeyframe(
+          sheetObject,
+          trackId,
+          kf.id,
+        )}
         keyframe={kf}
         index={index}
         trackData={trackData}

@@ -1,4 +1,5 @@
 import {prism} from '@theatre/dataverse'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregatedKeyframeTrack'
 import {isConnectionEditingInCurvePopover} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/CurveEditorPopover/CurveEditorPopover'
 import {usePrism} from '@theatre/react'
@@ -93,7 +94,27 @@ export function getAggregateKeyframeEditorUtilsPrismFn(
       (con) => isConnectionEditingInCurvePopover(con),
     )
 
+    const itemKey = prism.memo(
+      'itemKey',
+      () => {
+        if (props.viewModel.type === 'sheetObject') {
+          return createStudioSheetItemKey.forSheetObjectAggregateKeyframe(
+            props.viewModel.sheetObject,
+            cur.position,
+          )
+        } else {
+          return createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+            props.viewModel.sheetObject,
+            props.viewModel.pathToProp,
+            cur.position,
+          )
+        }
+      },
+      [props.viewModel.sheetObject, cur.position],
+    )
+
     return {
+      itemKey,
       cur,
       connected,
       isAggregateEditingInCurvePopover,

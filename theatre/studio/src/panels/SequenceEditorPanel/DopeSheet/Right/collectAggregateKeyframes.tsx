@@ -4,7 +4,11 @@ import type {
   SequenceEditorTree_PropWithChildren,
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import type {
+  SequenceTrackId,
+  StudioSheetItemKey,
+} from '@theatre/shared/utils/ids'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {
   Keyframe,
   TrackData,
@@ -31,6 +35,7 @@ export type TrackWithId = {
 export type KeyframeWithTrack = {
   kf: Keyframe
   track: TrackWithId
+  itemKey: StudioSheetItemKey
 }
 
 /**
@@ -120,7 +125,15 @@ export function collectAggregateKeyframesInPrism(
         existing = []
         byPosition.set(kf.position, existing)
       }
-      existing.push({kf, track})
+      existing.push({
+        kf,
+        track,
+        itemKey: createStudioSheetItemKey.forTrackKeyframe(
+          sheetObject,
+          track.id,
+          kf.id,
+        ),
+      })
     }
   }
 

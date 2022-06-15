@@ -4,7 +4,10 @@ import type {
 } from '@theatre/core/projects/store/types/SheetState_Historic'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import type {
+  SequenceTrackId,
+  StudioSheetItemKey,
+} from '@theatre/shared/utils/ids'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
@@ -28,6 +31,7 @@ type IKeyframeEditorProps = {
   index: number
   keyframe: Keyframe
   trackData: TrackData
+  itemKey: StudioSheetItemKey
   layoutP: Pointer<SequenceEditorPanelLayout>
   trackId: SequenceTrackId
   sheetObject: SheetObject

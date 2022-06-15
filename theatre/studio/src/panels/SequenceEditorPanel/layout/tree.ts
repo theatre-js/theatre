@@ -8,7 +8,10 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {IPropPathToTrackIdTree} from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {PathToProp} from '@theatre/shared/utils/addresses'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import type {
+  SequenceTrackId,
+  StudioSheetItemKey,
+} from '@theatre/shared/utils/ids'
 import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
 import {prism, val, valueDerivation} from '@theatre/dataverse'
@@ -30,6 +33,8 @@ export type SequenceEditorTree_Row<TypeName extends string> = {
 
   /** Visual indentation */
   depth: number
+  /** A convenient studio sheet localized identifier for managing presence and ephemeral visual effects. */
+  sheetItemKey: StudioSheetItemKey
   /**
    * This is a part of the tree, but it is not rendered at all,
    * and it doesn't contribute to height.
@@ -107,6 +112,7 @@ export const calculateSequenceEditorTree = (
     type: 'sheet',
     sheet,
     children: [],
+    sheetItemKey: createStudioSheetItemKey.forSheet(),
     shouldRender: rootShouldRender,
     top: topSoFar,
     depth: -1,
@@ -151,6 +157,7 @@ export const calculateSequenceEditorTree = (
     const row: SequenceEditorTree_SheetObject = {
       type: 'sheetObject',
       isCollapsed,
+      sheetItemKey: createStudioSheetItemKey.forSheetObject(sheetObject),
       shouldRender,
       top: topSoFar,
       children: [],
@@ -270,6 +277,10 @@ export const calculateSequenceEditorTree = (
       type: 'propWithChildren',
       isCollapsed,
       pathToProp,
+      sheetItemKey: createStudioSheetItemKey.forSheetObjectProp(
+        sheetObject,
+        pathToProp,
+      ),
       sheetObject: sheetObject,
       shouldRender,
       top: topSoFar,
@@ -316,6 +327,10 @@ export const calculateSequenceEditorTree = (
       type: 'primitiveProp',
       propConf: propConf,
       depth: level,
+      sheetItemKey: createStudioSheetItemKey.forSheetObjectProp(
+        sheetObject,
+        pathToProp,
+      ),
       sheetObject: sheetObject,
       pathToProp,
       shouldRender,

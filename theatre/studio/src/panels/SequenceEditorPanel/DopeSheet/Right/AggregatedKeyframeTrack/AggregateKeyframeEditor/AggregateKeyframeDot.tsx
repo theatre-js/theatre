@@ -1,5 +1,8 @@
 import React from 'react'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
+import usePresence, {
+  PresenceFlag,
+} from '@theatre/studio/uiComponents/usePresence'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import type {IAggregateKeyframeEditorProps} from './AggregateKeyframeEditor'
@@ -26,6 +29,22 @@ export function AggregateKeyframeDot(
   const logger = useLogger('AggregateKeyframeDot')
   const {cur} = props.utils
 
+  const presence = usePresence(props.utils.itemKey)
+  presence.useRelations(
+    () =>
+      cur.keyframes.map((kf) => ({
+        affects: kf.itemKey,
+        flag: PresenceFlag.Primary,
+      })),
+    [
+      // Hmm: Is this a valid fix for the changing size of the useEffect's dependency array?
+      // also: does it work properly with selections?
+      cur.keyframes
+        .map((keyframeWithTrack) => keyframeWithTrack.track.id)
+        .join('-'),
+    ],
+  )
+
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useAggregateKeyframeContextMenu(props, logger, node)
@@ -34,11 +53,13 @@ export function AggregateKeyframeDot(
     <>
       <HitZone
         ref={ref}
+        {...presence.attrs}
         // Need this for the dragging logic to be able to get the keyframe props
         // based on the position.
         {...DopeSnap.includePositionSnapAttrs(cur.position)}
       />
       <AggregateKeyframeVisualDot
+        flag={presence.flag}
         isAllHere={cur.allHere}
         isSelected={cur.selected}
       />

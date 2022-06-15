@@ -17,6 +17,9 @@ import {
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import {useSingleKeyframeInlineEditorPopover} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/useSingleKeyframeInlineEditorPopover'
+import usePresence, {
+  PresenceFlag,
+} from '@theatre/studio/uiComponents/usePresence'
 
 export const dotSize = 6
 
@@ -60,9 +63,9 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
 
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
+  const presence = usePresence(props.itemKey)
 
   const curValue = cur.value as number
 
@@ -95,6 +98,7 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
         }}
         {...includeLockFrameStampAttrs(cur.position)}
         {...DopeSnap.includePositionSnapAttrs(cur.position)}
+        {...presence.attrs}
         className={isDragging ? 'beingDragged' : ''}
       />
       <Circle
@@ -102,6 +106,7 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
           // @ts-ignore
           cx: `calc(var(--unitSpaceToScaledSpaceMultiplier) * ${cur.position} * 1px)`,
           cy: `calc((var(--graphEditorVerticalSpace) - var(--graphEditorVerticalSpace) * ${cyInExtremumSpace}) * 1px)`,
+          fill: presence.flag === PresenceFlag.Primary ? 'white' : undefined,
         }}
       />
       {inlineEditorPopover}
