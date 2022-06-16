@@ -46,6 +46,7 @@ const Header = styled(BaseHeader)`
     background: rgba(29, 53, 59, 0.7);
   }
 
+  ${pointerEventsAutoInNormalMode};
   &:not(.not-selectable):not(.selected):hover {
     background: rgba(59, 63, 69, 0.9);
 
@@ -69,7 +70,6 @@ const Header = styled(BaseHeader)`
     display: block;
     content: ' ';
     z-index: 5;
-    ${pointerEventsAutoInNormalMode};
   }
 
   @supports not (backdrop-filter: blur()) {
