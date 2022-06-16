@@ -8,7 +8,7 @@ import {mapValues} from 'lodash-es'
 import React from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 import {ServerStyleSheet} from 'styled-components'
-import {Home} from './Home'
+import {PlaygroundPage} from './home/PlaygroundPage'
 import {timer} from './timer'
 import {openForOS} from './openForOS'
 import {tryMultiplePorts} from './tryMultiplePorts'
@@ -91,7 +91,7 @@ export async function start(options: {
     try {
       const html = renderToStaticMarkup(
         sheet.collectStyles(
-          React.createElement(Home, {
+          React.createElement(PlaygroundPage, {
             groups: mapValues(groups, (group) => Object.keys(group)),
           }),
         ),
@@ -129,7 +129,12 @@ export async function start(options: {
       'window.__IS_VISUAL_REGRESSION_TESTING': 'true',
     },
     banner: liveReload?.esbuildBanner,
-    watch: liveReload?.esbuildWatch,
+    watch: liveReload?.esbuildWatch && {
+      onRebuild(error, result) {
+        esbuildWatchStop = result?.stop ?? esbuildWatchStop
+        liveReload?.esbuildWatch.onRebuild?.(error, result)
+      },
+    },
   }
 
   let esbuildWatchStop: undefined | (() => void)
@@ -158,10 +163,14 @@ export async function start(options: {
         ...outDirs.map((outDir) =>
           writeFile(
             path.join(outDir, 'index.html'),
-            // Substitute %ENTRYPOINT% placeholder with the output file path
+            // Insert the script
             index.replace(
-              '%ENTRYPOINT%',
-              path.join('/', path.relative(buildDir, outDir), 'index.js'),
+              /<\/body>/,
+              `<script src="${path.join(
+                '/',
+                path.relative(buildDir, outDir),
+                'index.js',
+              )}"></script></body>`,
             ),
             'utf-8',
           ),
