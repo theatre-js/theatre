@@ -21,7 +21,9 @@ export enum PresenceFlag {
 const undefinedD = prism(() => undefined)
 undefinedD.keepHot() // constant anyway...
 
-function createPresenceContext(): InternalPresenceContext {
+function createPresenceContext(options: {
+  enabled: boolean
+}): InternalPresenceContext {
   const currentUserHoverItemB = new Box<StudioSheetItemKey | undefined>(
     undefined,
   )
@@ -61,6 +63,8 @@ function createPresenceContext(): InternalPresenceContext {
       }
     },
     usePresenceFlag(itemKey) {
+      if (!options.enabled) return undefined
+
       const focusD = useMemo(() => {
         if (!itemKey) return undefinedD
         // this is the thing being hovered
@@ -127,10 +131,10 @@ type InternalPresenceContext = {
 }
 
 const presenceInternalCtx = React.createContext<InternalPresenceContext>(
-  createPresenceContext(),
+  createPresenceContext({enabled: false}),
 )
 export function ProvidePresenceRoot({children}: React.PropsWithChildren<{}>) {
-  const presence = useMemo(() => createPresenceContext(), [])
+  const presence = useMemo(() => createPresenceContext({enabled: false}), [])
   return React.createElement(
     presenceInternalCtx.Provider,
     {children, value: presence},
