@@ -58,7 +58,7 @@ async function createBundles() {
         '@theatre/studio',
         '@theatre/dataverse',
         '@theatre/r3f',
-        // 'three',
+        'three',
         // '@react-three/fiber',
         // '@react-three/drei',
         // 'three-stdlib',
