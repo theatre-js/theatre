@@ -7,7 +7,8 @@ import {definedGlobals} from '../../../theatre/devEnv/definedGlobals'
 import {mapValues} from 'lodash-es'
 import React from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
-import {Home} from './Home'
+import {ServerStyleSheet} from 'styled-components'
+import {PlaygroundPage} from './home/PlaygroundPage'
 import {timer} from './timer'
 import {openForOS} from './openForOS'
 import {tryMultiplePorts} from './tryMultiplePorts'
@@ -83,11 +84,31 @@ export async function start(options: {
   )
 
   // Render home page contents
-  const homeHtml = renderToStaticMarkup(
-    React.createElement(Home, {
-      groups: mapValues(groups, (group) => Object.keys(group)),
-    }),
-  )
+
+  // Render home page contents
+  const homeHtml = (() => {
+    const sheet = new ServerStyleSheet()
+    try {
+      const html = renderToStaticMarkup(
+        sheet.collectStyles(
+          React.createElement(PlaygroundPage, {
+            groups: mapValues(groups, (group) => Object.keys(group)),
+          }),
+        ),
+      )
+      const styleTags = sheet.getStyleTags() // or sheet.getStyleElement();
+      sheet.seal()
+      return {
+        head: styleTags,
+        html,
+      }
+    } catch (error) {
+      // handle error
+      console.error(error)
+      sheet.seal()
+      process.exit(1)
+    }
+  })()
 
   const _initialBuild = timer('esbuild initial playground entry point builds')
 
@@ -108,7 +129,12 @@ export async function start(options: {
       'window.__IS_VISUAL_REGRESSION_TESTING': 'true',
     },
     banner: liveReload?.esbuildBanner,
-    watch: liveReload?.esbuildWatch,
+    watch: liveReload?.esbuildWatch && {
+      onRebuild(error, result) {
+        esbuildWatchStop = result?.stop ?? esbuildWatchStop
+        liveReload?.esbuildWatch.onRebuild?.(error, result)
+      },
+    },
   }
 
   let esbuildWatchStop: undefined | (() => void)
@@ -128,17 +154,23 @@ export async function start(options: {
         // Write home page
         writeFile(
           path.join(buildDir, 'index.html'),
-          index.replace(/<body>[\s\S]*<\/body>/, `<body>${homeHtml}</body>`),
+          index
+            .replace(/<\/head>/, `${homeHtml.head}<\/head>`)
+            .replace(/<body>/, `<body>${homeHtml.html}`),
           'utf-8',
         ),
         // Write module pages
         ...outDirs.map((outDir) =>
           writeFile(
             path.join(outDir, 'index.html'),
-            // Substitute %ENTRYPOINT% placeholder with the output file path
+            // Insert the script
             index.replace(
-              '%ENTRYPOINT%',
-              path.join('/', path.relative(buildDir, outDir), 'index.js'),
+              /<\/body>/,
+              `<script src="${path.join(
+                '/',
+                path.relative(buildDir, outDir),
+                'index.js',
+              )}"></script></body>`,
             ),
             'utf-8',
           ),
