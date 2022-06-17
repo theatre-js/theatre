@@ -126,6 +126,25 @@ const ReferenceWindowContainer = styled.div`
   justify-content: center;
 `
 
+const WaitForSceneInitMessage = styled.div<{active?: boolean}>`
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  width: 300px;
+  top: 12px;
+  padding: 16px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(14px);
+  background: rgba(40, 43, 47, 0.8);
+
+  @supports not (backdrop-filter: blur()) {
+    background-color: rgba(40, 43, 47, 0.95);
+  }
+`
+
 const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   const snapshotEditorSheet = getEditorSheet()
   const paneId = props.paneId
@@ -137,20 +156,10 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
     shallow,
   )
 
-  const editorOpen = true
   useLayoutEffect(() => {
-    let timeout: NodeJS.Timeout | undefined
-    if (editorOpen) {
-      // a hack to make sure all the scene's props are
-      // applied before we take a snapshot
-      timeout = setTimeout(createSnapshot, 100)
-    }
-    return () => {
-      if (timeout !== undefined) {
-        clearTimeout(timeout)
-      }
-    }
-  }, [editorOpen])
+    // Create a fresh snapshot when the editor is opened
+    createSnapshot()
+  }, [])
 
   const onPointerMissed = useCallback(() => {
     // This callback runs when the user clicks in an empty space inside a SnapshotEditor.
@@ -190,28 +199,30 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                   maxWidth={Math.min(bounds.width * 0.4, 200)}
                 />
               </ReferenceWindowContainer>
+              {!sceneSnapshot && (
+                <WaitForSceneInitMessage>
+                  The scene hasn't been initialized yet. It will appear in the
+                  editor as soon as it is.
+                </WaitForSceneInitMessage>
+              )}
             </Overlay>
 
-            {sceneSnapshot ? (
-              <>
-                <CanvasWrapper ref={ref}>
-                  <Canvas
-                    onCreated={({gl}) => {
-                      gl.setClearColor('white')
-                    }}
-                    shadows
-                    dpr={[1, 2]}
-                    frameloop="demand"
-                    onPointerMissed={onPointerMissed}
-                  >
-                    <EditorScene
-                      snapshotEditorSheet={snapshotEditorSheet}
-                      paneId={paneId}
-                    />
-                  </Canvas>
-                </CanvasWrapper>
-              </>
-            ) : null}
+            <CanvasWrapper ref={ref}>
+              <Canvas
+                onCreated={({gl}) => {
+                  gl.setClearColor('white')
+                }}
+                shadows
+                dpr={[1, 2]}
+                frameloop="demand"
+                onPointerMissed={onPointerMissed}
+              >
+                <EditorScene
+                  snapshotEditorSheet={snapshotEditorSheet}
+                  paneId={paneId}
+                />
+              </Canvas>
+            </CanvasWrapper>
           </Wrapper>
         </>
       </StyleSheetManager>

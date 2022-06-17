@@ -52,7 +52,7 @@ export type EditorStore = {
   ) => void
 }
 
-const config: StateCreator<EditorStore> = (set) => {
+const config: StateCreator<EditorStore> = (set, get) => {
   return {
     sheet: null,
     editorObject: null,
@@ -70,6 +70,10 @@ const config: StateCreator<EditorStore> = (set) => {
         scene,
         gl,
       })
+
+      // Create a snapshot, so that if the editor is already open, it gets refreshed
+      // when the scene is initialized
+      get().createSnapshot()
     },
 
     addEditable: (uniqueName, editable) => {
