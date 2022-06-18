@@ -194,8 +194,8 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
               <Tools ref={setToolsContainer} />
               <ReferenceWindowContainer>
                 <ReferenceWindow
-                  maxHeight={Math.min(bounds.height * 0.3, 120)}
-                  maxWidth={Math.min(bounds.width * 0.4, 200)}
+                  maxHeight={Math.min(bounds.height * 0.3, 150)}
+                  maxWidth={Math.min(bounds.width * 0.3, 250)}
                 />
               </ReferenceWindowContainer>
               {!sceneSnapshot && (
