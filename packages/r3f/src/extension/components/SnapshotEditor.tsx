@@ -31,7 +31,6 @@ const GlobalStyle = createGlobalStyle`
   * {
     padding: 0;
     margin: 0;
-    font-size: 100%;
     font: inherit;
     vertical-align: baseline;
     list-style: none;
@@ -91,15 +90,15 @@ const Wrapper = styled.div`
   margin: 0;
 
   position: absolute;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   overflow: hidden;
 `
 
 const CanvasWrapper = styled.div`
-  display: relative;
+  position: relative;
   z-index: 0;
   height: 100%;
   overflow: hidden;
