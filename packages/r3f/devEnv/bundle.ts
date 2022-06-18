@@ -58,7 +58,7 @@ async function createBundles() {
         '@theatre/studio',
         '@theatre/dataverse',
         '@theatre/r3f',
-        // 'three',
+        'three',
         // '@react-three/fiber',
         // '@react-three/drei',
         // 'three-stdlib',
@@ -69,6 +69,7 @@ async function createBundles() {
       outfile: path.join(__dirname, '../dist/extension/index.js'),
       format: 'cjs',
       metafile: true,
+      minify: true,
     }
 
     const result = await build(esbuildConfig)
