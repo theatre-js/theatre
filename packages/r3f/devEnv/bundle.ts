@@ -5,7 +5,7 @@ const definedGlobals = {
   'process.env.THEATRE_VERSION': JSON.stringify(
     require('../package.json').version,
   ),
-  'process.env.NODE_ENV': JSON.stringify('development'),
+  'process.env.NODE_ENV': JSON.stringify('production'),
 }
 
 createBundles()
