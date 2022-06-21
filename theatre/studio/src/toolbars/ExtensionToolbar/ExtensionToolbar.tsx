@@ -14,7 +14,7 @@ const Container = styled.div`
   /* pointer-events: none; */
 
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   justify-content: center;
 `
 
@@ -32,6 +32,14 @@ const Bg = styled.div`
     background-color: rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(4px);
   }
+`
+
+const GroupDivider = styled.div`
+  position: abolute;
+  height: 32px;
+  width: 1px;
+  background: #373b40;
+  opacity: 0.4;
 `
 
 const ExtensionToolsetRender: React.FC<{
@@ -60,16 +68,22 @@ export const ExtensionToolbar: React.FC<{toolbarId: string}> = ({
   const groups: Array<React.ReactNode> = []
   const extensionsById = useVal(getStudio().atomP.ephemeral.extensions.byId)
 
+  let isAfterFirstGroup = false
   for (const [, extension] of Object.entries(extensionsById)) {
     if (!extension || !extension.toolbars?.[toolbarId]) continue
 
     groups.push(
-      <ExtensionToolsetRender
-        extension={extension}
-        key={'extensionToolbar-' + extension.id}
-        toolbarId={toolbarId}
-      />,
+      <>
+        {isAfterFirstGroup ? <GroupDivider></GroupDivider> : undefined}
+        <ExtensionToolsetRender
+          extension={extension}
+          key={'extensionToolbar-' + extension.id}
+          toolbarId={toolbarId}
+        />
+      </>,
     )
+
+    isAfterFirstGroup = true
   }
 
   if (groups.length === 0) return null
