@@ -12,7 +12,7 @@ studio.extend({
   toolbars: {
     global(set, studio) {
       const exampleBox = new Box('mobile')
-      const calc = prism<ToolsetConfig>(() => [
+      return prism<ToolsetConfig>(() => [
         {
           type: 'Switch',
           value: val(exampleBox.derivation),
@@ -38,9 +38,8 @@ studio.extend({
             console.log('hello')
           },
         },
-      ])
-      return calc.tapImmediate(Ticker.raf, () => {
-        set(calc.getValue())
+      ]).tapImmediate(Ticker.raf, (value) => {
+        set(value)
       })
     },
   },
