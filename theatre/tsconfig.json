@@ -5,7 +5,7 @@
     "lib": ["es2017", "dom", "ESNext"],
     "rootDir": ".",
     "composite": true,
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "webxr"],
     "plugins": [
       {
         "name": "typescript-styled-plugin",

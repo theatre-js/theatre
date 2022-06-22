@@ -20,7 +20,6 @@ import type {ProjectId} from '@theatre/shared/utils/ids'
 import {_coreLogger} from './_coreLogger'
 import type {DriverFn} from '@theatre/dataverse'
 import {AnimationDriver} from '@theatre/dataverse'
-import type {XRSession} from 'three'
 export {types}
 
 /**
