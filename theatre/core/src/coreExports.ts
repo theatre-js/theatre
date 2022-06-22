@@ -18,6 +18,9 @@ import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import coreTicker from './coreTicker'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import {_coreLogger} from './_coreLogger'
+import type {DriverFn} from '@theatre/dataverse/dist/Ticker'
+import {AnimationDriver} from '@theatre/dataverse/dist/Ticker'
+import type {XRSession} from 'three'
 export {types}
 
 /**
@@ -190,5 +193,55 @@ export function val<T>(pointer: PointerType<T>): T {
     return valueDerivation(pointer).getValue() as $IntentionalAny
   } else {
     throw new Error(`Called val(p) where p is not a pointer.`)
+  }
+}
+
+/**
+ * Applies a driver using Window.requestAnimationFrame().
+ *
+ * @param driver - 'raf'.
+ */
+export function applyAnimationDriver(driver: 'raf'): void
+/**
+ * Applies a driver using the provided updater function.
+ *
+ * @param driver - The function to be used to update the driver. Must return
+ * a function that will be called to stop the driver.
+ */
+export function applyAnimationDriver(driver: DriverFn): void
+/**
+ * Applies a driver using XRSession.requestAnimationFrame() and the provided XRSession.
+ *
+ * @param driver - 'xrRaf'.
+ * @param xrSession - The XRSession to use.
+ */
+export function applyAnimationDriver(
+  driver: 'xrRaf',
+  xrSession: XRSession,
+): void
+/**
+ * Applies a driver either using Window.requestAnimationFrame(), XRSession.requestAnimationFrame()
+ * or the provided updater function.
+ *
+ * @param driver - The driver to apply.
+ * @param xrSession - The XRSession to use.
+ */
+export function applyAnimationDriver(
+  driver: 'raf' | 'xrRaf' | DriverFn,
+  xrSession?: XRSession,
+): void {
+  if (driver === 'raf') {
+    coreTicker.applyDriver(AnimationDriver.rafDriver())
+  } else if (driver === 'xrRaf') {
+    if (!xrSession) {
+      throw new Error(
+        `Called applyDriver('xrRaf') but no XRSession was provided.`,
+      )
+    }
+    coreTicker.applyDriver(AnimationDriver.xrRafDriver(xrSession))
+  } else if (typeof driver === 'function') {
+    coreTicker.applyDriver(new AnimationDriver(driver))
+  } else {
+    throw new Error(`Invalid driver: ${driver}`)
   }
 }

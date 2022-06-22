@@ -6487,6 +6487,7 @@ __metadata:
     "@types/jest": ^26.0.23
     "@types/lodash-es": ^4.17.4
     "@types/node": ^15.6.2
+    "@types/webxr": ^0.4.0
     esbuild: ^0.12.15
     esbuild-register: ^2.5.0
     lodash-es: ^4.17.21
@@ -7288,6 +7289,13 @@ __metadata:
     anymatch: ^3.0.0
     source-map: ^0.6.0
   checksum: a247f48905777ac96fd43699cbef0aa053d25316f4242f3b1b9c5193850883fe42397e745a87b209c1da94f61dbbb9db2cef0a74b420bd3fe3af3be6a5ed039f
+  languageName: node
+  linkType: hard
+
+"@types/webxr@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@types/webxr@npm:0.4.0"
+  checksum: 4388c18a5b08ef4aa97f2177d3d80d384c5557c4b06278215d46472585923128fb316353e5fb799d22ffe99be149af90d0c27c41cb3681e82228088e48b24184
   languageName: node
   linkType: hard
 

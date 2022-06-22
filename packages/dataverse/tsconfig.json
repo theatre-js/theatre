@@ -4,7 +4,7 @@
     "outDir": "dist",
     "lib": ["ESNext", "DOM"],
     "rootDir": "src",
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "webxr"],
     "emitDeclarationOnly": true,
     "target": "es6",
     "composite": true

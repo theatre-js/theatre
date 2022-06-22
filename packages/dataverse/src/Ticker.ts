@@ -1,30 +1,87 @@
 type ICallback = (t: number) => void
 
-function createRafTicker() {
-  const ticker = new Ticker()
+let rafTicker: undefined | Ticker
 
-  if (typeof window !== 'undefined') {
-    /**
-     * @remarks
-     * TODO users should also be able to define their own ticker.
-     */
-    const onAnimationFrame = (t: number) => {
-      ticker.tick(t)
-      window.requestAnimationFrame(onAnimationFrame)
-    }
-    window.requestAnimationFrame(onAnimationFrame)
-  } else {
-    ticker.tick(0)
-    setTimeout(() => ticker.tick(1), 0)
-    console.log(
-      `@theatre/dataverse is running in a server rather than in a browser. We haven't gotten around to testing server-side rendering, so if something is working in the browser but not on the server, please file a bug: https://github.com/theatre-js/theatre/issues/new`,
-    )
+export type DriverFn = (update: (time: number) => void) => () => void
+
+/**
+ * Class to be used to update something at _regular_ intervals, such as on animation frames.
+ *
+ * @remarks If used with a Ticker, Ticker.applyTicker will automatically take care of
+ * starting and stopping the driver.
+ */
+export class AnimationDriver {
+  private _driverFn: DriverFn
+  private _stopFn?: () => void
+
+  /**
+   * Creates a new AnimationDriver that will use the given updater function.
+   *
+   * @param driverFn - The function to be used to update the driver. Must return
+   * a function that will be called to stop the driver.
+   */
+  constructor(driverFn: (update: (time: number) => void) => () => void) {
+    this._driverFn = driverFn
   }
 
-  return ticker
-}
+  /** Starts the driver. The given function will be called by the updater at regular
+   * intervals.
+   * */
+  start(update: ICallback) {
+    this.stop()
+    this._stopFn = this._driverFn(update)
+  }
 
-let rafTicker: undefined | Ticker
+  /**
+   * Stops the driver. Does nothing if the driver is not running.
+   */
+  stop() {
+    if (this._stopFn) {
+      this._stopFn()
+    }
+    this._stopFn = undefined
+  }
+
+  /**
+   * Create a new AnimationDriver using Window.requestAnimationFrame().
+   */
+  static rafDriver(): AnimationDriver {
+    return new AnimationDriver((update) => {
+      let lastRequestId = 0
+      if (typeof window !== 'undefined') {
+        const onAnimationFrame = (t: number) => {
+          update(t)
+          lastRequestId = window.requestAnimationFrame(onAnimationFrame)
+        }
+        lastRequestId = window.requestAnimationFrame(onAnimationFrame)
+      } else {
+        update(0)
+        setTimeout(() => update(1), 0)
+        console.log(
+          `@theatre/dataverse is running in a server rather than in a browser. We haven't gotten around to testing server-side rendering, so if something is working in the browser but not on the server, please file a bug: https://github.com/theatre-js/theatre/issues/new`,
+        )
+      }
+      return () => window.cancelAnimationFrame(lastRequestId)
+    })
+  }
+
+  /**
+   * Create a new AnimationDriver using XRSession.requestAnimationFrame().
+   *
+   * @param xrSession - The XRSession to use.
+   */
+  static xrRafDriver(xrSession: XRSession): AnimationDriver {
+    return new AnimationDriver((update) => {
+      let lastRequestId = 0
+      const onAnimationFrame = (t: number) => {
+        update(t)
+        lastRequestId = xrSession.requestAnimationFrame(onAnimationFrame)
+      }
+      lastRequestId = xrSession.requestAnimationFrame(onAnimationFrame)
+      return () => xrSession.cancelAnimationFrame(lastRequestId)
+    })
+  }
+}
 
 /**
  * The Ticker class helps schedule callbacks. Scheduled callbacks are executed per tick. Ticks can be triggered by an
@@ -33,7 +90,8 @@ let rafTicker: undefined | Ticker
 export default class Ticker {
   static get raf(): Ticker {
     if (!rafTicker) {
-      rafTicker = createRafTicker()
+      rafTicker = new Ticker()
+      rafTicker.applyDriver(AnimationDriver.rafDriver())
     }
     return rafTicker
   }
@@ -41,6 +99,7 @@ export default class Ticker {
   private _scheduledForNextTick: Set<ICallback>
   private _timeAtCurrentTick: number
   private _ticking: boolean = false
+  private _driver: AnimationDriver | null = null
 
   constructor() {
     this._scheduledForThisOrNextTick = new Set()
@@ -150,5 +209,18 @@ export default class Ticker {
     if (this._scheduledForThisOrNextTick.size > 0) {
       return this._tick(iterationNumber + 1)
     }
+  }
+
+  /**
+   * Disposes of any previous driver and applies the given driver.
+   *
+   * @param driver - The driver to apply.
+   */
+  applyDriver(driver: AnimationDriver | null) {
+    if (this._driver) {
+      this._driver.stop()
+    }
+    this._driver = driver
+    this._driver?.start(this.tick)
   }
 }
