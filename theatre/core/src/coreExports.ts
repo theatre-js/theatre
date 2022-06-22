@@ -197,6 +197,12 @@ export function val<T>(pointer: PointerType<T>): T {
 }
 
 /**
+ * Removes any animation drivers. Careful! This will stop all animations from updating.
+ *
+ * @param driver - null.
+ */
+export function applyAnimationDriver(driver: null): void
+/**
  * Applies a driver using Window.requestAnimationFrame().
  *
  * @param driver - 'raf'.
@@ -221,13 +227,13 @@ export function applyAnimationDriver(
 ): void
 /**
  * Applies a driver either using Window.requestAnimationFrame(), XRSession.requestAnimationFrame()
- * or the provided updater function.
+ * or the provided updater function. Providing null will remove any driver.
  *
  * @param driver - The driver to apply.
  * @param xrSession - The XRSession to use.
  */
 export function applyAnimationDriver(
-  driver: 'raf' | 'xrRaf' | DriverFn,
+  driver: 'raf' | 'xrRaf' | DriverFn | null,
   xrSession?: XRSession,
 ): void {
   if (driver === 'raf') {
@@ -241,6 +247,8 @@ export function applyAnimationDriver(
     coreTicker.applyDriver(AnimationDriver.xrRafDriver(xrSession))
   } else if (typeof driver === 'function') {
     coreTicker.applyDriver(new AnimationDriver(driver))
+  } else if (driver === null) {
+    coreTicker.applyDriver(null)
   } else {
     throw new Error(`Invalid driver: ${driver}`)
   }
