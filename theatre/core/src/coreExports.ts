@@ -18,8 +18,8 @@ import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import coreTicker from './coreTicker'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import {_coreLogger} from './_coreLogger'
-import type {DriverFn} from '@theatre/dataverse/dist/Ticker'
-import {AnimationDriver} from '@theatre/dataverse/dist/Ticker'
+import type {DriverFn} from '@theatre/dataverse'
+import {AnimationDriver} from '@theatre/dataverse'
 import type {XRSession} from 'three'
 export {types}
 
