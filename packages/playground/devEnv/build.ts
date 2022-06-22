@@ -84,8 +84,6 @@ export async function start(options: {
   )
 
   // Render home page contents
-
-  // Render home page contents
   const homeHtml = (() => {
     const sheet = new ServerStyleSheet()
     try {
