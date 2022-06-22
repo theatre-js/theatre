@@ -221,6 +221,6 @@ export default class Ticker {
       this._driver.stop()
     }
     this._driver = driver
-    this._driver?.start(this.tick)
+    this._driver?.start((t) => this.tick(t))
   }
 }
