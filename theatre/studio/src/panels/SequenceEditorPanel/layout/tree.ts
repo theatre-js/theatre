@@ -13,11 +13,19 @@ import type {
   StudioSheetItemKey,
 } from '@theatre/shared/utils/ids'
 import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
-import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
+import type {
+  $FixMe,
+  $IntentionalAny,
+  SerializableMap,
+  SerializablePrimitive,
+} from '@theatre/shared/utils/types'
+import type {Pointer} from '@theatre/dataverse'
 import {prism, val, valueDerivation} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import {titleBarHeight} from '@theatre/studio/panels/BasePanel/common'
 import type {Studio} from '@theatre/studio/Studio'
+import type {UnknownValidCompoundProps} from '@theatre/core/propTypes/internals'
+import pointerDeep from '@theatre/shared/utils/pointerDeep'
 
 /**
  * Base "view model" for each row with common
@@ -74,6 +82,8 @@ export type SequenceEditorTree_PropWithChildren =
     isCollapsed: boolean
     sheetObject: SheetObject
     pathToProp: PathToProp
+    pointerToProp: Pointer<SerializableMap>
+    propConfig: PropTypeConfig_Compound<UnknownValidCompoundProps>
     children: Array<
       SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp
     >
@@ -84,6 +94,7 @@ export type SequenceEditorTree_PrimitiveProp =
   SequenceEditorTree_Row<'primitiveProp'> & {
     sheetObject: SheetObject
     pathToProp: PathToProp
+    pointerToProp: Pointer<SerializablePrimitive>
     trackId: SequenceTrackId
     propConf: PropTypeConfig_AllSimples
   }
@@ -260,7 +271,7 @@ export const calculateSequenceEditorTree = (
     sheetObject: SheetObject,
     trackMapping: IPropPathToTrackIdTree,
     pathToProp: PathToProp,
-    conf: PropTypeConfig_Compound<$FixMe>,
+    propConfig: PropTypeConfig_Compound<$FixMe>,
     arrayOfChildren: Array<
       SequenceEditorTree_PrimitiveProp | SequenceEditorTree_PropWithChildren
     >,
@@ -273,6 +284,11 @@ export const calculateSequenceEditorTree = (
       ].isCollapsed
     const isCollapsed = valueDerivation(isCollapsedP).getValue() ?? false
 
+    const pointerToProp = pointerDeep(
+      sheetObject.propsP,
+      pathToProp,
+    ) as Pointer<$IntentionalAny>
+
     const row: SequenceEditorTree_PropWithChildren = {
       type: 'propWithChildren',
       isCollapsed,
@@ -281,7 +297,9 @@ export const calculateSequenceEditorTree = (
         sheetObject,
         pathToProp,
       ),
-      sheetObject: sheetObject,
+      propConfig,
+      pointerToProp,
+      sheetObject,
       shouldRender,
       top: topSoFar,
       children: [],
@@ -302,7 +320,7 @@ export const calculateSequenceEditorTree = (
       sheetObject,
       trackMapping,
       pathToProp,
-      conf,
+      propConfig,
       row.children,
       level + 1,
       // collapsed shouldn't render child props
@@ -323,6 +341,11 @@ export const calculateSequenceEditorTree = (
     level: number,
     shouldRender: boolean,
   ) {
+    const pointerToProp = pointerDeep(
+      sheetObject.propsP,
+      pathToProp,
+    ) as Pointer<$IntentionalAny>
+
     const row: SequenceEditorTree_PrimitiveProp = {
       type: 'primitiveProp',
       propConf: propConf,
@@ -333,6 +356,7 @@ export const calculateSequenceEditorTree = (
       ),
       sheetObject: sheetObject,
       pathToProp,
+      pointerToProp,
       shouldRender,
       top: topSoFar,
       nodeHeight: shouldRender ? HEIGHT_OF_ANY_TITLE : 0,

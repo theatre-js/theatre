@@ -56,7 +56,7 @@ const ProjectListItem: React.FC<{
           : 'not-selected'
       }
       select={select}
-    ></BaseItem>
+    />
   )
 }
 
