@@ -42,12 +42,20 @@ export function parseRgbaFromHex(rgba: string) {
   }
 }
 
-export function rgba2hex(rgba: Rgba) {
+export function rgba2hex(
+  rgba: Rgba,
+  {
+    /** Alpha is usually an optional value for most hex inputs, so if it's opaque, we can omit its value. */
+    removeAlphaIfOpaque = false,
+  } = {},
+) {
+  const alpha = ((rgba.a * 255) | (1 << 8)).toString(16).slice(1)
+
   const hex =
     ((rgba.r * 255) | (1 << 8)).toString(16).slice(1) +
     ((rgba.g * 255) | (1 << 8)).toString(16).slice(1) +
     ((rgba.b * 255) | (1 << 8)).toString(16).slice(1) +
-    ((rgba.a * 255) | (1 << 8)).toString(16).slice(1)
+    (removeAlphaIfOpaque && alpha === 'ff' ? '' : alpha)
 
   return `#${hex}`
 }
@@ -59,7 +67,7 @@ export function decorateRgba(rgba: Rgba) {
   return {
     ...rgba,
     toString() {
-      return rgba2hex(this)
+      return rgba2hex(this, {removeAlphaIfOpaque: true})
     },
   }
 }
