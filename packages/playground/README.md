@@ -1,6 +1,6 @@
 # The playground
 
-The playground is the quickest way to hack on the internals of Theatre. It also hosts our end-to-end tests. It uses a build setup that builds all the related packages in one go, so you _don't_ have to run a bunch of build commands separately to start developing.
+The playground is the quickest way to hack on the internals of Theatre. It also hosts our end-to-end tests. It uses a build setup (see the live-reload esbuild server in [./devEnv/build.ts](./devEnv/build.ts)) that builds all the related packages in one go, so you _don't_ have to run a bunch of build commands separately to start developing.
 
 ## Directory structure
 
