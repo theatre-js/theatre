@@ -202,7 +202,12 @@ function useHandlePanAndZoom(
         const windowSize = oldRange.end - oldRange.start
         const speed = windowSize / sequenceLength
 
-        const delta = normalize(event.deltaY, [-50, 50])
+        // if there's no deltaY, the browser is probably assigning to deltaX because of the shiftKey
+        // it appeared that Safari + Chrome continue to use deltaY with shiftKey, while FF on macOS
+        // updates the deltaX with deltaY unchanged.
+        // this is a little awkward with track pads + shift on macOS FF, but that's not a big deal
+        // since scrolling horizontally with macOS track pads is not necessary to hold shift.
+        const delta = normalize(event.deltaY || event.deltaX, [-50, 50])
         const scaleFactor = delta * 0.05 * speed
 
         const newRange = mapValues(
