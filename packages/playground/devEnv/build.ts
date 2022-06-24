@@ -1,4 +1,4 @@
-import {readdirSync} from 'fs'
+import {readdirSync, readFileSync, statSync} from 'fs'
 import {writeFile, readFile} from 'fs/promises'
 import path from 'path'
 import type {BuildOptions} from 'esbuild'
@@ -18,6 +18,7 @@ import {createServerForceClose} from './createServerForceClose'
 
 const playgroundDir = (folder: string) => path.join(__dirname, '..', folder)
 const buildDir = playgroundDir('build')
+const srcDir = playgroundDir('src')
 const sharedDir = playgroundDir('src/shared')
 const personalDir = playgroundDir('src/personal')
 const testDir = playgroundDir('src/tests')
@@ -34,12 +35,15 @@ export async function start(options: {
 
   const liveReload = options.dev ? createEsbuildLiveReloadTools() : undefined
 
+  type PlaygroundExample = {
+    useHtml?: string
+    entryFilePath: string
+    outDir: string
+  }
+
   type Groups = {
     [group: string]: {
-      [module: string]: {
-        entryDir: string
-        outDir: string
-      }
+      [module: string]: PlaygroundExample
     }
   }
 
@@ -51,17 +55,45 @@ export async function start(options: {
           return [
             path.basename(groupDir),
             Object.fromEntries(
-              readdirSync(groupDir).map((moduleDirName) => [
-                path.basename(moduleDirName),
-                {
-                  entryDir: path.join(groupDir, moduleDirName),
-                  outDir: path.join(
-                    buildDir,
-                    path.basename(groupDir),
-                    moduleDirName,
-                  ),
-                },
-              ]),
+              readdirSync(groupDir)
+                .map(
+                  (moduleDirName): [string, PlaygroundExample | undefined] => {
+                    const entryKey = path.basename(moduleDirName)
+                    const entryFilePath = path.join(
+                      groupDir,
+                      moduleDirName,
+                      'index.tsx',
+                    )
+
+                    if (!tryOrUndefined(() => statSync(entryFilePath).isFile()))
+                      return [entryKey, undefined]
+
+                    return [
+                      entryKey,
+                      {
+                        // Including your own html file for playground is an experimental feature,
+                        // it's not quite ready for "prime time" and advertising to the masses until
+                        // it properly handles file watching.
+                        // It's good for now, since we can use it for some demos, just make sure that
+                        // you add a comment to the custom index.html file saying that you have to
+                        // restart playground server entirely to see changes.
+                        useHtml: tryOrUndefined(() =>
+                          readFileSync(
+                            path.join(groupDir, moduleDirName, 'index.html'),
+                            'utf-8',
+                          ),
+                        ),
+                        entryFilePath,
+                        outDir: path.join(
+                          buildDir,
+                          path.basename(groupDir),
+                          moduleDirName,
+                        ),
+                      },
+                    ]
+                  },
+                )
+                .filter((entry) => entry[1] !== undefined),
             ),
           ]
         } catch (e) {
@@ -76,11 +108,11 @@ export async function start(options: {
   // Collect all entry files
   const entryPoints = Object.values(groups)
     .flatMap((group) => Object.values(group))
-    .map((module) => path.join(module.entryDir, 'index.tsx'))
+    .map((module) => module.entryFilePath)
 
   // Collect all output directories
-  const outDirs = Object.values(groups).flatMap((group) =>
-    Object.values(group).map((module) => module.outDir),
+  const outModules = Object.values(groups).flatMap((group) =>
+    Object.values(group),
   )
 
   // Render home page contents
@@ -158,15 +190,15 @@ export async function start(options: {
           'utf-8',
         ),
         // Write module pages
-        ...outDirs.map((outDir) =>
+        ...outModules.map((outModule) =>
           writeFile(
-            path.join(outDir, 'index.html'),
+            path.join(outModule.outDir, 'index.html'),
             // Insert the script
-            index.replace(
+            (outModule.useHtml ?? index).replace(
               /<\/body>/,
               `<script src="${path.join(
                 '/',
-                path.relative(buildDir, outDir),
+                path.relative(buildDir, outModule.outDir),
                 'index.js',
               )}"></script></body>`,
             ),
@@ -224,5 +256,13 @@ export async function start(options: {
         // map to void for type defs
       })
     },
+  }
+}
+
+function tryOrUndefined<T>(fn: () => T): T | undefined {
+  try {
+    return fn()
+  } catch (err) {
+    return undefined
   }
 }
