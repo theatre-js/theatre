@@ -76,8 +76,18 @@ const Box: React.FC<{
   sheet: ISheet
   selection: IStudio['selection']
 }> = ({id, sheet, selection}) => {
+  const defaultConfig = useMemo(
+    () =>
+      Object.assign({}, boxObjectConfig, {
+        // give the box initial values offset from each other
+        x: ((id.codePointAt(0) ?? 0) % 15) * 100,
+        y: ((id.codePointAt(0) ?? 0) % 15) * 100,
+      }),
+    [id],
+  )
+
   // This is cheap to call and always returns the same value, so no need for useMemo()
-  const obj = sheet.object(id, boxObjectConfig)
+  const obj = sheet.object(id, defaultConfig)
 
   const isSelected = selection.includes(obj)
 
@@ -202,6 +212,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
           top: '16px',
           left: '60px',
           position: 'absolute',
+          padding: '.25rem .5rem',
         }}
         onClick={() => {
           setBoxes((boxes) => [...boxes, String(++lastBoxId)])
