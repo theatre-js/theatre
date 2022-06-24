@@ -1,4 +1,4 @@
-import {readdirSync, readFileSync, statSync} from 'fs'
+import {readdirSync, readFileSync, statSync, writeFileSync} from 'fs'
 import {writeFile, readFile} from 'fs/promises'
 import path from 'path'
 import type {BuildOptions} from 'esbuild'
@@ -165,6 +165,49 @@ export async function start(options: {
         liveReload?.esbuildWatch.onRebuild?.(error, result)
       },
     },
+    plugins: [
+      {
+        name: 'watch playground assets',
+        setup(build) {
+          build.onStart(() => {})
+          build.onLoad(
+            {
+              filter: /index\.tsx?$/,
+            },
+            (loadFile) => {
+              const indexHtmlPath = loadFile.path.replace(
+                /index\.tsx?$/,
+                'index.html',
+              )
+              const relToSrc = path.relative(srcDir, indexHtmlPath)
+              const isInSrcFolder = !relToSrc.startsWith('..')
+              if (isInSrcFolder) {
+                const newHtml = tryOrUndefined(() =>
+                  readFileSync(indexHtmlPath, 'utf-8'),
+                )
+                if (newHtml) {
+                  writeFileSync(
+                    path.resolve(buildDir, relToSrc),
+                    newHtml.replace(
+                      /<\/body>/,
+                      `<script src="${path.join(
+                        '/',
+                        relToSrc,
+                        '../index.js',
+                      )}"></script></body>`,
+                    ),
+                  )
+                }
+
+                return {
+                  watchFiles: [indexHtmlPath],
+                }
+              }
+            },
+          )
+        },
+      },
+    ],
   }
 
   let esbuildWatchStop: undefined | (() => void)
