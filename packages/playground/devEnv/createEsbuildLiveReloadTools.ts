@@ -34,6 +34,13 @@ export function createEsbuildLiveReloadTools(): {
       js: `;(${function liveReloadClientSetup() {
         // from packages/playground/devEnv/createEsbuildLiveReloadTools.ts
         function connect() {
+          if (window.parent !== window) {
+            console.log(
+              '%cLive reload disabled for iframed content',
+              'color: gray',
+            )
+            return
+          }
           try {
             const es = new EventSource('/esbuild')
             es.onmessage = (evt) => {

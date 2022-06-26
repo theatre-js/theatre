@@ -81,6 +81,9 @@ const Body = styled.div`
   scrollbar-width: none;
   padding: 0;
   user-select: none;
+
+  /* Set the font-size for input values in the detail panel */
+  font-size: 12px;
 `
 
 export const contextMenuShownContext = createContext<
