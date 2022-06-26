@@ -134,7 +134,7 @@ const GlobalToolbar: React.FC = () => {
           unpinHintIcon={<DoubleChevronLeft />}
           pinned={outlinePinned}
         />
-        <GroupDivider></GroupDivider>
+        <GroupDivider />
         {conflicts.length > 0 ? (
           <NumberOfConflictsIndicator>
             {conflicts.length}
