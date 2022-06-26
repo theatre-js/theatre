@@ -8,6 +8,7 @@ import type {
 import type {PathToProp} from '@theatre/shared/utils/addresses'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
+/** Either compound or enum properties can be considered "composite" */
 export function isPropConfigComposite(
   c: PropTypeConfig,
 ): c is PropTypeConfig_Compound<{}> | PropTypeConfig_Enum {
