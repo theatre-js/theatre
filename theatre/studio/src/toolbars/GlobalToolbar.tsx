@@ -57,6 +57,14 @@ const HasUpdatesBadge = styled.div`
   top: -2px;
 `
 
+const GroupDivider = styled.div`
+  position: abolute;
+  height: 32px;
+  width: 1px;
+  background: #373b40;
+  opacity: 0.4;
+`
+
 const GlobalToolbar: React.FC = () => {
   const conflicts = usePrism(() => {
     const ephemeralStateOfAllProjects = val(
@@ -126,6 +134,7 @@ const GlobalToolbar: React.FC = () => {
           unpinHintIcon={<DoubleChevronLeft />}
           pinned={outlinePinned}
         />
+        <GroupDivider />
         {conflicts.length > 0 ? (
           <NumberOfConflictsIndicator>
             {conflicts.length}
@@ -144,7 +153,6 @@ const GlobalToolbar: React.FC = () => {
           <Ellipsis />
           {hasUpdates && <HasUpdatesBadge />}
         </ToolbarIconButton>
-
         <PinButton
           ref={triggerButtonRef as $IntentionalAny}
           onClick={() => {

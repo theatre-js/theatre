@@ -27,8 +27,9 @@ export const Container = styled.button`
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 2px;
 
-  filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.25))
-    drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.15));
+  svg {
+    display: block;
+  }
 
   &:hover {
     background: rgba(59, 63, 69, 0.8);
