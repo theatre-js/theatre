@@ -252,3 +252,31 @@ export function applyAnimationDriver(
     throw new Error(`Invalid driver: ${driver}`)
   }
 }
+
+// Flush will probably be called in a loop, so we don't want to warn every time. Once is enough.
+let hasWarnedAboutFlush = false
+
+/**
+ * Flushes all pending animation updates. You can use this function to manually
+ * update the animation from your own animation loop instead of using a Theatre.js
+ * animation driver.
+ *
+ * You can disable a running driver using applyAnimationDriver(null).
+ *
+ * @param t - The elapsed time in milliseconds.
+ */
+export const flush = (t: number) => {
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    coreTicker.isDriven &&
+    !hasWarnedAboutFlush
+  ) {
+    hasWarnedAboutFlush = true
+    console.warn(
+      'flush() called outside of a running animation driver. ' +
+        'You can disable the driver by calling applyAnimationDriver(null). ' +
+        'If this was intentional, you can ignore this warning.',
+    )
+  }
+  coreTicker.tick(t)
+}

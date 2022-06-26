@@ -223,4 +223,8 @@ export default class Ticker {
     this._driver = driver
     this._driver?.start((t) => this.tick(t))
   }
+
+  get isDriven() {
+    return this._driver !== null
+  }
 }
