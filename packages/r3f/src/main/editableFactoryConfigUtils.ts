@@ -31,6 +31,14 @@ type Vector3 = {
   z: number
 }
 
+function isNumber(value: any) {
+  return typeof value === 'number' && isFinite(value)
+}
+
+function isVectorObject(value: any) {
+  return (['x', 'y', 'z'] as const).every((axis) => isNumber(value[axis]))
+}
+
 export const createVector = (components?: [number, number, number]) => {
   return components
     ? {x: components[0], y: components[1], z: components[2]}
@@ -47,16 +55,37 @@ export const createVectorPropConfig = (
   {nudgeMultiplier = 0.01} = {},
 ): PropConfig<Vector3> => ({
   parse: (props) => {
-    const vector = props[key]
-      ? Array.isArray(props[key])
-        ? createVector(props[key] as any)
-        : {
-            x: props[key].x,
-            y: props[key].y,
-            z: props[key].z,
-          }
-      : defaultValue
+    const propValue = props[key]
+    // if prop exists
+    const vector = !propValue
+      ? defaultValue
+      : // if prop is an array
+      Array.isArray(propValue)
+      ? createVector(propValue as any)
+      : // if prop is a scalar
+      isNumber(propValue)
+      ? {
+          x: propValue,
+          y: propValue,
+          z: propValue,
+        }
+      : // if prop is a threejs Vector3
+      isVectorObject(propValue)
+      ? {
+          x: propValue.x,
+          y: propValue.y,
+          z: propValue.z,
+        }
+      : // show a warning and return defaultValue
+        (console.warn(
+          `Couldn't parse prop %c${key}={${JSON.stringify(
+            propValue,
+          )}}%c, falling back to default value.`,
+          'background: black; color: white',
+        ),
+        defaultValue)
     ;(['x', 'y', 'z'] as const).forEach((axis) => {
+      // e.g. r3f also accepts prop keys like "scale-x"
       if (props[`${key}-${axis}` as any])
         vector[axis] = props[`${key}-${axis}` as any]
     })
