@@ -70,7 +70,7 @@ const GraphEditorDotNonScalar: React.VFC<IProps> = (props) => {
 
   const curValue = props.which === 'left' ? 0 : 1
 
-  const [inlineEditorPopover, openEditor, _, _isInlineEditorPopoverOpen] =
+  const {node: inlineEditorPopover, toggle: toggleEditor} =
     useSingleKeyframeInlineEditorPopover({
       keyframe: props.keyframe,
       pathToProp: props.pathToProp,
@@ -84,7 +84,10 @@ const GraphEditorDotNonScalar: React.VFC<IProps> = (props) => {
     props,
     // dragging does not work with also having a click listener
     onDetectedClick: (event) =>
-      openEditor(event, event.target instanceof Element ? event.target : node!),
+      toggleEditor(
+        event,
+        event.target instanceof Element ? event.target : node!,
+      ),
   })
 
   const cyInExtremumSpace = props.extremumSpace.fromValueSpace(curValue)

@@ -70,7 +70,7 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
   const curValue = cur.value as number
 
   const cyInExtremumSpace = props.extremumSpace.fromValueSpace(curValue)
-  const [inlineEditorPopover, openEditor, _, _isInlineEditorPopoverOpen] =
+  const {node: inlineEditorPopover, toggle: toggleEditor} =
     useSingleKeyframeInlineEditorPopover({
       keyframe: props.keyframe,
       pathToProp: props.pathToProp,
@@ -84,7 +84,10 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
     props,
     // dragging does not work with also having a click listener
     onDetectedClick: (event) =>
-      openEditor(event, event.target instanceof Element ? event.target : node!),
+      toggleEditor(
+        event,
+        event.target instanceof Element ? event.target : node!,
+      ),
   })
 
   return (
