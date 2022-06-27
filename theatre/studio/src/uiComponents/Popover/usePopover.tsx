@@ -48,16 +48,22 @@ type Opts = {
   verticalGap?: number
 }
 
-export default function usePopover(
-  opts: Opts | (() => Opts),
-  render: () => React.ReactElement,
-): {
+export interface IPopover {
+  /**
+   * The React node of the popover. Insert into your JSX using \{node\}. Its state
+   * will be managed automatically.
+   */
   node: React.ReactNode
   open: OpenFn
   close: CloseFn
   toggle: OpenFn
   isOpen: boolean
-} {
+}
+
+export default function usePopover(
+  opts: Opts | (() => Opts),
+  render: () => React.ReactElement,
+): IPopover {
   const _debug = (...args: any) => {}
 
   // want to make sure that we don't close a popover when dragging something (like a curve editor handle)
