@@ -47,9 +47,21 @@ const LeftRowHead_Label = styled.span`
   line-height: 26px;
   flex-wrap: nowrap;
 
+  font-weight: bold;
+
   ${LeftRowHeader}:hover & {
     color: #ccc;
   }
+`
+
+const LeftRowHead_RightAlign = styled.div`
+  flex-wrap: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  flex-grow: 1;
+  padding-right: 1.9rem;
+  /* border-top: 1px solid #444; */
 `
 
 const LeftRowHead_Icon = styled.span<{isCollapsed: boolean}>`
@@ -121,8 +133,10 @@ const AnyCompositeRow: React.FC<{
         <LeftRowHead_Icon isCollapsed={isCollapsed} onClick={toggleCollapsed}>
           <HiOutlineChevronRight />
         </LeftRowHead_Icon>
-        {controls && <>{controls}&nbsp;</>}
-        <LeftRowHead_Label>{label}</LeftRowHead_Label>
+        <LeftRowHead_RightAlign>
+          <LeftRowHead_Label>{label}</LeftRowHead_Label>
+          {controls && <>{controls}&nbsp;</>}
+        </LeftRowHead_RightAlign>
       </LeftRowHeader>
       {hasChildren && <LeftRowChildren>{children}</LeftRowChildren>}
     </LeftRowContainer>
