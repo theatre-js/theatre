@@ -74,31 +74,28 @@ function RgbaPropEditor({
     [editingTools],
   )
 
-  const {node: popoverNode, toggle: togglePopover} = usePopover(
-    {debugName: 'RgbaPropEditor'},
-    () => (
-      <RgbaPopover>
-        <RgbaColorPicker
-          color={{
-            r: value.r,
-            g: value.g,
-            b: value.b,
-            a: value.a,
-          }}
-          temporarilySetValue={(color) => {
-            const rgba = decorateRgba(color)
-            editingTools.temporarilySetValue(rgba)
-          }}
-          permanentlySetValue={(color) => {
-            // console.log('perm')
-            const rgba = decorateRgba(color)
-            editingTools.permanentlySetValue(rgba)
-          }}
-          discardTemporaryValue={editingTools.discardTemporaryValue}
-        />
-      </RgbaPopover>
-    ),
-  )
+  const popover = usePopover({debugName: 'RgbaPropEditor'}, () => (
+    <RgbaPopover>
+      <RgbaColorPicker
+        color={{
+          r: value.r,
+          g: value.g,
+          b: value.b,
+          a: value.a,
+        }}
+        temporarilySetValue={(color) => {
+          const rgba = decorateRgba(color)
+          editingTools.temporarilySetValue(rgba)
+        }}
+        permanentlySetValue={(color) => {
+          // console.log('perm')
+          const rgba = decorateRgba(color)
+          editingTools.permanentlySetValue(rgba)
+        }}
+        discardTemporaryValue={editingTools.discardTemporaryValue}
+      />
+    </RgbaPopover>
+  ))
 
   return (
     <>
@@ -107,7 +104,7 @@ function RgbaPropEditor({
           rgbaColor={value}
           ref={containerRef}
           onClick={(e) => {
-            togglePopover(e, containerRef.current)
+            popover.toggle(e, containerRef.current)
           }}
         />
         <HexInput
@@ -118,7 +115,7 @@ function RgbaPropEditor({
           isValid={(v) => !!v.match(validHexRegExp)}
         />
       </RowContainer>
-      {popoverNode}
+      {popover.node}
     </>
   )
 }

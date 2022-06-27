@@ -58,7 +58,7 @@ const HasUpdatesBadge = styled.div`
 `
 
 const GroupDivider = styled.div`
-  position: abolute;
+  position: absolute;
   height: 32px;
   width: 1px;
   background: #373b40;
@@ -96,7 +96,7 @@ const GlobalToolbar: React.FC = () => {
   const hasUpdates =
     useVal(getStudio().atomP.ahistoric.updateChecker.result.hasUpdates) === true
 
-  const {node: moreMenu, toggle: toggleMenu} = usePopover(
+  const moreMenu = usePopover(
     () => {
       const triggerBounds = moreMenuTriggerRef.current!.getBoundingClientRect()
       return {
@@ -143,11 +143,11 @@ const GlobalToolbar: React.FC = () => {
         <ExtensionToolbar toolbarId="global" />
       </SubContainer>
       <SubContainer>
-        {moreMenu}
+        {moreMenu.node}
         <ToolbarIconButton
           ref={moreMenuTriggerRef}
           onClick={(e) => {
-            toggleMenu(e, moreMenuTriggerRef.current!)
+            moreMenu.toggle(e, moreMenuTriggerRef.current!)
           }}
         >
           <Ellipsis />

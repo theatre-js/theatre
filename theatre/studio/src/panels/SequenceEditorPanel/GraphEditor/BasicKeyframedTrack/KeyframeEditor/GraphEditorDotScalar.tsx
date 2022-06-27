@@ -70,21 +70,20 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
   const curValue = cur.value as number
 
   const cyInExtremumSpace = props.extremumSpace.fromValueSpace(curValue)
-  const {node: inlineEditorPopover, toggle: toggleEditor} =
-    useSingleKeyframeInlineEditorPopover({
-      keyframe: props.keyframe,
-      pathToProp: props.pathToProp,
-      propConf: props.propConfig,
-      sheetObject: props.sheetObject,
-      trackId: props.trackId,
-    })
+  const inlineEditorPopover = useSingleKeyframeInlineEditorPopover({
+    keyframe: props.keyframe,
+    pathToProp: props.pathToProp,
+    propConf: props.propConfig,
+    sheetObject: props.sheetObject,
+    trackId: props.trackId,
+  })
 
   const isDragging = useDragKeyframe({
     node,
     props,
     // dragging does not work with also having a click listener
     onDetectedClick: (event) =>
-      toggleEditor(
+      inlineEditorPopover.toggle(
         event,
         event.target instanceof Element ? event.target : node!,
       ),
@@ -112,7 +111,7 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
           fill: presence.flag === PresenceFlag.Primary ? 'white' : undefined,
         }}
       />
-      {inlineEditorPopover}
+      {inlineEditorPopover.node}
       {contextMenu}
     </>
   )

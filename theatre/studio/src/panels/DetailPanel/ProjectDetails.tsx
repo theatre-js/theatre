@@ -55,7 +55,7 @@ const ProjectDetails: React.FC<{
     }, 40000)
   }, [])
 
-  const {node: tooltip, open: openExportTooltip} = usePopover(
+  const exportTooltip = usePopover(
     {debugName: 'ProjectDetails', pointerDistanceThreshold: 50},
     () => (
       <ExportTooltip>
@@ -74,13 +74,13 @@ const ProjectDetails: React.FC<{
 
   return (
     <>
-      {tooltip}
+      {exportTooltip.node}
       <Container>
         <StateConflictRow projectId={projectId} />
         <TheExportRow>
           <DetailPanelButton
             onMouseEnter={(e) =>
-              openExportTooltip(e, e.target as unknown as HTMLButtonElement)
+              exportTooltip.open(e, e.target as unknown as HTMLButtonElement)
             }
             onClick={!downloaded ? exportProject : undefined}
             disabled={downloaded}
