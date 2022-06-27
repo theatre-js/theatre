@@ -68,6 +68,9 @@ export function generateSequenceMarkerId(): SequenceMarkerId {
  * versioning happens where something needs to
  */
 export const createStudioSheetItemKey = {
+  forSheet(): StudioSheetItemKey {
+    return 'sheet' as StudioSheetItemKey
+  },
   forSheetObject(obj: SheetObject): StudioSheetItemKey {
     return stableValueHash({
       o: obj.address.objectKey,
@@ -80,6 +83,38 @@ export const createStudioSheetItemKey = {
     return stableValueHash({
       o: obj.address.objectKey,
       p: pathToProp,
+    }) as StudioSheetItemKey
+  },
+  forTrackKeyframe(
+    obj: SheetObject,
+    trackId: SequenceTrackId,
+    keyframeId: KeyframeId,
+  ): StudioSheetItemKey {
+    return stableValueHash({
+      o: obj.address.objectKey,
+      t: trackId,
+      k: keyframeId,
+    }) as StudioSheetItemKey
+  },
+  forSheetObjectAggregateKeyframe(
+    obj: SheetObject,
+    position: number,
+  ): StudioSheetItemKey {
+    return createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+      obj,
+      [],
+      position,
+    )
+  },
+  forCompoundPropAggregateKeyframe(
+    obj: SheetObject,
+    pathToProp: PathToProp,
+    position: number,
+  ): StudioSheetItemKey {
+    return stableValueHash({
+      o: obj.address.objectKey,
+      p: pathToProp,
+      pos: position,
     }) as StudioSheetItemKey
   },
 }

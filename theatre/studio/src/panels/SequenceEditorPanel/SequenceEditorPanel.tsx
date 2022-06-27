@@ -3,7 +3,7 @@ import {usePrism} from '@theatre/react'
 import {valToAtom} from '@theatre/shared/utils/valToAtom'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
-import React from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
 
 import DopeSheet from './DopeSheet/DopeSheet'
@@ -28,6 +28,7 @@ import {
   TitleBar_Punctuation,
 } from '@theatre/studio/panels/BasePanel/common'
 import type {UIPanelId} from '@theatre/shared/utils/ids'
+import {usePresenceListenersOnRootElement} from '@theatre/studio/uiComponents/usePresence'
 
 const Container = styled(PanelWrapper)`
   z-index: ${panelZIndexes.sequenceEditorPanel};
@@ -99,7 +100,10 @@ const SequenceEditorPanel: React.VFC<{}> = (props) => {
 
 const Content: React.VFC<{}> = () => {
   const {dims} = usePanel()
-
+  const [containerNode, setContainerNode] = useState<null | HTMLDivElement>(
+    null,
+  )
+  usePresenceListenersOnRootElement(containerNode)
   return usePrism(() => {
     const panelSize = prism.memo(
       'panelSize',
@@ -161,7 +165,14 @@ const Content: React.VFC<{}> = () => {
     const graphEditorOpen = val(layoutP.graphEditorDims.isOpen)
 
     return (
-      <Container ref={containerRef}>
+      <Container
+        ref={(elt) => {
+          containerRef(elt as HTMLDivElement)
+          if (elt !== containerNode) {
+            setContainerNode(elt as HTMLDivElement)
+          }
+        }}
+      >
         <LeftBackground style={{width: `${val(layoutP.leftDims.width)}px`}} />
         <FrameStampPositionProvider layoutP={layoutP}>
           <Header layoutP={layoutP} />
@@ -174,7 +185,7 @@ const Content: React.VFC<{}> = () => {
         </FrameStampPositionProvider>
       </Container>
     )
-  }, [dims])
+  }, [dims, containerNode])
 }
 
 const Header: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({

@@ -2,7 +2,6 @@ import React, {useEffect, useLayoutEffect} from 'react'
 import styled from 'styled-components'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
 import ProjectsList from './ProjectsList/ProjectsList'
-import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
@@ -15,7 +14,7 @@ const Container = styled.div<{pin: boolean}>`
   position: absolute;
   left: 8px;
   z-index: ${panelZIndexes.outlinePanel};
-  ${pointerEventsAutoInNormalMode};
+
   top: calc(${headerHeight} + 8px);
   height: fit-content;
   max-height: calc(100% - ${headerHeight});

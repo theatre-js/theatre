@@ -12,20 +12,22 @@ import {useVal} from '@theatre/react'
 import {getEditorSheetObject} from '../../editorStuff'
 import studio from '@theatre/studio'
 
-const Container = styled.div`
+const Container = styled.div<{minified: boolean}>`
   position: relative;
-  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   pointer-events: auto;
   cursor: pointer;
   overflow: hidden;
-
-  &.hidden {
-    border-radius: 8px;
-  }
+  border-radius: ${({minified}) => (minified ? '2px' : '4px')};
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
 `
 
-const Canvas = styled.canvas`
+const Canvas = styled.canvas<{width: number; height: number}>`
   display: block;
+  width: ${({width, height}) => (width > height ? 'auto' : '100%')};
+  height: ${({width, height}) => (height > width ? 'auto' : '100%')};
 `
 
 const staticAnimation = keyframes`
@@ -71,15 +73,6 @@ const Warning = styled.div`
   opacity: 0.8;
 `
 
-const Dot = styled.div`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: red;
-  pointer-events: auto;
-  cursor: pointer;
-`
-
 interface ReferenceWindowProps {
   maxHeight: number
   maxWidth: number
@@ -88,16 +81,14 @@ interface ReferenceWindowProps {
 const ReferenceWindow: VFC<ReferenceWindowProps> = ({maxHeight, maxWidth}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const visible =
+  const minified =
     useVal(getEditorSheetObject()?.props.viewport.showReferenceWindow) ?? true
 
   const [gl] = useExtensionStore((state) => [state.gl], shallow)
-  const [ref, bounds] = useMeasure()
+  const [ref, {width: origWidth, height: origHeight}] = useMeasure()
 
   const preserveDrawingBuffer =
-    (
-      gl?.domElement.getContext('webgl') ?? gl?.domElement.getContext('webgl2')
-    )?.getContextAttributes()?.preserveDrawingBuffer ?? false
+    gl?.getContextAttributes()?.preserveDrawingBuffer ?? false
 
   useLayoutEffect(() => {
     if (gl) {
@@ -107,16 +98,15 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({maxHeight, maxWidth}) => {
 
   const [width, height] = useMemo(() => {
     if (!gl) return [0, 0]
-    const aspectRatio = gl.domElement.width / gl.domElement.height
+    const aspectRatio = origWidth / origHeight
 
     const width = Math.min(aspectRatio * maxHeight, maxWidth)
 
     const height = width / aspectRatio
     return [width, height]
-  }, [gl, maxWidth, maxHeight])
+  }, [gl, maxWidth, maxHeight, origWidth, origHeight])
 
   useEffect(() => {
-    // if (!visible) return
     let animationHandle: number
     const draw = (gl: WebGLRenderer) => () => {
       animationHandle = requestAnimationFrame(draw(gl))
@@ -148,24 +138,20 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({maxHeight, maxWidth}) => {
 
   const toggleVisibility = () => {
     studio.transaction(({set}) => {
-      set(getEditorSheetObject()!.props.viewport.showReferenceWindow, !visible)
+      set(getEditorSheetObject()!.props.viewport.showReferenceWindow, !minified)
     })
   }
 
-  // if (!visible) {
-  //   return <Dot onClick={toggleVisibility} />
-  // }
-
   return (
     <Container
+      minified={!minified}
       onClick={toggleVisibility}
-      className={`${visible ? 'visible' : 'hidden'}`}
       style={{
-        width: (visible ? width : 12) + 'px',
-        height: (visible ? height : 12) + 'px',
+        width: !minified ? 32 : preserveDrawingBuffer ? `${width}px` : 'auto',
+        height: !minified ? 32 : preserveDrawingBuffer ? `${height}px` : 'auto',
       }}
     >
-      {gl?.domElement && preserveDrawingBuffer ? (
+      {preserveDrawingBuffer ? (
         <Canvas ref={canvasRef} width={width} height={height} />
       ) : (
         <Static>

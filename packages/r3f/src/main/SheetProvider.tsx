@@ -1,3 +1,4 @@
+import type {ReactNode} from 'react'
 import React, {
   createContext,
   useContext,
@@ -26,6 +27,7 @@ export const useCurrentSheet = (): ISheet | undefined => {
 
 const SheetProvider: React.FC<{
   sheet: ISheet
+  children: ReactNode
 }> = ({sheet, children}) => {
   const {scene, gl} = useThree((s) => ({scene: s.scene, gl: s.gl}))
 

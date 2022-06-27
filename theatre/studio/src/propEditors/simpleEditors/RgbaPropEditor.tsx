@@ -111,7 +111,7 @@ function RgbaPropEditor({
           }}
         />
         <HexInput
-          value={rgba2hex(value)}
+          value={rgba2hex(value, {removeAlphaIfOpaque: true})}
           temporarilySetValue={noop}
           discardTemporaryValue={noop}
           permanentlySetValue={onChange}

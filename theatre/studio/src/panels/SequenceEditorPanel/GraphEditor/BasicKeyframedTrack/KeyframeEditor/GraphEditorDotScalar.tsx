@@ -16,6 +16,10 @@ import {
   useCssCursorLock,
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
+import {useSingleKeyframeInlineEditorPopover} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/useSingleKeyframeInlineEditorPopover'
+import usePresence, {
+  PresenceFlag,
+} from '@theatre/studio/uiComponents/usePresence'
 
 export const dotSize = 6
 
@@ -59,15 +63,29 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
 
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
+  const presence = usePresence(props.itemKey)
 
   const curValue = cur.value as number
 
-  const isDragging = useDragKeyframe(node, props)
-
   const cyInExtremumSpace = props.extremumSpace.fromValueSpace(curValue)
+  const [inlineEditorPopover, openEditor, _, _isInlineEditorPopoverOpen] =
+    useSingleKeyframeInlineEditorPopover({
+      keyframe: props.keyframe,
+      pathToProp: props.pathToProp,
+      propConf: props.propConfig,
+      sheetObject: props.sheetObject,
+      trackId: props.trackId,
+    })
+
+  const isDragging = useDragKeyframe({
+    node,
+    props,
+    // dragging does not work with also having a click listener
+    onDetectedClick: (event) =>
+      openEditor(event, event.target instanceof Element ? event.target : node!),
+  })
 
   return (
     <>
@@ -80,6 +98,7 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
         }}
         {...includeLockFrameStampAttrs(cur.position)}
         {...DopeSnap.includePositionSnapAttrs(cur.position)}
+        {...presence.attrs}
         className={isDragging ? 'beingDragged' : ''}
       />
       <Circle
@@ -87,8 +106,10 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
           // @ts-ignore
           cx: `calc(var(--unitSpaceToScaledSpaceMultiplier) * ${cur.position} * 1px)`,
           cy: `calc((var(--graphEditorVerticalSpace) - var(--graphEditorVerticalSpace) * ${cyInExtremumSpace}) * 1px)`,
+          fill: presence.flag === PresenceFlag.Primary ? 'white' : undefined,
         }}
       />
+      {inlineEditorPopover}
       {contextMenu}
     </>
   )
@@ -96,14 +117,15 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
 
 export default GraphEditorDotScalar
 
-function useDragKeyframe(
-  node: SVGCircleElement | null,
-  _props: IProps,
-): boolean {
+function useDragKeyframe(options: {
+  node: SVGCircleElement | null
+  props: IProps
+  onDetectedClick: (event: MouseEvent) => void
+}): boolean {
   const [isDragging, setIsDragging] = useState(false)
-  useLockFrameStampPosition(isDragging, _props.keyframe.position)
-  const propsRef = useRef(_props)
-  propsRef.current = _props
+  useLockFrameStampPosition(isDragging, options.props.keyframe.position)
+  const propsRef = useRef(options.props)
+  propsRef.current = options.props
 
   const gestureHandlers = useMemo<Parameters<typeof useDrag>[1]>(() => {
     return {
@@ -219,6 +241,7 @@ function useDragKeyframe(
               tempTransaction?.commit()
             } else {
               tempTransaction?.discard()
+              options.onDetectedClick(event)
             }
           },
         }
@@ -226,7 +249,7 @@ function useDragKeyframe(
     }
   }, [])
 
-  useDrag(node, gestureHandlers)
+  useDrag(options.node, gestureHandlers)
   useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'move')
   return isDragging
 }

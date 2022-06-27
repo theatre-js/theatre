@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
   useLayoutEffect,
+  useState,
 } from 'react'
 import styled from 'styled-components'
 import {isProject, isSheetObject} from '@theatre/shared/instanceTypes'
@@ -21,6 +22,7 @@ import useHotspot from '@theatre/studio/uiComponents/useHotspot'
 import {Box, prism, val} from '@theatre/dataverse'
 import EmptyState from './EmptyState'
 import useLockSet from '@theatre/studio/uiComponents/useLockSet'
+import {usePresenceListenersOnRootElement} from '@theatre/studio/uiComponents/usePresence'
 
 const headerHeight = `32px`
 
@@ -43,6 +45,10 @@ const Container = styled.div<{pin: boolean}>`
 
   &:hover {
     display: block;
+  }
+
+  @supports not (backdrop-filter: blur()) {
+    background: rgba(40, 43, 47, 0.95);
   }
 `
 
@@ -75,6 +81,9 @@ const Body = styled.div`
   scrollbar-width: none;
   padding: 0;
   user-select: none;
+
+  /* Set the font-size for input values in the detail panel */
+  font-size: 12px;
 `
 
 export const contextMenuShownContext = createContext<
@@ -102,6 +111,9 @@ const DetailPanel: React.FC<{}> = (props) => {
 
   const showDetailsPanel = pin || hotspotActive || isContextMenuShown
 
+  const [containerElt, setContainerElt] = useState<null | HTMLDivElement>(null)
+  usePresenceListenersOnRootElement(containerElt)
+
   return usePrism(() => {
     const selection = getOutlineSelection()
 
@@ -111,6 +123,7 @@ const DetailPanel: React.FC<{}> = (props) => {
         <Container
           data-testid="DetailPanel-Object"
           pin={showDetailsPanel}
+          ref={setContainerElt}
           onMouseEnter={() => {
             isDetailPanelHoveredB.set(true)
           }}

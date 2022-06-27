@@ -1,6 +1,5 @@
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import last from 'lodash-es/last'
 
 import getStudio from '@theatre/studio/getStudio'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
@@ -12,11 +11,7 @@ import {val} from '@theatre/dataverse'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
-import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 
-import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
-import {useTempTransactionEditingTools} from './useTempTransactionEditingTools'
-import {DeterminePropEditorForSingleKeyframe} from './DeterminePropEditorForSingleKeyframe'
 import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
@@ -28,6 +23,10 @@ import {
   snapToNone,
   snapToSome,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import {useSingleKeyframeInlineEditorPopover} from './useSingleKeyframeInlineEditorPopover'
+import usePresence, {
+  PresenceFlag,
+} from '@theatre/studio/uiComponents/usePresence'
 
 export const DOT_SIZE_PX = 6
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 2
@@ -54,7 +53,11 @@ const selectBacgroundForDiamond = ({
   }
 }
 
-type IDiamond = {isSelected: boolean; isInlineEditorPopoverOpen: boolean}
+type IDiamond = {
+  isSelected: boolean
+  isInlineEditorPopoverOpen: boolean
+  flag: PresenceFlag | undefined
+}
 
 /** The keyframe diamond ◆ */
 const Diamond = styled.div<IDiamond>`
@@ -63,6 +66,9 @@ const Diamond = styled.div<IDiamond>`
 
   background: ${(props) => selectBacgroundForDiamond(props)};
   transform: rotateZ(45deg);
+
+  ${(props) =>
+    props.flag === PresenceFlag.Primary ? 'outline: 2px solid white;' : ''};
 
   z-index: 1;
   pointer-events: none;
@@ -90,7 +96,8 @@ type ISingleKeyframeDotProps = ISingleKeyframeEditorProps
 
 /** The ◆ you can grab onto in "keyframe editor" (aka "dope sheet" in other programs) */
 const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
-  const logger = useLogger('SingleKeyframeDot')
+  const logger = useLogger('SingleKeyframeDot', props.keyframe.id)
+  const presence = usePresence(props.itemKey)
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
@@ -98,7 +105,14 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
     node: inlineEditorPopover,
     toggle: toggleEditor,
     isOpen: isInlineEditorPopoverOpen,
-  } = useSingleKeyframeInlineEditorPopover(props)
+  } = useSingleKeyframeInlineEditorPopover({
+    keyframe: props.keyframe,
+    pathToProp: props.leaf.pathToProp,
+    propConf: props.leaf.propConf,
+    sheetObject: props.leaf.sheetObject,
+    trackId: props.leaf.trackId,
+  })
+
   const [isDragging] = useDragForSingleKeyframeDot(node, props, {
     onClickFromDrag(dragStartEvent) {
       toggleEditor(dragStartEvent, ref.current!)
@@ -110,10 +124,12 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
       <HitZone
         ref={ref}
         isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+        {...presence.attrs}
       />
       <Diamond
         isSelected={!!props.selection}
         isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+        flag={presence.flag}
       />
       {inlineEditorPopover}
       {contextMenu}
@@ -183,38 +199,6 @@ function useSingleKeyframeContextMenu(
   })
 }
 
-/** The editor that pops up when directly clicking a Keyframe. */
-function useSingleKeyframeInlineEditorPopover(props: ISingleKeyframeDotProps) {
-  const editingTools = useEditingToolsForKeyframeEditorPopover(props)
-  const label = props.leaf.propConf.label ?? last(props.leaf.pathToProp)
-
-  return usePopover({debugName: 'useKeyframeInlineEditorPopover'}, () => (
-    <BasicPopover showPopoverEdgeTriangle>
-      <DeterminePropEditorForSingleKeyframe
-        propConfig={props.leaf.propConf}
-        editingTools={editingTools}
-        keyframeValue={props.keyframe.value}
-        displayLabel={label != null ? String(label) : undefined}
-      />
-    </BasicPopover>
-  ))
-}
-
-function useEditingToolsForKeyframeEditorPopover(
-  props: ISingleKeyframeDotProps,
-) {
-  const obj = props.leaf.sheetObject
-  return useTempTransactionEditingTools(({stateEditors}, value) => {
-    const newKeyframe = {...props.keyframe, value}
-    stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes({
-      ...obj.address,
-      trackId: props.leaf.trackId,
-      keyframes: [newKeyframe],
-      snappingFunction: obj.sheet.getSequence().closestGridPosition,
-    })
-  })
-}
-
 function useDragForSingleKeyframeDot(
   node: HTMLDivElement | null,
   props: ISingleKeyframeDotProps,
@@ -276,7 +260,7 @@ function useDragForSingleKeyframeDot(
               ...sheetObject.address,
               domNode: node!,
               positionAtStartOfDrag:
-                props.trackData.keyframes[props.index].position,
+                props.track.data.keyframes[props.index].position,
             })
             .onDragStart(event)
 
@@ -306,7 +290,7 @@ function useDragForSingleKeyframeDot(
         return {
           onDrag(dx, dy, event) {
             const original =
-              propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
+              propsAtStartOfDrag.track.data.keyframes[propsAtStartOfDrag.index]
             const newPosition = Math.max(
               // check if our event hoversover a [data-pos] element
               DopeSnap.checkIfMouseEventSnapToPos(event, {

@@ -19,7 +19,7 @@ export type AbsolutePlacementBoxConstraints = {
 }
 
 const TooltipWrapper: React.FC<{
-  target: HTMLElement | SVGElement
+  target: HTMLElement | SVGElement | Element
   onClickOutside?: (e: MouseEvent) => void
   children: () => React.ReactElement
   onPointerOutside?: {

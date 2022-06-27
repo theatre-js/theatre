@@ -6,6 +6,7 @@ import useDrag from '@theatre/studio/uiComponents/useDrag'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {panelDimsToPanelPosition, usePanel} from './BasePanel'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 
 const Container = styled.div`
   cursor: move;
@@ -63,7 +64,8 @@ const PanelDragZone: React.FC<
     }
   }, [])
 
-  useDrag(node, dragOpts)
+  const [isDragging] = useDrag(node, dragOpts)
+  useCssCursorLock(isDragging, 'dragging', 'move')
 
   const [onMouseEnter, onMouseLeave] = useMemo(() => {
     let unlock: VoidFn | undefined
