@@ -14,8 +14,8 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   config: EditableFactoryConfig,
 ) => {
   const editable = <
-    T extends ComponentType<any> | Keys | 'primitive',
-    U extends T extends Keys ? T : Keys,
+    T extends ComponentType<any> | keyof JSX.IntrinsicElements | 'primitive',
+    U extends Keys,
   >(
     Component: T,
     type: T extends 'primitive' ? null : U,
