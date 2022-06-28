@@ -1,8 +1,14 @@
 import studio from '@theatre/studio'
 import type {UseDragOpts} from './useDrag'
 import useDrag from './useDrag'
-import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
-import type {IProject, ISheet} from '@theatre/core'
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import type {IProject, ISheetObject} from '@theatre/core'
 import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
 import type {ShorthandCompoundPropsToInitialValue} from '@theatre/core/propTypes/internals'
@@ -72,31 +78,17 @@ type State = {
 }
 
 const Box: React.FC<{
-  id: string
-  sheet: ISheet
+  sheetObject: ISheetObject
   selection: IStudio['selection']
-}> = ({id, sheet, selection}) => {
-  const defaultConfig = useMemo(
-    () =>
-      Object.assign({}, boxObjectConfig, {
-        // give the box initial values offset from each other
-        x: ((id.codePointAt(0) ?? 0) % 15) * 100,
-        y: ((id.codePointAt(0) ?? 0) % 15) * 100,
-      }),
-    [id],
-  )
-
-  // This is cheap to call and always returns the same value, so no need for useMemo()
-  const obj = sheet.object(id, defaultConfig)
-
-  const isSelected = selection.includes(obj)
+}> = ({sheetObject, selection}) => {
+  const isSelected = selection.includes(sheetObject)
 
   const boxRef = useRef<HTMLDivElement>(null!)
   const preRef = useRef<HTMLPreElement>(null!)
   const colorRef = useRef<HTMLDivElement>(null!)
 
   useLayoutEffect(() => {
-    const unsubscribeFromChanges = onChange(obj.props, (newValues) => {
+    const unsubscribeFromChanges = onChange(sheetObject.props, (newValues) => {
       boxRef.current.style.transform = `translate(${newValues.x}px, ${newValues.y}px)`
       preRef.current.innerText = JSON.stringify(newValues, null, 2)
       colorRef.current.style.background = newValues.color.toString()
@@ -106,21 +98,17 @@ const Box: React.FC<{
 
   const dragOpts = useMemo((): UseDragOpts => {
     let scrub: IScrub | undefined
-    let initial: typeof obj.value
-    let firstOnDragCalled = false
+    let initial: typeof sheetObject.value
     return {
       onDragStart() {
         scrub = studio.scrub()
-        initial = obj.value
-        firstOnDragCalled = false
+        initial = sheetObject.value
       },
       onDrag(x, y) {
-        if (!firstOnDragCalled) {
-          studio.setSelection([obj])
-          firstOnDragCalled = true
-        }
+        studio.setSelection([sheetObject])
+
         scrub!.capture(({set}) => {
-          set(obj.props, {
+          set(sheetObject.props, {
             ...initial,
             x: x + initial.x,
             y: y + initial.y,
@@ -143,7 +131,7 @@ const Box: React.FC<{
   return (
     <div
       onClick={() => {
-        studio.setSelection([obj])
+        studio.setSelection([sheetObject])
       }}
       ref={boxRef}
       style={{
@@ -166,15 +154,40 @@ const Box: React.FC<{
   )
 }
 
-let lastBoxId = 1
+let lastBoxId = -1
+const boxObjectConfigForBoxId = (id: number) => ({
+  ...boxObjectConfig,
+  // give the box initial values offset from each other
+  x: (id % 15) * 100,
+  y: (id % 15) * 100,
+})
 
 export const Scene: React.FC<{project: IProject}> = ({project}) => {
-  const [boxes, setBoxes] = useState<Array<string>>(['0', '1'])
-
-  // This is cheap to call and always returns the same value, so no need for useMemo()
   const sheet = project.sheet('Scene', 'default')
-  const [selection, setSelection] = useState<IStudio['selection']>()
 
+  const updateBoxes = () =>
+    setBoxes(
+      sheet
+        .allObjects()
+        .filter((sheetObject) => sheetObject.address.objectKey !== 'global'),
+    )
+  const addBox = () => {
+    lastBoxId++
+    sheet.object(String(lastBoxId), boxObjectConfigForBoxId(lastBoxId))
+    updateBoxes()
+  }
+  const removeBox = () => {
+    sheet.deleteObject(String(lastBoxId))
+    lastBoxId--
+    updateBoxes()
+  }
+
+  const [boxes, setBoxes] = useState<ISheetObject[]>([])
+  useEffect(() => {
+    addBox()
+    addBox()
+  }, [])
+  const [selection, setSelection] = useState<IStudio['selection']>()
   useLayoutEffect(() => {
     return studio.onSelectionChange((newState) => {
       setSelection(newState)
@@ -214,17 +227,25 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
           position: 'absolute',
           padding: '.25rem .5rem',
         }}
-        onClick={() => {
-          setBoxes((boxes) => [...boxes, String(++lastBoxId)])
-        }}
+        onClick={addBox}
       >
         Add
       </button>
-      {boxes.map((id) => (
+      <button
+        style={{
+          top: '16px',
+          left: '120px',
+          position: 'absolute',
+          padding: '.25rem .5rem',
+        }}
+        onClick={removeBox}
+      >
+        Delete
+      </button>
+      {boxes.map((sheetObject) => (
         <Box
-          key={'box' + id}
-          id={id}
-          sheet={sheet}
+          key={'box' + sheetObject.address.objectKey}
+          sheetObject={sheetObject}
           selection={selection ?? []}
         />
       ))}

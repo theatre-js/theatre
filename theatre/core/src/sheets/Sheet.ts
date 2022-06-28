@@ -68,8 +68,20 @@ export default class Sheet {
     return object
   }
 
+  deleteObject(objectKey: ObjectAddressKey) {
+    this._objects.reduceState([], (state) => {
+      const newState = {...state}
+      delete newState[objectKey]
+      return newState
+    })
+  }
+
   getObject(key: ObjectAddressKey): SheetObject | undefined {
     return this._objects.getState()[key]
+  }
+
+  getObjects(): SheetObject[] {
+    return Object.values(this._objects.getState()) as SheetObject[]
   }
 
   getSequence(): Sequence {

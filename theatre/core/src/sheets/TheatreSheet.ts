@@ -71,6 +71,22 @@ export interface ISheet {
   ): ISheetObject<Props>
 
   /**
+   * Deletes a previously created child object for the sheet
+   *
+   * @param key - Delete the child object created with this key
+   */
+  deleteObject(key: string): void
+
+  /**
+   * Gets all the previously created objects on the sheet.
+   *
+   * Note for studio users: this won't return "dead" objects from previous
+   * studio sessions, it will only return objects that have been created by
+   * `sheet.object(...)` this session.
+   */
+  allObjects(): ISheetObject[]
+
+  /**
    * The Sequence of this Sheet
    */
   readonly sequence: ISequence
@@ -140,6 +156,21 @@ export default class TheatreSheet implements ISheet {
       }
       return object.publicApi as $IntentionalAny
     }
+  }
+
+  deleteObject(key: string) {
+    const internal = privateAPI(this)
+    const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
+      key,
+      `sheet.object("${key}", ...)`,
+    )
+
+    internal.deleteObject(sanitizedPath as ObjectAddressKey)
+  }
+
+  allObjects(): ISheetObject[] {
+    const internal = privateAPI(this)
+    return internal.getObjects().map((so) => so.publicApi)
   }
 
   get sequence(): TheatreSequence {
