@@ -73,14 +73,10 @@ export const ExtensionToolbar: React.FC<{toolbarId: string}> = ({
     if (!extension || !extension.toolbars?.[toolbarId]) continue
 
     groups.push(
-      <>
+      <React.Fragment key={'extensionToolbar-' + extension.id}>
         {isAfterFirstGroup ? <GroupDivider></GroupDivider> : undefined}
-        <ExtensionToolsetRender
-          extension={extension}
-          key={'extensionToolbar-' + extension.id}
-          toolbarId={toolbarId}
-        />
-      </>,
+        <ExtensionToolsetRender extension={extension} toolbarId={toolbarId} />
+      </React.Fragment>,
     )
 
     isAfterFirstGroup = true
