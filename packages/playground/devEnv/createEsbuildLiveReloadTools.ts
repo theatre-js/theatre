@@ -53,7 +53,10 @@ export function createEsbuildLiveReloadTools(): {
                   break
               }
             }
-            es.onerror = attemptConnect
+            es.onerror = () => {
+              es.close()
+              attemptConnect()
+            }
           } catch (err) {
             attemptConnect()
           }
