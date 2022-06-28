@@ -168,6 +168,23 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
         } & React.RefAttributes<JSX.IntrinsicElements[Property]>
       >
     >
+  } & {
+    primitive: React.ForwardRefExoticComponent<
+      React.PropsWithoutRef<
+        {
+          object: any
+          uniqueName: string
+          visible?: boolean | 'editor'
+          additionalProps?: $FixMe
+          objRef?: $FixMe
+          editableType: keyof JSX.IntrinsicElements
+        } & React.RefAttributes<JSX.IntrinsicElements['primitive']>
+      > & {
+        // Have to reproduce the primitive component's props here because we need to
+        // lift this index type here to the outside to make auto-complete work
+        [props: string]: any
+      }
+    >
   }
 
   return Object.assign(editable, extensions)
