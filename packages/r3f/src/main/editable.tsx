@@ -10,16 +10,22 @@ import type {EditableFactoryConfig} from './editableFactoryConfigUtils'
 import {makeStoreKey} from './utils'
 import type {$FixMe} from '../types'
 
-const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
+const createEditable = <
+  // This should really be extends keyof JSX.IntrinsicElements, but that results in a union
+  // that is "too complex to represent".
+  Keys extends string,
+>(
   config: EditableFactoryConfig,
 ) => {
   const editable = <
-    T extends ComponentType<any> | Keys | 'primitive',
+    T extends ComponentType<any> | Keys | 'primitive' | 'custom',
     U extends T extends Keys ? T : Keys,
   >(
     Component: T,
-    type: T extends 'primitive' ? null : U,
+    type: T extends 'primitive' | 'custom' ? null : U,
   ) => {
+    // Since we can't make T conform to keyof JSX.IntrinsicElements (see above) we have to @ts-ignore here.
+    // @ts-ignore
     type Props = Omit<ComponentProps<T>, 'visible'> & {
       uniqueName: string
       visible?: boolean | 'editor'
@@ -30,6 +36,14 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
             editableType: U
           }
         : {}) &
+      (T extends 'custom'
+        ? {
+            customComponent: keyof JSX.IntrinsicElements | ComponentType<any>
+            editableType: U
+          }
+        : {}) &
+      // Since we can't make T conform to keyof JSX.IntrinsicElements (see above) we have to @ts-ignore here.
+      // @ts-ignore
       RefAttributes<JSX.IntrinsicElements[U]>
 
     return forwardRef(
@@ -38,6 +52,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
           uniqueName,
           visible,
           editableType,
+          customComponent,
           additionalProps,
           objRef,
           ...props
@@ -45,7 +60,10 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
         ref,
       ) => {
         const actualType = type ?? editableType
+        const ActualComponent = customComponent ?? Component
 
+        // Since we can't make T conform to keyof JSX.IntrinsicElements (see above) we have to @ts-ignore here.
+        // @ts-ignore
         const objectRef = useRef<JSX.IntrinsicElements[U]>()
 
         const sheet = useCurrentSheet()!
@@ -134,7 +152,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
 
         return (
           // @ts-ignore
-          <Component
+          <ActualComponent
             ref={mergeRefs([objectRef, ref])}
             {...props}
             visible={visible !== 'editor' && visible}
@@ -157,16 +175,50 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
       ]),
     ),
     primitive: editable('primitive', null),
+    custom: editable('custom', null),
   } as unknown as {
     [Property in Keys]: React.ForwardRefExoticComponent<
       React.PropsWithoutRef<
+        // Since we can't make T conform to keyof JSX.IntrinsicElements (see above) we have to @ts-ignore here.
+        // @ts-ignore
         Omit<JSX.IntrinsicElements[Property], 'visible'> & {
           uniqueName: string
           visible?: boolean | 'editor'
           additionalProps?: $FixMe
           objRef?: $FixMe
+          // Since we can't make T conform to keyof JSX.IntrinsicElements (see above) we have to @ts-ignore here.
+          // @ts-ignore
         } & React.RefAttributes<JSX.IntrinsicElements[Property]>
       >
+    >
+  } & {
+    primitive: React.ForwardRefExoticComponent<
+      React.PropsWithoutRef<
+        {
+          object: any
+          uniqueName: string
+          visible?: boolean | 'editor'
+          additionalProps?: $FixMe
+          objRef?: $FixMe
+          editableType: keyof JSX.IntrinsicElements
+        } & React.RefAttributes<JSX.IntrinsicElements['primitive']>
+      > & {
+        // Have to reproduce the primitive component's props here because we need to
+        // lift this index type here to the outside to make auto-complete work
+        [props: string]: any
+      }
+    >
+    custom: React.ForwardRefExoticComponent<
+      React.PropsWithoutRef<{
+        uniqueName: string
+        visible?: boolean | 'editor'
+        additionalProps?: $FixMe
+        objRef?: $FixMe
+        editableType: keyof JSX.IntrinsicElements
+        customComponent: keyof JSX.IntrinsicElements | ComponentType<any>
+      }> & {
+        [props: string]: any
+      }
     >
   }
 
