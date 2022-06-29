@@ -3,6 +3,7 @@ import {types} from '@theatre/core'
 import type {Object3D} from 'three'
 import type {IconID} from '../extension/icons'
 import {Color} from 'three'
+import type {ThreeElements} from './ThreeElements'
 
 export type Helper = Object3D & {
   update?: () => void
@@ -22,7 +23,7 @@ type Meta<T> = {
 }
 export type ObjectConfig<T> = {props: Props} & Meta<T>
 export type EditableFactoryConfig = Partial<
-  Record<keyof JSX.IntrinsicElements, ObjectConfig<any>>
+  Record<keyof ThreeElements, ObjectConfig<any>>
 >
 
 type Vector3 = {
