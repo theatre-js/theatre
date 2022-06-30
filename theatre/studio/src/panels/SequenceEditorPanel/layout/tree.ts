@@ -18,6 +18,7 @@ import {prism, val, valueDerivation} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import {titleBarHeight} from '@theatre/studio/panels/BasePanel/common'
 import type {Studio} from '@theatre/studio/Studio'
+import type {UnknownValidCompoundProps} from '@theatre/core/propTypes/internals'
 
 /**
  * Base "view model" for each row with common
@@ -73,6 +74,7 @@ export type SequenceEditorTree_PropWithChildren =
   SequenceEditorTree_Row<'propWithChildren'> & {
     isCollapsed: boolean
     sheetObject: SheetObject
+    propConf: PropTypeConfig_Compound<UnknownValidCompoundProps>
     pathToProp: PathToProp
     children: Array<
       SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp
@@ -233,6 +235,7 @@ export const calculateSequenceEditorTree = (
       addProp_compound(
         sheetObject,
         trackMapping,
+        conf,
         pathToProp,
         conf,
         arrayOfChildren,
@@ -259,6 +262,7 @@ export const calculateSequenceEditorTree = (
   function addProp_compound(
     sheetObject: SheetObject,
     trackMapping: IPropPathToTrackIdTree,
+    propConf: PropTypeConfig_Compound<UnknownValidCompoundProps>,
     pathToProp: PathToProp,
     conf: PropTypeConfig_Compound<$FixMe>,
     arrayOfChildren: Array<
@@ -276,6 +280,7 @@ export const calculateSequenceEditorTree = (
     const row: SequenceEditorTree_PropWithChildren = {
       type: 'propWithChildren',
       isCollapsed,
+      propConf,
       pathToProp,
       sheetItemKey: createStudioSheetItemKey.forSheetObjectProp(
         sheetObject,
