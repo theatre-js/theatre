@@ -23,7 +23,7 @@ import {
   snapToNone,
   snapToSome,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
-import {useSingleKeyframeInlineEditorPopover} from './useSingleKeyframeInlineEditorPopover'
+import {useKeyframeInlineEditorPopover} from './useSingleKeyframeInlineEditorPopover'
 import usePresence, {
   PresenceFlag,
 } from '@theatre/studio/uiComponents/usePresence'
@@ -95,22 +95,21 @@ const HitZone = styled.div<{isInlineEditorPopoverOpen: boolean}>`
 type ISingleKeyframeDotProps = ISingleKeyframeEditorProps
 
 /** The ◆ you can grab onto in "keyframe editor" (aka "dope sheet" in other programs) */
-const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = React.memo(
-  (props) => {
-    const logger = useLogger('SingleKeyframeDot', props.keyframe.id)
-    const presence = usePresence(props.itemKey)
-    const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
+const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
+  const logger = useLogger('SingleKeyframeDot', props.keyframe.id)
+  const presence = usePresence(props.itemKey)
+  const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
-    const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
-    const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
-      useSingleKeyframeInlineEditorPopover({
-        keyframe: props.keyframe,
-        pathToProp: props.leaf.pathToProp,
-        propConf: props.leaf.propConf,
-        sheetObject: props.leaf.sheetObject,
-        trackId: props.leaf.trackId,
-      })
-
+  const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
+  const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
+    useKeyframeInlineEditorPopover({
+      type: 'primitiveProp',
+      keyframe: props.keyframe,
+      pathToProp: props.leaf.pathToProp,
+      propConfig: props.leaf.propConf,
+      sheetObject: props.leaf.sheetObject,
+      trackId: props.leaf.trackId,
+    })
     const [isDragging] = useDragForSingleKeyframeDot(node, props, {
       onClickFromDrag(dragStartEvent) {
         openEditor(dragStartEvent, ref.current!)

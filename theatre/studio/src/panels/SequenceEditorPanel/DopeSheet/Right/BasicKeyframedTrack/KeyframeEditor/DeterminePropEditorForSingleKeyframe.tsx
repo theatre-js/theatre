@@ -1,28 +1,19 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import type {
-  PropTypeConfig,
-  PropTypeConfig_AllSimples,
-} from '@theatre/core/propTypes'
-import type {IEditingTools} from '@theatre/studio/propEditors/utils/IEditingTools'
-import type {PropConfigForType} from '@theatre/studio/propEditors/utils/PropConfigForType'
+import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import type {ISimplePropEditorReactProps} from '@theatre/studio/propEditors/simpleEditors/ISimplePropEditorReactProps'
 import {simplePropEditorByPropType} from '@theatre/studio/propEditors/simpleEditors/simplePropEditorByPropType'
 
 import SingleKeyframeSimplePropEditor from './DeterminePropEditorForSingleKeyframe/SingleKeyframeSimplePropEditor'
-
-type IDeterminePropEditorForSingleKeyframeProps<
-  K extends PropTypeConfig['type'],
-> = {
-  editingTools: IEditingTools<PropConfigForType<K>['valueType']>
-  propConfig: PropConfigForType<K>
-  keyframeValue: PropConfigForType<K>['valueType']
-  displayLabel?: string
-}
+import type {
+  EditingOptionsTree,
+  PrimitivePropEditingOptions,
+} from './useSingleKeyframeInlineEditorPopover'
+import last from 'lodash-es/last'
+import {useTempTransactionEditingTools} from './useTempTransactionEditingTools'
 
 const SingleKeyframePropEditorContainer = styled.div`
-  padding: 2px;
   display: flex;
   align-items: stretch;
 
@@ -30,7 +21,7 @@ const SingleKeyframePropEditorContainer = styled.div`
     min-width: 100px;
   }
 `
-const SingleKeyframePropLabel = styled.span`
+const SingleKeyframePropLabel = styled.div`
   font-style: normal;
   font-weight: 400;
   font-size: 11px;
@@ -40,6 +31,10 @@ const SingleKeyframePropLabel = styled.span`
   padding: 8px;
 
   color: #919191;
+`
+
+const IndentedThing = styled.div`
+  margin-left: 24px;
 `
 
 /**
@@ -52,35 +47,73 @@ const SingleKeyframePropLabel = styled.span`
  *
  * @param p - propConfig object for any type of prop.
  */
-export function DeterminePropEditorForSingleKeyframe(
-  p: IDeterminePropEditorForSingleKeyframeProps<PropTypeConfig['type']>,
-) {
-  const propConfig = p.propConfig
-
-  if (propConfig.type === 'compound') {
-    throw new Error(
-      'We do not yet support editing compound props for a keyframe',
+export function DeterminePropEditorForKeyframeTree(p: EditingOptionsTree) {
+  if (p.type === 'sheetObject') {
+    return (
+      <>
+        <SingleKeyframePropLabel>
+          {p.sheetObject.address.objectKey}
+        </SingleKeyframePropLabel>
+        <IndentedThing>
+          {p.children.map((c, i) => (
+            <DeterminePropEditorForKeyframeTree key={i} {...c} />
+          ))}
+        </IndentedThing>
+      </>
     )
-  } else if (propConfig.type === 'enum') {
+  } else if (p.type === 'propWithChildren') {
+    const label = p.propConfig.label ?? last(p.pathToProp)
+    return (
+      <>
+        <SingleKeyframePropLabel>{label}</SingleKeyframePropLabel>
+        <IndentedThing>
+          {p.children.map((c, i) => (
+            <DeterminePropEditorForKeyframeTree key={i} {...c} />
+          ))}
+        </IndentedThing>
+      </>
+    )
+  } else {
+    return <BeepBoop {...p} />
+  }
+}
+
+function BeepBoop(p: PrimitivePropEditingOptions) {
+  const label = p.propConfig.label ?? last(p.pathToProp)
+  const editingTools = useEditingToolsForKeyframeEditorPopover(p)
+
+  if (p.propConfig.type === 'enum') {
     // notice: enums are not implemented, yet.
     return <></>
   } else {
-    const PropEditor = simplePropEditorByPropType[propConfig.type]
-
+    const PropEditor = simplePropEditorByPropType[
+      p.propConfig.type
+    ] as React.VFC<ISimplePropEditorReactProps<PropTypeConfig_AllSimples>>
     return (
       <SingleKeyframePropEditorContainer>
-        <SingleKeyframePropLabel>{p.displayLabel}</SingleKeyframePropLabel>
+        <SingleKeyframePropLabel>{label}</SingleKeyframePropLabel>
         <SingleKeyframeSimplePropEditor
-          SimpleEditorComponent={
-            PropEditor as React.VFC<
-              ISimplePropEditorReactProps<PropTypeConfig_AllSimples>
-            >
-          }
-          propConfig={propConfig}
-          editingTools={p.editingTools}
-          keyframeValue={p.keyframeValue}
+          SimpleEditorComponent={PropEditor}
+          propConfig={p.propConfig}
+          editingTools={editingTools}
+          keyframeValue={p.keyframe.value}
         />
       </SingleKeyframePropEditorContainer>
     )
   }
+}
+
+function useEditingToolsForKeyframeEditorPopover(
+  props: PrimitivePropEditingOptions,
+) {
+  const obj = props.sheetObject
+  return useTempTransactionEditingTools(({stateEditors}, value) => {
+    const newKeyframe = {...props.keyframe, value}
+    stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes({
+      ...obj.address,
+      trackId: props.trackId,
+      keyframes: [newKeyframe],
+      snappingFunction: obj.sheet.getSequence().closestGridPosition,
+    })
+  })
 }

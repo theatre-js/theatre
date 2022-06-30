@@ -17,10 +17,71 @@ import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/t
 import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
 import type {ILogger} from '@theatre/shared/logger'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
+import type {EditingOptionsTree} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/useSingleKeyframeInlineEditorPopover'
+import {useKeyframeInlineEditorPopover} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/useSingleKeyframeInlineEditorPopover'
+import type {
+  SequenceEditorTree_PrimitiveProp,
+  SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_SheetObject,
+} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 
 type IAggregateKeyframeDotProps = {
   editorProps: IAggregateKeyframeEditorProps
   utils: IAggregateKeyframeEditorUtils
+}
+
+function sheetObjectBuild(
+  viewModel: SequenceEditorTree_SheetObject,
+  keyframes: KeyframeWithTrack[],
+): EditingOptionsTree | null {
+  const children = viewModel.children
+    .map((a) =>
+      a.type === 'propWithChildren'
+        ? propWithChildrenBuild(a, keyframes)
+        : primitivePropBuild(a, keyframes),
+    )
+    .filter((a): a is EditingOptionsTree => a !== null)
+  if (children.length === 0) return null
+  return {
+    type: 'sheetObject',
+    sheetObject: viewModel.sheetObject,
+    children,
+  }
+}
+function propWithChildrenBuild(
+  viewModel: SequenceEditorTree_PropWithChildren,
+  keyframes: KeyframeWithTrack[],
+): EditingOptionsTree | null {
+  const children = viewModel.children
+    .map((a) =>
+      a.type === 'propWithChildren'
+        ? propWithChildrenBuild(a, keyframes)
+        : primitivePropBuild(a, keyframes),
+    )
+    .filter((a): a is EditingOptionsTree => a !== null)
+  if (children.length === 0) return null
+  return {
+    type: 'propWithChildren',
+    pathToProp: viewModel.pathToProp,
+    propConfig: viewModel.propConf,
+    children,
+  }
+}
+function primitivePropBuild(
+  viewModelLeaf: SequenceEditorTree_PrimitiveProp,
+  keyframes: KeyframeWithTrack[],
+): EditingOptionsTree | null {
+  const keyframe = keyframes.find((kf) => kf.track.id === viewModelLeaf.trackId)
+  if (!keyframe) return null
+  return {
+    type: 'primitiveProp',
+    keyframe: keyframe.kf,
+    pathToProp: viewModelLeaf.pathToProp,
+    propConfig: viewModelLeaf.propConf,
+    sheetObject: viewModelLeaf.sheetObject,
+    trackId: viewModelLeaf.trackId,
+  }
 }
 
 export function AggregateKeyframeDot(
@@ -28,6 +89,13 @@ export function AggregateKeyframeDot(
 ) {
   const logger = useLogger('AggregateKeyframeDot')
   const {cur} = props.utils
+
+  const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
+    useKeyframeInlineEditorPopover(
+      props.editorProps.viewModel.type === 'sheetObject'
+        ? sheetObjectBuild(props.editorProps.viewModel, cur.keyframes)
+        : propWithChildrenBuild(props.editorProps.viewModel, cur.keyframes),
+    )
 
   const presence = usePresence(props.utils.itemKey)
   presence.useRelations(
@@ -57,6 +125,7 @@ export function AggregateKeyframeDot(
         // Need this for the dragging logic to be able to get the keyframe props
         // based on the position.
         {...DopeSnap.includePositionSnapAttrs(cur.position)}
+        onClick={(e) => openEditor(e, ref.current!)}
       />
       <AggregateKeyframeVisualDot
         flag={presence.flag}
@@ -64,6 +133,7 @@ export function AggregateKeyframeDot(
         isSelected={cur.selected}
       />
       {contextMenu}
+      {inlineEditorPopover}
     </>
   )
 }
