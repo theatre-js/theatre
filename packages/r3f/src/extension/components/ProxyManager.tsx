@@ -180,7 +180,7 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
     })
   }, [viewportShading, renderMaterials, sceneProxy])
 
-  const scrub = useRef<IScrub>(undefined!)
+  const scrub = useRef<IScrub | undefined>(undefined)
 
   if (!sceneProxy) {
     return null
@@ -199,6 +199,11 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
             orbitControlsRef={orbitControlsRef}
             object={editableProxyOfSelected.object}
             onObjectChange={() => {
+              // In case for some reason onObjectChange fires before onDraggingChange
+              if (!scrub.current) {
+                return
+              }
+
               const sheetObject = editableProxyOfSelected.editable.sheetObject
               const obj = editableProxyOfSelected.object
 
@@ -231,11 +236,18 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
             }}
             onDraggingChange={(event) => {
               if (event.value) {
+                // scrub.current should never be defined at this point, but check anyway
+                if (scrub.current) {
+                  scrub.current.discard()
+                }
                 scrub.current = studio.scrub()
-              } else {
-                scrub.current.commit()
               }
-              return (isBeingEdited.current = event.value)
+              // scrub.current should never be undefined at this point, but check anyway
+              else if (scrub.current) {
+                scrub.current.commit()
+                scrub.current = undefined
+              }
+              isBeingEdited.current = event.value
             }}
           />
         )}
