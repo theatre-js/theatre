@@ -239,7 +239,7 @@ export default class TheatreSequence implements ISequence {
       return priv.play(conf)
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        priv._logger.warnDev(
+        console.warn(
           `You seem to have called sequence.play() before the project has finished loading.\n` +
             `This would **not** a problem in production when using '@theatre/core', since Theatre loads instantly in core mode. ` +
             `However, when using '@theatre/studio', it takes a few milliseconds for it to load your project's state, ` +

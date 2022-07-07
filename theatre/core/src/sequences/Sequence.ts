@@ -145,13 +145,13 @@ export default class Sequence {
     this.pause()
     if (process.env.NODE_ENV !== 'production') {
       if (typeof position !== 'number') {
-        this._logger.errorDev(
+        console.error(
           `value t in sequence.position = t must be a number. ${typeof position} given`,
         )
         position = 0
       }
       if (position < 0) {
-        this._logger.errorDev(
+        console.error(
           `sequence.position must be a positive number. ${position} given`,
         )
         position = 0
@@ -231,7 +231,7 @@ export default class Sequence {
       }
 
       if (range[1] > sequenceDuration) {
-        this._logger.warnDev(
+        console.warn(
           `Argument conf.range[1] in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}s. ${JSON.stringify(
             range[1],
           )} given.`,
