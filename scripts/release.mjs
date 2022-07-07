@@ -20,7 +20,7 @@ const packagesToBuild = [
   '@theatre/dataverse',
   '@theatre/react',
   '@theatre/browser-bundles',
-  // '@theatre/r3f',
+  '@theatre/r3f',
 ]
 
 const packagesToPublish = [
@@ -29,7 +29,7 @@ const packagesToPublish = [
   '@theatre/dataverse',
   '@theatre/react',
   '@theatre/browser-bundles',
-  // '@theatre/r3f',
+  '@theatre/r3f',
 ]
 
 /**
@@ -43,7 +43,7 @@ const packagesWhoseVersionsShouldBump = [
   'packages/dataverse',
   'packages/react',
   'packages/browser-bundles',
-  // 'packages/r3f',
+  'packages/r3f',
 ]
 
 ;(async function () {
