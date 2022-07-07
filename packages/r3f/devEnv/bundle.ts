@@ -69,7 +69,6 @@ async function createBundles() {
       outfile: path.join(__dirname, '../dist/extension/index.js'),
       format: 'cjs',
       metafile: true,
-      minify: true,
     }
 
     const result = await build(esbuildConfig)
