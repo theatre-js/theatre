@@ -66,12 +66,10 @@ export default class Project {
     readonly config: Conf = {},
     readonly publicApi: TheatreProject,
   ) {
-    this._logger = _coreLogger(config.experiments).named('Project', id)
+    this._logger = _coreLogger({logging: {dev: true}}).named('Project', id)
     this._logger.traceDev('creating project')
     this.address = {projectId: id}
 
-    // remove when logger is understood
-    this._logger._kapow('this is a "kapow"')
     const onDiskStateAtom = new Atom<ProjectState>({
       ahistoric: {
         ahistoricStuff: '',
@@ -136,7 +134,7 @@ export default class Project {
           `Project ${this.address.projectId} is already attached to studio ${this._studio.address.studioId}`,
         )
       } else {
-        this._logger.warnDev(
+        console.warn(
           `Project ${this.address.projectId} is already attached to studio ${this._studio.address.studioId}`,
         )
         return

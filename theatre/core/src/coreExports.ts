@@ -61,7 +61,7 @@ export function getProject(id: string, config: IProjectConfig = {}): IProject {
     return existingProject.publicApi
   }
 
-  const rootLogger = _coreLogger(config.experiments)
+  const rootLogger = _coreLogger()
   const plogger = rootLogger.named('Project', id)
 
   if (process.env.NODE_ENV !== 'production') {
