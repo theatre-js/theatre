@@ -26,8 +26,14 @@
     "dist/**/*"
   ],
   "exports": {
-    ".": "./dist/index.js",
-    "./extension": "./dist/extension/index.js"
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./extension": {
+      "default": "./dist/extension/index.js",
+      "types": "./dist/extension/index.d.ts"
+    }
   },
   "scripts": {
     "prepack": "yarn run build",
