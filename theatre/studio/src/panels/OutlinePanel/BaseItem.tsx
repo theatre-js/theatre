@@ -1,5 +1,5 @@
 import type {VoidFn} from '@theatre/shared/utils/types'
-import React from 'react'
+import React, {useState} from 'react'
 import styled, {css} from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
@@ -63,15 +63,6 @@ const Header = styled(BaseHeader)`
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  // Hit zone
-  &:before {
-    position: absolute;
-    inset: -1px 0;
-    display: block;
-    content: ' ';
-    z-index: 5;
-  }
-
   @supports not (backdrop-filter: blur()) {
     background: rgba(40, 43, 47, 0.95);
   }
@@ -110,12 +101,16 @@ const Head_Icon_WithDescendants = styled.span<{isOpen: boolean}>`
   font-size: 9px;
   position: relative;
   display: block;
+
+  transform: rotate(${(props) => (props.isOpen ? '0deg' : '-90deg')});
 `
 
-const ChildrenContainer = styled.ul`
+const ChildrenContainer = styled.ul<{show: boolean}>`
   margin: 0;
   padding: 0;
   list-style: none;
+
+  display: ${(props) => (props.show ? 'block' : 'none')};
 `
 
 type SelectionStatus =
@@ -132,6 +127,7 @@ const BaseItem: React.FC<{
   labelDecoration?: React.ReactNode
 }> = ({label, children, depth, select, selectionStatus, labelDecoration}) => {
   const canContainChildren = children !== undefined
+  const [isOpen, setIsOpen] = useState(true)
 
   return (
     <Container
@@ -143,7 +139,14 @@ const BaseItem: React.FC<{
       <Header className={selectionStatus} onClick={select ?? noop} data-header>
         <Head_IconContainer>
           {canContainChildren ? (
-            <Head_Icon_WithDescendants isOpen={true}>
+            <Head_Icon_WithDescendants
+              isOpen={isOpen}
+              onClick={(evt) => {
+                evt.stopPropagation()
+                setIsOpen(!isOpen)
+                select?.()
+              }}
+            >
               <ChevronDown />
             </Head_Icon_WithDescendants>
           ) : (
@@ -156,7 +159,9 @@ const BaseItem: React.FC<{
         </Head_Label>
         {labelDecoration}
       </Header>
-      {canContainChildren && <ChildrenContainer>{children}</ChildrenContainer>}
+      {canContainChildren && (
+        <ChildrenContainer show={isOpen}>{children}</ChildrenContainer>
+      )}
     </Container>
   )
 }
