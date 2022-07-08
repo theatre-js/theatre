@@ -6,10 +6,12 @@ import {useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
 import {Box, prism, val} from '@theatre/dataverse'
+import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const headerHeight = `44px`
 
 const Container = styled.div<{pin: boolean}>`
+  ${pointerEventsAutoInNormalMode};
   background-color: transparent;
   position: absolute;
   left: 8px;
@@ -62,6 +64,7 @@ const OutlinePanel: React.FC<{}> = () => {
 
   return (
     <Container
+      className="cont"
       pin={pin || show}
       onMouseEnter={() => {
         isOutlinePanelHoveredB.set(true)
