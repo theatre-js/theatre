@@ -10,7 +10,7 @@ import {val} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import clamp from 'lodash-es/clamp'
 
-const greaterThanZero = (v: number) => isFinite(v) && v > 0
+const greaterThanOrEqualToZero = (v: number) => isFinite(v) && v >= 0
 
 const Container = styled.div`
   display: flex;
@@ -78,7 +78,7 @@ const PlayheadPositionPopover: React.FC<{
         <BasicNumberInput
           value={Number(sequence.position.toFixed(3))}
           {...fns}
-          isValid={greaterThanZero}
+          isValid={greaterThanOrEqualToZero}
           inputRef={inputRef}
           onBlur={onRequestClose.bind(null, 'number input blur')}
           nudge={nudge}
