@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import App from './App'
 import type {ToolsetConfig} from '@theatre/studio'
 import studio from '@theatre/studio'
-import extension from '@theatre/r3f/dist/extension'
+import extension from '@theatre/r3f/extension'
 import {Box, prism, Ticker, val} from '@theatre/dataverse'
 
 studio.extend(extension)

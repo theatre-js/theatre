@@ -1,13 +1,11 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "lib": ["ESNext", "DOM"],
-    "rootDir": "src",
-    "types": ["jest", "node"],
-    "emitDeclarationOnly": true,
-    "composite": true
+    "outDir": "main",
+    "rootDir": "src/main"
   },
   "references": [{"path": "../../theatre"}],
-  "include": ["./src/**/*"]
+  "include": [
+    "./src/main/**/*"
+  ]
 }

@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "extension",
+    "rootDir": "src/extension"
+  },
+  "references": [
+    {
+      "path": "../../theatre"
+    },
+    {
+      "path": "./"
+    }
+  ],
+  "include": [
+    "./src/extension/**/*"
+  ]
+}

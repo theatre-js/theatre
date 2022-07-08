@@ -8,7 +8,7 @@ import {useCurrentSheet} from './SheetProvider'
 import defaultEditableFactoryConfig from './defaultEditableFactoryConfig'
 import type {EditableFactoryConfig} from './editableFactoryConfigUtils'
 import {makeStoreKey} from './utils'
-import type {$FixMe} from '../types'
+import type {$FixMe} from './types'
 
 const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   config: EditableFactoryConfig,

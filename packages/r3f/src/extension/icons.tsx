@@ -6,8 +6,10 @@ import {
 import {GiCube, GiLightBulb, GiLightProjector} from 'react-icons/gi'
 import {BiSun} from 'react-icons/bi'
 import React from 'react'
+import type {IconID} from '@theatre/r3f'
+export type {IconID} from '@theatre/r3f'
 
-const icons = {
+const icons: {[P in IconID]: JSX.Element} = {
   collection: <BsFillCollectionFill />,
   cube: <GiCube />,
   lightBulb: <GiLightBulb />,
@@ -16,7 +18,5 @@ const icons = {
   camera: <BsCameraVideoFill />,
   cloud: <BsCloudFill />,
 }
-
-export type IconID = keyof typeof icons
 
 export default icons

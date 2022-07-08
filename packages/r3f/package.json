@@ -19,20 +19,21 @@
     "url": "https://github.com/AriaMinaei/theatre",
     "directory": "packages/r3f"
   },
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "main/index.js",
+  "module": "main/index.js",
   "sideEffects": false,
   "files": [
-    "dist/**/*"
+    "main/**/*",
+    "extension/**/*"
   ],
   "exports": {
     ".": {
-      "default": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "default": "./main/index.js",
+      "types": "./main/index.d.ts"
     },
     "./extension": {
-      "default": "./dist/extension/index.js",
-      "types": "./dist/extension/index.d.ts"
+      "default": "./extension/index.js",
+      "types": "./extension/index.d.ts"
     }
   },
   "scripts": {
@@ -40,9 +41,9 @@
     "typecheck": "yarn run build",
     "build": "run-s build:ts build:js",
     "build:js": "node -r esbuild-register devEnv/bundle.ts",
-    "build:ts": "tsc --build ./tsconfig.json",
+    "build:ts": "tsc --build ./tsconfig.json && tsc --build ./tsconfig-extension.json",
     "prepublish": "yarn run build",
-    "clean": "rm -rf ./dist && rm -f tsconfig.tsbuildinfo"
+    "clean": "rm -rf ./main ./extension && rm -f tsconfig.tsbuildinfo"
   },
   "devDependencies": {
     "@react-three/drei": "^7.3.1",

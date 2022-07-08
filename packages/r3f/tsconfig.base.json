@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "types": ["jest", "node"],
+    "emitDeclarationOnly": true,
+    "composite": true
+  },
+  "references": [{"path": "../../theatre"}]
+}

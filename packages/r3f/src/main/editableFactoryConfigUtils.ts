@@ -1,8 +1,8 @@
 import type {UnknownShorthandCompoundProps} from '@theatre/core'
 import {types} from '@theatre/core'
 import type {Object3D} from 'three'
-import type {IconID} from '../extension/icons'
 import {Color} from 'three'
+import type {IconID} from './IconID'
 
 export type Helper = Object3D & {
   update?: () => void
