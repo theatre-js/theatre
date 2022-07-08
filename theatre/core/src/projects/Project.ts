@@ -117,10 +117,10 @@ export default class Project {
         if (!this._studio) {
           throw new Error(
             `Argument config.state in Theatre.getProject("${id}", config) is empty. This is fine ` +
-              `while you are using @theatre/core along with @theatre/sutdio. But since @theatre/studio ` +
+              `while you are using @theatre/core along with @theatre/studio. But since @theatre/studio ` +
               `is not loaded, the state of project "${id}" will be empty.\n\n` +
               `To fix this, you need to add @theatre/studio into the bundle and export ` +
-              `the projet's state. Learn how to do that at https://docs.theatrejs.com/in-depth/#exporting`,
+              `the project's state. Learn how to do that at https://docs.theatrejs.com/in-depth/#exporting`,
           )
         }
       }, 1000)
