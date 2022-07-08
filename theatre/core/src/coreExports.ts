@@ -20,6 +20,15 @@ import type {ProjectId} from '@theatre/shared/utils/ids'
 import {_coreLogger} from './_coreLogger'
 export {types}
 
+export type {
+  IProject,
+  IProjectConfig,
+} from '@theatre/core/projects/TheatreProject'
+export type {ISequence} from '@theatre/core/sequences/TheatreSequence'
+export type {ISheetObject} from '@theatre/core/sheetObjects/TheatreSheetObject'
+export type {ISheet} from '@theatre/core/sheets/TheatreSheet'
+export type {UnknownShorthandCompoundProps} from '@theatre/core/propTypes'
+
 /**
  * Returns a project of the given id, or creates one if it doesn't already exist.
  *
