@@ -27,7 +27,7 @@
   ],
   "exports": {
     ".": "./dist/index.js",
-    "./extension": "./dist/extension/index.js"
+    "./dist/extension": "./dist/extension/index.js"
   },
   "scripts": {
     "prepack": "yarn run build",
