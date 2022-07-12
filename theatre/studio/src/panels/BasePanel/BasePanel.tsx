@@ -1,4 +1,4 @@
-import {val} from '@theatre/dataverse'
+import {prism, val} from '@theatre/dataverse'
 import {usePrism} from '@theatre/react'
 import type {UIPanelId} from '@theatre/shared/utils/ids'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
@@ -108,13 +108,20 @@ const BasePanel: React.FC<{
     const width = Math.max(right - left, minDims.width)
     const height = Math.max(bottom - top, minDims.height)
 
-    const stuff: PanelStuff = {
-      dims: {
+    // memo-ing dims so its ref can be used as a cache key
+    const dims = prism.memo(
+      'dims',
+      () => ({
         width,
         left,
         top,
         height,
-      },
+      }),
+      [width, left, top, height],
+    )
+
+    const stuff: PanelStuff = {
+      dims: dims,
       panelId,
       minDims,
       boundsHighlighted,

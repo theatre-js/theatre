@@ -29,32 +29,34 @@ export type ISingleKeyframeEditorProps = {
   selection: undefined | DopeSheetSelection
 }
 
-const SingleKeyframeEditor: React.VFC<ISingleKeyframeEditorProps> = (props) => {
-  const {
-    index,
-    keyframe,
-    track: {data: trackData},
-  } = props
-  const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
+const SingleKeyframeEditor: React.VFC<ISingleKeyframeEditorProps> = React.memo(
+  (props) => {
+    const {
+      index,
+      keyframe,
+      track: {data: trackData},
+    } = props
+    const cur = trackData.keyframes[index]
+    const next = trackData.keyframes[index + 1]
 
-  const connected = cur.connectedRight && !!next
+    const connected = cur.connectedRight && !!next
 
-  return (
-    <SingleKeyframeEditorContainer
-      style={{
-        top: `${props.leaf.nodeHeight / 2}px`,
-        left: `calc(${val(
-          props.layoutP.scaledSpace.leftPadding,
-        )}px + calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
-          cur.position
-        }px))`,
-      }}
-    >
-      <SingleKeyframeDot {...props} itemKey={props.itemKey} />
-      {connected ? <SingleKeyframeConnector {...props} /> : noConnector}
-    </SingleKeyframeEditorContainer>
-  )
-}
+    return (
+      <SingleKeyframeEditorContainer
+        style={{
+          top: `${props.leaf.nodeHeight / 2}px`,
+          left: `calc(${val(
+            props.layoutP.scaledSpace.leftPadding,
+          )}px + calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
+            cur.position
+          }px))`,
+        }}
+      >
+        <SingleKeyframeDot {...props} itemKey={props.itemKey} />
+        {connected ? <SingleKeyframeConnector {...props} /> : noConnector}
+      </SingleKeyframeEditorContainer>
+    )
+  },
+)
 
 export default SingleKeyframeEditor
