@@ -93,18 +93,20 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
     () => logger._debug('see aggregatedKeyframes', props.aggregatedKeyframes),
   )
 
-  const posKfs: IAggregateKeyframesAtPosition[] = [
-    ...aggregatedKeyframes.byPosition.entries(),
-  ]
-    .sort((a, b) => a[0] - b[0])
-    .map(
-      ([position, keyframes]): IAggregateKeyframesAtPosition => ({
-        position,
-        keyframes,
-        selected: selectedPositions.get(position),
-        allHere: keyframes.length === aggregatedKeyframes.tracks.length,
-      }),
-    )
+  const posKfs: IAggregateKeyframesAtPosition[] = useMemo(
+    () =>
+      [...aggregatedKeyframes.byPosition.entries()]
+        .sort((a, b) => a[0] - b[0])
+        .map(
+          ([position, keyframes]): IAggregateKeyframesAtPosition => ({
+            position,
+            keyframes,
+            selected: selectedPositions.get(position),
+            allHere: keyframes.length === aggregatedKeyframes.tracks.length,
+          }),
+        ),
+    [aggregatedKeyframes, selectedPositions],
+  )
 
   const snapPositionsState = useVal(snapPositionsStateD)
 
@@ -129,20 +131,24 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
     />
   ))
 
-  const keyframeEditorProps = posKfs.map(
-    (
-      {position, keyframes},
-      index,
-    ): {editorProps: IAggregateKeyframeEditorProps; position: number} => ({
-      position,
-      editorProps: {
-        index,
-        layoutP,
-        viewModel,
-        aggregateKeyframes: posKfs,
-        selection: selectedPositions.has(position) ? selection : undefined,
-      },
-    }),
+  const keyframeEditorProps = useMemo(
+    () =>
+      posKfs.map(
+        (
+          {position, keyframes},
+          index,
+        ): {editorProps: IAggregateKeyframeEditorProps; position: number} => ({
+          position,
+          editorProps: {
+            index,
+            layoutP,
+            viewModel,
+            aggregateKeyframes: posKfs,
+            selection: selectedPositions.has(position) ? selection : undefined,
+          },
+        }),
+      ),
+    [posKfs, viewModel, selectedPositions],
   )
 
   const [isDragging] = useDragForAggregateKeyframeDot(
