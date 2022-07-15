@@ -18,8 +18,9 @@
  *
  *  return atom
  * ```
+ *
+ * @type {import("eslint").Linter.Config}
  */
-
 module.exports = {
   root: true,
   plugins: ['unused-imports', 'eslint-plugin-tsdoc'],
