@@ -76,7 +76,10 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
           allRegisteredObjects.add(sheetObject)
           setSheetObject(sheetObject)
 
-          if (objRef) objRef!.current = sheetObject
+          if (objRef)
+            typeof objRef === 'function'
+              ? objRef(sheetObject)
+              : (objRef.current = sheetObject)
 
           editorStore.getState().addEditable(storeKey, {
             type: actualType,
