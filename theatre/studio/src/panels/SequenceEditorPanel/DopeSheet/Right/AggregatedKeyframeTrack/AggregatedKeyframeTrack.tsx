@@ -308,7 +308,7 @@ function pasteKeyframesContextMenuItem(
  * into tracks on either the object (if viewModel.type === 'sheetObject') or
  * the compound prop (if viewModel.type === 'propWithChildren').
  *
- * Our copy & paste behaviour is currently roughly described in AGGREGATE_COPY_PASTE.md
+ * Our copy & paste behavior is currently roughly described in AGGREGATE_COPY_PASTE.md
  *
  * @see StudioAhistoricState.clipboard
  * @see setClipboardNestedKeyframes
