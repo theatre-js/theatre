@@ -1,7 +1,7 @@
 import {TheatreLoggerLevel} from './logger'
 import {describeLogger} from './logger.test-helpers'
 
-describeLogger('Theatre internal logger', (setup) => {
+describeLogger('Theatre.js internal logger', (setup) => {
   describe('default logger', () => {
     test('it reports public messages', () => {
       const t = setup().t()
