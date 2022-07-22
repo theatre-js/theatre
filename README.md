@@ -20,7 +20,7 @@ Theatre.js is an animation library for high-fidelity motion graphics. It is
 designed to help you express detailed animation, enabling you to create
 intricate movement, and convey nuance.
 
-Theatre can be used both programmatically _and_ visually.
+Theatre.js can be used both programmatically _and_ visually.
 
 ---
 
@@ -65,7 +65,7 @@ The docs are at [docs.theatrejs.com](https://docs.theatrejs.com):
   - [Animating with music](https://www.youtube.com/watch?v=QoS4gMxwq_4)
   - [Yuri Artiukh](https://twitter.com/akella)'s
     [stream](https://youtu.be/qmRqgFbNprM?t=3462) with a section on using
-    Theatre with THREE.js
+    Theatre.js with THREE.js
   - \<Add your own tutorials here\>
 
 ## Community and support

@@ -39,7 +39,7 @@ export type IProjectConfig = {
 // }
 
 /**
- * A Theatre project
+ * A Theatre.js project
  */
 export interface IProject {
   readonly type: 'Theatre_Project_PublicAPI'

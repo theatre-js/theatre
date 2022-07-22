@@ -77,7 +77,7 @@ function registerCoreBundle() {
       */
       throw new Error(
         `It seems that the module '@theatre/core' is loaded more than once. This could have two possible causes:\n` +
-          `1. You might have two separate versions of theatre in node_modules.\n` +
+          `1. You might have two separate versions of Theatre.js in node_modules.\n` +
           `2. Or this might be a bundling misconfiguration, in case you're using a bundler like Webpack/ESBuild/Rollup.\n\n` +
           `Note that it **is okay** to import '@theatre/core' multiple times. But those imports should point to the same module.`,
       )

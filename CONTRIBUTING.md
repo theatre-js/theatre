@@ -64,7 +64,7 @@ Read more at
 ### Hacking with `examples/`
 
 Other than `playground`, the [`examples/`](./examples) folder contains a few
-small projects that use Theatre with [parcel](https://parceljs.org),
+small projects that use Theatre.js with [parcel](https://parceljs.org),
 [Create react app](create-react-app.dev), and other build tools. This means that
 unlike `playground`, you have to build all the packages before running the
 examples.
@@ -177,7 +177,7 @@ The [monorepo](https://en.wikipedia.org/wiki/Monorepo) consists of:
   [`./theatre/studio`](./theatre/studio).
 - `@theatre/dataverse` – The reactive dataflow library at
   [`./packages/dataverse`](./packages/dataverse).
-- `@theatre/react` – Utilities for using Theatre with React at
+- `@theatre/react` – Utilities for using Theatre.js with React at
   [`./packages/react`](./packages/react).
 - `@theatre/r3f` – The react-three-fiber extension at
   [`./packages/r3f`](./packages/r3f).
