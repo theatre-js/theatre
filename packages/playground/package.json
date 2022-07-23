@@ -11,7 +11,7 @@
     "serve": "node devEnv/cli.js --dev",
     "build": "node devEnv/cli.js",
     "build:static": "yarn build",
-    "typecheck": "yarn run build",
+    "typecheck": "tsc --noEmit",
     "test": "playwright test --config=devEnv/playwright.config.ts",
     "test:ci": "percy exec -- playwright test --reporter=dot --config=devEnv/playwright.config.ts --project=chromium"
   },
