@@ -12,7 +12,7 @@ function onUpdatedBuildScript(rebuild) {
   try {
     module
       .start({
-        dev,
+        dev: !isCI && dev,
         findAvailablePort: !isCI,
         // If not in CI, try to spawn a browser
         openBrowser: !isCI && !rebuild,
