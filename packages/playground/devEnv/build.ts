@@ -102,7 +102,7 @@ export async function start(options: {
         }
       })
       // and then filter it out.
-      .filter((entry) => entry[1] !== undefined),
+      .filter((entry) => entry[1] !== undefined)
   )
 
   // Collect all entry files
@@ -174,7 +174,7 @@ export async function start(options: {
             {
               filter: /index\.tsx?$/,
             },
-            (loadFile) => {
+            async (loadFile) => {
               const indexHtmlPath = loadFile.path.replace(
                 /index\.tsx?$/,
                 'index.html',
@@ -186,7 +186,7 @@ export async function start(options: {
                   readFileSync(indexHtmlPath, 'utf-8'),
                 )
                 if (newHtml) {
-                  writeFileSync(
+                  await writeFile(
                     path.resolve(buildDir, relToSrc),
                     newHtml.replace(
                       /<\/body>/,
@@ -195,6 +195,10 @@ export async function start(options: {
                         relToSrc,
                         '../index.js',
                       )}"></script></body>`,
+                    ),
+                  ).catch(
+                    wrapCatch(
+                      `loading index.tsx creates corresponding index.html for ${relToSrc}`,
                     ),
                   )
                 }
@@ -215,14 +219,19 @@ export async function start(options: {
   await esbuild
     .build(esbuildConfig)
     .finally(() => _initialBuild.stop())
-    .catch((err) => {
+    .catch(
       // if in dev mode, permit continuing to watch even if there was an error
-      return options.dev ? Promise.resolve() : Promise.reject(err)
-    })
+      options.dev
+        ? () => Promise.resolve()
+        : wrapCatch(`failed initial esbuild.build`),
+    )
     .then(async (buildResult) => {
       esbuildWatchStop = buildResult?.stop
       // Read index.html template
-      const index = await readFile(path.join(__dirname, 'index.html'), 'utf8')
+      const index = await readFile(
+        path.join(__dirname, 'index.html'),
+        'utf8',
+      ).catch(wrapCatch('reading index.html template'))
       await Promise.all([
         // Write home page
         writeFile(
@@ -231,7 +240,7 @@ export async function start(options: {
             .replace(/<\/head>/, `${homeHtml.head}<\/head>`)
             .replace(/<body>/, `<body>${homeHtml.html}`),
           'utf-8',
-        ),
+        ).catch(wrapCatch('writing build index.html')),
         // Write module pages
         ...outModules.map((outModule) =>
           writeFile(
@@ -246,12 +255,19 @@ export async function start(options: {
               )}"></script></body>`,
             ),
             'utf-8',
+          ).catch(
+            wrapCatch(
+              `writing index.html for ${path.relative(
+                buildDir,
+                outModule.outDir,
+              )}`,
+            ),
           ),
         ),
       ])
     })
     .catch((err) => {
-      console.error(err)
+      console.error('build.ts: esbuild or html files writing error', err)
       return process.exit(1)
     })
 
@@ -307,5 +323,12 @@ function tryOrUndefined<T>(fn: () => T): T | undefined {
     return fn()
   } catch (err) {
     return undefined
+  }
+}
+
+function wrapCatch(message: string) {
+  return (err: any) => {
+    console.error(message, err)
+    return Promise.reject(`Rejected "${message}":\n    ${err.toString()}`)
   }
 }
