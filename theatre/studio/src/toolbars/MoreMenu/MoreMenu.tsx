@@ -22,6 +22,13 @@ const Container = styled.div`
   @supports not (backdrop-filter: blur()) {
     background-color: rgba(42, 45, 50, 0.98);
   }
+
+  color: rgba(255, 255, 255, 0.9);
+
+  & a {
+    // Fix colors of links to not be default
+    color: inherit;
+  }
 `
 
 const Item = styled.div`

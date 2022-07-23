@@ -105,6 +105,14 @@ const GlobalToolbar: React.FC = () => {
         constraints: {
           maxX: triggerBounds.right,
           maxY: 8,
+          // MVP: Don't render the more menu all the way to the left
+          // when it doesn't fit on the screen height
+          // See https://linear.app/theatre/issue/P-178/bug-broken-updater-ui-in-simple-html-page
+          // 1/10 There's a better way to solve this.
+          // 1/10 Perhaps consider separate constraint like "rightSideMinX" & for future: "bottomSideMinY"
+          // 2/10 Or, consider constraints being a function of the dimensions of the box => constraints.
+          minX: triggerBounds.left - 140,
+          minY: 8,
         },
         verticalGap: 2,
       }
