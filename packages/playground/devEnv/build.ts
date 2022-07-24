@@ -1,20 +1,19 @@
-import {readdirSync, readFileSync, statSync, writeFileSync} from 'fs'
-import {writeFile, readFile} from 'fs/promises'
-import path from 'path'
-import type {BuildOptions} from 'esbuild'
+import type { BuildOptions } from 'esbuild'
 import esbuild from 'esbuild'
-import {definedGlobals} from '../../../theatre/devEnv/definedGlobals'
-import {mapValues} from 'lodash-es'
+import { readdir, readFile, stat, writeFile } from 'fs/promises'
+import { mapValues } from 'lodash-es'
+import path from 'path'
 import React from 'react'
-import {renderToStaticMarkup} from 'react-dom/server'
-import {ServerStyleSheet} from 'styled-components'
-import {PlaygroundPage} from './home/PlaygroundPage'
-import {timer} from './timer'
-import {openForOS} from './openForOS'
-import {tryMultiplePorts} from './tryMultiplePorts'
-import {createProxyServer} from './createProxyServer'
-import {createEsbuildLiveReloadTools} from './createEsbuildLiveReloadTools'
-import {createServerForceClose} from './createServerForceClose'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { ServerStyleSheet } from 'styled-components'
+import { definedGlobals } from '../../../theatre/devEnv/definedGlobals'
+import { createEsbuildLiveReloadTools } from './createEsbuildLiveReloadTools'
+import { createProxyServer } from './createProxyServer'
+import { createServerForceClose } from './createServerForceClose'
+import { PlaygroundPage } from './home/PlaygroundPage'
+import { openForOS } from './openForOS'
+import { timer } from './timer'
+import { tryMultiplePorts } from './tryMultiplePorts'
 
 const playgroundDir = (folder: string) => path.join(__dirname, '..', folder)
 const buildDir = playgroundDir('build')
@@ -48,62 +47,76 @@ export async function start(options: {
   }
 
   // Collect all entry directories per module per group
-  const groups: Groups = Object.fromEntries(
-    [sharedDir, personalDir, testDir]
-      .map((groupDir) => {
-        try {
-          return [
-            path.basename(groupDir),
-            Object.fromEntries(
-              readdirSync(groupDir)
-                .map(
-                  (moduleDirName): [string, PlaygroundExample | undefined] => {
-                    const entryKey = path.basename(moduleDirName)
-                    const entryFilePath = path.join(
-                      groupDir,
-                      moduleDirName,
-                      'index.tsx',
-                    )
-
-                    if (!tryOrUndefined(() => statSync(entryFilePath).isFile()))
-                      return [entryKey, undefined]
-
-                    return [
-                      entryKey,
-                      {
-                        // Including your own html file for playground is an experimental feature,
-                        // it's not quite ready for "prime time" and advertising to the masses until
-                        // it properly handles file watching.
-                        // It's good for now, since we can use it for some demos, just make sure that
-                        // you add a comment to the custom index.html file saying that you have to
-                        // restart playground server entirely to see changes.
-                        useHtml: tryOrUndefined(() =>
-                          readFileSync(
-                            path.join(groupDir, moduleDirName, 'index.html'),
-                            'utf-8',
-                          ),
-                        ),
-                        entryFilePath,
-                        outDir: path.join(
-                          buildDir,
-                          path.basename(groupDir),
-                          moduleDirName,
-                        ),
-                      },
-                    ]
-                  },
+  const groups: Groups = await Promise.all(
+    [sharedDir, personalDir, testDir].map(async (groupDir) => {
+      try {
+        return [
+          path.basename(groupDir),
+          await Promise.all(
+            (
+              await readdir(groupDir).catch(
+                wrapCatch(`read group dir (${groupDir})`),
+              )
+            ).map(
+              async (
+                moduleDirName,
+              ): Promise<[string, PlaygroundExample | undefined]> => {
+                const entryKey = path.basename(moduleDirName)
+                const entryFilePath = path.join(
+                  groupDir,
+                  moduleDirName,
+                  'index.tsx',
                 )
-                .filter((entry) => entry[1] !== undefined),
+
+                if (
+                  !(await stat(entryFilePath)
+                    .then((s) => s.isFile())
+                    .catch(() => false))
+                )
+                  return [entryKey, undefined]
+
+                return [
+                  entryKey,
+                  {
+                    // Including your own html file for playground is an experimental feature,
+                    // it's not quite ready for "prime time" and advertising to the masses until
+                    // it properly handles file watching.
+                    // It's good for now, since we can use it for some demos, just make sure that
+                    // you add a comment to the custom index.html file saying that you have to
+                    // restart playground server entirely to see changes.
+                    useHtml: await readFile(
+                      path.join(groupDir, moduleDirName, 'index.html'),
+                      'utf-8',
+                    ).catch(() => undefined),
+                    entryFilePath,
+                    outDir: path.join(
+                      buildDir,
+                      path.basename(groupDir),
+                      moduleDirName,
+                    ),
+                  },
+                ]
+              },
             ),
-          ]
-        } catch (e) {
-          // If the group dir doesn't exist, we just set its entry to undefined
-          return [path.basename(groupDir), undefined]
-        }
-      })
-      // and then filter it out.
-      .filter((entry) => entry[1] !== undefined)
+          ).then((entries) =>
+            Object.fromEntries(
+              entries.filter((entry) => entry[1] !== undefined),
+            ),
+          ),
+        ]
+      } catch (e) {
+        // If the group dir doesn't exist, we just set its entry to undefined
+        return [path.basename(groupDir), undefined]
+      }
+    }),
   )
+    .then((entries) =>
+      Object.fromEntries(
+        // and then filter it out.
+        entries.filter((entry) => entry[1] !== undefined),
+      ),
+    )
+    .catch(wrapCatch('reading group dirs'))
 
   // Collect all entry files
   const entryPoints = Object.values(groups)
@@ -182,8 +195,8 @@ export async function start(options: {
               const relToSrc = path.relative(srcDir, indexHtmlPath)
               const isInSrcFolder = !relToSrc.startsWith('..')
               if (isInSrcFolder) {
-                const newHtml = tryOrUndefined(() =>
-                  readFileSync(indexHtmlPath, 'utf-8'),
+                const newHtml = await readFile(indexHtmlPath, 'utf-8').catch(
+                  () => undefined,
                 )
                 if (newHtml) {
                   await writeFile(
@@ -318,17 +331,8 @@ export async function start(options: {
   }
 }
 
-function tryOrUndefined<T>(fn: () => T): T | undefined {
-  try {
-    return fn()
-  } catch (err) {
-    return undefined
-  }
-}
-
 function wrapCatch(message: string) {
   return (err: any) => {
-    console.error(message, err)
     return Promise.reject(`Rejected "${message}":\n    ${err.toString()}`)
   }
 }
