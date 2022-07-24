@@ -1,19 +1,19 @@
-import type { BuildOptions } from 'esbuild'
+import type {BuildOptions} from 'esbuild'
 import esbuild from 'esbuild'
-import { readdir, readFile, stat, writeFile } from 'fs/promises'
-import { mapValues } from 'lodash-es'
+import {readdir, readFile, stat, writeFile} from 'fs/promises'
+import {mapValues} from 'lodash-es'
 import path from 'path'
 import React from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
-import { ServerStyleSheet } from 'styled-components'
-import { definedGlobals } from '../../../theatre/devEnv/definedGlobals'
-import { createEsbuildLiveReloadTools } from './createEsbuildLiveReloadTools'
-import { createProxyServer } from './createProxyServer'
-import { createServerForceClose } from './createServerForceClose'
-import { PlaygroundPage } from './home/PlaygroundPage'
-import { openForOS } from './openForOS'
-import { timer } from './timer'
-import { tryMultiplePorts } from './tryMultiplePorts'
+import {renderToStaticMarkup} from 'react-dom/server'
+import {ServerStyleSheet} from 'styled-components'
+import {definedGlobals} from '../../../theatre/devEnv/definedGlobals'
+import {createEsbuildLiveReloadTools} from './createEsbuildLiveReloadTools'
+import {createProxyServer} from './createProxyServer'
+import {createServerForceClose} from './createServerForceClose'
+import {PlaygroundPage} from './home/PlaygroundPage'
+import {openForOS} from './openForOS'
+import {timer} from './timer'
+import {tryMultiplePorts} from './tryMultiplePorts'
 
 const playgroundDir = (folder: string) => path.join(__dirname, '..', folder)
 const buildDir = playgroundDir('build')
@@ -23,16 +23,20 @@ const personalDir = playgroundDir('src/personal')
 const testDir = playgroundDir('src/tests')
 
 export async function start(options: {
+  /** enable live reload and watching stuff */
   dev: boolean
-  findAvailablePort: boolean
-  openBrowser: boolean
-  waitBeforeStartingServer?: Promise<void>
-  /** defaults to 8080 */
-  defaultPort?: number
+  serve?: {
+    findAvailablePort: boolean
+    openBrowser: boolean
+    waitBeforeStartingServer?: Promise<void>
+    /** defaults to 8080 */
+    defaultPort?: number
+  }
 }): Promise<{stop(): Promise<void>}> {
-  const defaultPort = options.defaultPort ?? 8080
+  const defaultPort = options.serve?.defaultPort ?? 8080
 
-  const liveReload = options.dev ? createEsbuildLiveReloadTools() : undefined
+  const liveReload =
+    options.serve && options.dev ? createEsbuildLiveReloadTools() : undefined
 
   type PlaygroundExample = {
     useHtml?: string
@@ -48,16 +52,12 @@ export async function start(options: {
 
   // Collect all entry directories per module per group
   const groups: Groups = await Promise.all(
-    [sharedDir, personalDir, testDir].map(async (groupDir) => {
-      try {
-        return [
+    [sharedDir, personalDir, testDir].map(async (groupDir) =>
+      readdir(groupDir)
+        .then(async (groupDirItems) => [
           path.basename(groupDir),
           await Promise.all(
-            (
-              await readdir(groupDir).catch(
-                wrapCatch(`read group dir (${groupDir})`),
-              )
-            ).map(
+            groupDirItems.map(
               async (
                 moduleDirName,
               ): Promise<[string, PlaygroundExample | undefined]> => {
@@ -103,12 +103,12 @@ export async function start(options: {
               entries.filter((entry) => entry[1] !== undefined),
             ),
           ),
-        ]
-      } catch (e) {
-        // If the group dir doesn't exist, we just set its entry to undefined
-        return [path.basename(groupDir), undefined]
-      }
-    }),
+        ])
+        .catch(() =>
+          // If the group dir doesn't exist, we just set its entry to undefined
+          [path.basename(groupDir), undefined],
+        ),
+    ),
   )
     .then((entries) =>
       Object.fromEntries(
@@ -284,8 +284,8 @@ export async function start(options: {
       return process.exit(1)
     })
 
-  // Only start dev server in dev, otherwise just run build and that's it
-  if (!options.dev) {
+  // Only start dev server in serve, otherwise just run build and that's it
+  if (!options.serve) {
     return {
       stop() {
         esbuildWatchStop?.()
@@ -294,7 +294,8 @@ export async function start(options: {
     }
   }
 
-  await options.waitBeforeStartingServer
+  const {serve} = options
+  await serve.waitBeforeStartingServer
 
   // We start ESBuild serve with no build config because it doesn't need to build
   // anything, we are already using ESBuild watch.
@@ -307,14 +308,14 @@ export async function start(options: {
   })
 
   const proxyForceExit = createServerForceClose(proxyServer)
-  const portTries = options.findAvailablePort ? 10 : 1
+  const portTries = serve.findAvailablePort ? 10 : 1
   const portChosen = await tryMultiplePorts(defaultPort, portTries, proxyServer)
 
   const hostedAt = `http://localhost:${portChosen}`
 
   console.log('Playground running at', hostedAt)
 
-  if (options.openBrowser) {
+  if (serve.openBrowser) {
     setTimeout(() => {
       if (!liveReload?.hasOpenConnections()) openForOS(hostedAt)
     }, 1000)
