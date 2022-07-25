@@ -8,7 +8,7 @@ import type {Pointer} from '@theatre/dataverse'
 
 interface IAttachAudioArgs {
   /**
-   * Either a URL to the audio file (eg "https://localhost/audio.mp3") or an instance of AudioBuffer
+   * Either a URL to the audio file (eg "http://localhost:3000/audio.mp3") or an instance of AudioBuffer
    */
   source: string | AudioBuffer
   /**
@@ -136,7 +136,7 @@ export interface ISequence {
    * Usage:
    * ```ts
    * // Loads and decodes audio from the URL and then attaches it to the sequence
-   * await sheet.sequence.attachAudio({source: "https://localhost:3000/audio.mp3"})
+   * await sheet.sequence.attachAudio({source: "http://localhost:3000/audio.mp3"})
    * sheet.sequence.play()
    *
    * // Providing your own AudioAPI Context, destination, etc
