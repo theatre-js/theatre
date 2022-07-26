@@ -101,7 +101,9 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
       pathToProp,
     ) as undefined | IPropPathToTrackIdTree
 
-    const hasOneOrMoreSequencedTracks = !!possibleSequenceTrackIds
+    const hasOneOrMoreSequencedTracks =
+      possibleSequenceTrackIds !== undefined &&
+      Object.keys(possibleSequenceTrackIds).length !== 0 // check if object is empty or undefined
     const listOfDescendantTrackIds: SequenceTrackId[] = []
 
     let hasOneOrMoreStatics = true
