@@ -142,13 +142,12 @@ const GlobalToolbar: React.FC = () => {
           unpinHintIcon={<DoubleChevronLeft />}
           pinned={outlinePinned}
         />
-        <GroupDivider />
         {conflicts.length > 0 ? (
           <NumberOfConflictsIndicator>
             {conflicts.length}
           </NumberOfConflictsIndicator>
         ) : null}
-        <ExtensionToolbar toolbarId="global" />
+        <ExtensionToolbar showLeftDivider toolbarId="global" />
       </SubContainer>
       <SubContainer>
         {moreMenu}
