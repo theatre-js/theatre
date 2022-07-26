@@ -171,14 +171,16 @@ function createDerivation<T extends SerializablePrimitive>(
             const sequencePosition = val(
               obj.sheet.getSequence().positionDerivation,
             )
-            return getNearbyKeyframesOfTrack(
-              obj,
-              track && {
-                data: track,
-                id: sequenceTrackId,
-              },
-              sequencePosition,
-            )
+            return track
+              ? getNearbyKeyframesOfTrack(
+                  obj,
+                  {
+                    data: track,
+                    id: sequenceTrackId,
+                  },
+                  sequencePosition,
+                )
+              : {}
           },
           [sequenceTrackId],
         )
