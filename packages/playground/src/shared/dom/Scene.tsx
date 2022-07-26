@@ -223,7 +223,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
       {boxes.map((id) => (
         <Box
           key={'box' + id}
-          id={id}
+          id={`Boxes/${id}`}
           sheet={sheet}
           selection={selection ?? []}
         />
