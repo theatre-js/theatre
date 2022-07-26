@@ -62,9 +62,10 @@ const ExtensionToolsetRender: React.FC<{
   return <Toolset config={config} />
 }
 
-export const ExtensionToolbar: React.FC<{toolbarId: string}> = ({
-  toolbarId,
-}) => {
+export const ExtensionToolbar: React.FC<{
+  toolbarId: string
+  showLeftDivider?: boolean
+}> = ({toolbarId, showLeftDivider}) => {
   const groups: Array<React.ReactNode> = []
   const extensionsById = useVal(getStudio().atomP.ephemeral.extensions.byId)
 
@@ -84,7 +85,12 @@ export const ExtensionToolbar: React.FC<{toolbarId: string}> = ({
 
   if (groups.length === 0) return null
 
-  return <Container>{groups}</Container>
+  return (
+    <Container>
+      {showLeftDivider ? <GroupDivider></GroupDivider> : undefined}
+      {groups}
+    </Container>
+  )
 }
 
 export default ExtensionToolbar
