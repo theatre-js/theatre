@@ -10,7 +10,7 @@ import type {
 import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import get from 'lodash-es/get'
-import React from 'react'
+import React, {useMemo} from 'react'
 import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
 import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {
@@ -191,15 +191,12 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
         `controlIndicators`,
         () => (
           <ControlIndicators
-            {...{
-              pointerToProp,
-              obj,
-              possibleSequenceTrackIds,
-              listOfDescendantTrackIds,
-            }}
+            listOfDescendantTrackIds={listOfDescendantTrackIds}
+            obj={obj}
+            pointerToProp={pointerToProp}
           />
         ),
-        [possibleSequenceTrackIds, listOfDescendantTrackIds],
+        [listOfDescendantTrackIds],
       )
 
       const ret: HasSequences = {
@@ -224,18 +221,27 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
 function ControlIndicators({
   pointerToProp,
   obj,
-  possibleSequenceTrackIds,
   listOfDescendantTrackIds,
 }: {
   pointerToProp: Pointer<{}>
   obj: SheetObject
-  possibleSequenceTrackIds: IPropPathToTrackIdTree
   listOfDescendantTrackIds: SequenceTrackId[]
 }) {
-  return usePrism(() => {
-    const pathToProp = getPointerParts(pointerToProp).path
+  // memo so these accessors can be computed once and remain fast
+  const deps = useMemo(
+    () => ({
+      pathToProp: getPointerParts(pointerToProp).path,
+      positionD: obj.sheet.getSequence().positionDerivation,
+      trackDataP:
+        obj.template.project.pointers.historic.sheetsById[obj.address.sheetId]
+          .sequence.tracksByObject[obj.address.objectKey].trackData,
+    }),
+    [obj, pointerToProp],
+  )
 
-    const sequencePosition = val(obj.sheet.getSequence().positionDerivation)
+  return usePrism(() => {
+    const pathToProp = deps.pathToProp
+    const sequencePosition = val(deps.positionD)
 
     /*
     2/10 perf concern:
@@ -244,71 +250,56 @@ function ControlIndicators({
     we _could_ be re-using the calculation of `transform` in `position`, I think
     it's unlikely that this optimization would matter.
     */
-    const nearbyKeyframesInEachTrack = listOfDescendantTrackIds
-      .map((trackId) => ({
-        trackId,
-        track: val(
-          obj.template.project.pointers.historic.sheetsById[obj.address.sheetId]
-            .sequence.tracksByObject[obj.address.objectKey].trackData[trackId],
-        ),
-      }))
-      .filter(({track}) => !!track)
-      .map((s) => ({
-        ...s,
-        nearbies: getNearbyKeyframesOfTrack(
+    const nearbyKfs = (function collectNearbyKeyframesForCompound() {
+      let hasCur = false
+      let closestPrev: undefined | KeyframeWithTrack = undefined
+      let closestNext: undefined | KeyframeWithTrack = undefined
+      let allCur = listOfDescendantTrackIds.length !== 0
+      // previously written as a series of functional methods, using a for loop is far faster, here.
+      // pipelined in an effort to keep the playhead scrubbing fast.
+      for (const trackId of listOfDescendantTrackIds) {
+        const track = val(deps.trackDataP[trackId])
+        if (!track) continue
+        const nearbies = getNearbyKeyframesOfTrack(
           obj,
-          {id: s.trackId, data: s.track!},
+          {id: trackId, data: track},
           sequencePosition,
-        ),
-      }))
-
-    const hasCur = nearbyKeyframesInEachTrack.find(
-      ({nearbies}) => !!nearbies.cur,
-    )
-    const allCur = nearbyKeyframesInEachTrack.every(
-      ({nearbies}) => !!nearbies.cur,
-    )
-
-    const closestPrev = nearbyKeyframesInEachTrack.reduce<
-      undefined | KeyframeWithTrack
-    >((acc, s) => {
-      if (s.nearbies.prev) {
-        if (
-          acc === undefined ||
-          s.nearbies.prev.kf.position > acc.kf.position
-        ) {
-          return s.nearbies.prev
-        } else {
-          return acc
+        )
+        if (!hasCur && nearbies.cur) {
+          hasCur = true
         }
-      } else {
-        return acc
-      }
-    }, undefined)
-
-    const closestNext = nearbyKeyframesInEachTrack.reduce<
-      undefined | KeyframeWithTrack
-    >((acc, s) => {
-      if (s.nearbies.next) {
-        if (
-          acc === undefined ||
-          s.nearbies.next.kf.position < acc.kf.position
-        ) {
-          return s.nearbies.next
-        } else {
-          return acc
+        if (allCur && !nearbies.cur) {
+          allCur = false
         }
-      } else {
-        return acc
+        if (
+          nearbies.prev &&
+          (closestPrev == null ||
+            closestPrev.kf.position < nearbies.prev.kf.position)
+        ) {
+          closestPrev = nearbies.prev
+        }
+        if (
+          nearbies.next &&
+          (closestNext == null ||
+            closestNext.kf.position > nearbies.next.kf.position)
+        ) {
+          closestNext = nearbies.next
+        }
       }
-    }, undefined)
+      return {
+        closestNext,
+        closestPrev,
+        allCur,
+        hasCur,
+      }
+    })()
 
     const toggle = () => {
-      if (allCur) {
+      if (nearbyKfs.allCur) {
         getStudio().transaction((api) => {
           api.unset(pointerToProp)
         })
-      } else if (hasCur) {
+      } else if (nearbyKfs.hasCur) {
         getStudio().transaction((api) => {
           api.set(pointerToProp, val(pointerToProp))
         })
@@ -320,7 +311,7 @@ function ControlIndicators({
     }
 
     const pr: NearbyKeyframesControls = {
-      cur: hasCur
+      cur: nearbyKfs.hasCur
         ? {
             type: 'on',
             itemKey: createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
@@ -335,37 +326,39 @@ function ControlIndicators({
             type: 'off',
           },
       prev:
-        closestPrev !== undefined
+        nearbyKfs.closestPrev !== undefined
           ? {
-              position: closestPrev.kf.position,
+              position: nearbyKfs.closestPrev.kf.position,
               itemKey:
                 createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
                   obj,
                   pathToProp,
-                  closestPrev.kf.position,
+                  nearbyKfs.closestPrev.kf.position,
                 ),
               jump: () => {
-                obj.sheet.getSequence().position = closestPrev.kf.position
+                obj.sheet.getSequence().position =
+                  nearbyKfs.closestPrev!.kf.position
               },
             }
           : undefined,
       next:
-        closestNext !== undefined
+        nearbyKfs.closestNext !== undefined
           ? {
-              position: closestNext.kf.position,
+              position: nearbyKfs.closestNext.kf.position,
               itemKey:
                 createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
                   obj,
                   pathToProp,
-                  closestNext.kf.position,
+                  nearbyKfs.closestNext.kf.position,
                 ),
               jump: () => {
-                obj.sheet.getSequence().position = closestNext.kf.position
+                obj.sheet.getSequence().position =
+                  nearbyKfs.closestNext!.kf.position
               },
             }
           : undefined,
     }
 
     return <NextPrevKeyframeCursors {...pr} />
-  }, [pointerToProp, obj, possibleSequenceTrackIds, listOfDescendantTrackIds])
+  }, [deps, obj, listOfDescendantTrackIds])
 }

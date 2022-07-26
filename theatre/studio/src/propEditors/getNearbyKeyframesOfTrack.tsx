@@ -1,8 +1,9 @@
 import type {
-  TrackData,
   Keyframe,
+  TrackData,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
 import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {
   KeyframeWithTrack,
@@ -16,12 +17,14 @@ const cache = new WeakMap<
 
 const noKeyframes: NearbyKeyframes = {}
 
+const itemKeyCache = new WeakMap<Keyframe, StudioSheetItemKey>()
+
 export function getNearbyKeyframesOfTrack(
   obj: SheetObject,
-  track: TrackWithId | undefined,
+  track: TrackWithId,
   sequencePosition: number,
 ): NearbyKeyframes {
-  if (!track || track.data.keyframes.length === 0) return noKeyframes
+  if (track.data.keyframes.length === 0) return noKeyframes
 
   const cachedItem = cache.get(track.data)
   if (cachedItem && cachedItem[0] === sequencePosition) {
@@ -29,19 +32,21 @@ export function getNearbyKeyframesOfTrack(
   }
 
   function getKeyframeWithTrackId(idx: number): KeyframeWithTrack | undefined {
-    if (!track) return
-    const found = track.data.keyframes[idx]
-    return (
-      found && {
-        kf: found,
-        track,
-        itemKey: createStudioSheetItemKey.forTrackKeyframe(
-          obj,
-          track.id,
-          found.id,
-        ),
-      }
-    )
+    const kf = track.data.keyframes[idx]
+    if (!kf) return
+
+    // use a cache to avoid extra string manipulation code involved with createStudioSheetItemKey
+    let itemKey = itemKeyCache.get(kf)
+    if (!itemKey) {
+      itemKey = createStudioSheetItemKey.forTrackKeyframe(obj, track.id, kf.id)
+      itemKeyCache.set(kf, itemKey)
+    }
+
+    return {
+      kf,
+      track,
+      itemKey,
+    }
   }
 
   const calculate = (): NearbyKeyframes => {
