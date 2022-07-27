@@ -7,8 +7,6 @@ import {onChange, types} from '@theatre/core'
 import type {IScrub, IStudio} from '@theatre/studio'
 import type {ShorthandCompoundPropsToInitialValue} from '@theatre/core/propTypes/internals'
 
-studio.initialize({usePersistentStorage: false})
-
 const textInterpolate = (left: string, right: string, progression: number) => {
   if (!left || right.startsWith(left)) {
     const length = Math.floor(
@@ -223,7 +221,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
       {boxes.map((id) => (
         <Box
           key={'box' + id}
-          id={`Boxes/${id}`}
+          id={`Box / ${id}`}
           sheet={sheet}
           selection={selection ?? []}
         />
