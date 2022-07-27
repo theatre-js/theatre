@@ -99,7 +99,7 @@ export default class TheatreSheet implements ISheet {
     const internal = privateAPI(this)
     const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
       key,
-      `sheet.object("${key}", ...)`,
+      `sheet.object`,
     )
 
     const existingObject = internal.getObject(sanitizedPath as ObjectAddressKey)
