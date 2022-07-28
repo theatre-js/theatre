@@ -134,7 +134,7 @@ const BasicNumberInput: React.FC<{
 
   const bodyCursorBeforeDrag = useRef<string | null>(null)
 
-  const callbacks = useMemo(() => {
+  const eventListeners = useMemo((): Parameters<typeof Input>[0] => {
     const inputChange = (e: React.ChangeEvent) => {
       const target = e.target as HTMLInputElement
       const {value} = target
@@ -214,9 +214,25 @@ const BasicNumberInput: React.FC<{
       })
     }
 
-    let inputWidth: number
+    return {
+      onChange: inputChange,
+      onBlur,
+      onKeyDown: onInputKeyDown,
+      onClick,
+      onFocus,
+      onMouseDown(e: React.MouseEvent) {
+        e.stopPropagation()
+      },
+      onDoubleClick(e: React.MouseEvent) {
+        e.preventDefault()
+        e.stopPropagation()
+      },
+    }
+  }, [])
 
-    const transitionToDraggingMode = () => {
+  const transitionToDraggingMode = useMemo(() => {
+    let inputWidth: number
+    return function transitionToDraggingMode() {
       const curValue = propsRef.current.value
       inputWidth = inputRef.current?.getBoundingClientRect().width!
 
@@ -266,15 +282,6 @@ const BasicNumberInput: React.FC<{
         },
       }
     }
-
-    return {
-      inputChange,
-      onBlur,
-      transitionToDraggingMode,
-      onInputKeyDown,
-      onClick,
-      onFocus,
-    }
   }, [])
 
   let value =
@@ -291,22 +298,11 @@ const BasicNumberInput: React.FC<{
 
   const theInput = (
     <Input
-      key="input"
       type="text"
-      onChange={callbacks.inputChange}
+      key="input"
       value={value}
-      onBlur={callbacks.onBlur}
-      onKeyDown={callbacks.onInputKeyDown}
-      onClick={callbacks.onClick}
-      onFocus={callbacks.onFocus}
       ref={mergeRefs(_refs)}
-      onMouseDown={(e: React.MouseEvent) => {
-        e.stopPropagation()
-      }}
-      onDoubleClick={(e: React.MouseEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-      }}
+      {...eventListeners}
     />
   )
 
@@ -325,7 +321,7 @@ const BasicNumberInput: React.FC<{
   const [dragNode, setDragNode] = useState<HTMLDivElement | null>(null)
   useDrag(dragNode, {
     debugName: 'form/BasicNumberInput',
-    onDragStart: callbacks.transitionToDraggingMode,
+    onDragStart: transitionToDraggingMode,
     lockCSSCursorTo: 'ew-resize',
     shouldPointerLock: true,
     disabled: stateRef.current.mode === 'editingViaKeyboard',
