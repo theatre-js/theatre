@@ -4,7 +4,6 @@ import {useDerivation} from '@theatre/react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import React, {useMemo, useRef} from 'react'
 import {invariant} from './invariant'
-import {emptyArray} from '@theatre/shared/utils'
 
 type DeriveAll<T> = IDerivation<
   {
@@ -36,23 +35,6 @@ function deriveAllD<T extends Record<string, $<any>> | $<any>[]>(
   }) as $IntentionalAny
 }
 
-export function useReactPrism(
-  fn: () => React.ReactNode,
-  deps: readonly any[] = emptyArray,
-): React.ReactElement {
-  const derivation = useMemo(() => prism(fn), deps)
-  return <DeriveElement der={derivation} />
-}
-
-export function reactPrism(fn: () => React.ReactNode): React.ReactElement {
-  return <DeriveElement der={prism(fn)} />
-}
-
-function DeriveElement(props: {der: IDerivation<React.ReactNode>}) {
-  const node = useDerivation(props.der)
-  return <>{node}</>
-}
-
 /** This is only used for type checking to make sure the APIs are used properly */
 interface TSErrors<M> extends Error {}
 
@@ -76,41 +58,47 @@ type ReactDeriver<Props extends {}> = (
 export function deriver<Props extends {}>(
   Component: React.ComponentType<Props>,
 ): ReactDeriver<Props> {
-  return React.forwardRef(function deriverRender(
-    props: Record<string, $IntentionalAny>,
-    ref,
-  ) {
-    let observableArr = []
-    const observables: Record<string, IDerivation<$IntentionalAny>> = {}
-    const normalProps: Record<string, $IntentionalAny> = {
+  const finalComp = React.memo(
+    React.forwardRef(function deriverRender(
+      props: Record<string, $IntentionalAny>,
       ref,
-    }
-    for (const key in props) {
-      const value = props[key]
-      if (isDerivation(value)) {
-        observableArr.push(value)
-        observables[key] = value
-      } else {
-        normalProps[key] = value
+    ) {
+      let observableArr = []
+      const observables: Record<string, IDerivation<$IntentionalAny>> = {}
+      const normalProps: Record<string, $IntentionalAny> = {
+        ref,
       }
-    }
+      for (const key in props) {
+        const value = props[key]
+        if (isDerivation(value)) {
+          observableArr.push(value)
+          observables[key] = value
+        } else {
+          normalProps[key] = value
+        }
+      }
 
-    const initialCount = useRef(observableArr.length)
-    invariant(
-      initialCount.current === observableArr.length,
-      `expect same number of observable props on every invocation of deriver wrapped component.`,
-      {initial: initialCount.current, count: observableArr.length},
-    )
+      const initialCount = useRef(observableArr.length)
+      invariant(
+        initialCount.current === observableArr.length,
+        `expect same number of observable props on every invocation of deriver wrapped component.`,
+        {initial: initialCount.current, count: observableArr.length},
+      )
 
-    const allD = useMemo(() => deriveAllD(observables), observableArr)
-    const observedPropState = useDerivation(allD)
+      const allD = useMemo(() => deriveAllD(observables), observableArr)
+      const observedPropState = useDerivation(allD)
 
-    return (
-      observedPropState &&
-      React.createElement(Component, {
-        ...normalProps,
-        ...observedPropState,
-      } as Props)
-    )
-  })
+      return (
+        observedPropState &&
+        React.createElement(Component, {
+          ...normalProps,
+          ...observedPropState,
+        } as Props)
+      )
+    }),
+  )
+
+  finalComp.displayName = `deriver(${Component.displayName})`
+
+  return finalComp
 }

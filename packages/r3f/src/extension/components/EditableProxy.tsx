@@ -125,7 +125,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
               useExtensionStore.getState().editables[storeKey].sheetObject
 
             if (!theatreObject) {
-              console.log('no theatre object for', storeKey)
+              console.log('no Theatre.js object for', storeKey)
             } else {
               studio.setSelection([theatreObject])
             }
@@ -172,7 +172,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
                     useExtensionStore.getState().editables[storeKey].sheetObject
 
                   if (!theatreObject) {
-                    console.log('no theatre object for', storeKey)
+                    console.log('no Theatre.js object for', storeKey)
                   } else {
                     studio.setSelection([theatreObject])
                   }

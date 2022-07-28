@@ -26,10 +26,11 @@ const defaultProps = {
 }
 
 let lastProjectN = 0
-export async function setupTestSheet(sheetState: SheetState_Historic) {
-  const studio = getStudio()!
-  studio.initialize({usePersistentStorage: false})
 
+const studio = getStudio()!
+studio.initialize({usePersistentStorage: false})
+
+export async function setupTestSheet(sheetState: SheetState_Historic) {
   const projectState: ProjectState_Historic = {
     definitionVersion: globals.currentProjectStateDefinitionVersion,
     sheetsById: {

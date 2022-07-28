@@ -14,8 +14,8 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   config: EditableFactoryConfig,
 ) => {
   const editable = <
-    T extends ComponentType<any> | Keys | 'primitive',
-    U extends T extends Keys ? T : Keys,
+    T extends ComponentType<any> | keyof JSX.IntrinsicElements | 'primitive',
+    U extends Keys,
   >(
     Component: T,
     type: T extends 'primitive' ? null : U,
@@ -76,7 +76,10 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
           allRegisteredObjects.add(sheetObject)
           setSheetObject(sheetObject)
 
-          if (objRef) objRef!.current = sheetObject
+          if (objRef)
+            typeof objRef === 'function'
+              ? objRef(sheetObject)
+              : (objRef.current = sheetObject)
 
           editorStore.getState().addEditable(storeKey, {
             type: actualType,

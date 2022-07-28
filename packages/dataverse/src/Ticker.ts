@@ -31,6 +31,7 @@ let rafTicker: undefined | Ticker
  * external scheduling strategy, e.g. a raf.
  */
 export default class Ticker {
+  /** Get a shared `requestAnimationFrame` ticker. */
   static get raf(): Ticker {
     if (!rafTicker) {
       rafTicker = createRafTicker()

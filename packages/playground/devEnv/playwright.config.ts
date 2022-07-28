@@ -68,7 +68,7 @@ const config: PlaywrightTestConfig = {
   TODO 👆
   */
   webServer: {
-    command: 'yarn run serve',
+    command: 'yarn run serve:ci',
     port: 8080,
     reuseExistingServer: !process.env.CI,
   },

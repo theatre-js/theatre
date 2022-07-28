@@ -23,11 +23,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install
-      - name: Build the theatre packages
+      - name: Build the Theatre.js packages
         run: yarn build
       - name: Update .yarnrc.yml with the auth config for the npmPublishRegistry
         run: cat .github/.yarnrc.publish.yml >> .yarnrc.yml
-      - name: Publish the theatre packages
+      - name: Publish the Theatre.js packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           # LATEST_COMMIT_HASH: ${{ github.event.pull_request.head.sha }}

@@ -3,10 +3,26 @@ import percySnapshot from '@percy/playwright'
 
 const isMac = process.platform === 'darwin'
 
+const delay = (dur: number) =>
+  new Promise((resolve) => setTimeout(resolve, dur))
+
 test.describe('setting-static-props', () => {
   test.beforeEach(async ({page}) => {
-    // Go to the starting url before each test.
-    await page.goto('http://localhost:8080/tests/setting-static-props')
+    // TODO This is a temporary hack that re-tries navigating to the url in case the server isn't ready yet.
+    // Ideally we should wait running the e2e tests until the server has signalled that it's ready to serve.
+    // For now, let's use this hack, otherwise, the e2e test may _randomly_ break on the CI with "ERRConnectionRefused"
+    const maxRetries = 3
+    for (let i = 1; i <= maxRetries; i++) {
+      try {
+        await page.goto('http://localhost:8080/tests/setting-static-props')
+      } catch (error) {
+        if (i === maxRetries) {
+          throw error
+        } else {
+          await delay(1000)
+        }
+      }
+    }
   })
 
   test('Undo/redo', async ({page}) => {

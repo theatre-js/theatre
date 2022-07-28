@@ -32,5 +32,10 @@ describe(`removePathFromObject()`, () => {
     )
     t({foo: 'foo'}, ['none'], {foo: 'foo'})
     t({foo: 'foo'}, ['none', 'existing', 'prop'], {foo: 'foo'})
+
+    const foo = {one: {two: {three: 'three'}}}
+    removePathFromObject(foo.one, ['two', 'three'])
+    // make sure it doesn't delete above the base object
+    deepStrictEqual(foo, {one: {}})
   })
 })

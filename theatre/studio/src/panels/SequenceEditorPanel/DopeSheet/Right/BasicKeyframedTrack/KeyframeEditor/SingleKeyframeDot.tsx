@@ -95,44 +95,46 @@ const HitZone = styled.div<{isInlineEditorPopoverOpen: boolean}>`
 type ISingleKeyframeDotProps = ISingleKeyframeEditorProps
 
 /** The ◆ you can grab onto in "keyframe editor" (aka "dope sheet" in other programs) */
-const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
-  const logger = useLogger('SingleKeyframeDot', props.keyframe.id)
-  const presence = usePresence(props.itemKey)
-  const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
+const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = React.memo(
+  (props) => {
+    const logger = useLogger('SingleKeyframeDot', props.keyframe.id)
+    const presence = usePresence(props.itemKey)
+    const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
-  const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
-  const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
-    useSingleKeyframeInlineEditorPopover({
-      keyframe: props.keyframe,
-      pathToProp: props.leaf.pathToProp,
-      propConf: props.leaf.propConf,
-      sheetObject: props.leaf.sheetObject,
-      trackId: props.leaf.trackId,
+    const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
+    const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
+      useSingleKeyframeInlineEditorPopover({
+        keyframe: props.keyframe,
+        pathToProp: props.leaf.pathToProp,
+        propConf: props.leaf.propConf,
+        sheetObject: props.leaf.sheetObject,
+        trackId: props.leaf.trackId,
+      })
+
+    const [isDragging] = useDragForSingleKeyframeDot(node, props, {
+      onClickFromDrag(dragStartEvent) {
+        openEditor(dragStartEvent, ref.current!)
+      },
     })
 
-  const [isDragging] = useDragForSingleKeyframeDot(node, props, {
-    onClickFromDrag(dragStartEvent) {
-      openEditor(dragStartEvent, ref.current!)
-    },
-  })
-
-  return (
-    <>
-      <HitZone
-        ref={ref}
-        isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
-        {...presence.attrs}
-      />
-      <Diamond
-        isSelected={!!props.selection}
-        isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
-        flag={presence.flag}
-      />
-      {inlineEditorPopover}
-      {contextMenu}
-    </>
-  )
-}
+    return (
+      <>
+        <HitZone
+          ref={ref}
+          isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+          {...presence.attrs}
+        />
+        <Diamond
+          isSelected={!!props.selection}
+          isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+          flag={presence.flag}
+        />
+        {inlineEditorPopover}
+        {contextMenu}
+      </>
+    )
+  },
+)
 
 export default SingleKeyframeDot
 

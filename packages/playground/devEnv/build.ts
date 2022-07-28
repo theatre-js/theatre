@@ -1,20 +1,19 @@
-import {readdirSync, readFileSync, statSync, writeFileSync} from 'fs'
-import {writeFile, readFile} from 'fs/promises'
-import path from 'path'
 import type {BuildOptions} from 'esbuild'
 import esbuild from 'esbuild'
-import {definedGlobals} from '../../../theatre/devEnv/definedGlobals'
+import {readdir, readFile, stat, writeFile} from 'fs/promises'
 import {mapValues} from 'lodash-es'
+import path from 'path'
 import React from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 import {ServerStyleSheet} from 'styled-components'
-import {PlaygroundPage} from './home/PlaygroundPage'
-import {timer} from './timer'
-import {openForOS} from './openForOS'
-import {tryMultiplePorts} from './tryMultiplePorts'
-import {createProxyServer} from './createProxyServer'
+import {definedGlobals} from '../../../theatre/devEnv/definedGlobals'
 import {createEsbuildLiveReloadTools} from './createEsbuildLiveReloadTools'
+import {createProxyServer} from './createProxyServer'
 import {createServerForceClose} from './createServerForceClose'
+import {PlaygroundPage} from './home/PlaygroundPage'
+import {openForOS} from './openForOS'
+import {timer} from './timer'
+import {tryMultiplePorts} from './tryMultiplePorts'
 
 const playgroundDir = (folder: string) => path.join(__dirname, '..', folder)
 const buildDir = playgroundDir('build')
@@ -24,16 +23,20 @@ const personalDir = playgroundDir('src/personal')
 const testDir = playgroundDir('src/tests')
 
 export async function start(options: {
+  /** enable live reload and watching stuff */
   dev: boolean
-  findAvailablePort: boolean
-  openBrowser: boolean
-  waitBeforeStartingServer?: Promise<void>
-  /** defaults to 8080 */
-  defaultPort?: number
+  serve?: {
+    findAvailablePort: boolean
+    openBrowser: boolean
+    waitBeforeStartingServer?: Promise<void>
+    /** defaults to 8080 */
+    defaultPort?: number
+  }
 }): Promise<{stop(): Promise<void>}> {
-  const defaultPort = options.defaultPort ?? 8080
+  const defaultPort = options.serve?.defaultPort ?? 8080
 
-  const liveReload = options.dev ? createEsbuildLiveReloadTools() : undefined
+  const liveReload =
+    options.serve && options.dev ? createEsbuildLiveReloadTools() : undefined
 
   type PlaygroundExample = {
     useHtml?: string
@@ -48,62 +51,72 @@ export async function start(options: {
   }
 
   // Collect all entry directories per module per group
-  const groups: Groups = Object.fromEntries(
-    [sharedDir, personalDir, testDir]
-      .map((groupDir) => {
-        try {
-          return [
-            path.basename(groupDir),
-            Object.fromEntries(
-              readdirSync(groupDir)
-                .map(
-                  (moduleDirName): [string, PlaygroundExample | undefined] => {
-                    const entryKey = path.basename(moduleDirName)
-                    const entryFilePath = path.join(
-                      groupDir,
-                      moduleDirName,
-                      'index.tsx',
-                    )
-
-                    if (!tryOrUndefined(() => statSync(entryFilePath).isFile()))
-                      return [entryKey, undefined]
-
-                    return [
-                      entryKey,
-                      {
-                        // Including your own html file for playground is an experimental feature,
-                        // it's not quite ready for "prime time" and advertising to the masses until
-                        // it properly handles file watching.
-                        // It's good for now, since we can use it for some demos, just make sure that
-                        // you add a comment to the custom index.html file saying that you have to
-                        // restart playground server entirely to see changes.
-                        useHtml: tryOrUndefined(() =>
-                          readFileSync(
-                            path.join(groupDir, moduleDirName, 'index.html'),
-                            'utf-8',
-                          ),
-                        ),
-                        entryFilePath,
-                        outDir: path.join(
-                          buildDir,
-                          path.basename(groupDir),
-                          moduleDirName,
-                        ),
-                      },
-                    ]
-                  },
+  const groups: Groups = await Promise.all(
+    [sharedDir, personalDir, testDir].map(async (groupDir) =>
+      readdir(groupDir)
+        .then(async (groupDirItems) => [
+          path.basename(groupDir),
+          await Promise.all(
+            groupDirItems.map(
+              async (
+                moduleDirName,
+              ): Promise<[string, PlaygroundExample | undefined]> => {
+                const entryKey = path.basename(moduleDirName)
+                const entryFilePath = path.join(
+                  groupDir,
+                  moduleDirName,
+                  'index.tsx',
                 )
-                .filter((entry) => entry[1] !== undefined),
+
+                if (
+                  !(await stat(entryFilePath)
+                    .then((s) => s.isFile())
+                    .catch(() => false))
+                )
+                  return [entryKey, undefined]
+
+                return [
+                  entryKey,
+                  {
+                    // Including your own html file for playground is an experimental feature,
+                    // it's not quite ready for "prime time" and advertising to the masses until
+                    // it properly handles file watching.
+                    // It's good for now, since we can use it for some demos, just make sure that
+                    // you add a comment to the custom index.html file saying that you have to
+                    // restart playground server entirely to see changes.
+                    useHtml: await readFile(
+                      path.join(groupDir, moduleDirName, 'index.html'),
+                      'utf-8',
+                    ).catch(() => undefined),
+                    entryFilePath,
+                    outDir: path.join(
+                      buildDir,
+                      path.basename(groupDir),
+                      moduleDirName,
+                    ),
+                  },
+                ]
+              },
             ),
-          ]
-        } catch (e) {
+          ).then((entries) =>
+            Object.fromEntries(
+              entries.filter((entry) => entry[1] !== undefined),
+            ),
+          ),
+        ])
+        .catch(() =>
           // If the group dir doesn't exist, we just set its entry to undefined
-          return [path.basename(groupDir), undefined]
-        }
-      })
-      // and then filter it out.
-      .filter((entry) => entry[1] !== undefined),
+          [path.basename(groupDir), undefined],
+        ),
+    ),
   )
+    .then((entries) =>
+      Object.fromEntries(
+        // and then filter it out.
+        entries.filter((entry) => entry[1] !== undefined),
+      ),
+    )
+    .catch(wrapCatch('reading group dirs'))
 
   // Collect all entry files
   const entryPoints = Object.values(groups)
@@ -174,7 +187,7 @@ export async function start(options: {
             {
               filter: /index\.tsx?$/,
             },
-            (loadFile) => {
+            async (loadFile) => {
               const indexHtmlPath = loadFile.path.replace(
                 /index\.tsx?$/,
                 'index.html',
@@ -182,11 +195,11 @@ export async function start(options: {
               const relToSrc = path.relative(srcDir, indexHtmlPath)
               const isInSrcFolder = !relToSrc.startsWith('..')
               if (isInSrcFolder) {
-                const newHtml = tryOrUndefined(() =>
-                  readFileSync(indexHtmlPath, 'utf-8'),
+                const newHtml = await readFile(indexHtmlPath, 'utf-8').catch(
+                  () => undefined,
                 )
                 if (newHtml) {
-                  writeFileSync(
+                  await writeFile(
                     path.resolve(buildDir, relToSrc),
                     newHtml.replace(
                       /<\/body>/,
@@ -195,6 +208,10 @@ export async function start(options: {
                         relToSrc,
                         '../index.js',
                       )}"></script></body>`,
+                    ),
+                  ).catch(
+                    wrapCatch(
+                      `loading index.tsx creates corresponding index.html for ${relToSrc}`,
                     ),
                   )
                 }
@@ -215,14 +232,19 @@ export async function start(options: {
   await esbuild
     .build(esbuildConfig)
     .finally(() => _initialBuild.stop())
-    .catch((err) => {
+    .catch(
       // if in dev mode, permit continuing to watch even if there was an error
-      return options.dev ? Promise.resolve() : Promise.reject(err)
-    })
+      options.dev
+        ? () => Promise.resolve()
+        : wrapCatch(`failed initial esbuild.build`),
+    )
     .then(async (buildResult) => {
       esbuildWatchStop = buildResult?.stop
       // Read index.html template
-      const index = await readFile(path.join(__dirname, 'index.html'), 'utf8')
+      const index = await readFile(
+        path.join(__dirname, 'index.html'),
+        'utf8',
+      ).catch(wrapCatch('reading index.html template'))
       await Promise.all([
         // Write home page
         writeFile(
@@ -231,7 +253,7 @@ export async function start(options: {
             .replace(/<\/head>/, `${homeHtml.head}<\/head>`)
             .replace(/<body>/, `<body>${homeHtml.html}`),
           'utf-8',
-        ),
+        ).catch(wrapCatch('writing build index.html')),
         // Write module pages
         ...outModules.map((outModule) =>
           writeFile(
@@ -246,17 +268,24 @@ export async function start(options: {
               )}"></script></body>`,
             ),
             'utf-8',
+          ).catch(
+            wrapCatch(
+              `writing index.html for ${path.relative(
+                buildDir,
+                outModule.outDir,
+              )}`,
+            ),
           ),
         ),
       ])
     })
     .catch((err) => {
-      console.error(err)
+      console.error('build.ts: esbuild or html files writing error', err)
       return process.exit(1)
     })
 
-  // Only start dev server in dev, otherwise just run build and that's it
-  if (!options.dev) {
+  // Only start dev server in serve, otherwise just run build and that's it
+  if (!options.serve) {
     return {
       stop() {
         esbuildWatchStop?.()
@@ -265,7 +294,8 @@ export async function start(options: {
     }
   }
 
-  await options.waitBeforeStartingServer
+  const {serve} = options
+  await serve.waitBeforeStartingServer
 
   // We start ESBuild serve with no build config because it doesn't need to build
   // anything, we are already using ESBuild watch.
@@ -278,14 +308,14 @@ export async function start(options: {
   })
 
   const proxyForceExit = createServerForceClose(proxyServer)
-  const portTries = options.findAvailablePort ? 10 : 1
+  const portTries = serve.findAvailablePort ? 10 : 1
   const portChosen = await tryMultiplePorts(defaultPort, portTries, proxyServer)
 
   const hostedAt = `http://localhost:${portChosen}`
 
   console.log('Playground running at', hostedAt)
 
-  if (options.openBrowser) {
+  if (serve.openBrowser) {
     setTimeout(() => {
       if (!liveReload?.hasOpenConnections()) openForOS(hostedAt)
     }, 1000)
@@ -302,10 +332,8 @@ export async function start(options: {
   }
 }
 
-function tryOrUndefined<T>(fn: () => T): T | undefined {
-  try {
-    return fn()
-  } catch (err) {
-    return undefined
+function wrapCatch(message: string) {
+  return (err: any) => {
+    return Promise.reject(`Rejected "${message}":\n    ${err.toString()}`)
   }
 }

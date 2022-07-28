@@ -1,14 +1,17 @@
 import get from 'lodash-es/get'
 import React from 'react'
-import type {Pointer} from '@theatre/dataverse'
+import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import type Scrub from '@theatre/studio/Scrub'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getDeep from '@theatre/shared/utils/getDeep'
-import {usePrism} from '@theatre/react'
-import type {SerializablePrimitive as SerializablePrimitive} from '@theatre/shared/utils/types'
+import {useDerivation} from '@theatre/react'
+import type {
+  $IntentionalAny,
+  SerializablePrimitive as SerializablePrimitive,
+} from '@theatre/shared/utils/types'
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import {isPropConfSequencable} from '@theatre/shared/propTypes/utils'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
@@ -52,22 +55,18 @@ type EditingTools<T> =
   | EditingToolsStatic<T>
   | EditingToolsSequenced<T>
 
+const cache = new WeakMap<{}, IDerivation<EditingTools<$IntentionalAny>>>()
+
 /**
- * Notably, this uses the {@link Scrub} API to support
- * indicating in the UI which pointers (values/props) are being
- * scrubbed. See how impl of {@link Scrub} manages
- * `state.flagsTransaction` to keep a list of these touched paths
- * for the UI to be able to recognize. (e.g. to highlight the
- * item in r3f as you change its scale).
+ * Note: we're able to get `obj` and `propConfig` from `pointerToProp`,
+ * so the only reason they're still in the arguments list is that
  */
-export function useEditingToolsForSimplePropInDetailsPanel<
-  T extends SerializablePrimitive,
->(
+function createDerivation<T extends SerializablePrimitive>(
   pointerToProp: Pointer<T>,
   obj: SheetObject,
   propConfig: PropTypeConfig_AllSimples,
-): EditingTools<T> {
-  return usePrism(() => {
+): IDerivation<EditingTools<T>> {
+  return prism(() => {
     const pathToProp = getPointerParts(pointerToProp).path
 
     const final = obj.getValueByPointer(pointerToProp) as T
@@ -309,7 +308,40 @@ export function useEditingToolsForSimplePropInDetailsPanel<
     }
 
     return ret
-  }, [])
+  })
+}
+
+function getDerivation<T extends SerializablePrimitive>(
+  pointerToProp: Pointer<T>,
+  obj: SheetObject,
+  propConfig: PropTypeConfig_AllSimples,
+): IDerivation<EditingTools<T>> {
+  if (cache.has(pointerToProp)) {
+    return cache.get(pointerToProp)!
+  } else {
+    const d = createDerivation(pointerToProp, obj, propConfig)
+    cache.set(pointerToProp, d)
+    return d
+  }
+}
+
+/**
+ * Notably, this uses the {@link Scrub} API to support
+ * indicating in the UI which pointers (values/props) are being
+ * scrubbed. See how impl of {@link Scrub} manages
+ * `state.flagsTransaction` to keep a list of these touched paths
+ * for the UI to be able to recognize. (e.g. to highlight the
+ * item in r3f as you change its scale).
+ */
+export function useEditingToolsForSimplePropInDetailsPanel<
+  T extends SerializablePrimitive,
+>(
+  pointerToProp: Pointer<T>,
+  obj: SheetObject,
+  propConfig: PropTypeConfig_AllSimples,
+): EditingTools<T> {
+  const der = getDerivation(pointerToProp, obj, propConfig)
+  return useDerivation(der)
 }
 
 type Shade =

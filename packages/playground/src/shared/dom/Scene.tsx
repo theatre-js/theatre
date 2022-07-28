@@ -244,7 +244,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
       </button>
       {boxes.map((sheetObject) => (
         <Box
-          key={'box' + sheetObject.address.objectKey}
+          key={'Boxes/box' + sheetObject.address.objectKey}
           sheetObject={sheetObject}
           selection={selection ?? []}
         />

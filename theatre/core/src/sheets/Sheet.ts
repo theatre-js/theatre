@@ -9,6 +9,7 @@ import type SheetTemplate from './SheetTemplate'
 import type {ObjectAddressKey, SheetInstanceId} from '@theatre/shared/utils/ids'
 import type {StrictRecord} from '@theatre/shared/utils/types'
 import type {ILogger} from '@theatre/shared/logger'
+import {isInteger} from 'lodash-es'
 
 type SheetObjectMap = StrictRecord<ObjectAddressKey, SheetObject>
 
@@ -89,12 +90,12 @@ export default class Sheet {
       const lengthD = valueDerivation(
         this.project.pointers.historic.sheetsById[this.address.sheetId].sequence
           .length,
-      ).map((s) => (typeof s === 'number' ? s : 10))
+      ).map(sanitizeSequenceLength)
 
       const subUnitsPerUnitD = valueDerivation(
         this.project.pointers.historic.sheetsById[this.address.sheetId].sequence
           .subUnitsPerUnit,
-      ).map((s) => (typeof s === 'number' ? s : 30))
+      ).map(sanitizeSequenceSubUnitsPerUnit)
 
       this._sequence = new Sequence(
         this.template.project,
@@ -106,3 +107,11 @@ export default class Sheet {
     return this._sequence
   }
 }
+
+const sanitizeSequenceLength = (len: number | undefined): number =>
+  typeof len === 'number' && isFinite(len) && len > 0 ? len : 10
+
+const sanitizeSequenceSubUnitsPerUnit = (subs: number | undefined): number =>
+  typeof subs === 'number' && isInteger(subs) && subs >= 1 && subs <= 1000
+    ? subs
+    : 30

@@ -1,3 +1,4 @@
+/** @type {import('jest').Config} */
 module.exports = {
   testMatch: [
     '<rootDir>/packages/*/src/**/*.test.ts',
