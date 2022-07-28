@@ -18,7 +18,7 @@ import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import PlayheadPositionPopover from './PlayheadPositionPopover'
-import {getIsPlayheadAttachedToFocusRange} from '@theatre/studio/UIRoot/useKeyboardShortcuts'
+import {getIsPlayheadAttachedToFocusRange} from '@theatre/studio/UIRoot/getIsPlayheadAttachedToFocusRange'
 import {
   lockedCursorCssVarName,
   useCssCursorLock,
