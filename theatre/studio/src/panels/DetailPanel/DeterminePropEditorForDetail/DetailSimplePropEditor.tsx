@@ -3,9 +3,10 @@ import type {
   PropTypeConfig_AllSimples,
 } from '@theatre/core/propTypes'
 import React, {useMemo} from 'react'
-import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
+import {getEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
 import {SingleRowPropEditor} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/SingleRowPropEditor'
-import type {Pointer} from '@theatre/dataverse'
+import type {Pointer} from '@theatre/dataverse';
+import { prism} from '@theatre/dataverse'
 import {getPointerParts} from '@theatre/dataverse'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {ISimplePropEditorReactProps} from '@theatre/studio/propEditors/simpleEditors/ISimplePropEditorReactProps'
@@ -33,10 +34,14 @@ function DetailSimplePropEditor<
   obj,
   SimpleEditorComponent: EditorComponent,
 }: IDetailSimplePropEditorProps<TPropTypeConfig>) {
-  const editingTools = useEditingToolsForSimplePropInDetailsPanel(
-    pointerToProp,
-    obj,
-    propConfig,
+  const editingToolsD = useMemo(
+    () =>
+      getEditingToolsForSimplePropInDetailsPanel(
+        pointerToProp,
+        obj,
+        propConfig,
+      ),
+    [propConfig],
   )
 
   const isPropHighlightedD = useMemo(
@@ -51,16 +56,16 @@ function DetailSimplePropEditor<
   return (
     <SingleRowPropEditor
       {...{
-        editingTools: editingTools,
         propConfig,
         pointerToProp,
+        editingToolsD,
         isPropHighlightedD,
       }}
     >
       <EditorComponent
-        editingTools={editingTools}
+        editingToolsD={editingToolsD}
         propConfig={propConfig}
-        value={editingTools.value}
+        valueD={prism(() => editingToolsD.getValue().valueD.getValue())}
       />
     </SingleRowPropEditor>
   )

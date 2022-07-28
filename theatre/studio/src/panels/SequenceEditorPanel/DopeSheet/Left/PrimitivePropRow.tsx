@@ -8,12 +8,13 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useCallback, useRef} from 'react'
 import styled from 'styled-components'
-import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
+import {getEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
 import {nextPrevCursorsTheme} from '@theatre/studio/propEditors/NextPrevKeyframeCursors'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import {BaseHeader, LeftRowContainer as BaseContainer} from './AnyCompositeRow'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {usePropHighlightMouseEnter} from './usePropHighlightMouseEnter'
+import {prismRender} from '@theatre/studio/utils/derive-utils'
 
 const theme = {
   label: {
@@ -92,7 +93,7 @@ const PrimitivePropRow: React.FC<{
   ) as Pointer<$IntentionalAny>
 
   const obj = leaf.sheetObject
-  const {controlIndicators} = useEditingToolsForSimplePropInDetailsPanel(
+  const toolsD = getEditingToolsForSimplePropInDetailsPanel(
     pointerToProp,
     obj,
     leaf.propConf,
@@ -140,6 +141,11 @@ const PrimitivePropRow: React.FC<{
 
   usePropHighlightMouseEnter(headRef.current, leaf)
 
+  const controlsElt = prismRender(
+    () => toolsD.getValue().controlIndicators,
+    [toolsD],
+  )
+
   return (
     <PrimitivePropRowContainer depth={leaf.depth}>
       <PrimitivePropRowHead
@@ -151,7 +157,7 @@ const PrimitivePropRow: React.FC<{
         isSelected={isSelected === true}
       >
         <PrimitivePropRowHead_Label>{label}</PrimitivePropRowHead_Label>
-        {controlIndicators}
+        {controlsElt}
         <PrimitivePropRowIconContainer
           onClick={toggleSelect}
           isSelected={isSelected === true}

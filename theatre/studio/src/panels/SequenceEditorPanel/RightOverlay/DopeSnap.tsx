@@ -2,6 +2,9 @@
 // Consider if we should unify the implementations.
 // - See "useLockFrameStampPosition"
 // - Also see "pointerPositionInUnitSpace" for a related impl (for different problem)
+
+import type {IDerivation} from '@theatre/dataverse'
+
 const POSITION_SNAP_ATTR = 'data-pos'
 
 /**
@@ -39,7 +42,9 @@ const DopeSnap = {
    * <div {...DopeSnap.includePositionSnapAttrs(10)}/>
    * ```
    */
-  includePositionSnapAttrs(position: number) {
+  includePositionSnapAttrs<P extends number | IDerivation<number>>(
+    position: P,
+  ) {
     return {[POSITION_SNAP_ATTR]: position}
   },
 }

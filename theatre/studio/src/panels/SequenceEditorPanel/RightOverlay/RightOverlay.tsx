@@ -26,21 +26,24 @@ const Container = styled.div`
 const RightOverlay: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
-  return usePrism(() => {
-    const width = val(layoutP.rightDims.width)
+  const containerStyle = usePrism(
+    (): React.CSSProperties => ({
+      width: val(layoutP.rightDims.width) + 'px',
+    }),
+    [layoutP],
+  )
 
-    return (
-      <Container style={{width: width + 'px'}}>
-        <Playhead layoutP={layoutP} />
-        <HorizontalScrollbar layoutP={layoutP} />
-        <FrameStamp layoutP={layoutP} />
-        <TopStrip layoutP={layoutP} />
-        <Markers layoutP={layoutP} />
-        <LengthIndicator layoutP={layoutP} />
-        <FocusRangeCurtains layoutP={layoutP} />
-      </Container>
-    )
-  }, [layoutP])
+  return (
+    <Container style={containerStyle}>
+      <Playhead layoutP={layoutP} />
+      <HorizontalScrollbar layoutP={layoutP} />
+      <FrameStamp layoutP={layoutP} />
+      <TopStrip layoutP={layoutP} />
+      <Markers layoutP={layoutP} />
+      <LengthIndicator layoutP={layoutP} />
+      <FocusRangeCurtains layoutP={layoutP} />
+    </Container>
+  )
 }
 
 export default RightOverlay

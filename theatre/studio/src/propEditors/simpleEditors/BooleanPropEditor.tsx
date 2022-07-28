@@ -3,24 +3,25 @@ import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import BasicCheckbox from '@theatre/studio/uiComponents/form/BasicCheckbox'
 import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
+import {deriver} from '@theatre/studio/utils/derive-utils'
 
-const Input = styled(BasicCheckbox)`
+const Input = deriver(styled(BasicCheckbox)`
   margin-left: 6px;
-`
+`)
 
 function BooleanPropEditor({
   propConfig,
-  editingTools,
-  value,
+  editingToolsD,
+  valueD,
 }: ISimplePropEditorReactProps<PropTypeConfig_Boolean>) {
   const onChange = useCallback(
     (el: React.ChangeEvent<HTMLInputElement>) => {
-      editingTools.permanentlySetValue(Boolean(el.target.checked))
+      editingToolsD.getValue().permanentlySetValue(Boolean(el.target.checked))
     },
-    [propConfig, editingTools],
+    [propConfig, editingToolsD],
   )
 
-  return <Input checked={value} onChange={onChange} />
+  return <Input checked={valueD} onChange={onChange} />
 }
 
 export default BooleanPropEditor

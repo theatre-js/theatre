@@ -5,14 +5,14 @@ import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useCo
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {last} from 'lodash-es'
 import React from 'react'
-import type {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
 import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
-import {deriver} from '@theatre/studio/utils/derive-utils'
+import {deriver, prismRender} from '@theatre/studio/utils/derive-utils'
 import {rowIndentationFormulaCSS} from './rowIndentationFormulaCSS'
 import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground'
+import type {EditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
 
 const Container = deriver(styled.div<{
   isHighlighted: PropHighlighted
@@ -91,14 +91,14 @@ const InputContainer = styled.div`
 type ISingleRowPropEditorProps<T> = {
   propConfig: propTypes.PropTypeConfig
   pointerToProp: Pointer<T>
-  editingTools: ReturnType<typeof useEditingToolsForSimplePropInDetailsPanel>
+  editingToolsD: IDerivation<EditingToolsForSimplePropInDetailsPanel<T>>
   isPropHighlightedD: IDerivation<PropHighlighted>
 }
 
 export function SingleRowPropEditor<T>({
   propConfig,
   pointerToProp,
-  editingTools,
+  editingToolsD,
   children,
   isPropHighlightedD,
 }: React.PropsWithChildren<ISingleRowPropEditorProps<T>>): React.ReactElement<
@@ -111,14 +111,19 @@ export function SingleRowPropEditor<T>({
     useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useContextMenu(propNameContainer, {
-    menuItems: editingTools.contextMenuItems,
+    menuItems: () => editingToolsD.getValue().contextMenuItems,
   })
+
+  const controlsElt = prismRender(
+    () => editingToolsD.getValue().controlIndicators,
+    [editingToolsD],
+  )
 
   return (
     <Container isHighlighted={isPropHighlightedD}>
       {contextMenu}
       <Left>
-        <ControlsContainer>{editingTools.controlIndicators}</ControlsContainer>
+        <ControlsContainer>{controlsElt}</ControlsContainer>
         <PropNameContainer
           isHighlighted={isPropHighlightedD}
           ref={propNameContainerRef}

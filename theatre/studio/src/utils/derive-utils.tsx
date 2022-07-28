@@ -1,6 +1,6 @@
 import {isDerivation, prism, val} from '@theatre/dataverse'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
-import {useDerivation} from '@theatre/react'
+import {usePrism} from '@theatre/react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import React, {useMemo, useRef} from 'react'
 import {invariant} from './invariant'
@@ -33,6 +33,18 @@ function deriveAllD<T extends Record<string, $<any>> | $<any>[]>(
       return values
     }
   }) as $IntentionalAny
+}
+
+export function prismRender(
+  fn: () => React.ReactNode,
+  deps: any[],
+): React.ReactElement {
+  return <DeriveElement fn={fn} deps={deps} />
+}
+
+function DeriveElement(props: {fn: () => React.ReactNode; deps?: any[]}) {
+  const node = usePrism(props.fn, props.deps ?? [])
+  return <>{node}</>
 }
 
 /** This is only used for type checking to make sure the APIs are used properly */
@@ -86,7 +98,7 @@ export function deriver<Props extends {}>(
       )
 
       const allD = useMemo(() => deriveAllD(observables), observableArr)
-      const observedPropState = useDerivation(allD)
+      const observedPropState = usePrism(() => allD.getValue(), [allD])
 
       return (
         observedPropState &&

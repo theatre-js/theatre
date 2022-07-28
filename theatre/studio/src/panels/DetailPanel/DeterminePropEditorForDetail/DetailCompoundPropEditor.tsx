@@ -15,10 +15,10 @@ import DeterminePropEditorForDetail from '@theatre/studio/panels/DetailPanel/Det
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import {useEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEditingToolsForCompoundProp'
+import {getEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEditingToolsForCompoundProp'
 import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
 import {whatPropIsHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
-import {deriver} from '@theatre/studio/utils/derive-utils'
+import {deriver, prismRender} from '@theatre/studio/utils/derive-utils'
 import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground'
 
 const Container = styled.div`
@@ -93,14 +93,14 @@ function DetailCompoundPropEditor<
   const [propNameContainerRef, propNameContainer] =
     useRefAndState<HTMLDivElement | null>(null)
 
-  const tools = useEditingToolsForCompoundProp(
+  const toolsD = getEditingToolsForCompoundProp(
     pointerToProp as $FixMe,
     obj,
     propConfig,
   )
 
   const [contextMenu] = useContextMenu(propNameContainer, {
-    menuItems: tools.contextMenuItems,
+    menuItems: () => toolsD.getValue().contextMenuItems,
   })
 
   const lastSubPropIsComposite = compositeSubs.length > 0
@@ -114,6 +114,11 @@ function DetailCompoundPropEditor<
     [pointerToProp],
   )
 
+  const controlsElt = prismRender(
+    () => toolsD.getValue().controlIndicators,
+    [toolsD],
+  )
+
   return (
     <Container>
       {contextMenu}
@@ -123,7 +128,7 @@ function DetailCompoundPropEditor<
         style={{'--depth': visualIndentation - 1}}
       >
         <Padding>
-          {tools.controlIndicators}
+          {controlsElt}
           <PropName
             isHighlighted={isPropHighlightedD}
             ref={propNameContainerRef}

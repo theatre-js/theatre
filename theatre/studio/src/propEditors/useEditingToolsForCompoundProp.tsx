@@ -3,12 +3,9 @@ import getStudio from '@theatre/studio/getStudio'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getDeep from '@theatre/shared/utils/getDeep'
 import {usePrism} from '@theatre/react'
-import type {
-  $IntentionalAny,
-  SerializablePrimitive,
-} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
-import type {Pointer} from '@theatre/dataverse'
+import type {Pointer, IDerivation} from '@theatre/dataverse'
 import get from 'lodash-es/get'
 import React, {useMemo} from 'react'
 import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
@@ -26,6 +23,7 @@ import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
+import {prismRender} from '@theatre/studio/utils/derive-utils'
 
 interface CommonStuff {
   beingScrubbed: boolean
@@ -49,12 +47,12 @@ interface HasSequences extends CommonStuff {
 
 type Stuff = AllStatic | HasSequences
 
-export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
+export function getEditingToolsForCompoundProp(
   pointerToProp: Pointer<{}>,
   obj: SheetObject,
   propConfig: PropTypeConfig_Compound<{}>,
-): Stuff {
-  return usePrism((): Stuff => {
+): IDerivation<Stuff> {
+  return prism((): Stuff => {
     // if the compound has no simple descendants, then there isn't much the user can do with it
     if (!compoundHasSimpleDescendants(propConfig)) {
       return {
@@ -215,7 +213,7 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
         ),
       }
     }
-  }, [])
+  })
 }
 
 function ControlIndicators({
@@ -250,7 +248,7 @@ function ControlIndicators({
     we _could_ be re-using the calculation of `transform` in `position`, I think
     it's unlikely that this optimization would matter.
     */
-    const nearbyKfs = (function collectNearbyKeyframesForCompound() {
+    const nearbyKfsD = prism(function collectNearbyKeyframesForCompound() {
       let hasCur = false
       let closestPrev: undefined | KeyframeWithTrack = undefined
       let closestNext: undefined | KeyframeWithTrack = undefined
@@ -292,73 +290,79 @@ function ControlIndicators({
         allCur,
         hasCur,
       }
-    })()
+    })
 
-    const toggle = () => {
-      if (nearbyKfs.allCur) {
-        getStudio().transaction((api) => {
-          api.unset(pointerToProp)
-        })
-      } else if (nearbyKfs.hasCur) {
-        getStudio().transaction((api) => {
-          api.set(pointerToProp, val(pointerToProp))
-        })
-      } else {
-        getStudio().transaction((api) => {
-          api.set(pointerToProp, val(pointerToProp))
-        })
+    const nearbyKeyframeControlsD = prism((): NearbyKeyframesControls => {
+      const nearbyKfs = nearbyKfsD.getValue()
+      const toggle = () => {
+        if (nearbyKfs.allCur) {
+          getStudio().transaction((api) => {
+            api.unset(pointerToProp)
+          })
+        } else if (nearbyKfs.hasCur) {
+          getStudio().transaction((api) => {
+            api.set(pointerToProp, val(pointerToProp))
+          })
+        } else {
+          getStudio().transaction((api) => {
+            api.set(pointerToProp, val(pointerToProp))
+          })
+        }
       }
-    }
-
-    const pr: NearbyKeyframesControls = {
-      cur: nearbyKfs.hasCur
-        ? {
-            type: 'on',
-            itemKey: createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
-              obj,
-              pathToProp,
-              sequencePosition,
-            ),
-            toggle,
-          }
-        : {
-            toggle,
-            type: 'off',
-          },
-      prev:
-        nearbyKfs.closestPrev !== undefined
+      return {
+        cur: nearbyKfs.hasCur
           ? {
-              position: nearbyKfs.closestPrev.kf.position,
+              type: 'on',
               itemKey:
                 createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
                   obj,
                   pathToProp,
-                  nearbyKfs.closestPrev.kf.position,
+                  sequencePosition,
                 ),
-              jump: () => {
-                obj.sheet.getSequence().position =
-                  nearbyKfs.closestPrev!.kf.position
-              },
+              toggle,
             }
-          : undefined,
-      next:
-        nearbyKfs.closestNext !== undefined
-          ? {
-              position: nearbyKfs.closestNext.kf.position,
-              itemKey:
-                createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
-                  obj,
-                  pathToProp,
-                  nearbyKfs.closestNext.kf.position,
-                ),
-              jump: () => {
-                obj.sheet.getSequence().position =
-                  nearbyKfs.closestNext!.kf.position
-              },
-            }
-          : undefined,
-    }
+          : {
+              toggle,
+              type: 'off',
+            },
+        prev:
+          nearbyKfs.closestPrev !== undefined
+            ? {
+                position: nearbyKfs.closestPrev.kf.position,
+                itemKey:
+                  createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+                    obj,
+                    pathToProp,
+                    nearbyKfs.closestPrev.kf.position,
+                  ),
+                jump: () => {
+                  obj.sheet.getSequence().position =
+                    nearbyKfs.closestPrev!.kf.position
+                },
+              }
+            : undefined,
+        next:
+          nearbyKfs.closestNext !== undefined
+            ? {
+                position: nearbyKfs.closestNext.kf.position,
+                itemKey:
+                  createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+                    obj,
+                    pathToProp,
+                    nearbyKfs.closestNext.kf.position,
+                  ),
+                jump: () => {
+                  obj.sheet.getSequence().position =
+                    nearbyKfs.closestNext!.kf.position
+                },
+              }
+            : undefined,
+      }
+    })
 
-    return <NextPrevKeyframeCursors {...pr} />
+    return prismRender(
+      () => <NextPrevKeyframeCursors {...nearbyKeyframeControlsD.getValue()} />,
+      [nearbyKeyframeControlsD],
+    )
   }, [deps, obj, listOfDescendantTrackIds])
 }
