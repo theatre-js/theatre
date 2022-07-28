@@ -32,10 +32,7 @@ const MakeRootHostContainStatic =
 const Container = styled(PointerEventsHandler)`
   z-index: 50;
   position: fixed;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
+  inset: 0px;
 
   &.invisible {
     pointer-events: none !important;

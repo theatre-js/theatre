@@ -1,7 +1,6 @@
 import {Box} from '@theatre/dataverse'
 import {useVal} from '@theatre/react'
 import type {IExtension} from '@theatre/studio'
-import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import type {ToolsetConfig} from '@theatre/studio/TheatreStudio'
 import React, {useLayoutEffect, useMemo} from 'react'
@@ -16,22 +15,6 @@ const Container = styled.div`
   display: flex;
   gap: 0.5rem;
   justify-content: center;
-`
-
-const Bg = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  border-radius: 4px;
-  padding: 6px 6px;
-
-  ${pointerEventsAutoInNormalMode};
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(4px);
-  }
 `
 
 const GroupDivider = styled.div`
