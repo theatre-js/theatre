@@ -1,27 +1,23 @@
 type ICallback = (t: number) => void
 
 function createRafTicker() {
-  const ticker = new Ticker()
-
   if (typeof window !== 'undefined') {
-    /**
-     * @remarks
-     * TODO users should also be able to define their own ticker.
-     */
-    const onAnimationFrame = (t: number) => {
-      ticker.tick(t)
-      window.requestAnimationFrame(onAnimationFrame)
-    }
-    window.requestAnimationFrame(onAnimationFrame)
+    const ticker = new Ticker()
+    // defined outside of callback so the function is only created once
+    const rAFTick = (t: number) => ticker.tick(t)
+    // This Ticker will schedule ticks on demand (when something needs to be scheduled)
+    // Otherwise, if the application is idling, then no requestAnimationFrame calls will be necessary.
+    ticker._setRequestTick(() => requestAnimationFrame(rAFTick))
+    return ticker
   } else {
+    const ticker = new Ticker()
     ticker.tick(0)
     setTimeout(() => ticker.tick(1), 0)
     console.log(
-      `@theatre/dataverse is running in a server rather than in a browser. We haven't gotten around to testing server-side rendering, so if something is working in the browser but not on the server, please file a bug: https://github.com/theatre-js/theatre/issues/new`,
+      `@theatre/dataverse requestAnimationFrame Ticker is running in a server rather than in a browser. We haven't gotten around to testing server-side rendering, so if something is working in the browser but not on the server, please file a bug: https://github.com/theatre-js/theatre/issues/new`,
     )
+    return ticker
   }
-
-  return ticker
 }
 
 let rafTicker: undefined | Ticker
@@ -42,11 +38,25 @@ export default class Ticker {
   private _scheduledForNextTick: Set<ICallback>
   private _timeAtCurrentTick: number
   private _ticking: boolean = false
+  private _requestTick?: () => void
 
   constructor() {
     this._scheduledForThisOrNextTick = new Set()
     this._scheduledForNextTick = new Set()
     this._timeAtCurrentTick = 0
+  }
+
+  /**
+   * @internal experimental approach to allowing for ticking to be scheduled on demand
+   * rather than having to always call tick on every frame, even if there is nothing
+   * needing ticking.
+   */
+  _setRequestTick(requestTick: () => void) {
+    this._requestTick = requestTick
+  }
+
+  _schedule() {
+    if (!this._ticking && this._requestTick) this._requestTick()
   }
 
   /**
@@ -65,6 +75,7 @@ export default class Ticker {
    */
   onThisOrNextTick(fn: ICallback) {
     this._scheduledForThisOrNextTick.add(fn)
+    this._schedule()
   }
 
   /**
@@ -77,6 +88,7 @@ export default class Ticker {
    */
   onNextTick(fn: ICallback) {
     this._scheduledForNextTick.add(fn)
+    this._schedule()
   }
 
   /**
@@ -120,6 +132,20 @@ export default class Ticker {
    * @see onNextTick
    */
   tick(t: number = performance.now()) {
+    if (process.env.NODE_ENV === 'development') {
+      if (!(this instanceof Ticker)) {
+        throw new Error(
+          'ticker.tick must be called while bound to the ticker. As in, "ticker.tick(time)" or "requestAnimationFrame((t) => ticker.tick(t))" for performance.',
+        )
+      }
+    }
+    if (
+      this._scheduledForNextTick.size === 0 &&
+      this._scheduledForThisOrNextTick.size === 0
+    ) {
+      return
+    }
+
     this._ticking = true
     this._timeAtCurrentTick = t
     for (const v of this._scheduledForNextTick) {
@@ -129,6 +155,7 @@ export default class Ticker {
     this._scheduledForNextTick.clear()
     this._tick(0)
     this._ticking = false
+    this._schedule()
   }
 
   private _tick(iterationNumber: number): void {
