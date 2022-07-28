@@ -81,7 +81,8 @@ const BasicStringInput: React.FC<{
     stateRef.current.mode === 'editingViaKeyboard',
   )
 
-  const callbacks = useMemo(() => {
+  const eventListeners = useMemo((): Parameters<typeof Input>[0] => {
+    console.log('BasicStringInput create new callbacks')
     const inputChange = (e: React.ChangeEvent) => {
       const target = e.target as HTMLInputElement
       const {value} = target
@@ -160,11 +161,18 @@ const BasicStringInput: React.FC<{
     }
 
     return {
-      inputChange,
+      onChange: inputChange,
       onBlur,
-      onInputKeyDown,
+      onKeyDown: onInputKeyDown,
       onClick,
       onFocus,
+      onMouseDown(e: React.MouseEvent) {
+        e.stopPropagation()
+      },
+      onDoubleClick(e: React.MouseEvent) {
+        e.preventDefault()
+        e.stopPropagation()
+      },
     }
   }, [])
 
@@ -179,22 +187,10 @@ const BasicStringInput: React.FC<{
   const theInput = (
     <Input
       key="input"
-      type="text"
       className={`${props.className ?? ''} ${!isValid(value) ? 'invalid' : ''}`}
-      onChange={callbacks.inputChange}
       value={value}
-      onBlur={callbacks.onBlur}
-      onKeyDown={callbacks.onInputKeyDown}
-      onClick={callbacks.onClick}
-      onFocus={callbacks.onFocus}
       ref={mergeRefs(_refs)}
-      onMouseDown={(e: React.MouseEvent) => {
-        e.stopPropagation()
-      }}
-      onDoubleClick={(e: React.MouseEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-      }}
+      {...eventListeners}
     />
   )
 
