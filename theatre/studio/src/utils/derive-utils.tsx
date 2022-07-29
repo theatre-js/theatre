@@ -57,7 +57,7 @@ type ReactDeriver<Props extends {}> = (
  */
 export function deriver<Props extends {}>(
   Component: React.ComponentType<Props>,
-): ReactDeriver<Props> {
+): ReactDeriver<Omit<Props, keyof JSX.IntrinsicAttributes>> {
   const finalComp = React.memo(
     React.forwardRef(function deriverRender(
       props: Record<string, $IntentionalAny>,
