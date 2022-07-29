@@ -42,6 +42,11 @@ export default class Ticker {
   private _scheduledForNextTick: Set<ICallback>
   private _timeAtCurrentTick: number
   private _ticking: boolean = false
+  /**
+   * Counts up for every tick executed.
+   * Internally, this is used to measure ticks per second.
+   */
+  public __ticks = 0
 
   constructor() {
     this._scheduledForThisOrNextTick = new Set()
@@ -127,6 +132,9 @@ export default class Ticker {
         )
       }
     }
+
+    this.__ticks++
+
     this._ticking = true
     this._timeAtCurrentTick = t
     for (const v of this._scheduledForNextTick) {
