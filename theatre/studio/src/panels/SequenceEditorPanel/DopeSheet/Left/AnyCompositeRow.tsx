@@ -10,9 +10,9 @@ import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {usePropHighlightMouseEnter} from './usePropHighlightMouseEnter'
+import {getDepthVarStyle} from './getDepthVarStyle'
 
-export const LeftRowContainer = styled.li<{depth: number}>`
-  --depth: ${(props) => props.depth};
+export const LeftRowContainer = styled.li`
   margin: 0;
   padding: 0;
   list-style: none;
@@ -102,7 +102,7 @@ const AnyCompositeRow: React.FC<{
   usePropHighlightMouseEnter(rowHeaderRef.current, leaf)
 
   return leaf.shouldRender ? (
-    <LeftRowContainer depth={leaf.depth}>
+    <LeftRowContainer style={getDepthVarStyle(leaf.depth)}>
       <LeftRowHeader
         ref={rowHeaderRef}
         style={{

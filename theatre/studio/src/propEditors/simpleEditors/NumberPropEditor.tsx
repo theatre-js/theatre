@@ -9,7 +9,6 @@ function NumberPropEditor({
   editingToolsD,
   valueD,
 }: ISimplePropEditorReactProps<PropTypeConfig_Number>) {
-  const value = useDerivation(valueD)
   const editingTools = useDerivation(editingToolsD)
 
   const nudge = useCallback(
@@ -21,7 +20,7 @@ function NumberPropEditor({
 
   return (
     <BasicNumberInput
-      value={value}
+      valueD={valueD}
       temporarilySetValue={editingTools.temporarilySetValue}
       discardTemporaryValue={editingTools.discardTemporaryValue}
       permanentlySetValue={editingTools.permanentlySetValue}

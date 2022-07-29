@@ -3,6 +3,7 @@ import React from 'react'
 import styled, {css} from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {ChevronDown, Package} from '@theatre/studio/uiComponents/icons'
+import {getDepthVarStyle} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Left/getDepthVarStyle'
 
 export const Container = styled.li`
   margin: 0;
@@ -133,12 +134,7 @@ const BaseItem: React.FC<{
   const canContainChildren = children !== undefined
 
   return (
-    <Container
-      style={
-        /* @ts-ignore */
-        {'--depth': depth}
-      }
-    >
+    <Container style={getDepthVarStyle(depth)}>
       <Header className={selectionStatus} onClick={select}>
         <Head_IconContainer>
           {canContainChildren ? (

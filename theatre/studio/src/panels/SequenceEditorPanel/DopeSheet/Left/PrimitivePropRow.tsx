@@ -22,7 +22,7 @@ const theme = {
   },
 }
 
-const PrimitivePropRowContainer = styled(BaseContainer)<{}>``
+const PrimitivePropRowContainer = BaseContainer
 
 const PrimitivePropRowHead = styled(BaseHeader)<{
   isSelected: boolean
@@ -147,7 +147,7 @@ const PrimitivePropRow: React.FC<{
   )
 
   return (
-    <PrimitivePropRowContainer depth={leaf.depth}>
+    <PrimitivePropRowContainer>
       <PrimitivePropRowHead
         ref={headRef}
         isEven={leaf.n % 2 === 0}

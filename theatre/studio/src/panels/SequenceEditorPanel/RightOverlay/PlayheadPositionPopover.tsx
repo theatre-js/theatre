@@ -6,7 +6,7 @@ import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {useLayoutEffect, useMemo, useRef} from 'react'
 import React from 'react'
-import {val} from '@theatre/dataverse'
+import {prism, val} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import clamp from 'lodash-es/clamp'
 
@@ -70,13 +70,17 @@ const PlayheadPositionPopover: React.FC<{
   }, [])
 
   return usePrism(() => {
-    const sequence = sheet.getSequence()
+    const sequencePositionD = prism.memo(
+      'position',
+      () => prism(() => Number(sheet.getSequence().position.toFixed(3))),
+      [sheet],
+    )
 
     return (
       <Container>
         <Label>Sequence position</Label>
         <BasicNumberInput
-          value={Number(sequence.position.toFixed(3))}
+          valueD={sequencePositionD}
           {...fns}
           isValid={greaterThanOrEqualToZero}
           inputRef={inputRef}

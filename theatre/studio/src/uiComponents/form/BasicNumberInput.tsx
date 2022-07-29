@@ -4,9 +4,13 @@ import {useState} from 'react'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import mergeRefs from 'react-merge-refs'
-import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
+import type {IDerivation} from '@theatre/dataverse'
+import {Box, prism} from '@theatre/dataverse'
+import studioTicker from '@theatre/studio/studioTicker'
+import {usePrism} from '@theatre/react'
+import {useElementMutation} from '@theatre/studio/uiComponents/useElementMutation'
 
 const Container = styled.div`
   height: 100%;
@@ -56,6 +60,26 @@ const Input = styled.input`
     cursor: text;
   }
 `
+const FakeInput = styled.div`
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 1px 6px;
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  // center the ::after vertically like inputs do
+  display: flex;
+  align-items: center;
+
+  &::after {
+    content: attr(data-value);
+  }
+
+  ${Input}:focus + & {
+    display: none;
+  }
+`
 
 const FillIndicator = styled.div`
   position: absolute;
@@ -82,7 +106,7 @@ type IState_NoFocus = {
 
 type IState_EditingViaKeyboard = {
   mode: 'editingViaKeyboard'
-  currentEditedValueInString: string
+  currentEditedValueInStringBox: Box<string>
   valueBeforeEditing: number
 }
 
@@ -101,7 +125,7 @@ export type BasicNumberInputNudgeFn = (params: {
 }) => number
 
 const BasicNumberInput: React.VFC<{
-  value: number
+  valueD: IDerivation<number>
   temporarilySetValue: (v: number) => void
   discardTemporaryValue: () => void
   permanentlySetValue: (v: number) => void
@@ -116,7 +140,12 @@ const BasicNumberInput: React.VFC<{
   onBlur?: () => void
   nudge: BasicNumberInputNudgeFn
 }> = (propsA) => {
-  const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
+  const _stateRef = useRef<undefined | Box<IState>>(undefined)
+  const stateBox = _stateRef.current
+    ? _stateRef.current
+    : (_stateRef.current = new Box({mode: 'noFocus'} as IState))
+  const state = usePrism(() => stateBox.derivation.getValue(), [stateBox])
+
   const isValid = propsA.isValid ?? alwaysValid
 
   const propsRef = useRef(propsA)
@@ -129,18 +158,20 @@ const BasicNumberInput: React.VFC<{
     () => {
       inputRef.current!.blur()
     },
-    stateRef.current.mode === 'editingViaKeyboard',
+    state.mode === 'editingViaKeyboard',
   )
 
   const bodyCursorBeforeDrag = useRef<string | null>(null)
 
+  // pull all event listeners into one place so we can ensure new functions aren't created
+  // on every render causing re-renders.
   const eventListeners = useMemo((): Parameters<typeof Input>[0] => {
-    const inputChange = (e: React.ChangeEvent) => {
+    const onChange = (e: React.ChangeEvent) => {
       const target = e.target as HTMLInputElement
       const {value} = target
-      const curState = stateRef.current as IState_EditingViaKeyboard
+      const curState = stateBox.get() as IState_EditingViaKeyboard
 
-      stateRef.current = {...curState, currentEditedValueInString: value}
+      curState.currentEditedValueInStringBox.set(value)
 
       const valInFloat = parseFloat(value)
       if (!isFinite(valInFloat) || !isValid(valInFloat)) return
@@ -149,16 +180,19 @@ const BasicNumberInput: React.VFC<{
     }
 
     const onBlur = () => {
-      if (stateRef.current.mode === 'editingViaKeyboard') {
+      if (stateBox.get().mode === 'editingViaKeyboard') {
         commitKeyboardInput()
-        stateRef.current = {mode: 'noFocus'}
+        stateBox.set({mode: 'noFocus'})
       }
       if (propsA.onBlur) propsA.onBlur()
+
+      // when blurred, we can remove the current value (because we'll show the value in the FakeInput which is much more performant to change every frame)
+      inputRef.current!.value = ''
     }
 
     const commitKeyboardInput = () => {
-      const curState = stateRef.current as IState_EditingViaKeyboard
-      const value = parseFloat(curState.currentEditedValueInString)
+      const curState = stateBox.get() as IState_EditingViaKeyboard
+      const value = parseFloat(curState.currentEditedValueInStringBox.get())
 
       if (!isFinite(value) || !isValid(value)) {
         propsRef.current.discardTemporaryValue()
@@ -171,10 +205,10 @@ const BasicNumberInput: React.VFC<{
       }
     }
 
-    const onInputKeyDown = (e: React.KeyboardEvent) => {
+    const onKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
         propsRef.current.discardTemporaryValue()
-        stateRef.current = {mode: 'noFocus'}
+        stateBox.set({mode: 'noFocus'})
         inputRef.current!.blur()
       } else if (e.key === 'Enter' || e.key === 'Tab') {
         commitKeyboardInput()
@@ -183,7 +217,7 @@ const BasicNumberInput: React.VFC<{
     }
 
     const onClick = (e: React.MouseEvent) => {
-      if (stateRef.current.mode === 'noFocus') {
+      if (stateBox.get().mode === 'noFocus') {
         const c = inputRef.current!
         c.focus()
         e.preventDefault()
@@ -194,30 +228,39 @@ const BasicNumberInput: React.VFC<{
     }
 
     const onFocus = () => {
-      if (stateRef.current.mode === 'noFocus') {
-        transitionToEditingViaKeyboardMode()
-      } else if (stateRef.current.mode === 'editingViaKeyboard') {
+      const mode = stateBox.get().mode
+
+      // while focused, we need to assign the current value
+      let value = propsRef.current.valueD.getValue()
+      inputRef.current!.value = isNaN(value) ? 'NaN' : String(value)
+      inputRef.current!.setSelectionRange(0, 100)
+
+      if (mode === 'noFocus') {
+        // no need to focus, we're listening on focus
+        transitionToEditingViaKeyboardMode(false)
       }
     }
 
-    const transitionToEditingViaKeyboardMode = () => {
-      const curValue = propsRef.current.value
-      stateRef.current = {
+    const transitionToEditingViaKeyboardMode = (andFocus: boolean) => {
+      const curValue = propsRef.current.valueD.getValue()
+      stateBox.set({
         mode: 'editingViaKeyboard',
-        currentEditedValueInString: String(curValue),
+        currentEditedValueInStringBox: new Box(String(curValue)),
         valueBeforeEditing: curValue,
-      }
-
-      setTimeout(() => {
-        inputRef.current!.focus()
-        inputRef.current!.setSelectionRange(0, 100)
       })
+
+      if (andFocus) {
+        setTimeout(() => {
+          inputRef.current!.focus()
+          inputRef.current!.setSelectionRange(0, 100)
+        })
+      }
     }
 
     return {
-      onChange: inputChange,
+      onChange,
       onBlur,
-      onKeyDown: onInputKeyDown,
+      onKeyDown,
       onClick,
       onFocus,
       onMouseDown(e: React.MouseEvent) {
@@ -233,15 +276,15 @@ const BasicNumberInput: React.VFC<{
   const transitionToDraggingMode = useMemo(() => {
     let inputWidth: number
     return function transitionToDraggingMode() {
-      const curValue = propsRef.current.value
+      const curValue = propsRef.current.valueD
       inputWidth = inputRef.current?.getBoundingClientRect().width!
 
-      stateRef.current = {
+      stateBox.set({
         mode: 'dragging',
-      }
+      })
 
-      let valueBeforeDragging = curValue
-      let valueDuringDragging = curValue
+      const valueBeforeDragging = curValue.getValue()
+      let valueDuringDragging = valueBeforeDragging
 
       bodyCursorBeforeDrag.current = document.body.style.cursor
 
@@ -266,14 +309,14 @@ const BasicNumberInput: React.VFC<{
         onDragEnd(happened: boolean) {
           if (!happened) {
             propsRef.current.discardTemporaryValue()
-            stateRef.current = {mode: 'noFocus'}
+            stateBox.set({mode: 'noFocus'})
           } else {
             if (valueBeforeDragging === valueDuringDragging) {
               propsRef.current.discardTemporaryValue()
             } else {
               propsRef.current.permanentlySetValue(valueDuringDragging)
             }
-            stateRef.current = {mode: 'noFocus'}
+            stateBox.set({mode: 'noFocus'})
           }
         },
         onClick() {
@@ -284,38 +327,53 @@ const BasicNumberInput: React.VFC<{
     }
   }, [])
 
-  let value =
-    stateRef.current.mode !== 'editingViaKeyboard'
-      ? format(propsA.value)
-      : stateRef.current.currentEditedValueInString
-
-  if (typeof value === 'number' && isNaN(value)) {
-    value = 'NaN'
-  }
-
-  const _refs = [inputRef]
-  if (propsA.inputRef) _refs.push(propsA.inputRef)
-
-  const theInput = (
-    <Input
-      type="text"
-      key="input"
-      value={value}
-      ref={mergeRefs(_refs)}
-      {...eventListeners}
-    />
+  const valueD = useMemo(
+    () =>
+      prism(() => {
+        const state = stateBox.derivation.getValue()
+        let value =
+          state.mode !== 'editingViaKeyboard'
+            ? format(propsRef.current.valueD.getValue())
+            : state.currentEditedValueInStringBox.derivation.getValue()
+        if (typeof value === 'number' && isNaN(value)) {
+          value = 'NaN'
+        }
+        return value
+      }),
+    [stateBox, propsRef.current.valueD],
   )
 
-  const {range} = propsA
-  const num = parseFloat(value)
+  const mergedInputRef = useMemo(() => {
+    if (propsA.inputRef) return mergeRefs([inputRef, propsA.inputRef])
+    else return inputRef
+  }, [inputRef, propsA.inputRef])
 
-  const fillIndicator = range ? (
-    <FillIndicator
-      style={{
-        // @ts-ignore
-        '--percentage': clamp((num - range[0]) / (range[1] - range[0]), 0, 1),
-      }}
-    />
+  const dataValueRef = useElementMutation<HTMLDivElement>((elt) => {
+    return valueD.tapImmediate(studioTicker, (value) => {
+      elt.dataset.value = value
+    })
+  })
+
+  const theInput = (
+    <Input type="text" key="input" ref={mergedInputRef} {...eventListeners} />
+  )
+
+  const range = propsA.range ?? [0, 1]
+  const fillIndicatorRef = useElementMutation<HTMLDivElement>(
+    (fillIndicator) => {
+      return valueD.tapImmediate(studioTicker, (value) => {
+        const num = parseFloat(value)
+        fillIndicator.style.setProperty(
+          '--percentage',
+          String(clamp((num - range[0]) / (range[1] - range[0]), 0, 1)),
+        )
+      })
+    },
+    [valueD, ...range],
+  )
+
+  const fillIndicator = propsA.range ? (
+    <FillIndicator ref={fillIndicatorRef} />
   ) : null
 
   const [dragNode, setDragNode] = useState<HTMLDivElement | null>(null)
@@ -324,12 +382,15 @@ const BasicNumberInput: React.VFC<{
     onDragStart: transitionToDraggingMode,
     lockCSSCursorTo: 'ew-resize',
     shouldPointerLock: true,
-    disabled: stateRef.current.mode === 'editingViaKeyboard',
+    disabled: state.mode === 'editingViaKeyboard',
   })
 
   return (
-    <Container className={propsA.className + ' ' + stateRef.current.mode}>
-      <DragWrap ref={setDragNode}>{theInput}</DragWrap>
+    <Container className={propsA.className + ' ' + state.mode}>
+      <DragWrap ref={setDragNode}>
+        {theInput}
+        <FakeInput ref={dataValueRef} />
+      </DragWrap>
       {fillIndicator}
     </Container>
   )

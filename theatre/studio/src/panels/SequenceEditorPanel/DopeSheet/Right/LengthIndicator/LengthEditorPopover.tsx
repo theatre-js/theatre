@@ -1,4 +1,5 @@
-import type {Pointer} from '@theatre/dataverse'
+import type {Pointer} from '@theatre/dataverse';
+import { prism} from '@theatre/dataverse'
 import React, {useLayoutEffect, useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
@@ -78,14 +79,17 @@ const LengthEditorPopover: React.FC<{
   }, [])
 
   return usePrism(() => {
-    const sequence = sheet.getSequence()
-    const sequenceLength = sequence.length
+    const sequenceLengthD = prism.memo(
+      'seqLength',
+      () => prism(() => Number(sheet.getSequence().length)),
+      [sheet],
+    )
 
     return (
       <Container>
         <Label>Sequence length</Label>
         <BasicNumberInput
-          value={sequenceLength}
+          valueD={sequenceLengthD}
           {...fns}
           isValid={greaterThanZero}
           inputRef={inputRef}

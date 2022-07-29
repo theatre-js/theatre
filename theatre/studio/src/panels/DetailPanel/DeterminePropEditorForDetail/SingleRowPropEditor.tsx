@@ -105,7 +105,8 @@ export function SingleRowPropEditor<T>({
   any,
   any
 > | null {
-  const label = propConfig.label ?? last(getPointerParts(pointerToProp).path)
+  const path = getPointerParts(pointerToProp).path
+  const label = propConfig.label ?? last(path)
 
   const [propNameContainerRef, propNameContainer] =
     useRefAndState<HTMLDivElement | null>(null)
@@ -127,9 +128,7 @@ export function SingleRowPropEditor<T>({
         <PropNameContainer
           isHighlighted={isPropHighlightedD}
           ref={propNameContainerRef}
-          title={['obj', 'props', ...getPointerParts(pointerToProp).path].join(
-            '.',
-          )}
+          title={['obj', 'props', ...path].join('.')}
         >
           {label}
         </PropNameContainer>

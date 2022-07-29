@@ -36,6 +36,9 @@ test.describe('setting-static-props', () => {
     const detailPanel = page.locator('[data-testid="DetailPanel-Object"]')
 
     const firstInput = detailPanel.locator('input[type="text"]').first()
+    const firstInputFake = detailPanel
+      .locator('input[type="text"] + [data-value]')
+      .first()
     // Click input[type="text"] >> nth=0
     await firstInput.click()
     // Fill input[type="text"] >> nth=0
@@ -43,6 +46,9 @@ test.describe('setting-static-props', () => {
     // Press Enter
     await firstInput.press('Enter')
     const secondInput = detailPanel.locator('input[type="text"]').nth(1)
+    const secondInputFake = detailPanel
+      .locator('input[type="text"] + [data-value]')
+      .nth(1)
     // Click input[type="text"] >> nth=1
     await secondInput.click()
     // Fill input[type="text"] >> nth=1
@@ -54,11 +60,11 @@ test.describe('setting-static-props', () => {
 
     // Press z with modifiers
     await page.locator('body').press(`${metaKey}+z`)
-    await expect(firstInput).toHaveAttribute('value', '1')
-    await expect(secondInput).toHaveAttribute('value', '0')
+    await expect(firstInputFake).toHaveAttribute('data-value', '1')
+    await expect(secondInputFake).toHaveAttribute('data-value', '0')
     await page.locator('body').press(`${metaKey}+Shift+z`)
-    await expect(firstInput).toHaveAttribute('value', '1')
-    await expect(secondInput).toHaveAttribute('value', '2')
+    await expect(firstInputFake).toHaveAttribute('data-value', '1')
+    await expect(secondInputFake).toHaveAttribute('data-value', '2')
 
     // Our first visual regression test
     await percySnapshot(page, test.info().titlePath.join('/') + '/After redo')

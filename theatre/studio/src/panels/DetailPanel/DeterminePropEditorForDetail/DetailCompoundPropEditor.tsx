@@ -20,6 +20,7 @@ import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/w
 import {whatPropIsHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
 import {deriver, prismRender} from '@theatre/studio/utils/derive-utils'
 import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground'
+import {getDepthVarStyle} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Left/getDepthVarStyle'
 
 const Container = styled.div`
   --step: 15px;
@@ -124,8 +125,7 @@ function DetailCompoundPropEditor<
       {contextMenu}
       <Header
         isHighlighted={isPropHighlightedD}
-        // @ts-ignore
-        style={{'--depth': visualIndentation - 1}}
+        style={getDepthVarStyle(visualIndentation - 1)}
       >
         <Padding>
           {controlsElt}
@@ -139,8 +139,7 @@ function DetailCompoundPropEditor<
       </Header>
 
       <SubProps
-        // @ts-ignore
-        style={{'--depth': visualIndentation}}
+        style={getDepthVarStyle(visualIndentation)}
         depth={visualIndentation}
         lastSubIsComposite={lastSubPropIsComposite}
       >

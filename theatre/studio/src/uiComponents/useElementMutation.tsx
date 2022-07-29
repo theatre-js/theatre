@@ -1,6 +1,6 @@
 import type {VoidFn} from '@theatre/shared/utils/types'
-import type React from 'react';
-import {useEffect, useRef} from 'react'
+import type React from 'react'
+import {useCallback, useEffect, useRef} from 'react'
 
 /**
  * useEffectMutation was introduced as a helper to support with fixing memory allocation issues
@@ -16,17 +16,19 @@ import {useEffect, useRef} from 'react'
  */
 export function useElementMutation<T extends HTMLElement = HTMLElement>(
   callback: (element: T) => VoidFn,
+  deps: any[] = [],
 ): React.Ref<T> {
   const listenerRef = useRef(undefined as undefined | VoidFn)
   // effect to ensure that unmounting disposes of this listener's dependents
-  useEffect(() => () => clearListener(listenerRef), [])
-  return (elt) => {
+  useEffect(() => () => clearListener(listenerRef), deps)
+  return useCallback((elt) => {
     clearListener(listenerRef)
     if (elt) {
       listenerRef.current = callback(elt)
     }
-  }
+  }, deps)
 }
+
 function clearListener(ref: React.MutableRefObject<undefined | VoidFn>) {
   if (ref.current) {
     ref.current?.()
