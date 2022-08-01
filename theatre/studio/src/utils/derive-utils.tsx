@@ -76,6 +76,7 @@ export function deriver<Props extends {}>(
       ref,
     ) {
       let observableArr = []
+      let normalArr = []
       const observables: Record<string, IDerivation<$IntentionalAny>> = {}
       const normalProps: Record<string, $IntentionalAny> = {
         ref,
@@ -86,6 +87,7 @@ export function deriver<Props extends {}>(
           observableArr.push(value)
           observables[key] = value
         } else {
+          normalArr.push(value)
           normalProps[key] = value
         }
       }
@@ -98,14 +100,14 @@ export function deriver<Props extends {}>(
       )
 
       const allD = useMemo(() => deriveAllD(observables), observableArr)
-      const observedPropState = usePrism(() => allD.getValue(), [allD])
 
-      return (
-        observedPropState &&
-        React.createElement(Component, {
-          ...normalProps,
-          ...observedPropState,
-        } as Props)
+      return prismRender(
+        () =>
+          React.createElement(Component, {
+            ...(normalProps as Props),
+            ...(allD.getValue() as Props),
+          }),
+        [allD, ...normalArr],
       )
     }),
   )
