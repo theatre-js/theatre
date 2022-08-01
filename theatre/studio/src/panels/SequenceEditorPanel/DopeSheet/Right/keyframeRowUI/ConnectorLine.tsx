@@ -1,5 +1,5 @@
 import {lighten, saturate} from 'polished'
-import React from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {DOT_SIZE_PX} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/SingleKeyframeDot'
 
@@ -73,6 +73,14 @@ export const ConnectorLine = React.forwardRef<
     isSelected: props.isSelected,
   }
 
+  // memoize so the listener does not get re-assigned in React dif
+  const onClick = useMemo(
+    (): React.MouseEventHandler => (e) => {
+      props.openPopover?.(e)
+    },
+    [props.openPopover],
+  )
+
   return (
     <Container
       {...themeValues}
@@ -83,9 +91,7 @@ export const ConnectorLine = React.forwardRef<
           props.connectorLengthInUnitSpace / CONNECTOR_WIDTH_UNSCALED
         }))`,
       }}
-      onClick={(e) => {
-        props.openPopover?.(e)
-      }}
+      onClick={onClick}
     >
       {props.children}
     </Container>
