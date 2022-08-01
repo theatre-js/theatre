@@ -120,6 +120,13 @@ export default class Ticker {
    * @see onNextTick
    */
   tick(t: number = performance.now()) {
+    if (process.env.NODE_ENV === 'development') {
+      if (!(this instanceof Ticker)) {
+        throw new Error(
+          'ticker.tick must be called while bound to the ticker. As in, "ticker.tick(time)" or "requestAnimationFrame((t) => ticker.tick(t))" for performance.',
+        )
+      }
+    }
     this._ticking = true
     this._timeAtCurrentTick = t
     for (const v of this._scheduledForNextTick) {
