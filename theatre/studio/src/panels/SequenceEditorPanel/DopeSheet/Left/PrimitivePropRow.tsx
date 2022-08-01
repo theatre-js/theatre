@@ -142,7 +142,7 @@ const PrimitivePropRow: React.FC<{
   usePropHighlightMouseEnter(headRef.current, leaf)
 
   const controlsElt = prismRender(
-    () => toolsD.getValue().controlIndicators,
+    () => toolsD.getValue().nextPrevKeyframeControls,
     [toolsD],
   )
 

@@ -20,13 +20,15 @@ import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 import {prismRender} from '@theatre/studio/utils/derive-utils'
+import memoizeFn from '@theatre/shared/utils/memoizeFn'
+import {memoize} from 'lodash-es'
 
 interface EditingToolsCommon<T> {
   valueD: IDerivation<T>
   beingScrubbedD: IDerivation<boolean>
   contextMenuItems: Array<IContextMenuItem>
   /** e.g. `< • >` or `<   >` for {@link EditingToolsSequenced} */
-  controlIndicators: React.ReactElement
+  nextPrevKeyframeControls: React.ReactElement
 
   temporarilySetValue(v: T): void
   discardTemporaryValue(): void
@@ -132,7 +134,7 @@ function createDerivation<T extends SerializablePrimitive>(
       valueD: prism(() => obj.getValueByPointer(pointerToProp) as T),
       beingScrubbedD,
       contextMenuItems,
-      controlIndicators: <></>,
+      nextPrevKeyframeControls: <></>,
     }
 
     const isSequencable = isPropConfSequencable(propConfig)
@@ -209,61 +211,30 @@ function createDerivation<T extends SerializablePrimitive>(
           }
         })
 
-        const controlsD = prism(() => {
+        const nearbyKeyframeControlsD = prism((): NearbyKeyframesControls => {
           const nearbyKeyframes = nearbyKeyframesD.getValue()
-          const toggle = () => {
-            if (nearbyKeyframes.cur) {
-              getStudio()!.transaction((api) => {
-                api.unset(pointerToProp)
-              })
-            } else {
-              getStudio()!.transaction((api) => {
-                api.set(pointerToProp, common.valueD.getValue())
-              })
-            }
-          }
+          // memoized so React props don't change so often
+          const toggle = cacheToggleCurrent(pointerToProp)(
+            nearbyKeyframes.cur != null,
+          )
 
-          const controls: NearbyKeyframesControls = {
-            cur: nearbyKeyframes.cur
-              ? {
-                  type: 'on',
-                  itemKey: nearbyKeyframes.cur.itemKey,
-                  toggle,
-                }
-              : {
-                  type: 'off',
-                  toggle,
-                },
-            prev:
-              nearbyKeyframes.prev !== undefined
-                ? {
-                    itemKey: nearbyKeyframes.prev.itemKey,
-                    position: nearbyKeyframes.prev.kf.position,
-                    jump: () => {
-                      obj.sheet.getSequence().position =
-                        nearbyKeyframes.prev!.kf.position
-                    },
-                  }
-                : undefined,
-            next:
-              nearbyKeyframes.next !== undefined
-                ? {
-                    itemKey: nearbyKeyframes.next.itemKey,
-                    position: nearbyKeyframes.next.kf.position,
-                    jump: () => {
-                      obj.sheet.getSequence().position =
-                        nearbyKeyframes.next!.kf.position
-                    },
-                  }
-                : undefined,
+          return {
+            sequence: obj.sheet.getSequence(),
+            curToggle: toggle,
+            // perf: only set the current item key if there is a keyframe here, otherwise
+            // we will be re-rendering the current key on every single position change like on playback
+            curKey: nearbyKeyframes.cur?.itemKey,
+            prevKey: nearbyKeyframes.prev?.itemKey,
+            prevPosition: nearbyKeyframes.prev?.kf.position,
+            nextKey: nearbyKeyframes.next?.itemKey,
+            nextPosition: nearbyKeyframes.next?.kf.position,
           }
-
-          return controls
         })
-
         const nextPrevKeyframeCursors = prismRender(
-          () => <NextPrevKeyframeCursors {...controlsD.getValue()} />,
-          [controlsD],
+          () => (
+            <NextPrevKeyframeCursors {...nearbyKeyframeControlsD.getValue()} />
+          ),
+          [nearbyKeyframeControlsD],
         )
 
         const ret: EditingToolsSequenced<T> = {
@@ -271,7 +242,7 @@ function createDerivation<T extends SerializablePrimitive>(
           type: 'Sequenced',
           shadeD,
           nearbyKeyframesD,
-          controlIndicators: nextPrevKeyframeCursors,
+          nextPrevKeyframeControls: nextPrevKeyframeCursors,
         }
 
         return ret
@@ -312,7 +283,7 @@ function createDerivation<T extends SerializablePrimitive>(
         shadeD: prism(() =>
           common.beingScrubbedD.getValue() ? 'Static_BeingScrubbed' : 'Static',
         ),
-        controlIndicators: (
+        nextPrevKeyframeControls: (
           <DefaultOrStaticValueIndicator hasStaticOverride={true} />
         ),
       }
@@ -323,7 +294,7 @@ function createDerivation<T extends SerializablePrimitive>(
       ...common,
       type: 'Default',
       shadeD: prism(() => 'Default'),
-      controlIndicators: (
+      nextPrevKeyframeControls: (
         <DefaultOrStaticValueIndicator hasStaticOverride={false} />
       ),
     }
@@ -331,6 +302,20 @@ function createDerivation<T extends SerializablePrimitive>(
     return ret
   })
 }
+
+const cacheToggleCurrent = memoizeFn((pointerToProp: Pointer<{}>) =>
+  memoize((isSet: boolean) => {
+    return isSet
+      ? () =>
+          getStudio().transaction((api) => {
+            api.unset(pointerToProp)
+          })
+      : () =>
+          getStudio().transaction((api) => {
+            api.set(pointerToProp, val(pointerToProp))
+          })
+  }),
+)
 
 /**
  * Notably, this uses the {@link Scrub} API to support

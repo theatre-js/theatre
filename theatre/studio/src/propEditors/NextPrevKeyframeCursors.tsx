@@ -1,25 +1,36 @@
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {VoidFn} from '@theatre/shared/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {transparentize} from 'polished'
-import React from 'react'
+import React, {useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {PresenceFlag} from '@theatre/studio/uiComponents/usePresence'
 import usePresence from '@theatre/studio/uiComponents/usePresence'
+import type Sequence from '@theatre/core/sequences/Sequence'
 
+/**
+ * **Notes**
+ *
+ * * This could be used for either compound or simple
+ * * The props are flattened to optimize for few re-renders in combination with default `React.memo`
+ */
 export type NearbyKeyframesControls = {
-  prev?: Pick<Keyframe, 'position'> & {
-    jump: VoidFn
-    itemKey: StudioSheetItemKey
-  }
-  cur:
-    | {type: 'on'; toggle: VoidFn; itemKey: StudioSheetItemKey}
-    | {type: 'off'; toggle: VoidFn}
-  next?: Pick<Keyframe, 'position'> & {
-    jump: VoidFn
-    itemKey: StudioSheetItemKey
-  }
+  /**
+   * `sequence` is necessary for setting the position. Again, this is not just a function, because it's easier for
+   * us to ensure that React.memo will work optimally.
+   */
+  sequence: Sequence
+  prevPosition?: number
+  prevKey?: StudioSheetItemKey
+  curKey?: StudioSheetItemKey
+  /**
+   * Try to make sure this is memoized as best as possible.
+   * It should not need to be a different function every time
+   * the playhead changes position.
+   */
+  curToggle: VoidFn
+  nextPosition?: number
+  nextKey?: StudioSheetItemKey
 }
 
 const Container = styled.div`
@@ -194,41 +205,64 @@ namespace Icons {
   )
 }
 
-const NextPrevKeyframeCursors: React.VFC<NearbyKeyframesControls> = (props) => {
-  const prevPresence = usePresence(props.prev?.itemKey)
-  const curPresence = usePresence(
-    props.cur?.type === 'on' ? props.cur.itemKey : undefined,
-  )
-  const nextPresence = usePresence(props.next?.itemKey)
+// React.memo is crucial here to ensure that when none of these flat properties change,
+// that we don't recreate the element or anything like that. This is a huge speed-up by
+// preventing DOM mutation on every frame.
+const NextPrevKeyframeCursors = React.memo(
+  ({
+    sequence,
+    curKey,
+    curToggle,
+    nextKey,
+    nextPosition,
+    prevKey,
+    prevPosition,
+  }: NearbyKeyframesControls) => {
+    const prevPresence = usePresence(prevKey)
+    const curPresence = usePresence(curKey)
+    const nextPresence = usePresence(nextKey)
+    const prevJump = useMemo(() => {
+      if (prevPosition == null) return
+      return () => {
+        sequence.position = prevPosition
+      }
+    }, [sequence, prevPosition])
+    const nextJump = useMemo(() => {
+      if (nextPosition == null) return
+      return () => {
+        sequence.position = nextPosition
+      }
+    }, [sequence, nextPosition])
 
-  return (
-    <Container>
-      <Prev
-        available={!!props.prev}
-        onClick={props.prev?.jump}
-        flag={prevPresence.flag}
-        {...prevPresence.attrs}
-      >
-        <Icons.Prev />
-      </Prev>
-      <CurButton
-        isOn={props.cur.type === 'on'}
-        onClick={props.cur.toggle}
-        presence={curPresence.flag}
-        {...curPresence.attrs}
-      >
-        <Icons.Cur />
-      </CurButton>
-      <Next
-        available={!!props.next}
-        onClick={props.next?.jump}
-        flag={nextPresence.flag}
-        {...nextPresence.attrs}
-      >
-        <Icons.Next />
-      </Next>
-    </Container>
-  )
-}
+    return (
+      <Container>
+        <Prev
+          available={!!prevKey}
+          onClick={prevJump}
+          flag={prevPresence.flag}
+          {...prevPresence.attrs}
+        >
+          <Icons.Prev />
+        </Prev>
+        <CurButton
+          isOn={curKey != null}
+          onClick={curToggle}
+          presence={curPresence.flag}
+          {...curPresence.attrs}
+        >
+          <Icons.Cur />
+        </CurButton>
+        <Next
+          available={!!nextKey}
+          onClick={nextJump}
+          flag={nextPresence.flag}
+          {...nextPresence.attrs}
+        >
+          <Icons.Next />
+        </Next>
+      </Container>
+    )
+  },
+)
 
 export default NextPrevKeyframeCursors

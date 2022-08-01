@@ -116,7 +116,7 @@ export function SingleRowPropEditor<T>({
   })
 
   const controlsElt = prismRender(
-    () => editingToolsD.getValue().controlIndicators,
+    () => editingToolsD.getValue().nextPrevKeyframeControls,
     [editingToolsD],
   )
 

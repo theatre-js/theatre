@@ -116,7 +116,7 @@ function DetailCompoundPropEditor<
   )
 
   const controlsElt = prismRender(
-    () => toolsD.getValue().controlIndicators,
+    () => toolsD.getValue().nextPrevKeyframeControls,
     [toolsD],
   )
 

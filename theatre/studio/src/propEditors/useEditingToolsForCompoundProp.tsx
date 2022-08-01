@@ -24,11 +24,13 @@ import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import {prismRender} from '@theatre/studio/utils/derive-utils'
+import memoizeFn from '@theatre/shared/utils/memoizeFn'
+import {memoize} from 'lodash-es'
 
 interface CommonStuff {
   beingScrubbed: boolean
   contextMenuItems: Array<IContextMenuItem>
-  controlIndicators: React.ReactElement
+  nextPrevKeyframeControls: React.ReactElement
 }
 
 /**
@@ -59,7 +61,7 @@ export function getEditingToolsForCompoundProp(
         type: 'AllStatic',
         beingScrubbed: false,
         contextMenuItems: [],
-        controlIndicators: (
+        nextPrevKeyframeControls: (
           <DefaultOrStaticValueIndicator hasStaticOverride={false} />
         ),
       }
@@ -87,7 +89,7 @@ export function getEditingToolsForCompoundProp(
     const common: CommonStuff = {
       beingScrubbed: someDescendantsBeingScrubbed,
       contextMenuItems,
-      controlIndicators: <></>,
+      nextPrevKeyframeControls: <></>,
     }
 
     const validSequencedTracks = val(
@@ -185,10 +187,10 @@ export function getEditingToolsForCompoundProp(
     }
 
     if (hasOneOrMoreSequencedTracks) {
-      const controlIndicators = prism.memo(
-        `controlIndicators`,
+      const nextPrevKeyframeControls = prism.memo(
+        `nextPrevKeyframeControls`,
         () => (
-          <ControlIndicators
+          <NextPrevKeyframeControls
             listOfDescendantTrackIds={listOfDescendantTrackIds}
             obj={obj}
             pointerToProp={pointerToProp}
@@ -200,7 +202,7 @@ export function getEditingToolsForCompoundProp(
       const ret: HasSequences = {
         ...common,
         type: 'HasSequences',
-        controlIndicators,
+        nextPrevKeyframeControls,
       }
 
       return ret
@@ -208,7 +210,7 @@ export function getEditingToolsForCompoundProp(
       return {
         ...common,
         type: 'AllStatic',
-        controlIndicators: (
+        nextPrevKeyframeControls: (
           <DefaultOrStaticValueIndicator hasStaticOverride={false} />
         ),
       }
@@ -216,7 +218,7 @@ export function getEditingToolsForCompoundProp(
   })
 }
 
-function ControlIndicators({
+function NextPrevKeyframeControls({
   pointerToProp,
   obj,
   listOfDescendantTrackIds,
@@ -294,69 +296,41 @@ function ControlIndicators({
 
     const nearbyKeyframeControlsD = prism((): NearbyKeyframesControls => {
       const nearbyKfs = nearbyKfsD.getValue()
-      const toggle = () => {
-        if (nearbyKfs.allCur) {
-          getStudio().transaction((api) => {
-            api.unset(pointerToProp)
-          })
-        } else if (nearbyKfs.hasCur) {
-          getStudio().transaction((api) => {
-            api.set(pointerToProp, val(pointerToProp))
-          })
-        } else {
-          getStudio().transaction((api) => {
-            api.set(pointerToProp, val(pointerToProp))
-          })
-        }
-      }
+      // memoized so React props don't change so often
+      const toggle = cacheToggleCurrent(pointerToProp)(
+        (nearbyKfs.allCur ? 1 : 0) + (nearbyKfs.hasCur ? 2 : 0),
+        nearbyKfs.allCur,
+        nearbyKfs.hasCur,
+      )
+
       return {
-        cur: nearbyKfs.hasCur
-          ? {
-              type: 'on',
-              itemKey:
-                createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
-                  obj,
-                  pathToProp,
-                  sequencePosition,
-                ),
-              toggle,
-            }
-          : {
-              toggle,
-              type: 'off',
-            },
-        prev:
-          nearbyKfs.closestPrev !== undefined
-            ? {
-                position: nearbyKfs.closestPrev.kf.position,
-                itemKey:
-                  createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
-                    obj,
-                    pathToProp,
-                    nearbyKfs.closestPrev.kf.position,
-                  ),
-                jump: () => {
-                  obj.sheet.getSequence().position =
-                    nearbyKfs.closestPrev!.kf.position
-                },
-              }
-            : undefined,
-        next:
-          nearbyKfs.closestNext !== undefined
-            ? {
-                position: nearbyKfs.closestNext.kf.position,
-                itemKey:
-                  createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
-                    obj,
-                    pathToProp,
-                    nearbyKfs.closestNext.kf.position,
-                  ),
-                jump: () => {
-                  obj.sheet.getSequence().position =
-                    nearbyKfs.closestNext!.kf.position
-                },
-              }
-            : undefined,
+        sequence: obj.sheet.getSequence(),
+        curToggle: toggle,
+        // perf: only set the current item key if there is a keyframe here, otherwise
+        // we will be re-rendering the current key on every single position change like on playback
+        curKey: nearbyKfs.hasCur
+          ? createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+              obj,
+              pathToProp,
+              sequencePosition,
+            )
+          : undefined,
+        prevKey:
+          nearbyKfs.closestPrev &&
+          createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+            obj,
+            pathToProp,
+            nearbyKfs.closestPrev.kf.position,
+          ),
+        prevPosition: nearbyKfs.closestPrev?.kf.position,
+        nextKey:
+          nearbyKfs.closestNext &&
+          createStudioSheetItemKey.forCompoundPropAggregateKeyframe(
+            obj,
+            pathToProp,
+            nearbyKfs.closestNext.kf.position,
+          ),
+        nextPosition: nearbyKfs.closestNext?.kf.position,
       }
     })
 
@@ -366,3 +340,24 @@ function ControlIndicators({
     )
   }, [deps, obj, listOfDescendantTrackIds])
 }
+
+const cacheToggleCurrent = memoizeFn((pointerToProp: Pointer<{}>) =>
+  memoize((_key: number, allCur: boolean, hasCur: boolean) => {
+    if (allCur) {
+      return () =>
+        getStudio().transaction((api) => {
+          api.unset(pointerToProp)
+        })
+    } else if (hasCur) {
+      return () =>
+        getStudio().transaction((api) => {
+          api.set(pointerToProp, val(pointerToProp))
+        })
+    } else {
+      return () =>
+        getStudio().transaction((api) => {
+          api.set(pointerToProp, val(pointerToProp))
+        })
+    }
+  }),
+)
