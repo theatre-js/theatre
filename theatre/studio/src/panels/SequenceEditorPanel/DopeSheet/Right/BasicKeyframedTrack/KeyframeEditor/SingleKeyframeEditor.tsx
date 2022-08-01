@@ -33,7 +33,6 @@ const SingleKeyframeEditor: React.VFC<ISingleKeyframeEditorProps> = React.memo(
   (props) => {
     const {
       index,
-      keyframe,
       track: {data: trackData},
     } = props
     const cur = trackData.keyframes[index]
