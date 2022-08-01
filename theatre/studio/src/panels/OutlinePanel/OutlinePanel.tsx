@@ -64,7 +64,6 @@ const OutlinePanel: React.FC<{}> = () => {
 
   return (
     <Container
-      className="cont"
       pin={pin || show}
       onMouseEnter={() => {
         isOutlinePanelHoveredB.set(true)
