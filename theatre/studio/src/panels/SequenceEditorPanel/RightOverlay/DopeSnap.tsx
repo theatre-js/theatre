@@ -47,6 +47,9 @@ const DopeSnap = {
   ) {
     return {[POSITION_SNAP_ATTR]: position}
   },
+  setPositionSnapAttrs(elt: HTMLElement, position: number) {
+    elt.dataset.pos = String(position)
+  },
 }
 
 export default DopeSnap

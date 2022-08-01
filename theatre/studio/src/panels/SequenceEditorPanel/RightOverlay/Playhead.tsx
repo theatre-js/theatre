@@ -3,10 +3,8 @@ import RoomToClick from '@theatre/studio/uiComponents/RoomToClick'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {usePrism, useVal} from '@theatre/react'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import type {Pointer} from '@theatre/dataverse';
-import { prism} from '@theatre/dataverse'
-import {val} from '@theatre/dataverse'
+import type {Pointer} from '@theatre/dataverse'
+import {prism, val} from '@theatre/dataverse'
 import clamp from 'lodash-es/clamp'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
@@ -32,7 +30,9 @@ import {
   snapToAll,
   snapToNone,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
-import {deriver, prismRender} from '@theatre/studio/utils/derive-utils'
+import {prismRender} from '@theatre/studio/utils/derive-utils'
+import studioTicker from '@theatre/studio/studioTicker'
+import {useElementMutation} from '@theatre/studio/uiComponents/useElementMutation'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -45,6 +45,7 @@ const Container = styled.div<{isVisible: boolean}>`
   pointer-events: none;
 
   display: ${(props) => (props.isVisible ? 'block' : 'none')};
+  transform: translate3d(var(--playhead-pos, 0), 0, 0);
 `
 
 const Rod = styled.div`
@@ -185,19 +186,20 @@ const Tooltip = styled.div`
   font-size: 10px;
   line-height: 18px;
   text-align: center;
+
+  ::before {
+    content: attr(data-display);
+  }
+
   ${Thumb}:hover &, ${Container}.seeking & {
     display: block;
   }
 `
 
-const ContainerD = deriver(Container)
-const ThumbD = deriver(Thumb)
-const RodD = deriver(Rod)
-
 const Playhead: React.VFC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   layoutP,
 }) => {
-  const [thumbRef, thumbNode] = useRefAndState<HTMLElement | null>(null)
+  const [thumbRef, thumbNode] = useRefAndState<HTMLDivElement | null>(null)
 
   const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
     {debugName: 'Playhead'},
@@ -295,48 +297,58 @@ const Playhead: React.VFC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
     [sequence, dvs.posInUnitSpaceD],
   )
 
-  // this wasn't really necessary
-  const attrs = useMemo(
-    () => ({
-      rodClassNameD: dvs.stateD.map(({isSeeking}) =>
-        isSeeking ? 'seeking' : '',
-      ),
-      containerStyleD: dvs.posInClippedSpaceD.map((pos) => ({
-        transform: `translate3d(${pos}px, 0, 0)`,
-      })),
-      containerClassNameD: dvs.stateD.map(
-        ({isSeeking, isPlayheadAttachedToFocusRange}) =>
-          `${isSeeking && 'seeking'} ${
-            isPlayheadAttachedToFocusRange && 'playheadattachedtofocusrange'
-          }`,
-      ),
-    }),
-    [dvs],
-  )
+  // broken out into refs to reduce memory allocations by direct assigning to the elements
+  // fixing https://linear.app/theatre/issue/P-268/fix-the-memory-leak
+  const containerRef = useElementMutation<HTMLDivElement>((container) => {
+    return dvs.posInClippedSpaceD.tapImmediate(
+      studioTicker,
+      (posInClippedSpace) => {
+        container.style.setProperty('--playhead-pos', `${posInClippedSpace}px`)
+      },
+    )
+  })
+
+  const tooltipRef = useElementMutation<HTMLDivElement>((container) => {
+    return dvs.posInUnitSpaceD.tapImmediate(studioTicker, (posInUnitSpace) => {
+      const gridPos = sequence.positionFormatter.formatForPlayhead(
+        sequence.closestGridPosition(posInUnitSpace),
+      )
+      container.dataset.display = gridPos
+    })
+  })
+
+  const rodRef = useElementMutation<HTMLDivElement>((rod) => {
+    return dvs.posInUnitSpaceD.tapImmediate(studioTicker, (posInUnitSpace) => {
+      DopeSnap.setPositionSnapAttrs(rod, posInUnitSpace)
+    })
+  })
+
+  const container = prismRender(() => {
+    const {isSeeking, isPlayheadAttachedToFocusRange} = dvs.stateD.getValue()
+    return (
+      <Container
+        isVisible={dvs.isVisibleD.getValue()}
+        className={`${isSeeking && 'seeking'} ${
+          isPlayheadAttachedToFocusRange && 'playheadattachedtofocusrange'
+        }`}
+        {...includeLockFrameStampAttrs('hide')}
+        ref={containerRef}
+      >
+        <Thumb ref={thumbRef}>
+          <RoomToClick room={8} />
+          <Squinch />
+          <Tooltip ref={tooltipRef} />
+        </Thumb>
+        <Rod ref={rodRef} className={isSeeking ? 'seeking' : ''} />
+      </Container>
+    )
+  }, [dvs, tooltip])
 
   return (
     <>
       {contextMenu}
       {popoverNode}
-      <ContainerD
-        isVisible={dvs.isVisibleD}
-        style={attrs.containerStyleD}
-        className={attrs.containerClassNameD}
-        {...includeLockFrameStampAttrs('hide')}
-      >
-        <ThumbD
-          ref={thumbRef as $IntentionalAny}
-          {...DopeSnap.includePositionSnapAttrs(dvs.posInUnitSpaceD)}
-        >
-          <RoomToClick room={8} />
-          <Squinch />
-          <Tooltip>{tooltip}</Tooltip>
-        </ThumbD>
-        <RodD
-          {...DopeSnap.includePositionSnapAttrs(dvs.posInUnitSpaceD)}
-          className={attrs.rodClassNameD}
-        />
-      </ContainerD>
+      {container}
     </>
   )
 }
