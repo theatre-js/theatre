@@ -25,6 +25,8 @@ const testDir = playgroundDir('src/tests')
 export async function start(options: {
   /** enable live reload and watching stuff */
   dev: boolean
+  /** make some UI elements predictable by setting the __IS_VISUAL_REGRESSION_TESTING value on window */
+  isVisualRegressionTesting: boolean
   serve?: {
     findAvailablePort: boolean
     openBrowser: boolean
@@ -169,7 +171,9 @@ export async function start(options: {
     },
     define: {
       ...definedGlobals,
-      'window.__IS_VISUAL_REGRESSION_TESTING': 'true',
+      'window.__IS_VISUAL_REGRESSION_TESTING': JSON.stringify(
+        options.isVisualRegressionTesting,
+      ),
     },
     banner: liveReload?.esbuildBanner,
     watch: liveReload?.esbuildWatch && {

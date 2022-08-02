@@ -1,6 +1,6 @@
 import {usePrism, useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
-import React, {useRef} from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import type {$IntentionalAny} from '@theatre/dataverse/dist/types'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
@@ -65,6 +65,8 @@ const GroupDivider = styled.div`
   opacity: 0.4;
 `
 
+let showedVisualTestingWarning = false
+
 const GlobalToolbar: React.FC = () => {
   const conflicts = usePrism(() => {
     const ephemeralStateOfAllProjects = val(
@@ -123,6 +125,20 @@ const GlobalToolbar: React.FC = () => {
   )
   const moreMenuTriggerRef = useRef<HTMLButtonElement>(null)
 
+  const showUpdatesBadge = useMemo(() => {
+    if (hasUpdates || window.__IS_VISUAL_REGRESSION_TESTING) {
+      if (!showedVisualTestingWarning) {
+        showedVisualTestingWarning = true
+        console.warn(
+          "Visual regression testing enabled, so we're showing the updates badge unconditionally",
+        )
+      }
+      return true
+    }
+
+    return hasUpdates
+  }, [hasUpdates])
+
   return (
     <Container>
       <SubContainer>
@@ -158,7 +174,7 @@ const GlobalToolbar: React.FC = () => {
           }}
         >
           <Ellipsis />
-          {hasUpdates && <HasUpdatesBadge />}
+          {showUpdatesBadge && <HasUpdatesBadge />}
         </ToolbarIconButton>
         <PinButton
           ref={triggerButtonRef as $IntentionalAny}

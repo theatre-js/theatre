@@ -21,6 +21,7 @@ function onUpdatedBuildScript(rebuild) {
     module
       .start({
         dev: !isCI && dev,
+        isVisualRegressionTesting: isCI,
         serve: serve && {
           findAvailablePort: !isCI,
           // If not in CI, try to spawn a browser
