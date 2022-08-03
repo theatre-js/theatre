@@ -151,6 +151,24 @@ type IUseDragStateDetection_Detected = {
   dragEventCount: number
 }
 
+// pointer lock may not have been accepted, because we might be in an iframe which disallows pointer locking
+let isPointerLockAllowed = !isSafari
+function requestPointerLockSafely(target: Element): Promise<boolean> {
+  if (!isPointerLockAllowed) return Promise.resolve(false)
+  try {
+    // Checking introduced with https://linear.app/theatre/issue/P-199/dont-use-pointer-lock-when-in-an-iframe
+    return Promise.resolve(target.requestPointerLock())
+      .then(() => true)
+      .catch(() => {
+        isPointerLockAllowed = false
+        return false
+      })
+  } catch (_err) {
+    isPointerLockAllowed = false
+    return Promise.resolve(false)
+  }
+}
+
 export default function useDrag(
   target: HTMLElement | SVGElement | undefined | null,
   opts: UseDragOpts,
@@ -162,7 +180,7 @@ export default function useDrag(
    * Safari has a gross behavior with locking the pointer changes the height of the webpage
    * See {@link UseDragOpts.shouldPointerLock} for more context.
    */
-  const isPointerLockUsed = opts.shouldPointerLock && !isSafari
+  const isPointerLockUsed = opts.shouldPointerLock && isPointerLockAllowed
 
   const stateRef = useRef<IUseDragStateRef>({
     domDragStarted: false,
@@ -206,7 +224,7 @@ export default function useDrag(
           DRAG_DETECTION_DISTANCE_THRESHOLD
         ) {
           if (isPointerLockUsed) {
-            target.requestPointerLock()
+            requestPointerLockSafely(target)
           }
 
           stateStarted.detection = {
@@ -248,7 +266,9 @@ export default function useDrag(
       if (!stateRef.current.domDragStarted) return
       const dragHappened = stateRef.current.detection.detected
       stateRef.current = {domDragStarted: false}
-      if (opts.shouldPointerLock && !isSafari) document.exitPointerLock()
+      if (isPointerLockUsed && document.pointerLockElement === target) {
+        document.exitPointerLock()
+      }
       callbacksRef.current.onDragEnd(dragHappened)
 
       // ensure that the window is focused after a successful drag
