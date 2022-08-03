@@ -7,6 +7,7 @@ const HomeContainer = styled.div`
   position: fixed;
   inset: 0;
   background: #1b1c1e;
+  overflow: auto;
 `
 const ContentContainer = styled.div`
   padding: 0 5rem;
