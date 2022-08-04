@@ -42,6 +42,7 @@ function Model({url}: {url: string}) {
   )
 }
 
+// Initially, just copied from the shared/dom example
 const textInterpolate = (left: string, right: string, progression: number) => {
   if (!left || right.startsWith(left)) {
     const length = Math.floor(
@@ -52,7 +53,7 @@ const textInterpolate = (left: string, right: string, progression: number) => {
   return left
 }
 
-const boxObjectConfig = {
+const allPropsObjectConfig = {
   test: types.string('Typing', {interpolate: textInterpolate}),
   testLiteral: types.stringLiteral('a', {a: 'Option A', b: 'Option B'}),
   bool: types.boolean(false),
@@ -77,7 +78,8 @@ function App() {
   const sheet = project.sheet('Scene')
   project.ready.then(() => sheet.sequence.play({iterationCount: Infinity}))
 
-  sheet.object('everything', boxObjectConfig)
+  const allPropsObj = sheet.object('All Props Tester', allPropsObjectConfig)
+  console.log('allPropsObj', allPropsObj)
 
   return (
     <div

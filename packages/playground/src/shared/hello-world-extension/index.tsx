@@ -37,7 +37,7 @@ studio.extend({
             title: 'Example Icon',
             svgSource: '👁‍🗨',
             onClick: () => {
-              console.log('hello')
+              studio.createPane('example')
             },
           },
         ])
@@ -49,7 +49,16 @@ studio.extend({
       }
     },
   },
-  panes: [],
+  panes: [
+    {
+      class: 'example',
+      mount: ({paneId, node}) => {
+        studio.ui.renderToolset('global', node)
+
+        return () => {}
+      },
+    },
+  ],
 })
 studio.initialize()
 

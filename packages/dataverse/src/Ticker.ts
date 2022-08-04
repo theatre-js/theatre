@@ -45,6 +45,9 @@ export default class Ticker {
   /**
    * Counts up for every tick executed.
    * Internally, this is used to measure ticks per second.
+   *
+   * This is "public" to TypeScript, because it's a tool for performance measurements.
+   * Consider this as experimental, and do not rely on it always being here in future releases.
    */
   public __ticks = 0
 
