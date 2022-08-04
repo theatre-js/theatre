@@ -12,13 +12,9 @@ ReactDOM.render(<App />, document.getElementById('root'))
 
 const raf = Ticker.raf
 
-setInterval(() => {
-  const id = Date.now().toString(36) + '-'
-  performance.mark(id)
-  setTimeout(() => {
-    performance.measure('---', id)
-  }, 2000)
-}, 2000)
+// Show "ticks per second" information in performance measurements using the User Timing API
+// See https://developer.mozilla.org/en-US/docs/Web/API/User_Timing_API
+// See https://web.dev/user-timings/
 setInterval(() => {
   const start = {
     ticks: raf.__ticks,
@@ -29,6 +25,7 @@ setInterval(() => {
   setTimeout(() => {
     const ticksPerSec =
       ((raf.__ticks - start.ticks) * 1000) / (Date.now() - start.now)
+    // This shows up in the performance tab of devtools if you record!
     performance.measure(
       `${ticksPerSec.toFixed(0)}t/1s - ${(ticksPerSec * 0.5).toFixed(
         0,
