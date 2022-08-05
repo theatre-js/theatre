@@ -7,13 +7,12 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import studio from '@theatre/studio'
 import type {ISheet} from '@theatre/core'
 import {types} from '@theatre/core'
 import type {ITurtle} from './turtle'
 import {drawTurtlePlan, makeTurtlePlan} from './turtle'
-
-studio.initialize()
+import type {IStudio} from '@theatre/studio'
+import {LazyLoadStudio} from '../../common/LazyLoadStudio'
 
 const objConfig = {
   startingPoint: {
@@ -38,6 +37,7 @@ const TurtleRenderer: React.FC<{
     }
   }, [canvas])
 
+  const studioRef = useRef<IStudio | undefined>()
   const dimsRef = useRef({width: props.width, height: props.height})
   dimsRef.current = {width: props.width, height: props.height}
 
@@ -93,7 +93,7 @@ const TurtleRenderer: React.FC<{
         newTransform.startingPoint.y =
           oldTransform.startingPoint.y - event.deltaY / dimsRef.current.height
       }
-      studio.transaction((api) => {
+      studioRef.current?.transaction((api) => {
         api.set(obj.props, newTransform)
       })
       // setTransforms(newTransform)
@@ -132,7 +132,15 @@ const TurtleRenderer: React.FC<{
   }, [props.width, props.height, plan, context, transforms])
 
   return (
-    <canvas width={props.width} height={props.height} ref={setCanvas}></canvas>
+    <>
+      <canvas width={props.width} height={props.height} ref={setCanvas} />
+      <LazyLoadStudio
+        import={[
+          () => import('./loadStudio'),
+          (studio) => (studioRef.current = studio),
+        ]}
+      />
+    </>
   )
 }
 

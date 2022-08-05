@@ -1,7 +1,5 @@
-import studio from '@theatre/studio'
 import {getProject, types} from '@theatre/core'
 import state from './reading obj value.theatre-project-state.json'
-studio.initialize({usePersistentStorage: false})
 
 const project = getProject('reading obj value', {state})
 const TOTAL_ELEMENTS = 300
@@ -40,8 +38,6 @@ const elements = new Array(TOTAL_ELEMENTS).fill(0).map((_, idx) => {
 })
 
 project.ready.then(() => {
-  // select the playback controls obj so it shows as a tweakable control
-  studio.setSelection([playbackControlObj])
   for (let i = 0; i < elements.length; i++) {
     const sheet = elements[i].sheet
     sheet.sequence.position = i * TOTAL_ELEMENTS_R * 5
@@ -49,6 +45,8 @@ project.ready.then(() => {
       iterationCount: Infinity,
     })
   }
+
+  import('./loadStudio').then((mod) => mod.loadStudio())
 })
 
 function render() {
