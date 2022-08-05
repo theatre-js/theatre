@@ -13,10 +13,12 @@ type ImportWithArgs<A extends any[]> = Readonly<
 >
 
 /**
- * @example
+ * ```tsx
+ * // creates the code split point, here 👇
  * <LazyLoadStudio load={() => import('./loadStudio')} />
+ * ```
  *
- * @example
+ * ```ts
  * // in loadStudio.ts
  * import studio from '@theatre/studio';
  * import extension from '@theatre/r3f/dist/extension';
@@ -25,6 +27,7 @@ type ImportWithArgs<A extends any[]> = Readonly<
  *   studio.extend(extension);
  *   studio.initialize();
  * }
+ * ```
  */
 export function LazyLoadStudio<A extends any[]>(props: {
   import:
