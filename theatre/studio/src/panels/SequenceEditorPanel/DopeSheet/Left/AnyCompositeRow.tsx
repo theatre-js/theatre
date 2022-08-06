@@ -4,12 +4,13 @@ import type {
   SequenceEditorTree_PropWithChildren,
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import type {VoidFn} from '@theatre/shared/utils/types'
+import type {$FixMe, VoidFn} from '@theatre/shared/utils/types'
 import React, {useRef} from 'react'
 import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {usePropHighlightMouseEnter} from './usePropHighlightMouseEnter'
+import {useEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEditingToolsForCompoundProp'
 
 export const LeftRowContainer = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
@@ -29,7 +30,7 @@ const LeftRowHeader = styled(BaseHeader)<{
   padding-left: calc(8px + var(--depth) * 20px);
 
   display: flex;
-  align-items: stretch;
+  align-items: center;
   color: ${theme.panel.body.compoudThing.label.color};
 
   box-sizing: border-box;
@@ -46,9 +47,21 @@ const LeftRowHead_Label = styled.span`
   line-height: 26px;
   flex-wrap: nowrap;
 
+  font-weight: bold;
+
   ${LeftRowHeader}:hover & {
     color: #ccc;
   }
+`
+
+const LeftRowHead_RightAlign = styled.div`
+  flex-wrap: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  flex-grow: 1;
+  padding-right: 1.9rem;
+  /* border-top: 1px solid #444; */
 `
 
 const LeftRowHead_Icon = styled.span<{isCollapsed: boolean}>`
@@ -96,6 +109,10 @@ const AnyCompositeRow: React.FC<{
   isCollapsed,
 }) => {
   const hasChildren = Array.isArray(children) && children.length > 0
+  const controls =
+    leaf.type === 'propWithChildren' ? (
+      <CompoundRowControls leaf={leaf} />
+    ) : undefined
 
   const rowHeaderRef = useRef<HTMLDivElement | null>(null)
 
@@ -116,11 +133,28 @@ const AnyCompositeRow: React.FC<{
         <LeftRowHead_Icon isCollapsed={isCollapsed} onClick={toggleCollapsed}>
           <HiOutlineChevronRight />
         </LeftRowHead_Icon>
-        <LeftRowHead_Label>{label}</LeftRowHead_Label>
+        <LeftRowHead_RightAlign>
+          <LeftRowHead_Label>{label}</LeftRowHead_Label>
+          {controls && <>{controls}&nbsp;</>}
+        </LeftRowHead_RightAlign>
       </LeftRowHeader>
       {hasChildren && <LeftRowChildren>{children}</LeftRowChildren>}
     </LeftRowContainer>
   ) : null
+}
+
+function CompoundRowControls({
+  leaf,
+}: {
+  leaf: SequenceEditorTree_PropWithChildren
+}) {
+  const {controlIndicators} = useEditingToolsForCompoundProp(
+    leaf.pointerToProp as $FixMe,
+    leaf.sheetObject,
+    leaf.propConfig,
+  )
+
+  return controlIndicators
 }
 
 export default AnyCompositeRow

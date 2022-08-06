@@ -1,10 +1,7 @@
 import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import getStudio from '@theatre/studio/getStudio'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
-import pointerDeep from '@theatre/shared/utils/pointerDeep'
 import {usePrism} from '@theatre/react'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useCallback, useRef} from 'react'
 import styled from 'styled-components'
@@ -86,14 +83,9 @@ const PrimitivePropRowHead_Label = styled.span`
 const PrimitivePropRow: React.FC<{
   leaf: SequenceEditorTree_PrimitiveProp
 }> = ({leaf}) => {
-  const pointerToProp = pointerDeep(
-    leaf.sheetObject.propsP,
-    leaf.pathToProp,
-  ) as Pointer<$IntentionalAny>
-
   const obj = leaf.sheetObject
   const {controlIndicators} = useEditingToolsForSimplePropInDetailsPanel(
-    pointerToProp,
+    leaf.pointerToProp,
     obj,
     leaf.propConf,
   )

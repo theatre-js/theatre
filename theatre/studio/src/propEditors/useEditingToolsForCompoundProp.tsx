@@ -3,10 +3,7 @@ import getStudio from '@theatre/studio/getStudio'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getDeep from '@theatre/shared/utils/getDeep'
 import {usePrism} from '@theatre/react'
-import type {
-  $IntentionalAny,
-  SerializablePrimitive,
-} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import get from 'lodash-es/get'
@@ -49,7 +46,7 @@ interface HasSequences extends CommonStuff {
 
 type Stuff = AllStatic | HasSequences
 
-export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
+export function useEditingToolsForCompoundProp(
   pointerToProp: Pointer<{}>,
   obj: SheetObject,
   propConfig: PropTypeConfig_Compound<{}>,
