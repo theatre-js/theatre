@@ -115,6 +115,7 @@ const BasicNumberInput: React.FC<{
    */
   onBlur?: () => void
   nudge: BasicNumberInputNudgeFn
+  autoFocus?: boolean
 }> = (propsA) => {
   const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
   const isValid = propsA.isValid ?? alwaysValid
@@ -307,6 +308,7 @@ const BasicNumberInput: React.FC<{
         e.preventDefault()
         e.stopPropagation()
       }}
+      autoFocus={propsA.autoFocus}
     />
   )
 

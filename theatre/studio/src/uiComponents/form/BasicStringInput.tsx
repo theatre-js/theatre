@@ -64,6 +64,7 @@ const BasicStringInput: React.FC<{
    * before this, so use this for UI purposes such as closing a popover.
    */
   onBlur?: () => void
+  autoFocus?: boolean
 }> = (props) => {
   const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
   const isValid = props.isValid ?? alwaysValid
@@ -195,6 +196,7 @@ const BasicStringInput: React.FC<{
         e.preventDefault()
         e.stopPropagation()
       }}
+      autoFocus={props.autoFocus}
     />
   )
 

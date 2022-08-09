@@ -71,13 +71,16 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
 
   const cyInExtremumSpace = props.extremumSpace.fromValueSpace(curValue)
   const [inlineEditorPopover, openEditor, _, _isInlineEditorPopoverOpen] =
-    useKeyframeInlineEditorPopover({
-      keyframe: props.keyframe,
-      pathToProp: props.pathToProp,
-      propConf: props.propConfig,
-      sheetObject: props.sheetObject,
-      trackId: props.trackId,
-    })
+    useKeyframeInlineEditorPopover([
+      {
+        type: 'primitiveProp',
+        keyframe: props.keyframe,
+        pathToProp: props.pathToProp,
+        propConfig: props.propConfig,
+        sheetObject: props.sheetObject,
+        trackId: props.trackId,
+      },
+    ])
 
   const isDragging = useDragKeyframe({
     node,

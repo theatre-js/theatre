@@ -4,8 +4,6 @@ import styled from 'styled-components'
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import type {ISimplePropEditorReactProps} from '@theatre/studio/propEditors/simpleEditors/ISimplePropEditorReactProps'
 import {simplePropEditorByPropType} from '@theatre/studio/propEditors/simpleEditors/simplePropEditorByPropType'
-
-import SingleKeyframeSimplePropEditor from './DeterminePropEditorForSingleKeyframe/SingleKeyframeSimplePropEditor'
 import type {
   EditingOptionsTree,
   PrimitivePropEditingOptions,
@@ -33,7 +31,7 @@ const SingleKeyframePropLabel = styled.div`
   color: #919191;
 `
 
-const IndentedThing = styled.div`
+const Indent = styled.div`
   margin-left: 24px;
 `
 
@@ -47,18 +45,24 @@ const IndentedThing = styled.div`
  *
  * @param p - propConfig object for any type of prop.
  */
-export function DeterminePropEditorForKeyframeTree(p: EditingOptionsTree) {
+export function DeterminePropEditorForKeyframeTree(
+  p: EditingOptionsTree & {autoFocusInput?: boolean},
+) {
   if (p.type === 'sheetObject') {
     return (
       <>
         <SingleKeyframePropLabel>
           {p.sheetObject.address.objectKey}
         </SingleKeyframePropLabel>
-        <IndentedThing>
+        <Indent>
           {p.children.map((c, i) => (
-            <DeterminePropEditorForKeyframeTree key={i} {...c} />
+            <DeterminePropEditorForKeyframeTree
+              key={i}
+              {...c}
+              autoFocusInput={p.autoFocusInput && i === 0}
+            />
           ))}
-        </IndentedThing>
+        </Indent>
       </>
     )
   } else if (p.type === 'propWithChildren') {
@@ -66,19 +70,31 @@ export function DeterminePropEditorForKeyframeTree(p: EditingOptionsTree) {
     return (
       <>
         <SingleKeyframePropLabel>{label}</SingleKeyframePropLabel>
-        <IndentedThing>
+        <Indent>
           {p.children.map((c, i) => (
-            <DeterminePropEditorForKeyframeTree key={i} {...c} />
+            <DeterminePropEditorForKeyframeTree
+              key={i}
+              {...c}
+              autoFocusInput={p.autoFocusInput && i === 0}
+            />
           ))}
-        </IndentedThing>
+        </Indent>
       </>
     )
   } else {
-    return <BeepBoop {...p} />
+    return <PrimitivePropEditor {...p} autoFocusInput={p.autoFocusInput} />
   }
 }
 
-function BeepBoop(p: PrimitivePropEditingOptions) {
+const SingleKeyframeSimplePropEditorContainer = styled.div`
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+`
+
+function PrimitivePropEditor(
+  p: PrimitivePropEditingOptions & {autoFocusInput?: boolean},
+) {
   const label = p.propConfig.label ?? last(p.pathToProp)
   const editingTools = useEditingToolsForKeyframeEditorPopover(p)
 
@@ -92,12 +108,14 @@ function BeepBoop(p: PrimitivePropEditingOptions) {
     return (
       <SingleKeyframePropEditorContainer>
         <SingleKeyframePropLabel>{label}</SingleKeyframePropLabel>
-        <SingleKeyframeSimplePropEditor
-          SimpleEditorComponent={PropEditor}
-          propConfig={p.propConfig}
-          editingTools={editingTools}
-          keyframeValue={p.keyframe.value}
-        />
+        <SingleKeyframeSimplePropEditorContainer>
+          <PropEditor
+            editingTools={editingTools}
+            propConfig={p.propConfig}
+            value={p.keyframe.value}
+            autoFocus={p.autoFocusInput}
+          />
+        </SingleKeyframeSimplePropEditorContainer>
       </SingleKeyframePropEditorContainer>
     )
   }
