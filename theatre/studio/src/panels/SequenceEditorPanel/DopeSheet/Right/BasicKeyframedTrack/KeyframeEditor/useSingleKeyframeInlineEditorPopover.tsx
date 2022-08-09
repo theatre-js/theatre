@@ -15,13 +15,19 @@ import type {UnknownValidCompoundProps} from '@theatre/core/propTypes/internals'
 
 /** The editor that pops up when directly clicking a Keyframe. */
 export function useKeyframeInlineEditorPopover(
-  props: EditingOptionsTree | null,
+  props: EditingOptionsTree[] | null,
 ) {
   return usePopover({debugName: 'useKeyframeInlineEditorPopover'}, () => (
     <BasicPopover showPopoverEdgeTriangle>
-      {props === null ? undefined : (
-        <DeterminePropEditorForKeyframeTree {...props} />
-      )}
+      {!Array.isArray(props)
+        ? undefined
+        : props.map((prop, i) => (
+            <DeterminePropEditorForKeyframeTree
+              key={i}
+              {...prop}
+              autoFocusInput={i === 0}
+            />
+          ))}
     </BasicPopover>
   ))
 }
@@ -30,12 +36,12 @@ export type EditingOptionsTree =
   | SheetObjectEditingOptionsTree
   | PropWithChildrenEditingOptionsTree
   | PrimitivePropEditingOptions
-type SheetObjectEditingOptionsTree = {
+export type SheetObjectEditingOptionsTree = {
   type: 'sheetObject'
   sheetObject: SheetObject
   children: EditingOptionsTree[]
 }
-type PropWithChildrenEditingOptionsTree = {
+export type PropWithChildrenEditingOptionsTree = {
   type: 'propWithChildren'
   propConfig: PropTypeConfig_Compound<UnknownValidCompoundProps>
   pathToProp: PathToProp

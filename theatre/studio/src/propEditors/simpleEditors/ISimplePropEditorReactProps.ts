@@ -8,4 +8,5 @@ export type ISimplePropEditorReactProps<
   propConfig: TPropTypeConfig
   editingTools: IEditingTools<TPropTypeConfig['valueType']>
   value: TPropTypeConfig['valueType']
+  autoFocus?: boolean
 }

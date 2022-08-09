@@ -6,6 +6,7 @@ import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
 function StringPropEditor({
   editingTools,
   value,
+  autoFocus,
 }: ISimplePropEditorReactProps<PropTypeConfig_String>) {
   return (
     <BasicStringInput
@@ -13,6 +14,7 @@ function StringPropEditor({
       temporarilySetValue={editingTools.temporarilySetValue}
       discardTemporaryValue={editingTools.discardTemporaryValue}
       permanentlySetValue={editingTools.permanentlySetValue}
+      autoFocus={autoFocus}
     />
   )
 }

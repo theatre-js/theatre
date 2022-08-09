@@ -102,38 +102,39 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
 
   const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
   const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
-    useKeyframeInlineEditorPopover({
-      type: 'primitiveProp',
-      keyframe: props.keyframe,
-      pathToProp: props.leaf.pathToProp,
-      propConfig: props.leaf.propConf,
-      sheetObject: props.leaf.sheetObject,
-      trackId: props.leaf.trackId,
-    })
-    const [isDragging] = useDragForSingleKeyframeDot(node, props, {
-      onClickFromDrag(dragStartEvent) {
-        openEditor(dragStartEvent, ref.current!)
+    useKeyframeInlineEditorPopover([
+      {
+        type: 'primitiveProp',
+        keyframe: props.keyframe,
+        pathToProp: props.leaf.pathToProp,
+        propConfig: props.leaf.propConf,
+        sheetObject: props.leaf.sheetObject,
+        trackId: props.leaf.trackId,
       },
-    })
+    ])
+  const [isDragging] = useDragForSingleKeyframeDot(node, props, {
+    onClickFromDrag(dragStartEvent) {
+      openEditor(dragStartEvent, ref.current!)
+    },
+  })
 
-    return (
-      <>
-        <HitZone
-          ref={ref}
-          isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
-          {...presence.attrs}
-        />
-        <Diamond
-          isSelected={!!props.selection}
-          isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
-          flag={presence.flag}
-        />
-        {inlineEditorPopover}
-        {contextMenu}
-      </>
-    )
-  },
-)
+  return (
+    <>
+      <HitZone
+        ref={ref}
+        isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+        {...presence.attrs}
+      />
+      <Diamond
+        isSelected={!!props.selection}
+        isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+        flag={presence.flag}
+      />
+      {inlineEditorPopover}
+      {contextMenu}
+    </>
+  )
+}
 
 export default SingleKeyframeDot
 

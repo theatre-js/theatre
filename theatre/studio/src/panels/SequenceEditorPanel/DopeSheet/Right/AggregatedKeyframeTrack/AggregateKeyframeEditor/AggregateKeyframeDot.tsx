@@ -17,7 +17,11 @@ import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/t
 import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
 import type {ILogger} from '@theatre/shared/logger'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
-import type {EditingOptionsTree} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/useSingleKeyframeInlineEditorPopover'
+import type {
+  PrimitivePropEditingOptions,
+  PropWithChildrenEditingOptionsTree,
+  SheetObjectEditingOptionsTree,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/useSingleKeyframeInlineEditorPopover'
 import {useKeyframeInlineEditorPopover} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/useSingleKeyframeInlineEditorPopover'
 import type {
   SequenceEditorTree_PrimitiveProp,
@@ -31,17 +35,22 @@ type IAggregateKeyframeDotProps = {
   utils: IAggregateKeyframeEditorUtils
 }
 
+const isOptionsTreeNodeNotNull = (
+  a: PropWithChildrenEditingOptionsTree | PrimitivePropEditingOptions | null,
+): a is PropWithChildrenEditingOptionsTree | PrimitivePropEditingOptions =>
+  a !== null
+
 function sheetObjectBuild(
   viewModel: SequenceEditorTree_SheetObject,
   keyframes: KeyframeWithTrack[],
-): EditingOptionsTree | null {
+): SheetObjectEditingOptionsTree | null {
   const children = viewModel.children
     .map((a) =>
       a.type === 'propWithChildren'
         ? propWithChildrenBuild(a, keyframes)
         : primitivePropBuild(a, keyframes),
     )
-    .filter((a): a is EditingOptionsTree => a !== null)
+    .filter(isOptionsTreeNodeNotNull)
   if (children.length === 0) return null
   return {
     type: 'sheetObject',
@@ -52,14 +61,14 @@ function sheetObjectBuild(
 function propWithChildrenBuild(
   viewModel: SequenceEditorTree_PropWithChildren,
   keyframes: KeyframeWithTrack[],
-): EditingOptionsTree | null {
+): PropWithChildrenEditingOptionsTree | null {
   const children = viewModel.children
     .map((a) =>
       a.type === 'propWithChildren'
         ? propWithChildrenBuild(a, keyframes)
         : primitivePropBuild(a, keyframes),
     )
-    .filter((a): a is EditingOptionsTree => a !== null)
+    .filter(isOptionsTreeNodeNotNull)
   if (children.length === 0) return null
   return {
     type: 'propWithChildren',
@@ -71,7 +80,7 @@ function propWithChildrenBuild(
 function primitivePropBuild(
   viewModelLeaf: SequenceEditorTree_PrimitiveProp,
   keyframes: KeyframeWithTrack[],
-): EditingOptionsTree | null {
+): PrimitivePropEditingOptions | null {
   const keyframe = keyframes.find((kf) => kf.track.id === viewModelLeaf.trackId)
   if (!keyframe) return null
   return {
@@ -94,7 +103,9 @@ export function AggregateKeyframeDot(
     useKeyframeInlineEditorPopover(
       props.editorProps.viewModel.type === 'sheetObject'
         ? sheetObjectBuild(props.editorProps.viewModel, cur.keyframes)
-        : propWithChildrenBuild(props.editorProps.viewModel, cur.keyframes),
+            ?.children ?? null
+        : propWithChildrenBuild(props.editorProps.viewModel, cur.keyframes)
+            ?.children ?? null,
     )
 
   const presence = usePresence(props.utils.itemKey)

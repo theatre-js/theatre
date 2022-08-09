@@ -6,12 +6,17 @@ import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
 
 const Input = styled(BasicCheckbox)`
   margin-left: 6px;
+
+  :focus {
+    outline: 1px solid #555;
+  }
 `
 
 function BooleanPropEditor({
   propConfig,
   editingTools,
   value,
+  autoFocus,
 }: ISimplePropEditorReactProps<PropTypeConfig_Boolean>) {
   const onChange = useCallback(
     (el: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +25,7 @@ function BooleanPropEditor({
     [propConfig, editingTools],
   )
 
-  return <Input checked={value} onChange={onChange} />
+  return <Input checked={value} onChange={onChange} autoFocus={autoFocus} />
 }
 
 export default BooleanPropEditor

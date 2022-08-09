@@ -63,6 +63,7 @@ const RgbaPopover = styled.div`
 function RgbaPropEditor({
   editingTools,
   value,
+  autoFocus,
 }: ISimplePropEditorReactProps<PropTypeConfig_Rgba>) {
   const containerRef = useRef<HTMLDivElement>(null!)
 
@@ -116,6 +117,7 @@ function RgbaPropEditor({
           discardTemporaryValue={noop}
           permanentlySetValue={onChange}
           isValid={(v) => !!v.match(validHexRegExp)}
+          autoFocus={autoFocus}
         />
       </RowContainer>
       {popoverNode}
