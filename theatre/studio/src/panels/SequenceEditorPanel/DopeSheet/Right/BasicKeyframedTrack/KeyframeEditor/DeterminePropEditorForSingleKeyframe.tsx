@@ -25,15 +25,16 @@ const SingleKeyframePropLabel = styled.div`
   font-size: 11px;
   line-height: 13px;
   letter-spacing: 0.01em;
-  margin-right: 12px;
-  padding: 8px;
+  padding: 6px 6px 6px 0;
+
+  width: 40%;
 
   color: #919191;
+
+  overflow: hidden;
 `
 
-const Indent = styled.div`
-  margin-left: 24px;
-`
+const INDENT_PX = 10
 
 /**
  * Given a propConfig, this function gives the corresponding prop editor for
@@ -46,54 +47,64 @@ const Indent = styled.div`
  * @param p - propConfig object for any type of prop.
  */
 export function DeterminePropEditorForKeyframeTree(
-  p: EditingOptionsTree & {autoFocusInput?: boolean},
+  p: EditingOptionsTree & {autoFocusInput?: boolean; indent: number},
 ) {
   if (p.type === 'sheetObject') {
     return (
       <>
-        <SingleKeyframePropLabel>
+        <SingleKeyframePropLabel
+          style={{paddingLeft: `${p.indent * INDENT_PX}px`}}
+        >
           {p.sheetObject.address.objectKey}
         </SingleKeyframePropLabel>
-        <Indent>
-          {p.children.map((c, i) => (
-            <DeterminePropEditorForKeyframeTree
-              key={i}
-              {...c}
-              autoFocusInput={p.autoFocusInput && i === 0}
-            />
-          ))}
-        </Indent>
+        {p.children.map((c, i) => (
+          <DeterminePropEditorForKeyframeTree
+            key={i}
+            {...c}
+            autoFocusInput={p.autoFocusInput && i === 0}
+            indent={p.indent + 1}
+          />
+        ))}
       </>
     )
   } else if (p.type === 'propWithChildren') {
     const label = p.propConfig.label ?? last(p.pathToProp)
     return (
       <>
-        <SingleKeyframePropLabel>{label}</SingleKeyframePropLabel>
-        <Indent>
-          {p.children.map((c, i) => (
-            <DeterminePropEditorForKeyframeTree
-              key={i}
-              {...c}
-              autoFocusInput={p.autoFocusInput && i === 0}
-            />
-          ))}
-        </Indent>
+        <SingleKeyframePropLabel
+          style={{paddingLeft: `${p.indent * INDENT_PX}px`}}
+        >
+          {label}
+        </SingleKeyframePropLabel>
+        {p.children.map((c, i) => (
+          <DeterminePropEditorForKeyframeTree
+            key={i}
+            {...c}
+            autoFocusInput={p.autoFocusInput && i === 0}
+            indent={p.indent + 1}
+          />
+        ))}
       </>
     )
   } else {
-    return <PrimitivePropEditor {...p} autoFocusInput={p.autoFocusInput} />
+    return (
+      <PrimitivePropEditor
+        {...p}
+        autoFocusInput={p.autoFocusInput}
+        indent={p.indent}
+      />
+    )
   }
 }
 
 const SingleKeyframeSimplePropEditorContainer = styled.div`
-  padding: 0 6px;
   display: flex;
   align-items: center;
+  width: 60%;
 `
 
 function PrimitivePropEditor(
-  p: PrimitivePropEditingOptions & {autoFocusInput?: boolean},
+  p: PrimitivePropEditingOptions & {autoFocusInput?: boolean; indent: number},
 ) {
   const label = p.propConfig.label ?? last(p.pathToProp)
   const editingTools = useEditingToolsForKeyframeEditorPopover(p)
@@ -107,7 +118,11 @@ function PrimitivePropEditor(
     ] as React.VFC<ISimplePropEditorReactProps<PropTypeConfig_AllSimples>>
     return (
       <SingleKeyframePropEditorContainer>
-        <SingleKeyframePropLabel>{label}</SingleKeyframePropLabel>
+        <SingleKeyframePropLabel>
+          <span style={{paddingLeft: `${p.indent * INDENT_PX}px`}}>
+            {label}
+          </span>
+        </SingleKeyframePropLabel>
         <SingleKeyframeSimplePropEditorContainer>
           <PropEditor
             editingTools={editingTools}
