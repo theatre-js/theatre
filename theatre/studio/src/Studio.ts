@@ -1,6 +1,6 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
-import UI from '@theatre/studio/UI'
+import type UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
 import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
 import type {
@@ -24,6 +24,8 @@ import type {ProjectId} from '@theatre/shared/utils/ids'
 import checkForUpdates from './checkForUpdates'
 
 export type CoreExports = typeof _coreExports
+
+let UIConstructor = typeof window !== 'undefined' ? require('./UI') : null
 
 const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
 \`\`\`
@@ -96,7 +98,7 @@ export class Studio {
     this.publicApi = new TheatreStudio(this)
 
     if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
-      this.ui = new UI(this)
+      this.ui = new UIConstructor(this)
     }
 
     this._attachToIncomingProjects()
