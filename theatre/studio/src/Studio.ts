@@ -25,7 +25,8 @@ import checkForUpdates from './checkForUpdates'
 
 export type CoreExports = typeof _coreExports
 
-let UIConstructor = typeof window !== 'undefined' ? require('./UI') : null
+let {default: UIConstructor} =
+  typeof window !== 'undefined' ? require('./UI') : null
 
 const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
 \`\`\`
