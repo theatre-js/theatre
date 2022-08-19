@@ -234,7 +234,7 @@ const BasicNumberInput: React.FC<{
         // note: we use mx because we need to constrain the `valueDuringDragging`
         // and dx will keep accumulating past any constraints
         onDrag(_dx: number, _dy: number, e: MouseEvent, mx: number) {
-          const deltaX = e.altKey ? mx / 100 : mx
+          const deltaX = e.altKey ? mx / 10 : mx
           const newValue =
             valueDuringDragging +
             propsA.nudge({
