@@ -5,7 +5,7 @@ import type {
 import React from 'react'
 import AnyCompositeRow from './AnyCompositeRow'
 import PrimitivePropRow from './PrimitivePropRow'
-import {setCollapsedSheetObjectOrCompoundProp} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/setCollapsedSheetObjectOrCompoundProp'
+import {setCollapsedSheetItem} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/setCollapsedSheetObjectOrCompoundProp'
 
 export const decideRowByPropType = (
   leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp,
@@ -31,7 +31,7 @@ const PropWithChildrenRow: React.VFC<{
       label={leaf.pathToProp[leaf.pathToProp.length - 1]}
       isCollapsed={leaf.isCollapsed}
       toggleCollapsed={() =>
-        setCollapsedSheetObjectOrCompoundProp(!leaf.isCollapsed, {
+        setCollapsedSheetItem(!leaf.isCollapsed, {
           sheetAddress: leaf.sheetObject.address,
           sheetItemKey: leaf.sheetItemKey,
         })

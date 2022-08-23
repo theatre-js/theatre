@@ -5,6 +5,7 @@ import type {
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {
   SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_Sheet,
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Pointer} from '@theatre/dataverse'
@@ -44,6 +45,7 @@ export type IAggregateKeyframeEditorProps = {
   viewModel:
     | SequenceEditorTree_PropWithChildren
     | SequenceEditorTree_SheetObject
+    | SequenceEditorTree_Sheet
   selection: undefined | DopeSheetSelection
 }
 

@@ -3,7 +3,6 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import usePresence, {
   PresenceFlag,
 } from '@theatre/studio/uiComponents/usePresence'
-import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import type {IAggregateKeyframeEditorProps} from './AggregateKeyframeEditor'
 import type {IAggregateKeyframeEditorUtils} from './useAggregateKeyframeEditorUtils'
@@ -15,7 +14,6 @@ import {
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types/ahistoric'
 import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
-import type {ILogger} from '@theatre/shared/logger'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import type {
   PrimitivePropEditingOptions,
@@ -96,12 +94,13 @@ function primitivePropBuild(
 export function AggregateKeyframeDot(
   props: React.PropsWithChildren<IAggregateKeyframeDotProps>,
 ) {
-  const logger = useLogger('AggregateKeyframeDot')
   const {cur} = props.utils
 
   const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
     useKeyframeInlineEditorPopover(
-      props.editorProps.viewModel.type === 'sheetObject'
+      props.editorProps.viewModel.type === 'sheet'
+        ? null
+        : props.editorProps.viewModel.type === 'sheetObject'
         ? sheetObjectBuild(props.editorProps.viewModel, cur.keyframes)
             ?.children ?? null
         : propWithChildrenBuild(props.editorProps.viewModel, cur.keyframes)
@@ -126,7 +125,7 @@ export function AggregateKeyframeDot(
 
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
-  const [contextMenu] = useAggregateKeyframeContextMenu(props, logger, node)
+  const [contextMenu] = useAggregateKeyframeContextMenu(props, node)
 
   return (
     <>
@@ -151,7 +150,6 @@ export function AggregateKeyframeDot(
 
 function useAggregateKeyframeContextMenu(
   props: IAggregateKeyframeDotProps,
-  logger: ILogger,
   target: HTMLDivElement | null,
 ) {
   return useContextMenu(target, {
@@ -164,7 +162,7 @@ function useAggregateKeyframeContextMenu(
         (acc, kfWithTrack) =>
           acc.concat(
             keyframesWithPaths({
-              ...props.editorProps.viewModel.sheetObject.address,
+              ...kfWithTrack.track.sheetObject.address,
               trackId: kfWithTrack.track.id,
               keyframeIds: [kfWithTrack.kf.id],
             }) ?? [],
@@ -176,20 +174,22 @@ function useAggregateKeyframeContextMenu(
         kfs.map((kf) => kf.pathToProp),
       )
 
-      const keyframesWithCommonRootPath = kfs.map(({keyframe, pathToProp}) => ({
-        keyframe,
-        pathToProp: pathToProp.slice(commonPath.length),
-      }))
+      const viewModel = props.editorProps.viewModel
+      const selection = props.editorProps.selection
 
       return [
         {
-          label: props.editorProps.selection ? 'Copy (selection)' : 'Copy',
+          label: selection ? 'Copy (selection)' : 'Copy',
           callback: () => {
-            if (props.editorProps.selection) {
+            if (selection) {
+              const {projectId, sheetId} =
+                viewModel.type === 'sheet'
+                  ? viewModel.sheet.address
+                  : viewModel.sheetObject.address
               const copyableKeyframes = copyableKeyframesFromSelection(
-                props.editorProps.viewModel.sheetObject.address.projectId,
-                props.editorProps.viewModel.sheetObject.address.sheetId,
-                props.editorProps.selection,
+                projectId,
+                sheetId,
+                selection,
               )
               getStudio().transaction((api) => {
                 api.stateEditors.studio.ahistoric.setClipboardKeyframes(
@@ -197,6 +197,13 @@ function useAggregateKeyframeContextMenu(
                 )
               })
             } else {
+              const keyframesWithCommonRootPath = kfs.map(
+                ({keyframe, pathToProp}) => ({
+                  keyframe,
+                  pathToProp: pathToProp.slice(commonPath.length),
+                }),
+              )
+              console.log('copy', keyframesWithCommonRootPath)
               getStudio().transaction((api) => {
                 api.stateEditors.studio.ahistoric.setClipboardKeyframes(
                   keyframesWithCommonRootPath,
@@ -206,16 +213,16 @@ function useAggregateKeyframeContextMenu(
           },
         },
         {
-          label: props.editorProps.selection ? 'Delete (selection)' : 'Delete',
+          label: selection ? 'Delete (selection)' : 'Delete',
           callback: () => {
-            if (props.editorProps.selection) {
-              props.editorProps.selection.delete()
+            if (selection) {
+              selection.delete()
             } else {
               getStudio().transaction(({stateEditors}) => {
                 for (const kfWithTrack of props.utils.cur.keyframes) {
                   stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
                     {
-                      ...props.editorProps.viewModel.sheetObject.address,
+                      ...kfWithTrack.track.sheetObject.address,
                       keyframeIds: [kfWithTrack.kf.id],
                       trackId: kfWithTrack.track.id,
                     },
@@ -226,9 +233,6 @@ function useAggregateKeyframeContextMenu(
           },
         },
       ]
-    },
-    onOpen() {
-      logger._debug('Show aggregate keyframe', props)
     },
   })
 }

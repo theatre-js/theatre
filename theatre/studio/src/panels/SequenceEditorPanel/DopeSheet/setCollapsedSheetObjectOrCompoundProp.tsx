@@ -5,7 +5,7 @@ import type {
   WithoutSheetInstance,
 } from '@theatre/shared/utils/addresses'
 
-export function setCollapsedSheetObjectOrCompoundProp(
+export function setCollapsedSheetItem(
   isCollapsed: boolean,
   toCollapse: {
     sheetAddress: WithoutSheetInstance<SheetAddress>

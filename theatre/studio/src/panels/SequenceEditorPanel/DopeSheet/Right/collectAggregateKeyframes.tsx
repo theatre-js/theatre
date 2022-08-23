@@ -1,7 +1,9 @@
 import getStudio from '@theatre/studio/getStudio'
 import {val} from '@theatre/dataverse'
 import type {
+  SequenceEditorTree_PrimitiveProp,
   SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_Sheet,
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {
@@ -13,9 +15,9 @@ import type {
   Keyframe,
   TrackData,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
-import type {IUtilLogger} from '@theatre/shared/logger'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
 import {uniq} from 'lodash-es'
+import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 
 /**
  * An index over a series of keyframes that have been collected from different tracks.
@@ -30,6 +32,7 @@ export type AggregatedKeyframes = {
 export type TrackWithId = {
   id: SequenceTrackId
   data: TrackData
+  sheetObject: SheetObject
 }
 
 export type KeyframeWithTrack = {
@@ -59,67 +62,27 @@ export type KeyframeWithTrack = {
  *
  */
 export function collectAggregateKeyframesInPrism(
-  logger: IUtilLogger,
-  leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_SheetObject,
+  leaf:
+    | SequenceEditorTree_Sheet
+    | SequenceEditorTree_PropWithChildren
+    | SequenceEditorTree_SheetObject,
 ): AggregatedKeyframes {
-  const sheetObject = leaf.sheetObject
+  const tracks =
+    leaf.type === 'sheet'
+      ? collectAggregateKeyframesSheet(leaf)
+      : collectAggregateKeyframesCompoundOrObject(leaf)
 
-  const projectId = sheetObject.address.projectId
-
-  const sheetObjectTracksP =
-    getStudio().atomP.historic.coreByProject[projectId].sheetsById[
-      sheetObject.address.sheetId
-    ].sequence.tracksByObject[sheetObject.address.objectKey]
-
-  const aggregatedKeyframes: AggregatedKeyframes[] = []
-  const childSimpleTracks: TrackWithId[] = []
-  for (const childLeaf of leaf.children) {
-    if (childLeaf.type === 'primitiveProp') {
-      const trackId = val(
-        sheetObjectTracksP.trackIdByPropPath[
-          encodePathToProp(childLeaf.pathToProp)
-        ],
-      )
-      if (!trackId) {
-        logger.trace('missing track id?', {childLeaf})
-        continue
-      }
-
-      const trackData = val(sheetObjectTracksP.trackData[trackId])
-      if (!trackData) {
-        logger.trace('missing track data?', {trackId, childLeaf})
-        continue
-      }
-
-      childSimpleTracks.push({id: trackId, data: trackData})
-    } else if (childLeaf.type === 'propWithChildren') {
-      aggregatedKeyframes.push(
-        collectAggregateKeyframesInPrism(
-          logger.named('propWithChildren', childLeaf.pathToProp.join()),
-          childLeaf,
-        ),
-      )
-    } else {
-      const _exhaustive: never = childLeaf
-      logger.error('unexpected kind of prop', {childLeaf})
-    }
+  return {
+    byPosition: keyframesByPositionFromTrackWithIds(tracks),
+    tracks,
   }
+}
 
-  logger.trace('see collected of children', {
-    aggregatedKeyframes,
-    childSimpleTracks,
-  })
-
-  const tracks = aggregatedKeyframes
-    .flatMap((a) => a.tracks)
-    .concat(childSimpleTracks)
-
+function keyframesByPositionFromTrackWithIds(tracks: TrackWithId[]) {
   const byPosition = new Map<number, KeyframeWithTrack[]>()
 
   for (const track of tracks) {
-    const kfs = track.data.keyframes
-    for (let i = 0; i < kfs.length; i++) {
-      const kf = kfs[i]
+    for (const kf of track.data.keyframes) {
       let existing = byPosition.get(kf.position)
       if (!existing) {
         existing = []
@@ -129,7 +92,7 @@ export function collectAggregateKeyframesInPrism(
         kf,
         track,
         itemKey: createStudioSheetItemKey.forTrackKeyframe(
-          sheetObject,
+          track.sheetObject,
           track.id,
           kf.id,
         ),
@@ -137,19 +100,28 @@ export function collectAggregateKeyframesInPrism(
     }
   }
 
-  return {
-    byPosition,
-    tracks,
-  }
+  return byPosition
 }
 
-/**
- * Collects all the snap positions for an aggregate track.
- */
-export function collectAggregateSnapPositions(
+function collectAggregateKeyframesSheet(
+  leaf: SequenceEditorTree_Sheet,
+): TrackWithId[] {
+  return leaf.children.flatMap(collectAggregateKeyframesCompoundOrObject)
+}
+
+function collectAggregateKeyframesCompoundOrObject(
   leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_SheetObject,
-  snapTargetPositions: {[key: string]: {[key: string]: number[]}},
-): number[] {
+): TrackWithId[] {
+  return leaf.children.flatMap((childLeaf) =>
+    childLeaf.type === 'propWithChildren'
+      ? collectAggregateKeyframesCompoundOrObject(childLeaf)
+      : collectAggregateKeyframesPrimitiveProp(childLeaf),
+  )
+}
+
+function collectAggregateKeyframesPrimitiveProp(
+  leaf: SequenceEditorTree_PrimitiveProp,
+): TrackWithId[] {
   const sheetObject = leaf.sheetObject
 
   const projectId = sheetObject.address.projectId
@@ -158,29 +130,67 @@ export function collectAggregateSnapPositions(
     getStudio().atomP.historic.coreByProject[projectId].sheetsById[
       sheetObject.address.sheetId
     ].sequence.tracksByObject[sheetObject.address.objectKey]
+  const trackId = val(
+    sheetObjectTracksP.trackIdByPropPath[encodePathToProp(leaf.pathToProp)],
+  )
+  if (!trackId) return []
 
-  const positions: number[] = []
-  for (const childLeaf of leaf.children) {
-    if (childLeaf.type === 'primitiveProp') {
-      const trackId = val(
-        sheetObjectTracksP.trackIdByPropPath[
-          encodePathToProp(childLeaf.pathToProp)
-        ],
-      )
-      if (!trackId) {
-        continue
-      }
+  const trackData = val(sheetObjectTracksP.trackData[trackId])
+  if (!trackData) return []
 
-      positions.push(
-        ...(snapTargetPositions[sheetObject.address.objectKey]?.[trackId] ??
-          []),
-      )
-    } else if (childLeaf.type === 'propWithChildren') {
-      positions.push(
-        ...collectAggregateSnapPositions(childLeaf, snapTargetPositions),
-      )
-    }
-  }
+  return [{id: trackId, data: trackData, sheetObject}]
+}
 
-  return uniq(positions)
+/**
+ * Collects all the snap positions for an aggregate track.
+ */
+export function collectAggregateSnapPositionsSheet(
+  leaf: SequenceEditorTree_Sheet,
+  snapTargetPositions: {[key: string]: {[key: string]: number[]}},
+): number[] {
+  return uniq(
+    leaf.children.flatMap((childLeaf) =>
+      collectAggregateSnapPositionsObjectOrCompound(
+        childLeaf,
+        snapTargetPositions,
+      ),
+    ),
+  )
+}
+
+export function collectAggregateSnapPositionsObjectOrCompound(
+  leaf: SequenceEditorTree_PropWithChildren | SequenceEditorTree_SheetObject,
+  snapTargetPositions: {[key: string]: {[key: string]: number[]}},
+): number[] {
+  return uniq(
+    leaf.children.flatMap((childLeaf) =>
+      childLeaf.type === 'propWithChildren'
+        ? collectAggregateSnapPositionsObjectOrCompound(
+            childLeaf,
+            snapTargetPositions,
+          )
+        : collectAggregateSnapPositionsPrimitiveProp(
+            childLeaf,
+            snapTargetPositions,
+          ),
+    ),
+  )
+}
+
+function collectAggregateSnapPositionsPrimitiveProp(
+  leaf: SequenceEditorTree_PrimitiveProp,
+  snapTargetPositions: {[key: string]: {[key: string]: number[]}},
+): number[] {
+  const sheetObject = leaf.sheetObject
+  const projectId = sheetObject.address.projectId
+  const sheetObjectTracksP =
+    getStudio().atomP.historic.coreByProject[projectId].sheetsById[
+      sheetObject.address.sheetId
+    ].sequence.tracksByObject[sheetObject.address.objectKey]
+  const trackId = val(
+    sheetObjectTracksP.trackIdByPropPath[encodePathToProp(leaf.pathToProp)],
+  )
+  if (!trackId) return []
+
+  return snapTargetPositions[sheetObject.address.objectKey]?.[trackId] ?? []
 }

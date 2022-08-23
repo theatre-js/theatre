@@ -2,6 +2,7 @@ import {theme} from '@theatre/studio/css'
 import type {
   SequenceEditorTree_PrimitiveProp,
   SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_Sheet,
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {VoidFn} from '@theatre/shared/utils/types'
@@ -76,6 +77,7 @@ const LeftRowChildren = styled.ul`
 
 const AnyCompositeRow: React.FC<{
   leaf:
+    | SequenceEditorTree_Sheet
     | SequenceEditorTree_PrimitiveProp
     | SequenceEditorTree_PropWithChildren
     | SequenceEditorTree_SheetObject
