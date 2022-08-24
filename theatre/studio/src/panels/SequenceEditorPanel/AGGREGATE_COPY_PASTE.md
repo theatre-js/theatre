@@ -1,14 +1,30 @@
 ## The keyframe copy/paste algorithm
 
-```
-copy algorithm: find the closest common acnestor for the tracks selected
+The copy and paste algorithms are specified below. Note that the copy algorithm
+is written with some capital letters to emphasize organization, its not an
+actual language or anything. The copy algorithm changed recently and the
+examples are more up-to-date than the paste algorithm because pasting stayed the
+same.
 
-- obj1.props.transform.position.x => simple
+```
+ALGORITHM copy:
+
+LET PATH =
+  CASE copy selection / single track THEN the path relative to the closest common ancestor for the tracks selected
+  CASE copy aggregate track          THEN the path relative the aggregate track compoundProp/sheetObject/sheet
+
+FOR EXAMPLE CASE copy selection / single track:
+- obj1.props.transform.position.x => x
 - obj1.props.transform.position.{x, z} => {x, z}
 - obj1.props.transform.position.{x, z} + obj1.props.transform.rotation.z =>
   {position: {x, z}, rotation: {z}}
 
-paste:
+FOR EXAMPLE CASE copy aggregate track:
+- sheet.obj1.props.transform.position => {x, y, z}
+- sheet.obj1.props.transform => {position: {x, y, z}, rotation: {x, y, z}}
+- sheet => { obj1: { props: { transform: {position: {x, y, z}, rotation: {x, y, z}}}}}
+
+ALGORITHM: paste:
 
 - simple => simple => 1-1
 - simple => {x, y} => {x: simple, y: simple} (distribute to all)

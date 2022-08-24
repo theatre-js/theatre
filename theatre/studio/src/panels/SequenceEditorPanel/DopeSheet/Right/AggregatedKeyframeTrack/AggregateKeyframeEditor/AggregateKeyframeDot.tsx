@@ -135,7 +135,11 @@ export function AggregateKeyframeDot(
         // Need this for the dragging logic to be able to get the keyframe props
         // based on the position.
         {...DopeSnap.includePositionSnapAttrs(cur.position)}
-        onClick={(e) => openEditor(e, ref.current!)}
+        onClick={(e) =>
+          props.editorProps.viewModel.type !== 'sheet'
+            ? openEditor(e, ref.current!)
+            : null
+        }
       />
       <AggregateKeyframeVisualDot
         flag={presence.flag}
@@ -155,25 +159,6 @@ function useAggregateKeyframeContextMenu(
   return useContextMenu(target, {
     displayName: 'Aggregate Keyframe',
     menuItems: () => {
-      // see AGGREGATE_COPY_PASTE.md for explanation of this
-      // code that makes some keyframes with paths for copying
-      // to clipboard
-      const kfs = props.utils.cur.keyframes.reduce(
-        (acc, kfWithTrack) =>
-          acc.concat(
-            keyframesWithPaths({
-              ...kfWithTrack.track.sheetObject.address,
-              trackId: kfWithTrack.track.id,
-              keyframeIds: [kfWithTrack.kf.id],
-            }) ?? [],
-          ),
-        [] as KeyframeWithPathToPropFromCommonRoot[],
-      )
-
-      const commonPath = commonRootOfPathsToProps(
-        kfs.map((kf) => kf.pathToProp),
-      )
-
       const viewModel = props.editorProps.viewModel
       const selection = props.editorProps.selection
 
@@ -181,6 +166,9 @@ function useAggregateKeyframeContextMenu(
         {
           label: selection ? 'Copy (selection)' : 'Copy',
           callback: () => {
+            // see AGGREGATE_COPY_PASTE.md for explanation of this
+            // code that makes some keyframes with paths for copying
+            // to clipboard
             if (selection) {
               const {projectId, sheetId} =
                 viewModel.type === 'sheet'
@@ -197,13 +185,41 @@ function useAggregateKeyframeContextMenu(
                 )
               })
             } else {
+              const kfs: KeyframeWithPathToPropFromCommonRoot[] =
+                props.utils.cur.keyframes.flatMap(
+                  (kfWithTrack) =>
+                    keyframesWithPaths({
+                      ...kfWithTrack.track.sheetObject.address,
+                      trackId: kfWithTrack.track.id,
+                      keyframeIds: [kfWithTrack.kf.id],
+                    }) ?? [],
+                )
+
+              // If copying from an aggregate track, the commonPath should always
+              // be relative to the aggregate track so that pasting back into the
+              // aggregate track behaves as expected.
+              const basePathFromSheet =
+                viewModel.type === 'sheet'
+                  ? []
+                  : viewModel.type === 'sheetObject'
+                  ? [viewModel.sheetObject.address.objectKey]
+                  : viewModel.type === 'propWithChildren'
+                  ? [
+                      viewModel.sheetObject.address.objectKey,
+                      ...viewModel.pathToProp,
+                    ]
+                  : [] // should be unreachable unless new viewModel/leaf types are added
+              const commonPath = commonRootOfPathsToProps([
+                basePathFromSheet,
+                ...kfs.map((kf) => kf.pathToProp),
+              ])
+
               const keyframesWithCommonRootPath = kfs.map(
                 ({keyframe, pathToProp}) => ({
                   keyframe,
                   pathToProp: pathToProp.slice(commonPath.length),
                 }),
               )
-              console.log('copy', keyframesWithCommonRootPath)
               getStudio().transaction((api) => {
                 api.stateEditors.studio.ahistoric.setClipboardKeyframes(
                   keyframesWithCommonRootPath,
