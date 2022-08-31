@@ -89,7 +89,6 @@ function AggregatedKeyframeTrack_memo(props: IAggregatedKeyframeTracksProps) {
 
   const {selectedPositions, selection} = useCollectedSelectedPositions(
     layoutP,
-    viewModel,
     aggregatedKeyframes,
   )
 
@@ -220,10 +219,6 @@ const {AllSelected, AtLeastOneUnselected, NoneSelected} =
 /** Helper to put together the selected positions */
 function useCollectedSelectedPositions(
   layoutP: Pointer<SequenceEditorPanelLayout>,
-  viewModel:
-    | SequenceEditorTree_PropWithChildren
-    | SequenceEditorTree_SheetObject
-    | SequenceEditorTree_Sheet,
   aggregatedKeyframes: AggregatedKeyframes,
 ): _AggSelection {
   return usePrism(
@@ -251,7 +246,10 @@ function collectedSelectedPositions(
         kfsWithTrack,
         selection,
       )
-      if (positionIsSelected !== undefined) {
+      if (
+        positionIsSelected !== undefined &&
+        positionIsSelected !== NoneSelected
+      ) {
         selectedAtPositions.set(position, positionIsSelected)
       }
     }
