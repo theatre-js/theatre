@@ -10,6 +10,7 @@ import type {
 } from './useSingleKeyframeInlineEditorPopover'
 import last from 'lodash-es/last'
 import {useTempTransactionEditingTools} from './useTempTransactionEditingTools'
+import {valueInProp} from '@theatre/shared/propTypes/utils'
 
 const SingleKeyframePropEditorContainer = styled.div`
   display: flex;
@@ -127,7 +128,7 @@ function PrimitivePropEditor(
           <PropEditor
             editingTools={editingTools}
             propConfig={p.propConfig}
-            value={p.keyframe.value}
+            value={valueInProp(p.keyframe.value, p.propConfig)}
             autoFocus={p.autoFocusInput}
           />
         </SingleKeyframeSimplePropEditorContainer>
@@ -136,6 +137,10 @@ function PrimitivePropEditor(
   }
 }
 
+// These editing tools are distinct from the editing tools used in the
+// prop editors in the details panel: These editing tools edit the value of a keyframe
+// while the details editing tools edit the value of the sequence at the playhead
+// (potentially creating a new keyframe).
 function useEditingToolsForKeyframeEditorPopover(
   props: PrimitivePropEditingOptions,
 ) {

@@ -176,6 +176,7 @@ function createDerivation<T extends SerializablePrimitive>(
               track && {
                 data: track,
                 id: sequenceTrackId,
+                sheetObject: obj,
               },
               sequencePosition,
             )
