@@ -1,11 +1,9 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "files.exclude": {
-    "**/node_modules": true,
-    // "**/.yarn": true,
     "**/.cache": true,
-    "**/.temp": true,
-    "**/.history": true
+    "**/.history": true,
+    "**/.temp": true
   },
   "search.exclude": {
     "**/node_modules": true,

@@ -20,14 +20,20 @@
     "directory": "packages/r3f"
   },
   "main": "dist/index.js",
-  "module": "dist/index.js",
+  "module": "dist/index.esm.js",
   "sideEffects": false,
   "files": [
     "dist/**/*"
   ],
   "exports": {
-    ".": "./dist/index.js",
-    "./dist/extension": "./dist/extension/index.js"
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js"
+    },
+    "./dist/extension": {
+      "import": "./dist/extension/index.esm.js",
+      "require": "./dist/extension/index.js"
+    }
   },
   "scripts": {
     "prepack": "yarn run build",
