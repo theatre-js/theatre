@@ -6,7 +6,7 @@ import studio from '@theatre/studio'
 import {getProject} from '@theatre/core'
 import React from 'react'
 
-//import App from './App'
+import App from './App'
 
 studio.initialize({usePersistentStorage: false})
 
@@ -15,5 +15,5 @@ const sheet = project.sheet('Sheet')
 const obj = sheet.object('Obj', {str: 'some string', num: 0})
 
 export default function Home() {
-  return <>hi</> //<App obj={obj}>hi</App>
+  return <App obj={obj}>hi</App>
 }

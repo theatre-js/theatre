@@ -88,7 +88,6 @@ function App() {
   return (
     <div>
       <Canvas
-        // @ts-ignore
         shadowMap
         gl={{preserveDrawingBuffer: true}}
         linear
