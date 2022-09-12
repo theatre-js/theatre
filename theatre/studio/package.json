@@ -1,6 +1,6 @@
 {
   "name": "@theatre/studio",
-  "version": "0.5.0-rc.3",
+  "version": "0.0.1-COMPAT.1",
   "license": "AGPL-3.0-only",
   "description": "Motion design editor for the web",
   "repository": {
@@ -15,6 +15,13 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "module": "dist/index.esm.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js"
+    }
+  },
   "files": [
     "dist/*"
   ],

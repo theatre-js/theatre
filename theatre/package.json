@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "typecheck": "tsc --build",
-    "build:js": "node -r esbuild-register devEnv/bundle.ts",
+    "build:js": "node -r esbuild-register devEnv/bundle.ts && cp -a studio/manual_dist/. studio/dist/ && cp -a core/manual_dist/. core/dist/",
     "build:js:watch": "node -r esbuild-register devEnv/watch.ts",
     "build:ts": "run-s typecheck build:ts:bundle",
     "build:ts:bundle": "rollup -c devEnv/declarations-bundler/rollup.config.js",
