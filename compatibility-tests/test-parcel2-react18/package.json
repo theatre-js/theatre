@@ -4,8 +4,10 @@
     "dev": "parcel serve ./index.html"
   },
   "dependencies": {
-    "@theatre/core": "0.0.1-COMPAT.1",
-    "@theatre/studio": "0.0.1-COMPAT.1",
+    "@react-three/fiber": "^7.0.6",
+    "@theatre/core": "^0.0.1-COMPAT.1",
+    "@theatre/r3f": "^0.0.1-COMPAT.1",
+    "@theatre/studio": "^0.0.1-COMPAT.1",
     "parcel": "^2.5.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
