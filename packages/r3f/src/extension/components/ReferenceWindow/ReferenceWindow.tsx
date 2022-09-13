@@ -99,7 +99,8 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({
 
   const [width, height] = useMemo(() => {
     if (!gl) return [0, 0]
-    const aspectRatio = origWidth / origHeight
+    const aspectRatio =
+      origWidth / (origHeight || Number.EPSILON) || Number.EPSILON
 
     const width = Math.min(aspectRatio * maxHeight, maxWidth)
 

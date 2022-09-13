@@ -41,7 +41,14 @@ async function createBundles() {
       metafile: true,
     }
 
-    const result = await build(esbuildConfig)
+    const result = await Promise.all([
+      build(esbuildConfig),
+      build({
+        ...esbuildConfig,
+        outfile: path.join(__dirname, '../dist/index.esm.js'),
+        format: 'esm',
+      }),
+    ])
   }
 
   /**
@@ -91,6 +98,13 @@ async function createBundles() {
       metafile: true,
     }
 
-    const result = await build(esbuildConfig)
+    const result = await Promise.all([
+      build(esbuildConfig),
+      build({
+        ...esbuildConfig,
+        outfile: path.join(__dirname, '../dist/extension/index.esm.js'),
+        format: 'esm',
+      }),
+    ])
   }
 }
