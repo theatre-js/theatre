@@ -19,28 +19,28 @@ function Model({
 
   return (
     <e.group
-      uniqueName={`Transforms for Rocket: ${instance ?? 'default'}`}
+      theatreKey={`Transforms for Rocket: ${instance ?? 'default'}`}
       {...props}
     >
       <SheetProvider sheet={getProject('Space').sheet('Rocket', instance)}>
         <group rotation={[-Math.PI / 2, 0, 0]} position={[0, -7, 0]} scale={7}>
           <group rotation={[Math.PI / 13.5, -Math.PI / 5.8, Math.PI / 5.6]}>
             <e.mesh
-              uniqueName="Thingy"
+              theatreKey="Thingy"
               receiveShadow
               castShadow
               geometry={nodes.planet001.geometry}
               material={nodes.planet001.material}
             />
             <e.mesh
-              uniqueName="Debris 2"
+              theatreKey="Debris 2"
               receiveShadow
               castShadow
               geometry={nodes.planet002.geometry}
               material={nodes.planet002.material}
             />
             <e.mesh
-              uniqueName="Debris 1"
+              theatreKey="Debris 1"
               geometry={nodes.planet003.geometry}
               material={nodes.planet003.material}
             />
@@ -70,7 +70,7 @@ function App() {
           <color attach="background" args={[bg]} />
           <ambientLight intensity={0.75} />
           <EditableCamera
-            uniqueName="Camera"
+            theatreKey="Camera"
             makeDefault
             position={[0, 0, 0]}
             fov={75}
@@ -78,12 +78,12 @@ function App() {
             far={70}
           >
             <e.pointLight
-              uniqueName="Light 1"
+              theatreKey="Light 1"
               intensity={1}
               position={[-10, -25, -10]}
             />
             <e.spotLight
-              uniqueName="Light 2"
+              theatreKey="Light 2"
               castShadow
               intensity={2.25}
               angle={0.2}
@@ -92,7 +92,7 @@ function App() {
               shadow-mapSize={[1024, 1024]}
               shadow-bias={-0.0001}
             />
-            <e.directionalLight uniqueName="Light 3" />
+            <e.directionalLight theatreKey="Light 3" />
           </EditableCamera>
           <Suspense fallback={null}>
             <RefreshSnapshot />

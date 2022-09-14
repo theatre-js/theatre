@@ -26,7 +26,7 @@ function App() {
       >
         <SheetProvider sheet={sheet}>
           <ambientLight intensity={0.75} />
-          <e.group uniqueName="trefoil">
+          <e.group theatreKey="trefoil">
             <TorusKnot scale={[1, 1, 1]} args={[1, 0.3, 128, 64]}>
               <meshNormalMaterial />
             </TorusKnot>

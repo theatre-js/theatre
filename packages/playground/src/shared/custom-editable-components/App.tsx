@@ -20,7 +20,7 @@ function App() {
       >
         <SheetProvider sheet={getProject('Space').sheet('Scene')}>
           <ambientLight intensity={0.75} />
-          <EditablePoints uniqueName="points">
+          <EditablePoints theatreKey="points">
             <torusKnotGeometry args={[1, 0.3, 128, 64]} />
             <meshNormalMaterial />
           </EditablePoints>
