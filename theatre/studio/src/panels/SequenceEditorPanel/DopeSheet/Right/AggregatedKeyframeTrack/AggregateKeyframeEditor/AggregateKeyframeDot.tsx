@@ -99,14 +99,13 @@ export function AggregateKeyframeDot(
   const logger = useLogger('AggregateKeyframeDot')
   const {cur} = props.utils
 
-  const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
-    useKeyframeInlineEditorPopover(
-      props.editorProps.viewModel.type === 'sheetObject'
-        ? sheetObjectBuild(props.editorProps.viewModel, cur.keyframes)
-            ?.children ?? null
-        : propWithChildrenBuild(props.editorProps.viewModel, cur.keyframes)
-            ?.children ?? null,
-    )
+  const inlineEditorPopover = useKeyframeInlineEditorPopover(
+    props.editorProps.viewModel.type === 'sheetObject'
+      ? sheetObjectBuild(props.editorProps.viewModel, cur.keyframes)
+          ?.children ?? null
+      : propWithChildrenBuild(props.editorProps.viewModel, cur.keyframes)
+          ?.children ?? null,
+  )
 
   const presence = usePresence(props.utils.itemKey)
   presence.useRelations(
@@ -136,7 +135,7 @@ export function AggregateKeyframeDot(
         // Need this for the dragging logic to be able to get the keyframe props
         // based on the position.
         {...DopeSnap.includePositionSnapAttrs(cur.position)}
-        onClick={(e) => openEditor(e, ref.current!)}
+        onClick={(e) => inlineEditorPopover.open(e, ref.current!)}
       />
       <AggregateKeyframeVisualDot
         flag={presence.flag}
@@ -144,7 +143,7 @@ export function AggregateKeyframeDot(
         isSelected={cur.selected}
       />
       {contextMenu}
-      {inlineEditorPopover}
+      {inlineEditorPopover.node}
     </>
   )
 }
