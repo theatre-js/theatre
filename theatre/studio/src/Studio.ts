@@ -25,7 +25,7 @@ import checkForUpdates from './checkForUpdates'
 
 export type CoreExports = typeof _coreExports
 
-let {default: UIConstructor} =
+const UIConstructorModule =
   typeof window !== 'undefined' ? require('./UI') : null
 
 const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
@@ -99,7 +99,7 @@ export class Studio {
     this.publicApi = new TheatreStudio(this)
 
     if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
-      this.ui = new UIConstructor(this)
+      this.ui = new UIConstructorModule.default(this)
     }
 
     this._attachToIncomingProjects()
@@ -148,7 +148,7 @@ export class Studio {
 
     this._initializedDeferred.resolve()
 
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'test' && this.ui) {
       this.ui.render()
       checkForUpdates()
     }
