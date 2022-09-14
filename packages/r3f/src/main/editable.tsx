@@ -9,28 +9,30 @@ import defaultEditableFactoryConfig from './defaultEditableFactoryConfig'
 import type {EditableFactoryConfig} from './editableFactoryConfigUtils'
 import {makeStoreKey} from './utils'
 import type {$FixMe} from '../types'
+import type {ThreeElements} from './ThreeElements'
 
-const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
+const createEditable = <Keys extends keyof ThreeElements>(
   config: EditableFactoryConfig,
 ) => {
   const editable = <
-    T extends ComponentType<any> | keyof JSX.IntrinsicElements | 'primitive',
-    U extends Keys,
+    T extends ComponentType<any> | keyof ThreeElements | 'primitive',
+    U extends Keys | null,
   >(
     Component: T,
-    type: T extends 'primitive' ? null : U,
+    type: U,
   ) => {
-    type Props = Omit<ComponentProps<T>, 'visible'> & {
+    type Props = Omit<ComponentProps<T>, 'visible' | 'editableType'> & {
       uniqueName: string
       visible?: boolean | 'editor'
       additionalProps?: $FixMe
       objRef?: $FixMe
-    } & (T extends 'primitive'
+    } & (U extends null
         ? {
-            editableType: U
+            editableType: Keys
           }
-        : {}) &
-      RefAttributes<JSX.IntrinsicElements[U]>
+        : U extends Keys
+        ? RefAttributes<ThreeElements[U]>
+        : {})
 
     return forwardRef(
       (
@@ -44,9 +46,27 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
         }: Props,
         ref,
       ) => {
-        const actualType = type ?? editableType
+        // For some reason we have to cast editableType here even though we omitted it from ComponentProps<T>.
+        const actualType = type ?? (editableType as Keys)
 
-        const objectRef = useRef<JSX.IntrinsicElements[U]>()
+        if (typeof actualType !== 'string') {
+          throw new Error(
+            `The editableType prop must be a valid editable type (${Object.keys(
+              config,
+            )
+              .slice(0, 3)
+              .join(', ')}...), got ${actualType}.`,
+          )
+        }
+
+        if (typeof uniqueName !== 'string') {
+          throw new Error(
+            `The uniqueName prop must be a string, got ${uniqueName}.`,
+          )
+        }
+
+        // This will work for everything except for primitives and custom stuff. Okay for now.
+        const objectRef = useRef<ThreeElements[NonNullable<U>]>()
 
         const sheet = useCurrentSheet()!
 
@@ -163,12 +183,12 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   } as unknown as {
     [Property in Keys]: React.ForwardRefExoticComponent<
       React.PropsWithoutRef<
-        Omit<JSX.IntrinsicElements[Property], 'visible'> & {
+        Omit<ThreeElements[Property], 'visible'> & {
           uniqueName: string
           visible?: boolean | 'editor'
           additionalProps?: $FixMe
           objRef?: $FixMe
-        } & React.RefAttributes<JSX.IntrinsicElements[Property]>
+        } & React.RefAttributes<ThreeElements[Property]>
       >
     >
   } & {
@@ -180,8 +200,8 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
           visible?: boolean | 'editor'
           additionalProps?: $FixMe
           objRef?: $FixMe
-          editableType: keyof JSX.IntrinsicElements
-        } & React.RefAttributes<JSX.IntrinsicElements['primitive']>
+          editableType: keyof ThreeElements
+        } & React.RefAttributes<ThreeElements['primitive']>
       > & {
         // Have to reproduce the primitive component's props here because we need to
         // lift this index type here to the outside to make auto-complete work
@@ -190,7 +210,35 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
     >
   }
 
-  return Object.assign(editable, extensions)
+  const extendedEditable = Object.assign(editable, extensions)
+
+  const extendedEditableProxy = new Proxy(extendedEditable, {
+    get(target, prop, receiver) {
+      if (!Reflect.has(target, prop)) {
+        // @ts-ignore
+        return editable(prop as keyof JSX.IntrinsicElements, null)
+      }
+      return Reflect.get(target, prop, receiver)
+    },
+  }) as typeof extendedEditable &
+    {
+      [Key in Exclude<
+        keyof ThreeElements,
+        keyof typeof extendedEditable
+      >]: React.ForwardRefExoticComponent<
+        React.PropsWithoutRef<
+          Omit<ThreeElements[Key], 'visible'> & {
+            uniqueName: string
+            visible?: boolean | 'editor'
+            additionalProps?: $FixMe
+            objRef?: $FixMe
+            editableType: Keys
+          } & React.RefAttributes<ThreeElements[Key]>
+        >
+      >
+    }
+
+  return extendedEditableProxy
 }
 
 const editable = createEditable<keyof typeof defaultEditableFactoryConfig>(
