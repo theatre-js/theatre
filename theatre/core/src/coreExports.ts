@@ -1,12 +1,9 @@
-import projectsSingleton from '@theatre/core/projects/projectsSingleton'
-import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
-import type {
-  IProject,
-  IProjectConfig,
-} from '@theatre/core/projects/TheatreProject'
-import TheatreProject from '@theatre/core/projects/TheatreProject'
+import projectsSingleton from './projects/projectsSingleton'
+import type {OnDiskState} from './projects/store/storeTypes'
+import type {IProject, IProjectConfig} from './projects/TheatreProject'
+import TheatreProject from './projects/TheatreProject'
 import globals from '@theatre/shared/globals'
-import * as types from '@theatre/core/propTypes'
+import * as types from './propTypes'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
@@ -61,7 +58,7 @@ export function getProject(id: string, config: IProjectConfig = {}): IProject {
     return existingProject.publicApi
   }
 
-  const rootLogger = _coreLogger(config.experiments)
+  const rootLogger = _coreLogger()
   const plogger = rootLogger.named('Project', id)
 
   if (process.env.NODE_ENV !== 'production') {

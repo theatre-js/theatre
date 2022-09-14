@@ -4,7 +4,6 @@ import type {Pointer} from '@theatre/dataverse'
 import {getPointerParts} from '@theatre/dataverse'
 import type {Studio} from './Studio'
 import type {CommitOrDiscard} from './StudioStore/StudioStore'
-import logger from '@theatre/shared/logger'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
 
 type State_Captured = {
@@ -22,7 +21,7 @@ type State =
 let lastScrubIdAsNumber = 0
 
 /**
- * The scrub API is a simple construct for changing values in Theatre in a history-compatible way.
+ * The scrub API is a simple construct for changing values in Theatre.js in a history-compatible way.
  * Primarily, it can be used to create a series of value changes using a temp transaction without
  * creating multiple transactions.
  *
@@ -129,7 +128,7 @@ export default class Scrub implements IScrub {
       state.flagsTransaction.discard()
       this._state = {type: 'Committed'}
     } else if (state.type === 'Ready') {
-      logger.warn(`Scrub is empty. Nothing to commit.`)
+      console.warn(`Scrub is empty. Nothing to commit.`)
       return
     } else if (state.type === 'Committed') {
       throw new Error(`This scrub is already committed.`)
@@ -150,18 +149,21 @@ export default class Scrub implements IScrub {
         errored = false
       } finally {
         if (errored) {
+          console.error(
+            `This scrub's callback threw an error. We're undo-ing all of the changes made by this scrub, and marking it as discarded.`,
+          )
           this._state = {type: 'Discarded'}
         }
       }
     } else {
       if (this._state.type === 'Committed') {
         throw new Error(
-          `This scrub is already committed and cannot capture again.` +
+          `This scrub is already committed and cannot capture again. ` +
             `If you wish to capture more, you can start a new studio.scrub() or do so before scrub.commit()`,
         )
       } else {
         throw new Error(
-          `This scrub is already discarded and cannot capture again.` +
+          `This scrub is already discarded and cannot capture again. ` +
             `If you wish to capture more, you can start a new studio.scrub() or do so before scrub.discard()`,
         )
       }

@@ -27,6 +27,10 @@ const ProjectDetails: React.FC<{
   const project = projects[0]
 
   const projectId = project.address.projectId
+  const slugifiedProjectId = projectId.replace(/[^\w\d'_\-]+/g, ' ').trim()
+  // const [dateString, _timeString] = new Date().toISOString().split('T')
+  // e.g. `Butterfly.theatre-project-state.json`
+  const suggestedFileName = `${slugifiedProjectId}.theatre-project-state.json`
 
   const [downloaded, setDownloaded] = useState(false)
 
@@ -36,13 +40,16 @@ const ProjectDetails: React.FC<{
       null,
       2,
     )
-    const file = new File([str], 'state.json', {type: 'application/json'})
+    const file = new File([str], suggestedFileName, {
+      type: 'application/json',
+    })
     const objUrl = URL.createObjectURL(file)
-    const a = document.createElement('a')
-    a.href = objUrl
-    a.target = '_blank'
-    a.setAttribute('download', 'state.json')
-    a.rel = 'noopener'
+    const a = Object.assign(document.createElement('a'), {
+      href: objUrl,
+      target: '_blank',
+      rel: 'noopener',
+    })
+    a.setAttribute('download', suggestedFileName)
     a.click()
 
     setDownloaded(true)

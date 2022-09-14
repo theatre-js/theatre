@@ -14,8 +14,8 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   config: EditableFactoryConfig,
 ) => {
   const editable = <
-    T extends ComponentType<any> | Keys | 'primitive',
-    U extends T extends Keys ? T : Keys,
+    T extends ComponentType<any> | keyof JSX.IntrinsicElements | 'primitive',
+    U extends Keys,
   >(
     Component: T,
     type: T extends 'primitive' ? null : U,
@@ -76,7 +76,10 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
           allRegisteredObjects.add(sheetObject)
           setSheetObject(sheetObject)
 
-          if (objRef) objRef!.current = sheetObject
+          if (objRef)
+            typeof objRef === 'function'
+              ? objRef(sheetObject)
+              : (objRef.current = sheetObject)
 
           editorStore.getState().addEditable(storeKey, {
             type: actualType,
@@ -167,6 +170,23 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
           objRef?: $FixMe
         } & React.RefAttributes<JSX.IntrinsicElements[Property]>
       >
+    >
+  } & {
+    primitive: React.ForwardRefExoticComponent<
+      React.PropsWithoutRef<
+        {
+          object: any
+          uniqueName: string
+          visible?: boolean | 'editor'
+          additionalProps?: $FixMe
+          objRef?: $FixMe
+          editableType: keyof JSX.IntrinsicElements
+        } & React.RefAttributes<JSX.IntrinsicElements['primitive']>
+      > & {
+        // Have to reproduce the primitive component's props here because we need to
+        // lift this index type here to the outside to make auto-complete work
+        [props: string]: any
+      }
     >
   }
 

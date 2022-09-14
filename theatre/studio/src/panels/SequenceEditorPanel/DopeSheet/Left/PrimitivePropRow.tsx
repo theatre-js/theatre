@@ -133,7 +133,8 @@ const PrimitivePropRow: React.FC<{
     })
   }, [leaf])
 
-  const label = leaf.pathToProp[leaf.pathToProp.length - 1]
+  const label =
+    leaf.propConf.label ?? leaf.pathToProp[leaf.pathToProp.length - 1]
   const isSelectable = true
 
   const headRef = useRef<HTMLDivElement | null>(null)

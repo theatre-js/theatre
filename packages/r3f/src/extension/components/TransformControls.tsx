@@ -2,7 +2,7 @@ import type {Object3D, Event} from 'three'
 import React, {forwardRef, useLayoutEffect, useEffect, useMemo} from 'react'
 import type {ReactThreeFiber, Overwrite} from '@react-three/fiber'
 import {useThree} from '@react-three/fiber'
-import {TransformControls as TransformControlsImpl} from 'three/examples/jsm/controls/TransformControls'
+import {TransformControls as TransformControlsImpl} from 'three-stdlib'
 import type {OrbitControls} from 'three-stdlib'
 
 type R3fTransformControls = Overwrite<
@@ -18,6 +18,10 @@ export interface TransformControlsProps extends R3fTransformControls {
   orbitControlsRef?: React.MutableRefObject<OrbitControls | null>
   onObjectChange?: (event: Event) => void
   onDraggingChange?: (event: Event) => void
+
+  // not a complete list of props that transform controls can take
+  mode: TransformControlsImpl['mode']
+  space: TransformControlsImpl['space']
 }
 
 const TransformControls = forwardRef(

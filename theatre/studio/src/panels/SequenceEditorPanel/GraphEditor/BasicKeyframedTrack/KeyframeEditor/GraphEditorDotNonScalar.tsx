@@ -16,7 +16,7 @@ import {
   useCssCursorLock,
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
-import {useSingleKeyframeInlineEditorPopover} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/useSingleKeyframeInlineEditorPopover'
+import {useKeyframeInlineEditorPopover} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/BasicKeyframedTrack/KeyframeEditor/useSingleKeyframeInlineEditorPopover'
 import usePresence, {
   PresenceFlag,
 } from '@theatre/studio/uiComponents/usePresence'
@@ -70,13 +70,16 @@ const GraphEditorDotNonScalar: React.VFC<IProps> = (props) => {
 
   const curValue = props.which === 'left' ? 0 : 1
 
-  const inlineEditorPopover = useSingleKeyframeInlineEditorPopover({
-    keyframe: props.keyframe,
-    pathToProp: props.pathToProp,
-    propConf: props.propConfig,
-    sheetObject: props.sheetObject,
-    trackId: props.trackId,
-  })
+  const inlineEditorPopover = useKeyframeInlineEditorPopover([
+    {
+      type: 'primitiveProp',
+      keyframe: props.keyframe,
+      pathToProp: props.pathToProp,
+      propConfig: props.propConfig,
+      sheetObject: props.sheetObject,
+      trackId: props.trackId,
+    },
+  ])
 
   const isDragging = useDragKeyframe({
     node,

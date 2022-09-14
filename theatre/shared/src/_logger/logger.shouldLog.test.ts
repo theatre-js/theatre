@@ -1,7 +1,7 @@
 import {TheatreLoggerLevel, _LoggerLevel} from './logger'
 import {_loggerShouldLog} from './logger'
 
-describe('Theatre internal logger: shouldLog', () => {
+describe('Theatre.js internal logger: shouldLog', () => {
   testIncludes(
     'TRACE dev/internal',
     {

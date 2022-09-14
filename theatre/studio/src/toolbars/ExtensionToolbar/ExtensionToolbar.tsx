@@ -1,7 +1,6 @@
 import {Box} from '@theatre/dataverse'
 import {useVal} from '@theatre/react'
 import type {IExtension} from '@theatre/studio'
-import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import getStudio from '@theatre/studio/getStudio'
 import type {ToolsetConfig} from '@theatre/studio/TheatreStudio'
 import React, {useLayoutEffect, useMemo} from 'react'
@@ -16,22 +15,6 @@ const Container = styled.div`
   display: flex;
   gap: 0.5rem;
   justify-content: center;
-`
-
-const Bg = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  border-radius: 4px;
-  padding: 6px 6px;
-
-  ${pointerEventsAutoInNormalMode};
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(4px);
-  }
 `
 
 const GroupDivider = styled.div`
@@ -62,9 +45,10 @@ const ExtensionToolsetRender: React.FC<{
   return <Toolset config={config} />
 }
 
-export const ExtensionToolbar: React.FC<{toolbarId: string}> = ({
-  toolbarId,
-}) => {
+export const ExtensionToolbar: React.FC<{
+  toolbarId: string
+  showLeftDivider?: boolean
+}> = ({toolbarId, showLeftDivider}) => {
   const groups: Array<React.ReactNode> = []
   const extensionsById = useVal(getStudio().atomP.ephemeral.extensions.byId)
 
@@ -73,14 +57,10 @@ export const ExtensionToolbar: React.FC<{toolbarId: string}> = ({
     if (!extension || !extension.toolbars?.[toolbarId]) continue
 
     groups.push(
-      <>
+      <React.Fragment key={'extensionToolbar-' + extension.id}>
         {isAfterFirstGroup ? <GroupDivider></GroupDivider> : undefined}
-        <ExtensionToolsetRender
-          extension={extension}
-          key={'extensionToolbar-' + extension.id}
-          toolbarId={toolbarId}
-        />
-      </>,
+        <ExtensionToolsetRender extension={extension} toolbarId={toolbarId} />
+      </React.Fragment>,
     )
 
     isAfterFirstGroup = true
@@ -88,7 +68,12 @@ export const ExtensionToolbar: React.FC<{toolbarId: string}> = ({
 
   if (groups.length === 0) return null
 
-  return <Container>{groups}</Container>
+  return (
+    <Container>
+      {showLeftDivider ? <GroupDivider></GroupDivider> : undefined}
+      {groups}
+    </Container>
+  )
 }
 
 export default ExtensionToolbar

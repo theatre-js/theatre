@@ -159,7 +159,7 @@ export enum TheatreLoggerLevel {
 }
 
 /**
- * @internal Theatre internal "dev" levels are odd numbers
+ * @internal Theatre.js internal "dev" levels are odd numbers
  *
  * You can check if a level is odd quickly by doing `level & 1 === 1`
  */

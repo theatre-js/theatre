@@ -8,11 +8,8 @@ import styled, {keyframes} from 'styled-components'
 import {TiWarningOutline} from 'react-icons/ti'
 import noiseImageUrl from './noise-transparent.png'
 import useExtensionStore from '../../useExtensionStore'
-import {useVal} from '@theatre/react'
-import {getEditorSheetObject} from '../../editorStuff'
-import studio from '@theatre/studio'
 
-const Container = styled.div<{minified: boolean}>`
+const Container = styled.div<{minimized: boolean}>`
   position: relative;
   display: flex;
   justify-content: center;
@@ -20,7 +17,7 @@ const Container = styled.div<{minified: boolean}>`
   pointer-events: auto;
   cursor: pointer;
   overflow: hidden;
-  border-radius: ${({minified}) => (minified ? '2px' : '4px')};
+  border-radius: ${({minimized}) => (minimized ? '2px' : '4px')};
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
 `
 
@@ -76,13 +73,17 @@ const Warning = styled.div`
 interface ReferenceWindowProps {
   maxHeight: number
   maxWidth: number
+  minimized: boolean
+  onToggleMinified: () => void
 }
 
-const ReferenceWindow: VFC<ReferenceWindowProps> = ({maxHeight, maxWidth}) => {
+const ReferenceWindow: VFC<ReferenceWindowProps> = ({
+  maxHeight,
+  maxWidth,
+  minimized,
+  onToggleMinified,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-
-  const minified =
-    useVal(getEditorSheetObject()?.props.viewport.showReferenceWindow) ?? true
 
   const [gl] = useExtensionStore((state) => [state.gl], shallow)
   const [ref, {width: origWidth, height: origHeight}] = useMeasure()
@@ -98,7 +99,8 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({maxHeight, maxWidth}) => {
 
   const [width, height] = useMemo(() => {
     if (!gl) return [0, 0]
-    const aspectRatio = origWidth / origHeight
+    const aspectRatio =
+      origWidth / (origHeight || Number.EPSILON) || Number.EPSILON
 
     const width = Math.min(aspectRatio * maxHeight, maxWidth)
 
@@ -136,19 +138,13 @@ const ReferenceWindow: VFC<ReferenceWindowProps> = ({maxHeight, maxWidth}) => {
     }
   }, [gl, width, height, preserveDrawingBuffer])
 
-  const toggleVisibility = () => {
-    studio.transaction(({set}) => {
-      set(getEditorSheetObject()!.props.viewport.showReferenceWindow, !minified)
-    })
-  }
-
   return (
     <Container
-      minified={!minified}
-      onClick={toggleVisibility}
+      minimized={minimized}
+      onClick={onToggleMinified}
       style={{
-        width: !minified ? 32 : preserveDrawingBuffer ? `${width}px` : 'auto',
-        height: !minified ? 32 : preserveDrawingBuffer ? `${height}px` : 'auto',
+        width: minimized ? 32 : preserveDrawingBuffer ? `${width}px` : 'auto',
+        height: minimized ? 32 : preserveDrawingBuffer ? `${height}px` : 'auto',
       }}
     >
       {preserveDrawingBuffer ? (

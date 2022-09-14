@@ -6,12 +6,13 @@
     "rootDir": ".",
     "types": ["jest", "node"],
     "emitDeclarationOnly": false,
-    "composite": true
+    "composite": true,
+    "resolveJsonModule": true
   },
   "references": [
     {"path": "../../theatre"},
     {"path": "../dataverse"},
     {"path": "../r3f"}
   ],
-  "include": ["./src/**/*", "./devEnv/**/*"]
+  "include": ["./src/**/*", "./src/**/*.json", "./devEnv/**/*"]
 }

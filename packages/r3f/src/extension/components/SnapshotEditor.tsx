@@ -184,6 +184,10 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
 
   if (!editorObject) return <></>
 
+  const referenceWindowVisibility =
+    useVal(getEditorSheetObject()?.props.viewport.referenceWindow) ??
+    'minimized'
+
   return (
     <root.div style={{overflow: 'hidden'}}>
       <StyleSheetManager disableVendorPrefixes>
@@ -192,12 +196,26 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
           <Wrapper>
             <Overlay>
               <Tools ref={setToolsContainer} />
-              <ReferenceWindowContainer>
-                <ReferenceWindow
-                  maxHeight={Math.min(bounds.height * 0.3, 150)}
-                  maxWidth={Math.min(bounds.width * 0.3, 250)}
-                />
-              </ReferenceWindowContainer>
+              {referenceWindowVisibility !== 'hidden' && (
+                <ReferenceWindowContainer>
+                  <ReferenceWindow
+                    maxHeight={Math.min(bounds.height * 0.3, 150)}
+                    maxWidth={Math.min(bounds.width * 0.3, 250)}
+                    minimized={referenceWindowVisibility === 'minimized'}
+                    onToggleMinified={() => {
+                      studio.transaction(({set}) => {
+                        set(
+                          getEditorSheetObject()!.props.viewport
+                            .referenceWindow,
+                          referenceWindowVisibility === 'minimized'
+                            ? 'maximized'
+                            : 'minimized',
+                        )
+                      })
+                    }}
+                  />
+                </ReferenceWindowContainer>
+              )}
               {!sceneSnapshot && (
                 <WaitForSceneInitMessage>
                   The scene hasn't been initialized yet. It will appear in the

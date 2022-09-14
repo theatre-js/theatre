@@ -56,10 +56,12 @@ function BasicSwitch<TLiteralOptions extends string>({
   value,
   onChange,
   options,
+  autoFocus,
 }: {
   value: TLiteralOptions
   onChange: (val: TLiteralOptions) => void
   options: Record<TLiteralOptions, string>
+  autoFocus?: boolean
 }) {
   const _onChange = useCallback(
     (el: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,6 +80,7 @@ function BasicSwitch<TLiteralOptions extends string>({
             value={key}
             onChange={_onChange}
             name="switchbox"
+            autoFocus={autoFocus}
           />
         </Label>
       ))}

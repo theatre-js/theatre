@@ -115,6 +115,7 @@ const BasicNumberInput: React.FC<{
    */
   onBlur?: () => void
   nudge: BasicNumberInputNudgeFn
+  autoFocus?: boolean
 }> = (propsA) => {
   const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
   const isValid = propsA.isValid ?? alwaysValid
@@ -232,12 +233,13 @@ const BasicNumberInput: React.FC<{
       return {
         // note: we use mx because we need to constrain the `valueDuringDragging`
         // and dx will keep accumulating past any constraints
-        onDrag(_dx: number, _dy: number, _e: MouseEvent, mx: number) {
+        onDrag(_dx: number, _dy: number, e: MouseEvent, mx: number) {
+          const deltaX = e.altKey ? mx / 10 : mx
           const newValue =
             valueDuringDragging +
             propsA.nudge({
-              deltaX: mx,
-              deltaFraction: mx / inputWidth,
+              deltaX,
+              deltaFraction: deltaX / inputWidth,
               magnitude: 1,
             })
 
@@ -307,6 +309,7 @@ const BasicNumberInput: React.FC<{
         e.preventDefault()
         e.stopPropagation()
       }}
+      autoFocus={propsA.autoFocus}
     />
   )
 

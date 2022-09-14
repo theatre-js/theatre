@@ -2,7 +2,7 @@
 
 Theatre.js is an animation library for high-fidelity motion graphics. It is designed to help you express detailed animation, enabling you to create intricate movement, and convey nuance.
 
-Theatre can be used both programmatically _and_ visually.
+Theatre.js can be used both programmatically _and_ visually.
 
 You can use Theatre.js to:
 
@@ -38,7 +38,7 @@ Join us on [Discord](https://discord.gg/bm9f8F9Y9N), follow the updates on [twit
 
 ## `@theatre/studio`
 
-Theatre comes in two packages: `@theatre/core` (the library) and `@theatre/studio` (the editor). This package is the editor, which is only used during design/development.
+Theatre.js comes in two packages: `@theatre/core` (the library) and `@theatre/studio` (the editor). This package is the editor, which is only used during design/development.
 
 ## License
 

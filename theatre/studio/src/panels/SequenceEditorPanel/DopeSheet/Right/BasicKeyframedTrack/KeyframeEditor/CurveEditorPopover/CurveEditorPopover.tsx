@@ -279,8 +279,13 @@ const CurveEditorPopover: React.VFC<ICurveEditorPopoverProps> = (props) => {
       e.stopPropagation()
     }
   }
-  const onEasingOptionMouseOver = (item: {label: string; value: string}) =>
+  const onEasingOptionMouseOver = (item: {label: string; value: string}) => {
+    // Set the `textInputMode` to `auto` if it was `init` before
+    // to enable the easing previews
+    if (textInputMode === TextInputMode.init)
+      setTextInputMode(TextInputMode.auto)
     setPreview(item.value)
+  }
   const onEasingOptionMouseOut = () => setPreview(null)
   const onSelectEasingOption = (item: {label: string; value: string}) => {
     setTempValue(tempTransaction, allConnections, item.value)

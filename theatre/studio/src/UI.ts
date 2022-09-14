@@ -16,7 +16,7 @@ export default class UI {
   readonly containerShadow: ShadowRoot & HTMLElement
 
   constructor(readonly studio: Studio) {
-    // @todo we can't bootstrap theatre (as in, to design theatre using theatre), if we rely on IDed elements
+    // @todo we can't bootstrap Theatre.js (as in, to design Theatre.js using theatre), if we rely on IDed elements
     this.containerEl.id = 'theatrejs-studio-root'
 
     this.containerEl.style.cssText = `

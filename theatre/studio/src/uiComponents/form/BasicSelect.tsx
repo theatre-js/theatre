@@ -55,11 +55,13 @@ function BasicSelect<TLiteralOptions extends string>({
   onChange,
   options,
   className,
+  autoFocus,
 }: {
   value: TLiteralOptions
   onChange: (val: TLiteralOptions) => void
   options: Record<TLiteralOptions, string>
   className?: string
+  autoFocus?: boolean
 }) {
   const _onChange = useCallback(
     (el: React.ChangeEvent<HTMLSelectElement>) => {
@@ -70,7 +72,12 @@ function BasicSelect<TLiteralOptions extends string>({
 
   return (
     <Container>
-      <Select className={className} value={value} onChange={_onChange}>
+      <Select
+        className={className}
+        value={value}
+        onChange={_onChange}
+        autoFocus={autoFocus}
+      >
         {Object.keys(options).map((key, i) => (
           <option key={'option-' + i} value={key}>
             {options[key]}

@@ -1,6 +1,6 @@
 import {usePrism, useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
-import React, {useRef} from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import type {$IntentionalAny} from '@theatre/dataverse/dist/types'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
@@ -65,6 +65,8 @@ const GroupDivider = styled.div`
   opacity: 0.4;
 `
 
+let showedVisualTestingWarning = false
+
 const GlobalToolbar: React.FC = () => {
   const conflicts = usePrism(() => {
     const ephemeralStateOfAllProjects = val(
@@ -105,6 +107,14 @@ const GlobalToolbar: React.FC = () => {
         constraints: {
           maxX: triggerBounds.right,
           maxY: 8,
+          // MVP: Don't render the more menu all the way to the left
+          // when it doesn't fit on the screen height
+          // See https://linear.app/theatre/issue/P-178/bug-broken-updater-ui-in-simple-html-page
+          // 1/10 There's a better way to solve this.
+          // 1/10 Perhaps consider separate constraint like "rightSideMinX" & for future: "bottomSideMinY"
+          // 2/10 Or, consider constraints being a function of the dimensions of the box => constraints.
+          minX: triggerBounds.left - 140,
+          minY: 8,
         },
         verticalGap: 2,
       }
@@ -114,6 +124,20 @@ const GlobalToolbar: React.FC = () => {
     },
   )
   const moreMenuTriggerRef = useRef<HTMLButtonElement>(null)
+
+  const showUpdatesBadge = useMemo(() => {
+    if (hasUpdates || window.__IS_VISUAL_REGRESSION_TESTING) {
+      if (!showedVisualTestingWarning) {
+        showedVisualTestingWarning = true
+        console.warn(
+          "Visual regression testing enabled, so we're showing the updates badge unconditionally",
+        )
+      }
+      return true
+    }
+
+    return hasUpdates
+  }, [hasUpdates])
 
   return (
     <Container>
@@ -134,13 +158,12 @@ const GlobalToolbar: React.FC = () => {
           unpinHintIcon={<DoubleChevronLeft />}
           pinned={outlinePinned}
         />
-        <GroupDivider />
         {conflicts.length > 0 ? (
           <NumberOfConflictsIndicator>
             {conflicts.length}
           </NumberOfConflictsIndicator>
         ) : null}
-        <ExtensionToolbar toolbarId="global" />
+        <ExtensionToolbar showLeftDivider toolbarId="global" />
       </SubContainer>
       <SubContainer>
         {moreMenu.node}
@@ -151,7 +174,7 @@ const GlobalToolbar: React.FC = () => {
           }}
         >
           <Ellipsis />
-          {hasUpdates && <HasUpdatesBadge />}
+          {showUpdatesBadge && <HasUpdatesBadge />}
         </ToolbarIconButton>
         <PinButton
           ref={triggerButtonRef as $IntentionalAny}

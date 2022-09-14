@@ -22,9 +22,15 @@ const editorSheetObjectConfig = {
         },
         {as: 'menu', label: 'Shading'},
       ),
-      showReferenceWindow: types.boolean(true, {
-        label: 'Reference',
-      }),
+      referenceWindow: types.stringLiteral(
+        'minimized',
+        {
+          maximized: 'Maximized',
+          minimized: 'Minimized',
+          hidden: 'Hidden',
+        },
+        {as: 'menu', label: 'Reference Window'},
+      ),
       lighting: types.stringLiteral(
         'physical',
         {
