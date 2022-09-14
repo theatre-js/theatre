@@ -21,7 +21,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
     type: T extends 'primitive' ? null : U,
   ) => {
     type Props = Omit<ComponentProps<T>, 'visible'> & {
-      uniqueName: string
+      theatreKey: string
       visible?: boolean | 'editor'
       additionalProps?: $FixMe
       objRef?: $FixMe
@@ -35,7 +35,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
     return forwardRef(
       (
         {
-          uniqueName,
+          theatreKey,
           visible,
           editableType,
           additionalProps,
@@ -50,7 +50,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
 
         const sheet = useCurrentSheet()!
 
-        const storeKey = makeStoreKey(sheet, uniqueName)
+        const storeKey = makeStoreKey(sheet, theatreKey)
 
         const [sheetObject, setSheetObject] = useState<
           undefined | ISheetObject<$FixMe>
@@ -61,7 +61,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
         useLayoutEffect(() => {
           if (!sheet) return
           const sheetObject = sheet.object(
-            uniqueName,
+            theatreKey,
             Object.assign(
               {
                 ...additionalProps,
@@ -164,7 +164,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
     [Property in Keys]: React.ForwardRefExoticComponent<
       React.PropsWithoutRef<
         Omit<JSX.IntrinsicElements[Property], 'visible'> & {
-          uniqueName: string
+          theatreKey: string
           visible?: boolean | 'editor'
           additionalProps?: $FixMe
           objRef?: $FixMe
@@ -176,7 +176,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
       React.PropsWithoutRef<
         {
           object: any
-          uniqueName: string
+          theatreKey: string
           visible?: boolean | 'editor'
           additionalProps?: $FixMe
           objRef?: $FixMe

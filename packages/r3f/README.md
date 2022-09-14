@@ -41,10 +41,10 @@ export default function App() {
             position={[10, 10, 10]}
             angle={0.15}
             penumbra={1}
-            uniqueName="Spotlight"
+            theatreKey="Spotlight"
           />
-          <e.pointLight uniqueName="PointLight" />
-          <e.mesh uniqueName="Box">
+          <e.pointLight theatreKey="PointLight" />
+          <e.mesh theatreKey="Box">
             <boxBufferGeometry />
             <meshStandardMaterial color="orange" />
           </e.mesh>
@@ -79,7 +79,7 @@ const EditableCamera = editable(PerspectiveCamera, 'perspectiveCamera');
 
 #### Props
 
-`uniqueName: string`: a unique name used to identify the object in the editor.
+`theatreKey: string`: a unique name used to identify the object in the editor.
 
 ### `<SheetProvider sheet={...} />`
 

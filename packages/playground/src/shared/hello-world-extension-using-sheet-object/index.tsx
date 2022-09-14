@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
-import type {ISheetObject} from '@theatre/core';
-import { onChange, types, val} from '@theatre/core'
+import type {ISheetObject} from '@theatre/core'
+import {onChange, types, val} from '@theatre/core'
 import studio from '@theatre/studio'
 import extension from '@theatre/r3f/dist/extension'
 
