@@ -1,5 +1,6 @@
-import {OrbitControls, PerspectiveCamera} from '@react-three/drei'
-import type {OrbitControls as OrbitControlsImpl} from 'three-stdlib'
+import {PerspectiveCamera} from '@react-three/drei'
+import {OrbitControls} from './OrbitControls'
+import type {OrbitControlsImpl} from './OrbitControls'
 import type {MutableRefObject} from 'react'
 import {useLayoutEffect, useRef} from 'react'
 import React from 'react'
