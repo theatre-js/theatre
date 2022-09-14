@@ -194,10 +194,7 @@ function useAggregateKeyframeContextMenu(
                     }) ?? [],
                 )
 
-              // If copying from an aggregate track, the commonPath should always
-              // be relative to the aggregate track so that pasting back into the
-              // aggregate track behaves as expected.
-              const basePathFromSheet =
+              const basePathRelativeToSheet =
                 viewModel.type === 'sheet'
                   ? []
                   : viewModel.type === 'sheetObject'
@@ -209,7 +206,7 @@ function useAggregateKeyframeContextMenu(
                     ]
                   : [] // should be unreachable unless new viewModel/leaf types are added
               const commonPath = commonRootOfPathsToProps([
-                basePathFromSheet,
+                basePathRelativeToSheet,
                 ...kfs.map((kf) => kf.pathToProp),
               ])
 
