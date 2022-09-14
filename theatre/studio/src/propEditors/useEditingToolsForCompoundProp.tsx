@@ -257,7 +257,7 @@ function ControlIndicators({
         ...s,
         nearbies: getNearbyKeyframesOfTrack(
           obj,
-          {id: s.trackId, data: s.track!},
+          {id: s.trackId, data: s.track!, sheetObject: obj},
           sequencePosition,
         ),
       }))
