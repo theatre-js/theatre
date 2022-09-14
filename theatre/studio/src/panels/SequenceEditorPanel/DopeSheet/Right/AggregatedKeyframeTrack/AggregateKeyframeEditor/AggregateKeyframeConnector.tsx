@@ -55,7 +55,11 @@ export const AggregateKeyframeConnector: React.VFC<IAggregateKeyframeConnectorPr
     const [contextMenu] = useConnectorContextMenu(props, node)
     const [isDragging] = useDragKeyframe(node, props.editorProps)
 
-    const [popoverNode, openPopover, closePopover] = usePopover(
+    const {
+      node: popoverNode,
+      toggle: togglePopover,
+      close: closePopover,
+    } = usePopover(
       () => {
         const rightDims = val(editorProps.layoutP.rightDims)
 
@@ -89,7 +93,7 @@ export const AggregateKeyframeConnector: React.VFC<IAggregateKeyframeConnectorPr
           isSelected={connected ? connected.selected : false}
           isPopoverOpen={isAggregateEditingInCurvePopover}
           openPopover={(e) => {
-            if (node) openPopover(e, node)
+            if (node) togglePopover(e, node)
           }}
         />
         {popoverNode}

@@ -193,19 +193,20 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 }) => {
   const [thumbRef, thumbNode] = useRefAndState<HTMLElement | null>(null)
 
-  const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
-    {debugName: 'Playhead'},
-    () => {
-      return (
-        <BasicPopover>
-          <PlayheadPositionPopover
-            layoutP={layoutP}
-            onRequestClose={closePopover}
-          />
-        </BasicPopover>
-      )
-    },
-  )
+  const {
+    node: popoverNode,
+    toggle: togglePopover,
+    close: closePopover,
+  } = usePopover({debugName: 'Playhead'}, () => {
+    return (
+      <BasicPopover>
+        <PlayheadPositionPopover
+          layoutP={layoutP}
+          onRequestClose={closePopover}
+        />
+      </BasicPopover>
+    )
+  })
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
     return {
@@ -236,7 +237,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
             snapToNone()
           },
           onClick(e) {
-            openPopover(e, thumbRef.current!)
+            togglePopover(e, thumbRef.current!)
           },
         }
       },
