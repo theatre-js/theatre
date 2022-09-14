@@ -58,6 +58,7 @@ export type SequenceEditorTree = SequenceEditorTree_Sheet
 
 export type SequenceEditorTree_Sheet = SequenceEditorTree_Row<'sheet'> & {
   sheet: Sheet
+  isCollapsed: boolean
   children: SequenceEditorTree_SheetObject[]
 }
 
@@ -106,34 +107,44 @@ export const calculateSequenceEditorTree = (
   studio: Studio,
 ): SequenceEditorTree => {
   prism.ensurePrism()
-  let topSoFar = titleBarHeight
-  let nSoFar = 0
   const rootShouldRender = true
+  let topSoFar = titleBarHeight + (rootShouldRender ? HEIGHT_OF_ANY_TITLE : 0)
+  let nSoFar = 0
+
+  const collapsableItemSetP =
+    studio.atomP.ahistoric.projects.stateByProjectId[sheet.address.projectId]
+      .stateBySheetId[sheet.address.sheetId].sequence.collapsableItems
+
+  const isCollapsedP =
+    collapsableItemSetP.byId[createStudioSheetItemKey.forSheet()].isCollapsed
+  const isCollapsed = valueDerivation(isCollapsedP).getValue() ?? false
 
   const tree: SequenceEditorTree = {
     type: 'sheet',
+    isCollapsed,
     sheet,
     children: [],
     sheetItemKey: createStudioSheetItemKey.forSheet(),
     shouldRender: rootShouldRender,
-    top: topSoFar,
-    depth: -1,
+    top: titleBarHeight,
+    depth: 0,
     n: nSoFar,
-    nodeHeight: 0, // always 0
-    heightIncludingChildren: -1, // will define this later
+    nodeHeight: rootShouldRender ? HEIGHT_OF_ANY_TITLE : 0,
+    heightIncludingChildren: -1, // calculated below
   }
 
   if (rootShouldRender) {
     nSoFar += 1
   }
 
-  const collapsableItemSetP =
-    studio.atomP.ahistoric.projects.stateByProjectId[sheet.address.projectId]
-      .stateBySheetId[sheet.address.sheetId].sequence.collapsableItems
-
   for (const sheetObject of Object.values(val(sheet.objectsP))) {
     if (sheetObject) {
-      addObject(sheetObject, tree.children, tree.depth + 1, rootShouldRender)
+      addObject(
+        sheetObject,
+        tree.children,
+        tree.depth + 1,
+        rootShouldRender && !isCollapsed,
+      )
     }
   }
   tree.heightIncludingChildren = topSoFar - tree.top
@@ -167,9 +178,7 @@ export const calculateSequenceEditorTree = (
       n: nSoFar,
       sheetObject: sheetObject,
       nodeHeight: shouldRender ? HEIGHT_OF_ANY_TITLE : 0,
-      // Question: Why -1? Is this relevant for "shouldRender"?
-      // Perhaps this is to indicate this does not have a valid value.
-      heightIncludingChildren: -1,
+      heightIncludingChildren: -1, // calculated below
     }
     arrayOfChildren.push(row)
 
@@ -350,5 +359,6 @@ export const calculateSequenceEditorTree = (
     topSoFar += row.nodeHeight
   }
 
+  console.log('tree :)', tree)
   return tree
 }

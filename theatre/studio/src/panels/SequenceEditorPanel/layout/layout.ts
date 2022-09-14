@@ -1,7 +1,7 @@
 import type Sheet from '@theatre/core/sheets/Sheet'
 import getStudio from '@theatre/studio/getStudio'
 import type useDrag from '@theatre/studio/uiComponents/useDrag'
-import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
+import type {SheetAddress} from '@theatre/shared/utils/addresses'
 import subPrism from '@theatre/shared/utils/subPrism'
 import type {
   IRange,
@@ -57,7 +57,7 @@ export type DopeSheetSelection = {
     }
   >
   getDragHandlers(
-    origin: SheetObjectAddress & {
+    origin: SheetAddress & {
       positionAtStartOfDrag: number
       domNode: Element
     },

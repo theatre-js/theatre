@@ -3,6 +3,7 @@ import type {PathToProp} from './addresses'
 import stableValueHash from './stableJsonStringify'
 import {nanoid as generateNonSecure} from 'nanoid/non-secure'
 import type {Nominal} from './Nominal'
+import type Sheet from '@theatre/core/sheets/Sheet'
 
 export type KeyframeId = Nominal<'KeyframeId'>
 
@@ -105,6 +106,12 @@ export const createStudioSheetItemKey = {
       [],
       position,
     )
+  },
+  forSheetAggregateKeyframe(obj: Sheet, position: number): StudioSheetItemKey {
+    return stableValueHash({
+      o: obj.address.sheetId,
+      pos: position,
+    }) as StudioSheetItemKey
   },
   forCompoundPropAggregateKeyframe(
     obj: SheetObject,

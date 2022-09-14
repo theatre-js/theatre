@@ -2,7 +2,7 @@ import type {SequenceEditorTree_SheetObject} from '@theatre/studio/panels/Sequen
 import React from 'react'
 import AnyCompositeRow from './AnyCompositeRow'
 import {decideRowByPropType} from './PropWithChildrenRow'
-import {setCollapsedSheetObjectOrCompoundProp} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/setCollapsedSheetObjectOrCompoundProp'
+import {setCollapsedSheetItem} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/setCollapsedSheetObjectOrCompoundProp'
 import getStudio from '@theatre/studio/getStudio'
 
 const LeftSheetObjectRow: React.VFC<{
@@ -22,7 +22,7 @@ const LeftSheetObjectRow: React.VFC<{
         })
       }}
       toggleCollapsed={() =>
-        setCollapsedSheetObjectOrCompoundProp(!leaf.isCollapsed, {
+        setCollapsedSheetItem(!leaf.isCollapsed, {
           sheetAddress: leaf.sheetObject.address,
           sheetItemKey: leaf.sheetItemKey,
         })

@@ -39,10 +39,7 @@ const RightPropWithChildrenRow: React.VFC<{
     viewModel.pathToProp.join(),
   )
   return usePrism(() => {
-    const aggregatedKeyframes = collectAggregateKeyframesInPrism(
-      logger.utilFor.internal(),
-      viewModel,
-    )
+    const aggregatedKeyframes = collectAggregateKeyframesInPrism(viewModel)
 
     const node = (
       <AggregatedKeyframeTrack

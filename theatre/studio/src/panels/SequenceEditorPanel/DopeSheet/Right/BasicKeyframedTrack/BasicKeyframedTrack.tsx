@@ -74,7 +74,11 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
     const snapToAllKeyframes = snapPositionsState.mode === 'snapToAll'
 
     const track = useMemo(
-      () => ({data: trackData, id: leaf.trackId}),
+      () => ({
+        data: trackData,
+        id: leaf.trackId,
+        sheetObject: props.leaf.sheetObject,
+      }),
       [trackData, leaf.trackId],
     )
 

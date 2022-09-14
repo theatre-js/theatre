@@ -108,9 +108,6 @@ export function selectedKeyframeConnections(
  *   {keyframe, pathToProp: ['scale',    'x']},
  * ]
  * ```
- *
- * TODO - we don't yet support copying/pasting keyframes from multiple objects to multiple objects.
- * The main reason is that we don't yet have an aggregate track for several objects.
  */
 export function copyableKeyframesFromSelection(
   projectId: ProjectId,
@@ -175,7 +172,7 @@ export function keyframesWithPaths({
   const encodedPropPath = propPathByTrackId[trackId]
 
   if (!encodedPropPath) return null
-  const pathToProp = decodePathToProp(encodedPropPath)
+  const pathToProp = [objectKey, ...decodePathToProp(encodedPropPath)]
 
   return keyframeIds
     .map((keyframeId) => ({
