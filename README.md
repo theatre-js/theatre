@@ -51,15 +51,8 @@ You can use Theatre.js to:
 
 ## Documentation and Tutorials
 
-The docs are at [docs.theatrejs.com](https://docs.theatrejs.com):
+The docs are at [theatrejs.com/docs](https://www.theatrejs.com/docs):
 
-- [Getting started guide](https://docs.theatrejs.com/getting-started/)
-  - [Install Theatre.js](https://docs.theatrejs.com/getting-started/install/)
-  - [Quickly try Theatre.js out](https://docs.theatrejs.com/getting-started/try-it-out/)
-  - [Learn the basics](https://docs.theatrejs.com/getting-started/basics/)
-- [In depth guide](https://docs.theatrejs.com/in-depth/)
-- [API docs](https://docs.theatrejs.com/api/)
-- [Extensions](https://docs.theatrejs.com/extensions/)
 - [Video tutorials](https://www.youtube.com/channel/UCsp9XOCs8v2twyq5kMLzS2Q)
   - [Crash course](https://www.youtube.com/watch?v=icR9EIS1q34)
   - [Animating with music](https://www.youtube.com/watch?v=QoS4gMxwq_4)
@@ -71,7 +64,7 @@ The docs are at [docs.theatrejs.com](https://docs.theatrejs.com):
 ## Community and support
 
 Join our friendly community on [Discord](https://discord.gg/bm9f8F9Y9N), follow
-the updates on [twitter](https://twitter.com/AriaMinaei) or write us an
+the updates on [twitter](https://twitter.com/theatre_js) or write us an
 [email](mailto:hello@theatrejs.com).
 
 ## Development and contributing
