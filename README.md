@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://github.com/theatre-js/theatre#gh-dark-mode-only"><img src="https://docs.theatrejs.com/public/theatrejs-logo-white.svg" alt="Theatre.js" width="200"></a><a href="https://github.com/theatre-js/theatre#gh-light-mode-only"><img src="https://docs.theatrejs.com/public/theatrejs-logo-black.svg" alt="Theatre.js" width="200"></a>
+  <a href="https://github.com/theatre-js/theatre#gh-dark-mode-only"><img src="https://raw.githubusercontent.com/theatre-js/theatre-docs/main/docs/.vuepress/public/public/theatrejs-logo-white.svg" alt="Theatre.js" width="200"></a><a href="https://github.com/theatre-js/theatre#gh-light-mode-only"><img src="https://raw.githubusercontent.com/theatre-js/theatre-docs/main/docs/.vuepress/public/public/theatrejs-logo-black.svg" alt="Theatre.js" width="200"></a>
 </h1>
 <p align="center">Motion Design, for the web</p>
 <p align="center">
