@@ -115,14 +115,21 @@ export default class Project {
     } else {
       setTimeout(() => {
         if (!this._studio) {
-          throw new Error(
-            `Argument config.state in Theatre.getProject("${id}", config) is empty. This is fine ` +
-              `while you are using @theatre/core along with @theatre/studio. But since @theatre/studio ` +
-              `is not loaded, the state of project "${id}" will be empty.\n\n` +
-              `To fix this, you need to add @theatre/studio into the bundle and export ` +
-              `the project's state. Learn how to do that at https://docs.theatrejs.com/in-depth/#exporting\n` +
-              `If you are using a framework like Next.js, this error may be caused by running Theatre on the server side.`,
-          )
+          if (typeof window === 'undefined') {
+            console.warn(
+              `Argument config.state in Theatre.getProject("${id}", config) is empty. ` +
+                `This is fine on SSR mode in development, but if you're creating a production bundle, make sure to set config.state, ` +
+                `otherwise your project's state will be empty and nothing will animate. Learn more at https://www.theatrejs.com/docs/latest/manual/projects#state`,
+            )
+          } else {
+            throw new Error(
+              `Argument config.state in Theatre.getProject("${id}", config) is empty. This is fine ` +
+                `while you are using @theatre/core along with @theatre/studio. But since @theatre/studio ` +
+                `is not loaded, the state of project "${id}" will be empty.\n\n` +
+                `To fix this, you need to add @theatre/studio into the bundle and export ` +
+                `the project's state. Learn how to do that at https://www.theatrejs.com/docs/latest/manual/projects#state\n`,
+            )
+          }
         }
       }, 1000)
     }
