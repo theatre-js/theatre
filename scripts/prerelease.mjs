@@ -130,7 +130,7 @@ async function writeVersionsToPackageJSONs(
   // through the `GITHUB_SHA` environmental variable.
 
   // The length of the abbreviated commit hash can change, that's why we
-  // need the lenght of the fake merge commit's abbreviated hash.
+  // need the length of the fake merge commit's abbreviated hash.
   const fakeMergeCommitHashLength = (await $`git log -1 --pretty=format:%h`)
     .stdout.length
 
