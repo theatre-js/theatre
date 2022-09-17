@@ -16,9 +16,6 @@ function createRafTicker() {
   } else {
     ticker.tick(0)
     setTimeout(() => ticker.tick(1), 0)
-    console.log(
-      `@theatre/dataverse is running in a server rather than in a browser. We haven't gotten around to testing server-side rendering, so if something is working in the browser but not on the server, please file a bug: https://github.com/theatre-js/theatre/issues/new`,
-    )
   }
 
   return ticker
