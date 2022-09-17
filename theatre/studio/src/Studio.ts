@@ -135,7 +135,7 @@ export class Studio {
       storeOpts.persistenceKey = opts.persistenceKey
     }
 
-    if (opts?.usePersistentStorage === false) {
+    if (opts?.usePersistentStorage === false || typeof window === 'undefined') {
       storeOpts.usePersistentStorage = false
     }
 
