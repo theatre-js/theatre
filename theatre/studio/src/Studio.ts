@@ -22,6 +22,7 @@ import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import checkForUpdates from './checkForUpdates'
+import shallowEqual from 'shallowequal'
 
 export type CoreExports = typeof _coreExports
 
@@ -223,6 +224,15 @@ export class Studio {
 
     this.transaction(({drafts}) => {
       if (drafts.ephemeral.extensions.byId[extension.id]) {
+        const prevExtension = drafts.ephemeral.extensions.byId[extension.id]
+        if (
+          extension === prevExtension ||
+          shallowEqual(extension, prevExtension)
+        ) {
+          // probably running studio.extend() several times because of hot reload.
+          // as long as it's the same extension, we can safely ignore.
+          return
+        }
         throw new Error(`Extension id "${extension.id}" is already defined`)
       }
 
