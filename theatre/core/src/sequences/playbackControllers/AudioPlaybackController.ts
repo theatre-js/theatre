@@ -33,9 +33,89 @@ export default class AudioPlaybackController implements IPlaybackController {
     this._mainGain.connect(this._nodeDestination)
   }
 
-  // TODO: Implement this method in the future!
   playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
-    throw new Error('Method not implemented.')
+    const deferred = defer<boolean>()
+    if (this._playing) this.pause()
+
+    this._playing = true
+
+    let stop: undefined | (() => void) = undefined
+
+    const play = () => {
+      stop?.()
+      stop = this._loopInRange(rangeD.getValue()).stop
+    }
+
+    // We're keeping the rangeD hot, so we can read from it on every tick without
+    // causing unnecessary recalculations
+    const untapFromRangeD = rangeD.changesWithoutValues().tap(play)
+    play()
+
+    this._stopPlayCallback = () => {
+      stop?.()
+      untapFromRangeD()
+      deferred.resolve(false)
+    }
+
+    return deferred.promise
+  }
+
+  private _loopInRange(range: IPlaybackRange): {stop: () => void} {
+    const rate = 1
+    const ticker = this._ticker
+    let startPos = this.getCurrentPosition()
+    const iterationLength = range[1] - range[0]
+
+    if (startPos < range[0] || startPos > range[1]) {
+      // if we're currently out of the range
+      this._updatePositionInState(range[0])
+    } else if (startPos === range[1]) {
+      // if we're currently at the very end of the range
+      this._updatePositionInState(range[0])
+    }
+    startPos = this.getCurrentPosition()
+
+    const currentSource = this._audioContext.createBufferSource()
+    currentSource.buffer = this._decodedBuffer
+    currentSource.connect(this._mainGain)
+    currentSource.playbackRate.value = rate
+
+    currentSource.loop = true
+    currentSource.loopStart = range[0]
+    currentSource.loopEnd = range[1]
+
+    const initialTickerTime = ticker.time
+    let initialElapsedPos = startPos - range[0]
+
+    currentSource.start(0, startPos)
+
+    const tick = (currentTickerTime: number) => {
+      const elapsedTickerTime = Math.max(
+        currentTickerTime - initialTickerTime,
+        0,
+      )
+      const elapsedTickerTimeInSeconds = elapsedTickerTime / 1000
+
+      const elapsedPos = elapsedTickerTimeInSeconds * rate + initialElapsedPos
+
+      let currentIterationPos =
+        ((elapsedPos / iterationLength) % 1) * iterationLength
+
+      this._updatePositionInState(currentIterationPos + range[0])
+      requestNextTick()
+    }
+
+    const requestNextTick = () => ticker.onNextTick(tick)
+    ticker.onThisOrNextTick(tick)
+
+    const stop = () => {
+      currentSource.stop()
+      currentSource.disconnect()
+      ticker.offThisOrNextTick(tick)
+      ticker.offNextTick(tick)
+    }
+
+    return {stop}
   }
 
   private get _playing() {
