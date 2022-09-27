@@ -116,8 +116,8 @@ export class Studio {
 
   async initialize(opts?: Parameters<IStudio['initialize']>[0]) {
     if (this._initializeFnCalled) {
-      console.warn(
-        `\`studio.initialize()\` is already called. You only need to call \`studio.initialize()\` once.`,
+      console.log(
+        `\`studio.initialize()\` is already called. Ignoring subsequent calls.`,
       )
       return this._initializedDeferred.promise
     }
