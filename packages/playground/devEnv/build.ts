@@ -167,6 +167,8 @@ export async function start(options: {
       '.png': 'file',
       '.glb': 'file',
       '.gltf': 'file',
+      '.mp3': 'file',
+      '.ogg': 'file',
       '.svg': 'dataurl',
     },
     define: {
