@@ -45,6 +45,7 @@ export interface ISheet {
    *
    * @param key - Each object is identified by a key, which is a non-empty string
    * @param props - The props of the object. See examples
+   * @param options - TODO
    *
    * @returns An Object
    *
@@ -68,6 +69,7 @@ export interface ISheet {
   object<Props extends UnknownShorthandCompoundProps>(
     key: string,
     props: Props,
+    options?: {override?: boolean},
   ): ISheetObject<Props>
 
   /**
@@ -95,6 +97,7 @@ export default class TheatreSheet implements ISheet {
   object<Props extends UnknownShorthandCompoundProps>(
     key: string,
     config: Props,
+    opts?: {override?: boolean},
   ): ISheetObject<Props> {
     const internal = privateAPI(this)
     const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
@@ -118,11 +121,19 @@ export default class TheatreSheet implements ISheet {
         const prevConfig = weakMapOfUnsanitizedProps.get(existingObject)
         if (prevConfig) {
           if (!deepEqual(config, prevConfig)) {
-            throw new Error(
-              `You seem to have called sheet.object("${key}", config) twice, with different values for \`config\`. ` +
-                `This is disallowed because changing the config of an object on the fly would make it difficult to reason about.\n\n` +
-                `You can fix this by either re-using the existing object, or calling sheet.object("${key}", config) with the same config.`,
-            )
+            if (opts?.override === true) {
+              const sanitizedConfig = compound(config)
+              existingObject.template.overrideConfig(sanitizedConfig)
+              weakMapOfUnsanitizedProps.set(existingObject, config)
+              return existingObject.publicApi as $IntentionalAny
+            } else {
+              throw new Error(
+                `You seem to have called sheet.object("${key}", config) twice, with different values for \`config\`. ` +
+                  `This is disallowed because changing the config of an object on the fly would make it difficult to reason about.\n\n` +
+                  `You can fix this by either re-using the existing object, or calling sheet.object("${key}", config) with the same config.\n\n` +
+                  `If you mean to override the object's config, set \`{override: true}\` in sheet.object("${key}", config, {override: true})`,
+              )
+            }
           }
         }
       }

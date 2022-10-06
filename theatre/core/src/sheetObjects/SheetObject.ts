@@ -166,6 +166,7 @@ export default class SheetObject implements IdentityDerivationProvider {
 
       const tracksToProcess = val(tracksToProcessD)
       const valsAtom = new Atom<SheetObjectPropsValue>({})
+      const config = val(this.template.configPointer)
 
       prism.effect(
         'processTracks',
@@ -175,7 +176,7 @@ export default class SheetObject implements IdentityDerivationProvider {
           for (const {trackId, pathToProp} of tracksToProcess) {
             const derivation = this._trackIdToDerivation(trackId)
             const propConfig = getPropConfigByPath(
-              this.template.config,
+              config,
               pathToProp,
             )! as Extract<PropTypeConfig, {interpolate: $IntentionalAny}>
 
@@ -222,7 +223,7 @@ export default class SheetObject implements IdentityDerivationProvider {
             }
           }
         },
-        tracksToProcess,
+        [config, ...tracksToProcess],
       )
 
       return valsAtom.pointer
