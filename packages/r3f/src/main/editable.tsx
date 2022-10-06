@@ -1,5 +1,11 @@
 import type {ComponentProps, ComponentType, RefAttributes} from 'react'
-import React, {forwardRef, useLayoutEffect, useRef, useState} from 'react'
+import React, {
+  forwardRef,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import {allRegisteredObjects, editorStore} from './store'
 import mergeRefs from 'react-merge-refs'
 import type {ISheetObject} from '@theatre/core'
@@ -57,6 +63,37 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
         >(undefined)
 
         const invalidate = useInvalidate()
+
+        useEffect(() => {
+          if (
+            Component === 'perspectiveCamera' ||
+            Component === 'orthographicCamera'
+          ) {
+            const dreiComponent =
+              Component.charAt(0).toUpperCase() + Component.slice(1)
+
+            console.warn(
+              `You seem to have declared the camera %c${theatreKey}%c simply as <e.${Component} ... />. This alone won't make r3f use it for rendering.
+
+The easiest way to create a custom animatable ${dreiComponent} is to import it from @react-three/drei, and make it editable.
+
+%cimport {${dreiComponent}} from '@react-three/drei'
+const EditableCamera = editable(${dreiComponent}, '${Component}')%c
+
+Then you can use it in your JSX like any other editable component. Note the makeDefault prop exposed by drei, which makes r3f use it for rendering.
+
+%c<EditableCamera
+  theatreKey="${theatreKey}"
+  makeDefault
+>`,
+              'font-style: italic;',
+              'font-style: inherit;',
+              'background: black; color: white;',
+              'background: inherit; color: inherit',
+              'background: black; color: white;',
+            )
+          }
+        }, [Component, theatreKey])
 
         useLayoutEffect(() => {
           if (!sheet) return
