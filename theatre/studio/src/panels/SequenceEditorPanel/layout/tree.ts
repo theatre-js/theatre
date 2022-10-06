@@ -157,6 +157,7 @@ export const calculateSequenceEditorTree = (
     const trackSetups = val(
       sheetObject.template.getMapOfValidSequenceTracks_forStudio(),
     )
+    const objectConfig = val(sheetObject.template.configPointer)
 
     if (Object.keys(trackSetups).length === 0) return
 
@@ -192,7 +193,7 @@ export const calculateSequenceEditorTree = (
       sheetObject,
       trackSetups,
       [],
-      sheetObject.template.config,
+      objectConfig,
       row.children,
       level + 1,
       shouldRender && !isCollapsed,

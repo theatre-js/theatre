@@ -5,7 +5,6 @@ import type {
   PropTypeConfig_AllSimples,
 } from '@theatre/core/propTypes'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import {getPropTypeByPointer} from '@theatre/studio/propEditors/utils/getPropTypeByPointer'
 import {simplePropEditorByPropType} from '@theatre/studio/propEditors/simpleEditors/simplePropEditorByPropType'
 import type {PropConfigForType} from '@theatre/studio/propEditors/utils/PropConfigForType'
 import type {ISimplePropEditorReactProps} from '@theatre/studio/propEditors/simpleEditors/ISimplePropEditorReactProps'
@@ -24,16 +23,13 @@ import DetailSimplePropEditor from './DeterminePropEditorForDetail/DetailSimpleP
  */
 const DeterminePropEditorForDetail: React.VFC<
   IDeterminePropEditorForDetailProps<PropTypeConfig['type']>
-> = (p) => {
-  const propConfig =
-    p.propConfig ?? getPropTypeByPointer(p.pointerToProp, p.obj)
-
+> = ({propConfig, visualIndentation, pointerToProp, obj}) => {
   if (propConfig.type === 'compound') {
     return (
       <DetailCompoundPropEditor
-        obj={p.obj}
-        visualIndentation={p.visualIndentation}
-        pointerToProp={p.pointerToProp}
+        obj={obj}
+        visualIndentation={visualIndentation}
+        pointerToProp={pointerToProp}
         propConfig={propConfig}
       />
     )
@@ -50,9 +46,9 @@ const DeterminePropEditorForDetail: React.VFC<
             ISimplePropEditorReactProps<PropTypeConfig_AllSimples>
           >
         }
-        obj={p.obj}
-        visualIndentation={p.visualIndentation}
-        pointerToProp={p.pointerToProp}
+        obj={obj}
+        visualIndentation={visualIndentation}
+        pointerToProp={pointerToProp}
         propConfig={propConfig}
       />
     )
@@ -60,6 +56,7 @@ const DeterminePropEditorForDetail: React.VFC<
 }
 
 export default DeterminePropEditorForDetail
+
 type IDeterminePropEditorForDetailProps<K extends PropTypeConfig['type']> =
   IDetailEditablePropertyProps<K> & {
     visualIndentation: number
