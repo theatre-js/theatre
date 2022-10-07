@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import {panelDimsToPanelPosition, usePanel} from './BasePanel'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import {clamp} from 'lodash-es'
-import {visibleSize} from './common'
+import {minVisibleSize} from './common'
 
 const Container = styled.div`
   cursor: move;
@@ -40,12 +40,12 @@ const PanelDragZone: React.FC<
               top: clamp(
                 stuffBeforeDrag.dims.top + dy,
                 0,
-                window.innerHeight - visibleSize,
+                window.innerHeight - minVisibleSize,
               ),
               left: clamp(
                 stuffBeforeDrag.dims.left + dx,
-                -stuffBeforeDrag.dims.width + visibleSize,
-                window.innerWidth - visibleSize,
+                -stuffBeforeDrag.dims.width + minVisibleSize,
+                window.innerWidth - minVisibleSize,
               ),
             }
             const position = panelDimsToPanelPosition(newDims, {
