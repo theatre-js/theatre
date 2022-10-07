@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import {panelDimsToPanelPosition, usePanel} from './BasePanel'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {clamp} from 'lodash-es'
-import {visibleSize} from './common'
+import {minVisibleSize} from './common'
 
 const Base = styled.div`
   position: absolute;
@@ -174,7 +174,7 @@ const PanelResizeHandle: React.FC<{
                 0,
                 Math.min(
                   bottom - stuffBeforeDrag.minDims.height,
-                  window.innerHeight - visibleSize,
+                  window.innerHeight - minVisibleSize,
                 ),
               )
               const height = bottom - top
@@ -188,7 +188,7 @@ const PanelResizeHandle: React.FC<{
                 newDims.left + dx,
                 Math.min(
                   right - stuffBeforeDrag.minDims.width,
-                  window.innerWidth - visibleSize,
+                  window.innerWidth - minVisibleSize,
                 ),
               )
               const width = right - left
@@ -200,7 +200,7 @@ const PanelResizeHandle: React.FC<{
                 newDims.width + dx,
                 Math.max(
                   stuffBeforeDrag.minDims.width,
-                  visibleSize - stuffBeforeDrag.dims.left,
+                  minVisibleSize - stuffBeforeDrag.dims.left,
                 ),
               )
             }
