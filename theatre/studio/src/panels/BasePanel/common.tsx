@@ -60,4 +60,5 @@ export const TitleBar = styled.div`
   text-overflow: ellipsis;
 `
 
-export const visibleSize = 100
+// the minimum visible width or height when the panel is partially offscreen
+export const minVisibleSize = 100
