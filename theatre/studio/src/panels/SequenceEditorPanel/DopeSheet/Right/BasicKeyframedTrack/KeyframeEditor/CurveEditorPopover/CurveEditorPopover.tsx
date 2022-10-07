@@ -437,7 +437,7 @@ function transactionSetCubicBezier(
 ): CommitOrDiscard {
   return getStudio().tempTransaction(({stateEditors}) => {
     const {setHandlesForKeyframe} =
-      stateEditors.coreByProject.historic.sheetsById.sequence
+      stateEditors.coreByProject.historic.sheetsById.sequences
 
     for (const {
       projectId,

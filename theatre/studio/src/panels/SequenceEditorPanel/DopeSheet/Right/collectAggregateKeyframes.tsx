@@ -129,7 +129,7 @@ function collectAggregateKeyframesPrimitiveProp(
   const sheetObjectTracksP =
     getStudio().atomP.historic.coreByProject[projectId].sheetsById[
       sheetObject.address.sheetId
-    ].sequence.tracksByObject[sheetObject.address.objectKey]
+    ].sequences[0].tracksByObject[sheetObject.address.objectKey]
   const trackId = val(
     sheetObjectTracksP.trackIdByPropPath[encodePathToProp(leaf.pathToProp)],
   )
@@ -186,7 +186,7 @@ function collectAggregateSnapPositionsPrimitiveProp(
   const sheetObjectTracksP =
     getStudio().atomP.historic.coreByProject[projectId].sheetsById[
       sheetObject.address.sheetId
-    ].sequence.tracksByObject[sheetObject.address.objectKey]
+    ].sequences[0].tracksByObject[sheetObject.address.objectKey]
   const trackId = val(
     sheetObjectTracksP.trackIdByPropPath[encodePathToProp(leaf.pathToProp)],
   )

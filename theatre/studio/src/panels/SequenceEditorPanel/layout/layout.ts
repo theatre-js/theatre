@@ -307,7 +307,7 @@ export function sequenceEditorPanelLayout(
     const unitSpace = {}
 
     const clippedSpaceRange =
-      val(ahistoricStateP.sequence.clippedSpaceRange) ??
+      val(ahistoricStateP.sequences[0].clippedSpaceRange) ??
       initialClippedSpaceRange
 
     const scaledSpace: SequenceEditorPanelLayout['scaledSpace'] = prism.memo(
@@ -352,7 +352,7 @@ export function sequenceEditorPanelLayout(
               range.end = length
             }
 
-            stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.clippedSpaceRange.set(
+            stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences.clippedSpaceRange.set(
               {...sheet.address, range},
             )
           })

@@ -47,7 +47,7 @@ const FocusRangeZone: React.FC<{
         const {projectId, sheetId} = val(layoutP.sheet).address
         const existingRange = val(
           getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
-            .stateBySheetId[sheetId].sequence.focusRange,
+            .stateBySheetId[sheetId].sequences[0].focusRange,
         )
         return existingRange
       }),
@@ -109,7 +109,7 @@ function usePanelDragZoneGestureHandlers(
           const clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)
           const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
           const sheet = val(layoutP.sheet)
-          const sequence = sheet.getSequence()
+          const sequence = sheet.getSequences()[0]
 
           const targetElement: HTMLElement = event.target as HTMLElement
           const rect = targetElement!.getBoundingClientRect()
@@ -150,7 +150,7 @@ function usePanelDragZoneGestureHandlers(
 
               tempTransaction = getStudio().tempTransaction(
                 ({stateEditors}) => {
-                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences.focusRange.set(
                     {
                       ...sheet.address,
                       range: {start, end},

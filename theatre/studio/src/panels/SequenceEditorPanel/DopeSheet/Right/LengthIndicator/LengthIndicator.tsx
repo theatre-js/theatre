@@ -154,7 +154,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
     const sheet = val(layoutP.sheet)
     const height = val(layoutP.rightDims.height)
 
-    const sequence = sheet.getSequence()
+    const sequence = sheet.getSequences()[0]
     const sequenceLength = sequence.length
     const startInUnitSpace = sequenceLength
 
@@ -230,7 +230,7 @@ function useDragBulge(
 
         const propsAtStartOfDrag = propsRef.current
         const sheet = val(propsRef.current.layoutP.sheet)
-        const initialLength = sheet.getSequence().length
+        const initialLength = sheet.getSequences()[0].length
 
         const toUnitSpace = val(
           propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace,
@@ -244,7 +244,7 @@ function useDragBulge(
               tempTransaction = undefined
             }
             tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-              stateEditors.coreByProject.historic.sheetsById.sequence.setLength(
+              stateEditors.coreByProject.historic.sheetsById.sequences.setLength(
                 {
                   ...sheet.address,
                   length: initialLength + delta,

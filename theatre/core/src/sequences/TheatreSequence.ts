@@ -35,25 +35,25 @@ export interface ISequence {
    * Usage:
    * ```ts
    * // plays the sequence from the current position to sequence.length
-   * sheet.sequence.play()
+   * sheet.sequences[0].play()
    *
    * // plays the sequence at 2.4x speed
-   * sheet.sequence.play({rate: 2.4})
+   * sheet.sequences[0].play({rate: 2.4})
    *
    * // plays the sequence from second 1 to 4
-   * sheet.sequence.play({range: [1, 4]})
+   * sheet.sequences[0].play({range: [1, 4]})
    *
    * // plays the sequence 4 times
-   * sheet.sequence.play({iterationCount: 4})
+   * sheet.sequences[0].play({iterationCount: 4})
    *
    * // plays the sequence in reverse
-   * sheet.sequence.play({direction: 'reverse'})
+   * sheet.sequences[0].play({direction: 'reverse'})
    *
    * // plays the sequence back and forth forever (until interrupted)
-   * sheet.sequence.play({iterationCount: Infinity, direction: 'alternateReverse})
+   * sheet.sequences[0].play({iterationCount: Infinity, direction: 'alternateReverse})
    *
    * // plays the sequence and logs "done" once playback is finished
-   * sheet.sequence.play().then(() => console.log('done'))
+   * sheet.sequences[0].play().then(() => console.log('done'))
    * ```
    */
   play(conf?: {
@@ -100,7 +100,7 @@ export interface ISequence {
    * import {onChange, val} from '@theatre/core'
    *
    * // let's assume `sheet` is a sheet
-   * const sequence = sheet.sequence
+   * const sequence = sheet.sequences[0]
    *
    * onChange(sequence.pointer.length, (len) => {
    *   console.log("Length of the sequence changed to:", len)
@@ -136,15 +136,15 @@ export interface ISequence {
    * Usage:
    * ```ts
    * // Loads and decodes audio from the URL and then attaches it to the sequence
-   * await sheet.sequence.attachAudio({source: "http://localhost:3000/audio.mp3"})
-   * sheet.sequence.play()
+   * await sheet.sequences[0].attachAudio({source: "http://localhost:3000/audio.mp3"})
+   * sheet.sequences[0].play()
    *
    * // Providing your own AudioAPI Context, destination, etc
    * const audioContext: AudioContext = {...} // create an AudioContext using the Audio API
    * const audioBuffer: AudioBuffer = {...} // create an AudioBuffer
    * const destinationNode = audioContext.destination
    *
-   * await sheet.sequence.attachAudio({source: audioBuffer, audioContext, destinationNode})
+   * await sheet.sequences[0].attachAudio({source: audioBuffer, audioContext, destinationNode})
    * ```
    *
    * Note: It's better to provide the `audioContext` rather than allow Theatre.js to create it.
@@ -162,8 +162,8 @@ export interface ISequence {
    *
    * button.addEventListener('click', async () => {
    *   const audioContext = ...
-   *   await sheet.sequence.attachAudio({audioContext, source: '...'})
-   *   sheet.sequence.play()
+   *   await sheet.sequences[0].attachAudio({audioContext, source: '...'})
+   *   sheet.sequences[0].play()
    * })
    * ```
    */

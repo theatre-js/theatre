@@ -29,7 +29,7 @@ const FocusRangeCurtains: React.FC<{
         const {projectId, sheetId} = val(layoutP.sheet).address
         const existingRange = val(
           getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
-            .stateBySheetId[sheetId].sequence.focusRange,
+            .stateBySheetId[sheetId].sequences[0].focusRange,
         )
         return existingRange
       }),

@@ -64,7 +64,7 @@ const FrameGrid: React.FC<{
     canvas!.height = height * ratio!
 
     const untap = prism(() => {
-      const sequence = val(layoutP.sheet).getSequence()
+      const sequence = val(layoutP.sheet).getSequences()[0]
       return {
         ctx,
         clippedSpaceRange: val(layoutP.clippedSpace.range),

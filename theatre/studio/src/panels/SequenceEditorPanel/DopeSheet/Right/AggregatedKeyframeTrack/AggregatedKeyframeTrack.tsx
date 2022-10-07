@@ -320,7 +320,7 @@ function pasteKeyframesContextMenuItem(
     enabled: keyframes.length > 0,
     callback: () => {
       const sheet = val(props.layoutP.sheet)
-      const sequence = sheet.getSequence()
+      const sequence = sheet.getSequences()[0]
 
       if (props.viewModel.type === 'sheet') {
         pasteKeyframesSheet(props.viewModel, keyframes, sequence)
@@ -357,7 +357,7 @@ function pasteKeyframesSheet(
     for (const object of viewModel.children.map((child) => child.sheetObject)) {
       const tracksByObject = valueDerivation(
         getStudio().atomP.historic.coreByProject[projectId].sheetsById[sheetId]
-          .sequence.tracksByObject[object.address.objectKey],
+          .sequences[0].tracksByObject[object.address.objectKey],
       ).getValue()
 
       const trackIdsOnObject = Object.keys(tracksByObject?.trackData ?? {})
@@ -372,7 +372,7 @@ function pasteKeyframesSheet(
   } else {
     const tracksByObject = valueDerivation(
       getStudio().atomP.historic.coreByProject[projectId].sheetsById[sheetId]
-        .sequence.tracksByObject,
+        .sequences[0].tracksByObject,
     ).getValue()
 
     const placeableKeyframes = keyframes
@@ -420,7 +420,7 @@ function pasteKeyframesObjectOrCompound(
 
   const trackRecords = valueDerivation(
     getStudio().atomP.historic.coreByProject[projectId].sheetsById[sheetId]
-      .sequence.tracksByObject[objectKey],
+      .sequences[0].tracksByObject[objectKey],
   ).getValue()
 
   const areKeyframesAllOnSingleTrack = keyframes.every(
@@ -506,7 +506,7 @@ function pasteKeyframesToMultipleTracks(
   getStudio()!.transaction(({stateEditors}) => {
     for (const trackId of trackIds) {
       for (const {keyframe} of keyframes) {
-        stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
+        stateEditors.coreByProject.historic.sheetsById.sequences.setKeyframeAtPosition(
           {
             ...address,
             trackId,
@@ -540,7 +540,7 @@ function pasteKeyframesToSpecificTracks(
       trackId,
       address,
     } of keyframesWithTracksToPlaceThemIn) {
-      stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
+      stateEditors.coreByProject.historic.sheetsById.sequences.setKeyframeAtPosition(
         {
           ...address,
           trackId,
@@ -604,7 +604,7 @@ function useDragForAggregateKeyframeDot(
 
         const tracksByObject = val(
           getStudio()!.atomP.historic.coreByProject[address.projectId]
-            .sheetsById[address.sheetId].sequence.tracksByObject,
+            .sheetsById[address.sheetId].sequences[0].tracksByObject,
         )!
 
         // Calculate all the valid snap positions in the sequence editor,
@@ -685,14 +685,14 @@ function useDragForAggregateKeyframeDot(
             tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
               for (const keyframe of keyframes) {
                 const original = keyframe.kf
-                stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
+                stateEditors.coreByProject.historic.sheetsById.sequences.replaceKeyframes(
                   {
                     ...keyframe.track.sheetObject.address,
                     trackId: keyframe.track.id,
                     keyframes: [{...original, position: newPosition}],
                     snappingFunction: val(
                       propsAtStartOfDrag.layoutP.sheet,
-                    ).getSequence().closestGridPosition,
+                    ).getSequences()[0].closestGridPosition,
                   },
                 )
               }

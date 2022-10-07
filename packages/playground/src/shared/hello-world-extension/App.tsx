@@ -6,7 +6,7 @@ import {Canvas} from '@react-three/fiber'
 
 function App() {
   const sheet = getProject('Space').sheet('Scene')
-  onChange(sheet.sequence.pointer, (a) => {
+  onChange(sheet.sequences[0].pointer, (a) => {
     console.log('gasp!!', a)
   })
   return (

@@ -238,7 +238,7 @@ namespace utils {
       const {sheetObject, trackId} = leaf
       const trackData = val(
         getStudio().atomP.historic.coreByProject[sheetObject.address.projectId]
-          .sheetsById[sheetObject.address.sheetId].sequence.tracksByObject[
+          .sheetsById[sheetObject.address.sheetId].sequences[0].tracksByObject[
           sheetObject.address.objectKey
         ].trackData[trackId],
       )!
@@ -370,7 +370,7 @@ namespace utils {
                 tempTransaction = getStudio().tempTransaction(
                   ({stateEditors}) => {
                     const transformKeyframes =
-                      stateEditors.coreByProject.historic.sheetsById.sequence
+                      stateEditors.coreByProject.historic.sheetsById.sequences
                         .transformKeyframes
 
                     for (const objectKey of Object.keys(selectionByObjectKey)) {
@@ -384,7 +384,7 @@ namespace utils {
                           scale: 1,
                           origin: 0,
                           snappingFunction:
-                            sheet.getSequence().closestGridPosition,
+                            sheet.getSequences()[0].closestGridPosition,
                           objectKey,
                           projectId: origin.projectId,
                           sheetId: origin.sheetId,
@@ -405,7 +405,7 @@ namespace utils {
       delete() {
         getStudio().transaction(({stateEditors}) => {
           const deleteKeyframes =
-            stateEditors.coreByProject.historic.sheetsById.sequence
+            stateEditors.coreByProject.historic.sheetsById.sequences
               .deleteKeyframes
 
           for (const objectKey of Object.keys(selectionByObjectKey)) {

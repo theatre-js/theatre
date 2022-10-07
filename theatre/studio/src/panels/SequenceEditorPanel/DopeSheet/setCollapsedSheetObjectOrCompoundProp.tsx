@@ -13,7 +13,7 @@ export function setCollapsedSheetItem(
   },
 ) {
   getStudio().transaction(({stateEditors}) => {
-    stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.sequenceEditorCollapsableItems.set(
+    stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences.sequenceEditorCollapsableItems.set(
       {
         ...toCollapse.sheetAddress,
         studioSheetItemKey: toCollapse.sheetItemKey,

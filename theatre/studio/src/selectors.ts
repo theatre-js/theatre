@@ -86,5 +86,5 @@ export function getSelectedSequence(): undefined | Sequence {
   const sheet = selectedSheets[0]
   if (!sheet) return
 
-  return sheet.getSequence()
+  return sheet.getSequences()[0]
 }

@@ -75,7 +75,7 @@ const StampsGrid: React.FC<{
     if (!fullSecondStampsContainer) return
 
     return prism(() => {
-      const sequence = val(layoutP.sheet).getSequence()
+      const sequence = val(layoutP.sheet).getSequences()[0]
       return {
         fullSecondStampsContainer,
         clippedSpaceRange: val(layoutP.clippedSpace.range),

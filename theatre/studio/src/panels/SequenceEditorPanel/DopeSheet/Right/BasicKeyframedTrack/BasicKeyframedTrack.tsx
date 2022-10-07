@@ -165,7 +165,7 @@ function pasteKeyframesContextMenuItem(
     enabled: keyframes.length > 0,
     callback: () => {
       const sheet = val(props.layoutP.sheet)
-      const sequence = sheet.getSequence()
+      const sequence = sheet.getSequences()[0]
 
       const firstPath = keyframes[0]?.pathToProp
       const singleTrackKeyframes = keyframes
@@ -179,7 +179,7 @@ function pasteKeyframesContextMenuItem(
         const keyframeOffset = earliestKeyframe(singleTrackKeyframes)?.position!
 
         for (const keyframe of singleTrackKeyframes) {
-          stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
+          stateEditors.coreByProject.historic.sheetsById.sequences.setKeyframeAtPosition(
             {
               ...props.leaf.sheetObject.address,
               trackId: props.leaf.trackId,

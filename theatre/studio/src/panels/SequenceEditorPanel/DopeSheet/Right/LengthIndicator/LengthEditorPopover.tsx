@@ -45,7 +45,7 @@ const LengthEditorPopover: React.FC<{
           tempTransaction = undefined
         }
         tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-          stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
+          stateEditors.coreByProject.historic.sheetsById.sequences.setLength({
             ...sheet.address,
             length: newLength,
           })
@@ -63,7 +63,7 @@ const LengthEditorPopover: React.FC<{
           tempTransaction = undefined
         }
         getStudio()!.transaction(({stateEditors}) => {
-          stateEditors.coreByProject.historic.sheetsById.sequence.setLength({
+          stateEditors.coreByProject.historic.sheetsById.sequences.setLength({
             ...sheet.address,
             length: newLength,
           })
@@ -78,7 +78,7 @@ const LengthEditorPopover: React.FC<{
   }, [])
 
   return usePrism(() => {
-    const sequence = sheet.getSequence()
+    const sequence = sheet.getSequences()[0]
     const sequenceLength = sequence.length
 
     return (

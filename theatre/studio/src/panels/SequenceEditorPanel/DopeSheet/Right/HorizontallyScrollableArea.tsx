@@ -108,7 +108,7 @@ function useDragPlayheadHandlers(
 
         const setIsSeeking = val(layoutP.seeker.setIsSeeking)
 
-        const sequence = val(layoutP.sheet).getSequence()
+        const sequence = val(layoutP.sheet).getSequences()[0]
 
         sequence.position = initialPositionInUnitSpace
 
@@ -184,7 +184,7 @@ function useHandlePanAndZoom(
 
         // Set maximum scroll points based on the sequence length.
         // This is to avoid zooming out to infinity.
-        const sequenceLength = val(layoutP.sheet).getSequence().length
+        const sequenceLength = val(layoutP.sheet).getSequences()[0].length
         const maxEnd = sequenceLength + sequenceLength * 0.25
 
         val(layoutP.clippedSpace.setRange)(
@@ -197,7 +197,7 @@ function useHandlePanAndZoom(
         event.preventDefault()
         event.stopPropagation()
 
-        const sequenceLength = val(layoutP.sheet).getSequence().length
+        const sequenceLength = val(layoutP.sheet).getSequences()[0].length
         const oldRange = val(layoutP.clippedSpace.range)
         const windowSize = oldRange.end - oldRange.start
         const speed = windowSize / sequenceLength

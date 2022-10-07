@@ -116,7 +116,7 @@ function useConnectorContextMenu(node: SVGElement | null, props: IProps) {
           callback: () => {
             getStudio()!.transaction(({stateEditors}) => {
               const {deleteKeyframes} =
-                stateEditors.coreByProject.historic.sheetsById.sequence
+                stateEditors.coreByProject.historic.sheetsById.sequences
 
               deleteKeyframes({
                 ...props.sheetObject.address,

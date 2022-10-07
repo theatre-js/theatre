@@ -151,7 +151,7 @@ const FocusRangeThumb: React.FC<{
         const {projectId, sheetId} = val(layoutP.sheet).address
         const existingRange = val(
           getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
-            .stateBySheetId[sheetId].sequence.focusRange,
+            .stateBySheetId[sheetId].sequences[0].focusRange,
         )
         return existingRange
       }),
@@ -166,7 +166,7 @@ const FocusRangeThumb: React.FC<{
         let range: IRange
 
         const sheet = val(layoutP.sheet)
-        const sequence = sheet.getSequence()
+        const sequence = sheet.getSequences()[0]
         const defaultRange = {start: 0, end: sequence.length}
         let existingRange = existingRangeD.getValue() || {
           range: defaultRange,
@@ -208,12 +208,12 @@ const FocusRangeThumb: React.FC<{
               // Prevent the start thumb from going over the length of the sequence
               newPosition = Math.min(
                 Math.max(newPosition, range['start'] + minFocusRangeStripWidth),
-                sheet.getSequence().length,
+                sheet.getSequences()[0].length,
               )
             }
 
             const newPositionInFrame = sheet
-              .getSequence()
+              .getSequences()[0]
               .closestGridPosition(newPosition)
 
             if (tempTransaction !== undefined) {
@@ -221,7 +221,7 @@ const FocusRangeThumb: React.FC<{
             }
 
             tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
-              stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+              stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences.focusRange.set(
                 {
                   ...sheet.address,
                   range: {...range, [thumbType]: newPositionInFrame},

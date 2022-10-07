@@ -141,8 +141,9 @@ export default class SheetObjectTemplate {
           this.project.pointers.historic.sheetsById[this.address.sheetId]
 
         const trackIdByPropPath = val(
-          pointerToSheetState.sequence.tracksByObject[this.address.objectKey]
-            .trackIdByPropPath,
+          pointerToSheetState.sequences[0].tracksByObject[
+            this.address.objectKey
+          ].trackIdByPropPath,
         )
 
         if (!trackIdByPropPath) return emptyArray as $IntentionalAny

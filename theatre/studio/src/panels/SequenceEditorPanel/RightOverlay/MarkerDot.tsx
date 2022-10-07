@@ -247,7 +247,7 @@ function useDragMarker(
                 {
                   sheetAddress: val(props.layoutP.sheet.address),
                   markers: [{...original, position: newPosition}],
-                  snappingFunction: val(props.layoutP.sheet).getSequence()
+                  snappingFunction: val(props.layoutP.sheet).getSequences()[0]
                     .closestGridPosition,
                 },
               )

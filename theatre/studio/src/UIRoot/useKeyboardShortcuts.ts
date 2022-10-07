@@ -63,7 +63,7 @@ export default function useKeyboardShortcuts() {
                 const focusRange = val(
                   getStudio().atomP.ahistoric.projects.stateByProjectId[
                     projectId
-                  ].stateBySheetId[sheetId].sequence.focusRange,
+                  ].stateBySheetId[sheetId].sequences[0].focusRange,
                 )
 
                 // Determines whether the playback should be played
@@ -178,7 +178,7 @@ export const getIsPlayheadAttachedToFocusRange = memoizeFn(
         const {projectId, sheetId} = sequence.address
         const focusRange = val(
           getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
-            .stateBySheetId[sheetId].sequence.focusRange,
+            .stateBySheetId[sheetId].sequences[0].focusRange,
         )
 
         if (!focusRange || !focusRange.enabled) return false

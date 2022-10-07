@@ -147,11 +147,11 @@ function useEditingToolsForKeyframeEditorPopover(
   const obj = props.sheetObject
   return useTempTransactionEditingTools(({stateEditors}, value) => {
     const newKeyframe = {...props.keyframe, value}
-    stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes({
+    stateEditors.coreByProject.historic.sheetsById.sequences.replaceKeyframes({
       ...obj.address,
       trackId: props.trackId,
       keyframes: [newKeyframe],
-      snappingFunction: obj.sheet.getSequence().closestGridPosition,
+      snappingFunction: obj.sheet.getSequences()[0].closestGridPosition,
     })
   })
 }

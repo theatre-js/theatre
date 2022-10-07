@@ -49,7 +49,7 @@ const FrameStamp: React.FC<{
   const [posInUnitSpace, posType] = useVal(useFrameStampPositionD())
   const unitSpaceToClippedSpace = useVal(layoutP.clippedSpace.fromUnitSpace)
   const {sequence, formatter, clippedSpaceWidth} = usePrism(() => {
-    const sequence = val(layoutP.sheet).getSequence()
+    const sequence = val(layoutP.sheet).getSequences()[0]
     const clippedSpaceWidth = val(layoutP.clippedSpace.width)
     return {sequence, formatter: sequence.positionFormatter, clippedSpaceWidth}
   }, [layoutP])

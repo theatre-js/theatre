@@ -47,7 +47,7 @@ export type StudioAhistoricState = {
         stateBySheetId: StrictRecord<
           SheetId,
           {
-            sequence?: {
+            sequences?: {
               /**
                * Stores the zoom level and scroll position of the sequence editor panel
                * for this particular sheet.
@@ -76,7 +76,7 @@ export type StudioAhistoricState = {
                   isCollapsed: boolean
                 }
               >
-            }
+            }[]
           }
         >
       }

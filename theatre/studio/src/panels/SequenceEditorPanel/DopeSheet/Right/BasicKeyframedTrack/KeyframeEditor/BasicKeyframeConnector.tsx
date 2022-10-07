@@ -175,7 +175,7 @@ function useDragKeyframe(
         }
 
         const propsAtStartOfDrag = props
-        const sequence = val(propsAtStartOfDrag.layoutP.sheet).getSequence()
+        const sequence = val(propsAtStartOfDrag.layoutP.sheet).getSequences()[0]
 
         const toUnitSpace = val(
           propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace,
@@ -189,7 +189,7 @@ function useDragKeyframe(
               tempTransaction = undefined
             }
             tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-              stateEditors.coreByProject.historic.sheetsById.sequence.transformKeyframes(
+              stateEditors.coreByProject.historic.sheetsById.sequences.transformKeyframes(
                 {
                   ...propsAtStartOfDrag.leaf.sheetObject.address,
                   trackId: propsAtStartOfDrag.leaf.trackId,
@@ -270,7 +270,7 @@ function useConnectorContextMenu(
               props.selection.delete()
             } else {
               getStudio().transaction(({stateEditors}) => {
-                stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+                stateEditors.coreByProject.historic.sheetsById.sequences.deleteKeyframes(
                   {
                     ...props.leaf.sheetObject.address,
                     keyframeIds: [cur.id, next.id],

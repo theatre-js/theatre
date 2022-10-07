@@ -31,6 +31,7 @@ import type {
   IRange,
   SerializableMap,
   SerializablePrimitive,
+  SerializableValue,
 } from '@theatre/shared/utils/types'
 import {current} from 'immer'
 import findLastIndex from 'lodash-es/findLastIndex'
@@ -475,16 +476,16 @@ namespace stateEditors {
               return projectState.stateBySheetId[p.sheetId]!
             }
 
-            export namespace sequence {
+            export namespace sequences {
               export function _ensure(p: WithoutSheetInstance<SheetAddress>) {
                 const sheetState =
                   stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId._ensure(
                     p,
                   )
-                if (!sheetState.sequence) {
-                  sheetState.sequence = {}
+                if (!sheetState.sequences?.[0]) {
+                  sheetState.sequences = [{}]
                 }
-                return sheetState.sequence!
+                return sheetState.sequences!
               }
 
               export namespace focusRange {
@@ -494,15 +495,15 @@ namespace stateEditors {
                     enabled: boolean
                   },
                 ) {
-                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences._ensure(
                     p,
-                  ).focusRange = {range: p.range, enabled: p.enabled}
+                  )[0].focusRange = {range: p.range, enabled: p.enabled}
                 }
 
                 export function unset(p: WithoutSheetInstance<SheetAddress>) {
-                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences._ensure(
                     p,
-                  ).focusRange = undefined
+                  )[0].focusRange = undefined
                 }
               }
 
@@ -512,18 +513,18 @@ namespace stateEditors {
                     range: IRange
                   },
                 ) {
-                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences._ensure(
                     p,
-                  ).clippedSpaceRange = {...p.range}
+                  )[0].clippedSpaceRange = {...p.range}
                 }
               }
 
               export namespace sequenceEditorCollapsableItems {
                 function _ensure(p: WithoutSheetInstance<SheetAddress>) {
                   const seq =
-                    stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
+                    stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences._ensure(
                       p,
-                    )
+                    )[0]
                   let existing = seq.collapsableItems
                   if (!existing) {
                     existing = seq.collapsableItems = pointableSetUtil.create()
@@ -578,19 +579,21 @@ namespace stateEditors {
           return sheetsById[p.sheetId]!
         }
 
-        export namespace sequence {
+        export namespace sequences {
           export function _ensure(
             p: WithoutSheetInstance<SheetAddress>,
-          ): HistoricPositionalSequence {
+          ): HistoricPositionalSequence[] {
             const s = stateEditors.coreByProject.historic.sheetsById._ensure(p)
-            s.sequence ??= {
-              subUnitsPerUnit: 30,
-              length: 10,
-              type: 'PositionalSequence',
-              tracksByObject: {},
-            }
+            s.sequences ??= [
+              {
+                subUnitsPerUnit: 30,
+                length: 10,
+                type: 'PositionalSequence',
+                tracksByObject: {},
+              },
+            ]
 
-            return s.sequence!
+            return s.sequences!
           }
 
           export function setLength(
@@ -607,9 +610,9 @@ namespace stateEditors {
             p: WithoutSheetInstance<SheetObjectAddress>,
           ) {
             const s =
-              stateEditors.coreByProject.historic.sheetsById.sequence._ensure(
+              stateEditors.coreByProject.historic.sheetsById.sequences._ensure(
                 p,
-              ).tracksByObject
+              )[0].tracksByObject
 
             s[p.objectKey] ??= {trackData: {}, trackIdByPropPath: {}}
 
@@ -695,7 +698,7 @@ namespace stateEditors {
            * Sets a keyframe at the exact specified position.
            * Any position snapping should be done by the caller.
            */
-          export function setKeyframeAtPosition<T>(
+          export function setKeyframeAtPosition<T extends SerializableValue>(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: SequenceTrackId
               position: number

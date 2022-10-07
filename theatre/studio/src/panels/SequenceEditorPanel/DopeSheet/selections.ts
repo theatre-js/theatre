@@ -62,7 +62,7 @@ export function selectedKeyframeConnections(
     for (const {objectKey, trackId} of flatSelectionTrackIds(selection)) {
       const track = val(
         getStudio().atomP.historic.coreByProject[projectId].sheetsById[sheetId]
-          .sequence.tracksByObject[objectKey].trackData[trackId],
+          .sequences[0].tracksByObject[objectKey].trackData[trackId],
       )
 
       if (track) {
@@ -160,7 +160,7 @@ export function keyframesWithPaths({
 }): KeyframeWithPathToPropFromCommonRoot[] | null {
   const tracksByObject = val(
     getStudio().atomP.historic.coreByProject[projectId].sheetsById[sheetId]
-      .sequence.tracksByObject[objectKey],
+      .sequences[0].tracksByObject[objectKey],
   )
   const track = tracksByObject?.trackData[trackId]
 

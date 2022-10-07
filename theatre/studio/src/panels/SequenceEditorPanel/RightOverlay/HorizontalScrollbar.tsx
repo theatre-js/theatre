@@ -123,14 +123,14 @@ const HorizontalScrollbar: React.FC<{
 }> = ({layoutP}) => {
   const unitPosToHumanReadablePos = useCallback((n: number) => n.toFixed(2), [])
 
-  // const dd = usePrism(() => val(layoutP.sheet).getSequence().positionFormatter.formatForPlayhead, [layoutP])
+  // const dd = usePrism(() => val(layoutP.sheet).getSequences()[0].positionFormatter.formatForPlayhead, [layoutP])
 
   const relevantValuesD = useMemo(
     () =>
       prism(() => {
         const rightWidth = val(layoutP.rightDims.width) - 25
         const clippedSpaceRange = val(layoutP.clippedSpace.range)
-        const sequenceLength = val(layoutP.sheet).getSequence().length
+        const sequenceLength = val(layoutP.sheet).getSequences()[0].length
 
         const assumedLengthOfSequence = Math.max(
           clippedSpaceRange.end,

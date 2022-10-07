@@ -20,7 +20,7 @@ const PrimitivePropRow: React.VFC<{
 
     const trackData = val(
       getStudio()!.atomP.historic.coreByProject[sheetObject.address.projectId]
-        .sheetsById[sheetObject.address.sheetId].sequence.tracksByObject[
+        .sheetsById[sheetObject.address.sheetId].sequences[0].tracksByObject[
         sheetObject.address.objectKey
       ].trackData[trackId],
     )

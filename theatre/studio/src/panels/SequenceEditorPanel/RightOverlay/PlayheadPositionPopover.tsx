@@ -35,7 +35,7 @@ const PlayheadPositionPopover: React.FC<{
   onRequestClose: (reason: string) => void
 }> = ({layoutP}) => {
   const sheet = val(layoutP.sheet)
-  const sequence = sheet.getSequence()
+  const sequence = sheet.getSequences()[0]
 
   const fns = useMemo(() => {
     let tempPosition: number | undefined
@@ -70,7 +70,7 @@ const PlayheadPositionPopover: React.FC<{
   }, [])
 
   return usePrism(() => {
-    const sequence = sheet.getSequence()
+    const sequence = sheet.getSequences()[0]
 
     return (
       <Container>

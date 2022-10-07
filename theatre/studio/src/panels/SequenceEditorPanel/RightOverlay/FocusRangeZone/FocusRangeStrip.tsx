@@ -121,7 +121,7 @@ const FocusRangeStrip: React.FC<{
         const {projectId, sheetId} = val(layoutP.sheet).address
         const existingRange = val(
           getStudio().atomP.ahistoric.projects.stateByProjectId[projectId]
-            .stateBySheetId[sheetId].sequence.focusRange,
+            .stateBySheetId[sheetId].sequences[0].focusRange,
         )
         return existingRange
       }),
@@ -142,7 +142,7 @@ const FocusRangeStrip: React.FC<{
           callback: () => {
             getStudio()
               .tempTransaction(({stateEditors}) => {
-                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.unset(
+                stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences.focusRange.unset(
                   {
                     ...sheet.address,
                   },
@@ -159,7 +159,7 @@ const FocusRangeStrip: React.FC<{
             if (existingRange !== undefined) {
               getStudio()
                 .tempTransaction(({stateEditors}) => {
-                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences.focusRange.set(
                     {
                       ...sheet.address,
                       range: existingRange.range,
@@ -191,7 +191,7 @@ const FocusRangeStrip: React.FC<{
         const startPosBeforeDrag = existingRange.range.start
         const endPosBeforeDrag = existingRange.range.end
         let dragHappened = false
-        const sequence = val(layoutP.sheet).getSequence()
+        const sequence = val(layoutP.sheet).getSequences()[0]
 
         return {
           onDrag(dx) {
@@ -218,7 +218,7 @@ const FocusRangeStrip: React.FC<{
 
               tempTransaction = getStudio().tempTransaction(
                 ({stateEditors}) => {
-                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence.focusRange.set(
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequences.focusRange.set(
                     {
                       ...sheet.address,
                       range: {

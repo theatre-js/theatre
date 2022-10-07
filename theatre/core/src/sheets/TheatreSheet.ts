@@ -73,7 +73,7 @@ export interface ISheet {
   /**
    * The Sequence of this Sheet
    */
-  readonly sequence: ISequence
+  readonly sequences: ISequence[]
 }
 
 const weakMapOfUnsanitizedProps = new WeakMap<
@@ -142,8 +142,10 @@ export default class TheatreSheet implements ISheet {
     }
   }
 
-  get sequence(): TheatreSequence {
-    return privateAPI(this).getSequence().publicApi
+  get sequences(): TheatreSequence[] {
+    return privateAPI(this)
+      .getSequences()
+      .map((seq) => seq.publicApi)
   }
 
   get project(): IProject {

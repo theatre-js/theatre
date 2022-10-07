@@ -147,7 +147,7 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
                 if (isPropConfigComposite(conf)) continue
                 const propAddress = {...obj.address, pathToProp: path}
 
-                stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
+                stateEditors.coreByProject.historic.sheetsById.sequences.setPrimitivePropAsSequenced(
                   propAddress,
                   propConfig,
                 )
@@ -174,7 +174,7 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
               }
               const pointerToSub = pointerDeep(pointerToProp, subPath)
 
-              stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsStatic(
+              stateEditors.coreByProject.historic.sheetsById.sequences.setPrimitivePropAsStatic(
                 {
                   ...propAddress,
                   value: obj.getValueByPointer(pointerToSub as $IntentionalAny),
@@ -235,7 +235,7 @@ function ControlIndicators({
   return usePrism(() => {
     const pathToProp = getPointerParts(pointerToProp).path
 
-    const sequencePosition = val(obj.sheet.getSequence().positionDerivation)
+    const sequencePosition = val(obj.sheet.getSequences()[0].positionDerivation)
 
     /*
     2/10 perf concern:
@@ -249,7 +249,9 @@ function ControlIndicators({
         trackId,
         track: val(
           obj.template.project.pointers.historic.sheetsById[obj.address.sheetId]
-            .sequence.tracksByObject[obj.address.objectKey].trackData[trackId],
+            .sequences[0].tracksByObject[obj.address.objectKey].trackData[
+            trackId
+          ],
         ),
       }))
       .filter(({track}) => !!track)
@@ -345,7 +347,7 @@ function ControlIndicators({
                   closestPrev.kf.position,
                 ),
               jump: () => {
-                obj.sheet.getSequence().position = closestPrev.kf.position
+                obj.sheet.getSequences()[0].position = closestPrev.kf.position
               },
             }
           : undefined,
@@ -360,7 +362,7 @@ function ControlIndicators({
                   closestNext.kf.position,
                 ),
               jump: () => {
-                obj.sheet.getSequence().position = closestNext.kf.position
+                obj.sheet.getSequences()[0].position = closestNext.kf.position
               },
             }
           : undefined,

@@ -212,7 +212,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
     return {
       debugName: 'RightOverlay/Playhead',
       onDragStart() {
-        const sequence = val(layoutP.sheet).getSequence()
+        const sequence = val(layoutP.sheet).getSequences()[0]
         const posBeforeSeek = sequence.position
         const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
 
@@ -259,7 +259,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
   return usePrism(() => {
     const isSeeking = val(layoutP.seeker.isSeeking)
 
-    const sequence = val(layoutP.sheet).getSequence()
+    const sequence = val(layoutP.sheet).getSequences()[0]
 
     const isPlayheadAttachedToFocusRange = val(
       getIsPlayheadAttachedToFocusRange(sequence),
@@ -324,7 +324,7 @@ function usePlayheadContextMenu(
             getStudio().transaction(({stateEditors}) => {
               // only retrieve val on callback to reduce unnecessary work on every use
               const sheet = val(options.layoutP.sheet)
-              const sheetSequence = sheet.getSequence()
+              const sheetSequence = sheet.getSequences()[0]
               stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.replaceMarkers(
                 {
                   sheetAddress: sheet.address,

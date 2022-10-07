@@ -44,8 +44,8 @@ project.ready.then(() => {
   studio.setSelection([playbackControlObj])
   for (let i = 0; i < elements.length; i++) {
     const sheet = elements[i].sheet
-    sheet.sequence.position = i * TOTAL_ELEMENTS_R * 5
-    sheet.sequence.play({
+    sheet.sequences[0].position = i * TOTAL_ELEMENTS_R * 5
+    sheet.sequences[0].play({
       iterationCount: Infinity,
     })
   }

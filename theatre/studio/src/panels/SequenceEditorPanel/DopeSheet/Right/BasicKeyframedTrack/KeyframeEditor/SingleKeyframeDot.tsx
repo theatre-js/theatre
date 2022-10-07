@@ -182,7 +182,7 @@ function useSingleKeyframeContextMenu(
               props.selection.delete()
             } else {
               getStudio()!.transaction(({stateEditors}) => {
-                stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+                stateEditors.coreByProject.historic.sheetsById.sequences.deleteKeyframes(
                   {
                     ...props.leaf.sheetObject.address,
                     keyframeIds: [props.keyframe.id],
@@ -227,7 +227,7 @@ function useDragForSingleKeyframeDot(
         const tracksByObject = val(
           getStudio()!.atomP.historic.coreByProject[
             props.leaf.sheetObject.address.projectId
-          ].sheetsById[props.leaf.sheetObject.address.sheetId].sequence
+          ].sheetsById[props.leaf.sheetObject.address.sheetId].sequences[0]
             .tracksByObject,
         )!
 
@@ -307,14 +307,14 @@ function useDragForSingleKeyframeDot(
             tempTransaction?.discard()
             tempTransaction = undefined
             tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-              stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
+              stateEditors.coreByProject.historic.sheetsById.sequences.replaceKeyframes(
                 {
                   ...propsAtStartOfDrag.leaf.sheetObject.address,
                   trackId: propsAtStartOfDrag.leaf.trackId,
                   keyframes: [{...original, position: newPosition}],
                   snappingFunction: val(
                     propsAtStartOfDrag.layoutP.sheet,
-                  ).getSequence().closestGridPosition,
+                  ).getSequences()[0].closestGridPosition,
                 },
               )
             })

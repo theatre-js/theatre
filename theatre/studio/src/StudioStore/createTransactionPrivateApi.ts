@@ -135,9 +135,9 @@ export default function createTransactionPrivateApi(
             | undefined
 
           if (typeof trackId === 'string') {
-            const seq = root.sheet.getSequence()
+            const seq = root.sheet.getSequences()[0]
             seq.position = seq.closestGridPosition(seq.position)
-            stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
+            stateEditors.coreByProject.historic.sheetsById.sequences.setKeyframeAtPosition(
               {
                 ...propAddress,
                 trackId,
@@ -217,11 +217,11 @@ export default function createTransactionPrivateApi(
             | undefined
 
           if (typeof trackId === 'string') {
-            stateEditors.coreByProject.historic.sheetsById.sequence.unsetKeyframeAtPosition(
+            stateEditors.coreByProject.historic.sheetsById.sequences.unsetKeyframeAtPosition(
               {
                 ...propAddress,
                 trackId,
-                position: root.sheet.getSequence().positionSnappedToGrid,
+                position: root.sheet.getSequences()[0].positionSnappedToGrid,
               },
             )
           } else if (propConfig !== undefined) {

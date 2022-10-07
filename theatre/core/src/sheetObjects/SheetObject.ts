@@ -234,9 +234,9 @@ export default class SheetObject implements IdentityDerivationProvider {
   ): IDerivation<InterpolationTriple | undefined> {
     const trackP =
       this.template.project.pointers.historic.sheetsById[this.address.sheetId]
-        .sequence.tracksByObject[this.address.objectKey].trackData[trackId]
+        .sequences[0].tracksByObject[this.address.objectKey].trackData[trackId]
 
-    const timeD = this.sheet.getSequence().positionDerivation
+    const timeD = this.sheet.getSequences()[0].positionDerivation
 
     return interpolationTripleAtPosition(this._internalUtilCtx, trackP, timeD)
   }

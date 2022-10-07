@@ -256,42 +256,44 @@ describe(`SheetObject`, () => {
         staticOverrides: {
           byObject: {},
         },
-        sequence: {
-          type: 'PositionalSequence',
-          length: 20,
-          subUnitsPerUnit: 30,
-          tracksByObject: {
-            ['obj' as ObjectAddressKey]: {
-              trackIdByPropPath: {
-                [encodePathToProp(['position', 'y'])]: asSequenceTrackId('1'),
-              },
-              trackData: {
-                ['1' as SequenceTrackId]: {
-                  type: 'BasicKeyframedTrack',
-                  keyframes: [
-                    {
-                      id: asKeyframeId('0'),
-                      position: 10,
-                      connectedRight: true,
-                      handles: [0.5, 0.5, 0.5, 0.5],
-                      value: 3,
-                    },
-                    {
-                      id: asKeyframeId('1'),
-                      position: 20,
-                      connectedRight: false,
-                      handles: [0.5, 0.5, 0.5, 0.5],
-                      value: 6,
-                    },
-                  ],
+        sequences: [
+          {
+            type: 'PositionalSequence',
+            length: 20,
+            subUnitsPerUnit: 30,
+            tracksByObject: {
+              ['obj' as ObjectAddressKey]: {
+                trackIdByPropPath: {
+                  [encodePathToProp(['position', 'y'])]: asSequenceTrackId('1'),
+                },
+                trackData: {
+                  ['1' as SequenceTrackId]: {
+                    type: 'BasicKeyframedTrack',
+                    keyframes: [
+                      {
+                        id: asKeyframeId('0'),
+                        position: 10,
+                        connectedRight: true,
+                        handles: [0.5, 0.5, 0.5, 0.5],
+                        value: 3,
+                      },
+                      {
+                        id: asKeyframeId('1'),
+                        position: 20,
+                        connectedRight: false,
+                        handles: [0.5, 0.5, 0.5, 0.5],
+                        value: 6,
+                      },
+                    ],
+                  },
                 },
               },
             },
           },
-        },
+        ],
       })
 
-      const seq = sheet.publicApi.sequence
+      const seq = sheet.publicApi.sequences[0]
 
       const objValues = iterateOver(prism(() => objPublicAPI.value))
 

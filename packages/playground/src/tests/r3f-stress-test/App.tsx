@@ -76,7 +76,7 @@ function App() {
   const bg = bgs[bgIndex]
   const project = getProject('SpaceStress', {state})
   const sheet = project.sheet('Scene')
-  project.ready.then(() => sheet.sequence.play({iterationCount: Infinity}))
+  project.ready.then(() => sheet.sequences[0].play({iterationCount: Infinity}))
 
   const allPropsObj = sheet.object('All Props Tester', allPropsObjectConfig)
   console.log('allPropsObj', allPropsObj)

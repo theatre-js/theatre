@@ -147,7 +147,7 @@ function createDerivation<T extends SerializablePrimitive>(
           callback: () => {
             getStudio()!.transaction(({stateEditors}) => {
               const propAddress = {...obj.address, pathToProp}
-              stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsStatic(
+              stateEditors.coreByProject.historic.sheetsById.sequences.setPrimitivePropAsStatic(
                 {
                   ...propAddress,
                   value: obj.getValueByPointer(pointerToProp) as T,
@@ -164,12 +164,12 @@ function createDerivation<T extends SerializablePrimitive>(
             const track = val(
               obj.template.project.pointers.historic.sheetsById[
                 obj.address.sheetId
-              ].sequence.tracksByObject[obj.address.objectKey].trackData[
+              ].sequences[0].tracksByObject[obj.address.objectKey].trackData[
                 sequenceTrackId
               ],
             )
             const sequencePosition = val(
-              obj.sheet.getSequence().positionDerivation,
+              obj.sheet.getSequences()[0].positionDerivation,
             )
             return getNearbyKeyframesOfTrack(
               obj,
@@ -226,7 +226,7 @@ function createDerivation<T extends SerializablePrimitive>(
                   itemKey: nearbyKeyframes.prev.itemKey,
                   position: nearbyKeyframes.prev.kf.position,
                   jump: () => {
-                    obj.sheet.getSequence().position =
+                    obj.sheet.getSequences()[0].position =
                       nearbyKeyframes.prev!.kf.position
                   },
                 }
@@ -237,7 +237,7 @@ function createDerivation<T extends SerializablePrimitive>(
                   itemKey: nearbyKeyframes.next.itemKey,
                   position: nearbyKeyframes.next.kf.position,
                   jump: () => {
-                    obj.sheet.getSequence().position =
+                    obj.sheet.getSequences()[0].position =
                       nearbyKeyframes.next!.kf.position
                   },
                 }
@@ -276,7 +276,7 @@ function createDerivation<T extends SerializablePrimitive>(
           getStudio()!.transaction(({stateEditors}) => {
             const propAddress = {...obj.address, pathToProp}
 
-            stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
+            stateEditors.coreByProject.historic.sheetsById.sequences.setPrimitivePropAsSequenced(
               propAddress,
               propConfig,
             )

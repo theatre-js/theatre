@@ -21,7 +21,7 @@ export interface SheetState_Historic {
   staticOverrides: {
     byObject: StrictRecord<ObjectAddressKey, SerializableMap>
   }
-  sequence?: HistoricPositionalSequence
+  sequences?: HistoricPositionalSequence[]
 }
 
 // Question: What is this? The timeline position of a sequence?

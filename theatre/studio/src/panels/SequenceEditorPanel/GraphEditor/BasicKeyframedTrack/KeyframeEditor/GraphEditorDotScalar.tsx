@@ -227,14 +227,14 @@ function useDragKeyframe(options: {
 
             tempTransaction?.discard()
             tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-              stateEditors.coreByProject.historic.sheetsById.sequence.replaceKeyframes(
+              stateEditors.coreByProject.historic.sheetsById.sequences.replaceKeyframes(
                 {
                   ...propsAtStartOfDrag.sheetObject.address,
                   trackId: propsAtStartOfDrag.trackId,
                   keyframes: updatedKeyframes,
                   snappingFunction: val(
                     propsAtStartOfDrag.layoutP.sheet,
-                  ).getSequence().closestGridPosition,
+                  ).getSequences()[0].closestGridPosition,
                 },
               )
             })
@@ -267,7 +267,7 @@ function useKeyframeContextMenu(node: SVGCircleElement | null, props: IProps) {
           label: 'Delete',
           callback: () => {
             getStudio()!.transaction(({stateEditors}) => {
-              stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
+              stateEditors.coreByProject.historic.sheetsById.sequences.deleteKeyframes(
                 {
                   ...props.sheetObject.address,
                   keyframeIds: [props.keyframe.id],

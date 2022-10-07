@@ -24,7 +24,7 @@ export type ObjectNativeObject = unknown
 
 export default class Sheet {
   private readonly _objects: Atom<SheetObjectMap> = new Atom<SheetObjectMap>({})
-  private _sequence: undefined | Sequence
+  private _sequences: undefined | Sequence[]
   readonly address: SheetAddress
   readonly publicApi: TheatreSheet
   readonly project: Project
@@ -73,26 +73,23 @@ export default class Sheet {
     return this._objects.getState()[key]
   }
 
-  getSequence(): Sequence {
-    if (!this._sequence) {
+  getSequences(): Sequence[] {
+    if (!this._sequences) {
       const lengthD = valueDerivation(
-        this.project.pointers.historic.sheetsById[this.address.sheetId].sequence
-          .length,
+        this.project.pointers.historic.sheetsById[this.address.sheetId]
+          .sequences[0].length,
       ).map(sanitizeSequenceLength)
 
       const subUnitsPerUnitD = valueDerivation(
-        this.project.pointers.historic.sheetsById[this.address.sheetId].sequence
-          .subUnitsPerUnit,
+        this.project.pointers.historic.sheetsById[this.address.sheetId]
+          .sequences[0].subUnitsPerUnit,
       ).map(sanitizeSequenceSubUnitsPerUnit)
 
-      this._sequence = new Sequence(
-        this.template.project,
-        this,
-        lengthD,
-        subUnitsPerUnitD,
-      )
+      this._sequences = [
+        new Sequence(this.template.project, this, lengthD, subUnitsPerUnitD),
+      ]
     }
-    return this._sequence
+    return this._sequences
   }
 }
 

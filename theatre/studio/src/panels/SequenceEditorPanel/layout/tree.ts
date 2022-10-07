@@ -113,7 +113,7 @@ export const calculateSequenceEditorTree = (
 
   const collapsableItemSetP =
     studio.atomP.ahistoric.projects.stateByProjectId[sheet.address.projectId]
-      .stateBySheetId[sheet.address.sheetId].sequence.collapsableItems
+      .stateBySheetId[sheet.address.sheetId].sequences[0].collapsableItems
 
   const isCollapsedP =
     collapsableItemSetP.byId[createStudioSheetItemKey.forSheet()].isCollapsed
