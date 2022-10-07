@@ -59,3 +59,5 @@ export const TitleBar = styled.div`
   white-space: nowrap;
   text-overflow: ellipsis;
 `
+
+export const visibleSize = 100
