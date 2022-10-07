@@ -20,6 +20,7 @@ import React, {useEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import FocusRangeStrip, {focusRangeStripTheme} from './FocusRangeStrip'
 import FocusRangeThumb from './FocusRangeThumb'
+import {visibleSize} from '@theatre/studio/panels/BasePanel/common'
 
 const Container = styled.div<{isShiftDown: boolean}>`
   position: absolute;
@@ -186,8 +187,16 @@ function usePanelDragZoneGestureHandlers(
             onDrag(dx, dy) {
               const newDims: typeof panelStuffRef.current['dims'] = {
                 ...stuffBeforeDrag.dims,
-                top: stuffBeforeDrag.dims.top + dy,
-                left: stuffBeforeDrag.dims.left + dx,
+                top: clamp(
+                  stuffBeforeDrag.dims.top + dy,
+                  0,
+                  window.innerHeight - visibleSize,
+                ),
+                left: clamp(
+                  stuffBeforeDrag.dims.left + dx,
+                  -stuffBeforeDrag.dims.width + visibleSize,
+                  window.innerWidth - visibleSize,
+                ),
               }
               const position = panelDimsToPanelPosition(newDims, {
                 width: window.innerWidth,
