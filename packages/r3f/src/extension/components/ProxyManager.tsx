@@ -1,7 +1,7 @@
 import type {VFC} from 'react'
 import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import type {Editable} from '../../main/store'
-import {createPortal} from '@react-three/fiber'
+import {createPortal, useThree} from '@react-three/fiber'
 import EditableProxy from './EditableProxy'
 import type {OrbitControls} from 'three-stdlib'
 import TransformControls from './TransformControls'
@@ -47,6 +47,8 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
       [name in string]?: IEditableProxy<any>
     }
   >({})
+
+  const invalidate = useThree(({invalidate}) => invalidate)
 
   // set up scene proxies
   useLayoutEffect(() => {
@@ -177,6 +179,8 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
         }
       }
     })
+
+    invalidate()
   }, [viewportShading, renderMaterials, sceneProxy])
 
   const scrub = useRef<IScrub>(undefined!)
