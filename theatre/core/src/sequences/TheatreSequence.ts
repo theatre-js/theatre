@@ -3,7 +3,6 @@ import {defer} from '@theatre/shared/utils/defer'
 import type Sequence from './Sequence'
 import type {IPlaybackDirection, IPlaybackRange} from './Sequence'
 import AudioPlaybackController from './playbackControllers/AudioPlaybackController'
-import coreTicker from '@theatre/core/coreTicker'
 import type {Pointer} from '@theatre/dataverse'
 
 interface IAttachAudioArgs {
@@ -279,7 +278,7 @@ export default class TheatreSequence implements ISequence {
       await resolveAudioBuffer(args)
 
     const playbackController = new AudioPlaybackController(
-      coreTicker,
+      privateAPI(this)._project.ticker,
       decodedBuffer,
       audioContext,
       gainNode,

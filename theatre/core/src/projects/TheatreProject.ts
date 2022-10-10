@@ -11,6 +11,7 @@ import type {
 import {validateInstanceId} from '@theatre/shared/utils/sanitizers'
 import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/shared/utils/slashedPaths'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {Ticker} from '@theatre/dataverse'
 
 /**
  * A project's config object (currently the only point of configuration is the project's state)
@@ -20,6 +21,10 @@ export type IProjectConfig = {
    * The state of the project, as [exported](https://docs.theatrejs.com/in-depth/#exporting) by the studio.
    */
   state?: $IntentionalAny
+  /**
+   * The project’s ticker. Defaults to `Theatre.core.ticker`.
+   */
+  ticker?: Ticker
   // experiments?: IProjectConfigExperiments
 }
 

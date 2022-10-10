@@ -1,6 +1,5 @@
 import {Ticker} from '@theatre/dataverse'
 
-const {ticker, enableTicker, disableTicker} = Ticker.stoppableRaf
+const studioTicker = Ticker.raf
 
-export default ticker
-export {enableTicker, disableTicker}
+export default studioTicker

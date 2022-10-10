@@ -10,7 +10,7 @@ import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfVal
 import deepEqual from 'fast-deep-equal'
 import type {PointerType} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
-import {isDerivation, valueDerivation} from '@theatre/dataverse'
+import {isDerivation, valueDerivation, Ticker} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import coreTicker, {enableTicker, disableTicker} from './coreTicker'
 import type {ProjectId} from '@theatre/shared/utils/ids'
@@ -206,7 +206,19 @@ export {
   enableTicker as enableDefaultTicker,
   /**
    * Disables the default core ticker. When the default ticker is disabled,
-   * you must call `Theatre.core.ticker.tick()` manually.
+   * you must call `Theatre.core.ticker.tick()` manually. When using
+   * per-project tickers, the core ticker is only used by the studio. The
+   * studio ticker can also be replaced by passing a ticker when calling
+   * `Theatre.studio.initialize({ ticker })`.
    */
   disableTicker as disableDefaultTicker,
+  /**
+   * The coreTicker executes work for all active projects and the studio. To
+   * be able to schedule work for each project separately, create a
+   * `new Ticker()` for each project and pass the project’s ticker when
+   * calling `Theatre.core.getProject(name, { state, ticker })`. The studio
+   * ticker can also be replaced by passing a ticker when calling
+   * `Theatre.studio.initialize({ ticker })`.
+   */
+  Ticker,
 }

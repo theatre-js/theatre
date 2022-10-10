@@ -2,10 +2,10 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import type {$FixMe} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
+import getStudio from '@theatre/studio/getStudio'
 import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import createGrid from './createGrid'
-import studioTicker from '@theatre/studio/studioTicker'
 
 const Container = styled.div`
   position: absolute;
@@ -75,7 +75,7 @@ const FrameGrid: React.FC<{
         fps: sequence.subUnitsPerUnit,
         snapToGrid: (n: number) => sequence.closestGridPosition(n),
       }
-    }).tapImmediate(studioTicker, (p) => {
+    }).tapImmediate(getStudio().ticker, (p) => {
       ctx.save()
       ctx.scale(ratio!, ratio!)
       drawGrid(p)

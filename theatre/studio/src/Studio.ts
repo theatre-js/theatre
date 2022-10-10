@@ -1,7 +1,7 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
 import type UI from '@theatre/studio/UI'
-import type {Pointer} from '@theatre/dataverse'
+import type {Pointer, Ticker} from '@theatre/dataverse'
 import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
 import type {
   CommitOrDiscard,
@@ -23,6 +23,7 @@ import {defer} from '@theatre/shared/utils/defer'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import checkForUpdates from './checkForUpdates'
 import shallowEqual from 'shallowequal'
+import studioTicker from './studioTicker'
 
 export type CoreExports = typeof _coreExports
 
@@ -72,6 +73,8 @@ export class Studio {
 
   private readonly _cache = new SimpleCache()
   readonly paneManager: PaneManager
+
+  private _ticker: Ticker = studioTicker
 
   /**
    * An atom holding the exports of '\@theatre/core'. Will be undefined if '\@theatre/core' is never imported
@@ -138,6 +141,10 @@ export class Studio {
 
     if (opts?.usePersistentStorage === false || typeof window === 'undefined') {
       storeOpts.usePersistentStorage = false
+    }
+
+    if (opts?.ticker) {
+      this._ticker = opts.ticker
     }
 
     try {
@@ -211,6 +218,10 @@ export class Studio {
 
   get coreP() {
     return this._coreAtom.pointer.core
+  }
+
+  get ticker(): Ticker {
+    return this._ticker
   }
 
   extend(extension: IExtension) {

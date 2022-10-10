@@ -1,8 +1,4 @@
 import type {IProject, ISheet, ISheetObject} from '@theatre/core'
-import studioTicker, {
-  enableTicker,
-  disableTicker,
-} from '@theatre/studio/studioTicker'
 import type {IDerivation, Pointer, Ticker} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
@@ -176,6 +172,12 @@ export interface _StudioInitializeOpts {
    * Default: true
    */
   usePersistentStorage?: boolean
+  /**
+   * A custom ticker.
+   *
+   * Default: `Theatre.core.ticker`
+   */
+  ticker?: Ticker
 }
 
 /**
@@ -203,8 +205,10 @@ export interface IStudio {
   readonly ui: IStudioUI
   /**
    * The studio ticker. To schedule work yourself, first call
-   * `studio.disableDefaultTicker()`, then call
-   * `studio.ticker.tick()` regularly.
+   * `studio.disableDefaultTicker()`, then call `studio.ticker.tick()`
+   * regularly. Note that by default, this is the same as
+   * `Theatre.core.ticker`. A different ticker can be used by
+   * passing a ticker to `Theatre.studio.initialize({ ticker })`.
    */
   readonly ticker: Ticker
 
@@ -376,20 +380,6 @@ export interface IStudio {
    * ```
    */
   createContentOfSaveFile(projectId: string): Record<string, unknown>
-
-  /**
-   * Enables the default studio ticker, which schedules ticks via
-   * `requestAnimationFrame()`. The default ticker is enabled by default, so
-   * this does nothing unless there was a prior call to
-   * `disableDefaultTicker()`.
-   */
-  enableDefaultTicker(): void
-
-  /**
-   * Disables the default studio ticker. When the default ticker is disabled,
-   * you must call `studio.ticker.tick()` manually.
-   */
-  disableDefaultTicker(): void
 }
 
 export default class TheatreStudio implements IStudio {
@@ -411,7 +401,6 @@ export default class TheatreStudio implements IStudio {
     },
   }
 
-  readonly ticker = studioTicker
   private readonly _cache = new SimpleCache()
 
   /**
@@ -464,7 +453,7 @@ export default class TheatreStudio implements IStudio {
   }
 
   onSelectionChange(fn: (s: (ISheetObject | ISheet)[]) => void): VoidFn {
-    return this._getSelectionDerivation().tapImmediate(studioTicker, fn)
+    return this._getSelectionDerivation().tapImmediate(this.ticker, fn)
   }
 
   get selection(): Array<ISheetObject | ISheet> {
@@ -473,6 +462,10 @@ export default class TheatreStudio implements IStudio {
 
   scrub(): IScrub {
     return getStudio().scrub()
+  }
+
+  get ticker(): Ticker {
+    return getStudio().ticker
   }
 
   getStudioProject() {
@@ -531,7 +524,4 @@ export default class TheatreStudio implements IStudio {
       projectId as ProjectId,
     ) as $IntentionalAny
   }
-
-  readonly enableDefaultTicker = enableTicker
-  readonly disableDefaultTicker = disableTicker
 }

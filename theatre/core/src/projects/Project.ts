@@ -4,7 +4,7 @@ import type Sheet from '@theatre/core/sheets/Sheet'
 import SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type {Studio} from '@theatre/studio/Studio'
 import type {ProjectAddress} from '@theatre/shared/utils/addresses'
-import type {Pointer} from '@theatre/dataverse'
+import type {Pointer, Ticker} from '@theatre/dataverse'
 import {PointerProxy} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import initialiseProjectState from './initialiseProjectState'
@@ -24,9 +24,11 @@ import type {
   ITheatreLoggingConfig,
 } from '@theatre/shared/logger'
 import {_coreLogger} from '@theatre/core/_coreLogger'
+import coreTicker from '@theatre/core/coreTicker'
 
 export type Conf = Partial<{
   state: OnDiskState
+  ticker?: Ticker
   experiments: ExperimentsConf
 }>
 
@@ -57,6 +59,8 @@ export default class Project {
   }>({})
   sheetTemplatesP = this._sheetTemplates.pointer
   private _studio: Studio | undefined
+
+  readonly ticker: Ticker
 
   type: 'Theatre_Project' = 'Theatre_Project'
   readonly _logger: ILogger
@@ -102,6 +106,7 @@ export default class Project {
     projectsSingleton.add(id, this)
 
     this._readyDeferred = defer()
+    this.ticker = config.ticker ?? coreTicker
 
     if (config.state) {
       setTimeout(() => {

@@ -1,5 +1,4 @@
 import type Project from '@theatre/core/projects/Project'
-import coreTicker from '@theatre/core/coreTicker'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SequenceAddress} from '@theatre/shared/utils/addresses'
 import didYouMean from '@theatre/shared/utils/didYouMean'
@@ -62,7 +61,7 @@ export default class Sequence {
     this.publicApi = new TheatreSequence(this)
 
     this._playbackControllerBox = new Box(
-      playbackController ?? new DefaultPlaybackController(coreTicker),
+      playbackController ?? new DefaultPlaybackController(_project.ticker),
     )
 
     this._statePointerDerivation = this._playbackControllerBox.derivation.map(

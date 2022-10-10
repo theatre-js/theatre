@@ -2,11 +2,11 @@ import type {ISequencePositionFormatter} from '@theatre/core/sequences/Sequence'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
+import getStudio from '@theatre/studio/getStudio'
 import {darken} from 'polished'
 import React, {useLayoutEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
 import createGrid from './createGrid'
-import studioTicker from '@theatre/studio/studioTicker'
 
 const Container = styled.div`
   position: absolute;
@@ -86,7 +86,7 @@ const StampsGrid: React.FC<{
         sequencePositionFormatter: sequence.positionFormatter,
         snapToGrid: (n: number) => sequence.closestGridPosition(n),
       }
-    }).tapImmediate(studioTicker, drawStamps)
+    }).tapImmediate(getStudio().ticker, drawStamps)
   }, [fullSecondStampsContainer, width, layoutP])
 
   return (
