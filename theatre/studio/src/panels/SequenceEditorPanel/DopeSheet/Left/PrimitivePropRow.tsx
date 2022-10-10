@@ -8,11 +8,12 @@ import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useCallback, useRef} from 'react'
 import styled from 'styled-components'
-import {useEditingToolsForPrimitiveProp} from '@theatre/studio/panels/DetailPanel/propEditors/utils/useEditingToolsForPrimitiveProp'
-import {nextPrevCursorsTheme} from '@theatre/studio/panels/DetailPanel/propEditors/utils/NextPrevKeyframeCursors'
+import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
+import {nextPrevCursorsTheme} from '@theatre/studio/propEditors/NextPrevKeyframeCursors'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
-import {BaseHeader, Container as BaseContainer} from './AnyCompositeRow'
-import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
+import {BaseHeader, LeftRowContainer as BaseContainer} from './AnyCompositeRow'
+import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import {usePropHighlightMouseEnter} from './usePropHighlightMouseEnter'
 
 const theme = {
   label: {
@@ -20,9 +21,9 @@ const theme = {
   },
 }
 
-const Container = styled(BaseContainer)<{}>``
+const PrimitivePropRowContainer = styled(BaseContainer)<{}>``
 
-const Head = styled(BaseHeader)<{
+const PrimitivePropRowHead = styled(BaseHeader)<{
   isSelected: boolean
   isEven: boolean
 }>`
@@ -34,7 +35,7 @@ const Head = styled(BaseHeader)<{
   box-sizing: border-box;
 `
 
-const IconContainer = styled.button<{
+const PrimitivePropRowIconContainer = styled.button<{
   isSelected: boolean
   graphEditorColor: keyof typeof graphEditorColors
 }>`
@@ -73,9 +74,13 @@ const GraphIcon = () => (
   </svg>
 )
 
-const Head_Label = styled.span`
+const PrimitivePropRowHead_Label = styled.span`
   margin-right: 4px;
-  ${propNameText};
+  ${propNameTextCSS};
+
+  ${PrimitivePropRowHead}:hover & {
+    color: #ccc;
+  }
 `
 
 const PrimitivePropRow: React.FC<{
@@ -87,7 +92,7 @@ const PrimitivePropRow: React.FC<{
   ) as Pointer<$IntentionalAny>
 
   const obj = leaf.sheetObject
-  const {controlIndicators} = useEditingToolsForPrimitiveProp(
+  const {controlIndicators} = useEditingToolsForSimplePropInDetailsPanel(
     pointerToProp,
     obj,
     leaf.propConf,
@@ -128,21 +133,27 @@ const PrimitivePropRow: React.FC<{
     })
   }, [leaf])
 
-  const label = leaf.pathToProp[leaf.pathToProp.length - 1]
+  const label =
+    leaf.propConf.label ?? leaf.pathToProp[leaf.pathToProp.length - 1]
   const isSelectable = true
 
+  const headRef = useRef<HTMLDivElement | null>(null)
+
+  usePropHighlightMouseEnter(headRef.current, leaf)
+
   return (
-    <Container depth={leaf.depth}>
-      <Head
+    <PrimitivePropRowContainer depth={leaf.depth}>
+      <PrimitivePropRowHead
+        ref={headRef}
         isEven={leaf.n % 2 === 0}
         style={{
           height: leaf.nodeHeight + 'px',
         }}
         isSelected={isSelected === true}
       >
-        <Head_Label>{label}</Head_Label>
+        <PrimitivePropRowHead_Label>{label}</PrimitivePropRowHead_Label>
         {controlIndicators}
-        <IconContainer
+        <PrimitivePropRowIconContainer
           onClick={toggleSelect}
           isSelected={isSelected === true}
           graphEditorColor={possibleColor ?? '1'}
@@ -150,9 +161,9 @@ const PrimitivePropRow: React.FC<{
           disabled={!isSelectable}
         >
           <GraphIcon />
-        </IconContainer>
-      </Head>
-    </Container>
+        </PrimitivePropRowIconContainer>
+      </PrimitivePropRowHead>
+    </PrimitivePropRowContainer>
   )
 }
 

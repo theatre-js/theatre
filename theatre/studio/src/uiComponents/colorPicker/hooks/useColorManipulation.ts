@@ -54,8 +54,6 @@ export function useColorManipulation<T extends AnyColor>(
         !equalColorObjects(hsva, tempCache.current.hsva) &&
         !colorModel.equal(newColor, tempCache.current.color)
       ) {
-        console.log('hsva', hsva)
-        console.log('hsva cache', tempCache.current.hsva)
         tempCache.current = {hsva, color: newColor}
 
         setEditingValue(newColor)

@@ -1,3 +1,4 @@
 /dist
 /test-results/
 /playwright-report/
+/build

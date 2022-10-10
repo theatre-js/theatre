@@ -13,9 +13,26 @@ import type {ProjectState} from './store/storeTypes'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import globals from '@theatre/shared/globals'
+import type {
+  ProjectId,
+  SheetId,
+  SheetInstanceId,
+} from '@theatre/shared/utils/ids'
+import type {
+  ILogger,
+  ITheatreLoggerConfig,
+  ITheatreLoggingConfig,
+} from '@theatre/shared/logger'
+import {_coreLogger} from '@theatre/core/_coreLogger'
 
 export type Conf = Partial<{
   state: OnDiskState
+  experiments: ExperimentsConf
+}>
+
+export type ExperimentsConf = Partial<{
+  logger: ITheatreLoggerConfig
+  logging: ITheatreLoggingConfig
 }>
 
 export default class Project {
@@ -42,12 +59,15 @@ export default class Project {
   private _studio: Studio | undefined
 
   type: 'Theatre_Project' = 'Theatre_Project'
+  readonly _logger: ILogger
 
   constructor(
-    id: string,
+    id: ProjectId,
     readonly config: Conf = {},
     readonly publicApi: TheatreProject,
   ) {
+    this._logger = _coreLogger({logging: {dev: true}}).named('Project', id)
+    this._logger.traceDev('creating project')
     this.address = {projectId: id}
 
     const onDiskStateAtom = new Atom<ProjectState>({
@@ -89,18 +109,27 @@ export default class Project {
         // let's give it one tick to attach itself
         if (!this._studio) {
           this._readyDeferred.resolve(undefined)
+          this._logger._trace('ready deferred resolved with no state')
         }
       }, 0)
     } else {
       setTimeout(() => {
         if (!this._studio) {
-          throw new Error(
-            `Argument config.state in Theatre.getProject("${id}", config) is empty. This is fine ` +
-              `while you are using @theatre/core along with @theatre/sutdio. But since @theatre/studio ` +
-              `is not loaded, the state of project "${id}" will be empty.\n\n` +
-              `To fix this, you need to add @theatre/studio into the bundle and export ` +
-              `the projet's state. Learn how to do that at https://docs.theatrejs.com/in-depth/#exporting`,
-          )
+          if (typeof window === 'undefined') {
+            console.warn(
+              `Argument config.state in Theatre.getProject("${id}", config) is empty. ` +
+                `This is fine on SSR mode in development, but if you're creating a production bundle, make sure to set config.state, ` +
+                `otherwise your project's state will be empty and nothing will animate. Learn more at https://www.theatrejs.com/docs/latest/manual/projects#state`,
+            )
+          } else {
+            throw new Error(
+              `Argument config.state in Theatre.getProject("${id}", config) is empty. This is fine ` +
+                `while you are using @theatre/core along with @theatre/studio. But since @theatre/studio ` +
+                `is not loaded, the state of project "${id}" will be empty.\n\n` +
+                `To fix this, you need to add @theatre/studio into the bundle and export ` +
+                `the project's state. Learn how to do that at https://www.theatrejs.com/docs/latest/manual/projects#state\n`,
+            )
+          }
         }
       }, 1000)
     }
@@ -150,7 +179,10 @@ export default class Project {
     return this._readyDeferred.status === 'resolved'
   }
 
-  getOrCreateSheet(sheetId: string, instanceId: string = 'default'): Sheet {
+  getOrCreateSheet(
+    sheetId: SheetId,
+    instanceId: SheetInstanceId = 'default' as SheetInstanceId,
+  ): Sheet {
     let template = this._sheetTemplates.getState()[sheetId]
 
     if (!template) {

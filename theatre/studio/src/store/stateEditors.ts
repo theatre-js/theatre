@@ -1,4 +1,6 @@
 import type {
+  BasicKeyframedTrack,
+  HistoricPositionalSequence,
   Keyframe,
   SheetState_Historic,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
@@ -10,8 +12,15 @@ import type {
   SheetObjectAddress,
   WithoutSheetInstance,
 } from '@theatre/shared/utils/addresses'
+import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
 import {encodePathToProp} from '@theatre/shared/utils/addresses'
-import type {KeyframeId} from '@theatre/shared/utils/ids'
+import type {
+  StudioSheetItemKey,
+  KeyframeId,
+  SequenceMarkerId,
+  SequenceTrackId,
+  UIPanelId,
+} from '@theatre/shared/utils/ids'
 import {
   generateKeyframeId,
   generateSequenceTrackId,
@@ -31,10 +40,13 @@ import set from 'lodash-es/set'
 import sortBy from 'lodash-es/sortBy'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import type {
+  KeyframeWithPathToPropFromCommonRoot,
   OutlineSelectable,
   OutlineSelectionState,
   PanelPosition,
   StudioAhistoricState,
+  StudioEphemeralState,
+  StudioHistoricStateSequenceEditorMarker,
 } from './types'
 import {clamp, uniq} from 'lodash-es'
 import {
@@ -47,6 +59,7 @@ import {
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
+import {pointableSetUtil} from '@theatre/shared/utils/PointableSet'
 
 export const setDrafts__onlyMeantToBeCalledByTransaction = (
   drafts: undefined | Drafts,
@@ -58,7 +71,7 @@ export const setDrafts__onlyMeantToBeCalledByTransaction = (
 let currentDrafts: undefined | Drafts
 
 const drafts = (): Drafts => {
-  if (typeof currentDrafts === 'undefined') {
+  if (currentDrafts === undefined) {
     throw new Error(
       `Calling stateEditors outside of a transaction is not allowed.`,
     )
@@ -72,7 +85,7 @@ namespace stateEditors {
     export namespace historic {
       export namespace panelPositions {
         export function setPanelPosition(p: {
-          panelId: string
+          panelId: UIPanelId
           position: PanelPosition
         }) {
           const h = drafts().historic
@@ -245,12 +258,96 @@ namespace stateEditors {
                   ])
                 }
               }
+
+              function _ensureMarkers(sheetAddress: SheetAddress) {
+                const sequenceEditor =
+                  stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId._ensure(
+                    sheetAddress,
+                  ).sequenceEditor
+
+                if (!sequenceEditor.markerSet) {
+                  sequenceEditor.markerSet = pointableSetUtil.create()
+                }
+
+                return sequenceEditor.markerSet
+              }
+
+              export function replaceMarkers(p: {
+                sheetAddress: SheetAddress
+                markers: Array<StudioHistoricStateSequenceEditorMarker>
+                snappingFunction: (p: number) => number
+              }) {
+                const currentMarkerSet = _ensureMarkers(p.sheetAddress)
+
+                const sanitizedMarkers = p.markers
+                  .filter((marker) => {
+                    if (!isFinite(marker.position)) return false
+
+                    return true // marker looks valid
+                  })
+                  .map((marker) => ({
+                    ...marker,
+                    position: p.snappingFunction(marker.position),
+                  }))
+
+                const newMarkersById = keyBy(sanitizedMarkers, 'id')
+
+                /** Usually starts as the "unselected" markers */
+                let markersThatArentBeingReplaced = pointableSetUtil.filter(
+                  currentMarkerSet,
+                  (marker) => marker && !newMarkersById[marker.id],
+                )
+
+                const markersThatArentBeingReplacedByPosition = keyBy(
+                  Object.values(markersThatArentBeingReplaced.byId),
+                  'position',
+                )
+
+                // If the new transformed markers overlap with any existing markers,
+                // we remove the overlapped markers
+                sanitizedMarkers.forEach(({position}) => {
+                  const existingMarkerAtThisPosition =
+                    markersThatArentBeingReplacedByPosition[position]
+                  if (existingMarkerAtThisPosition) {
+                    markersThatArentBeingReplaced = pointableSetUtil.remove(
+                      markersThatArentBeingReplaced,
+                      existingMarkerAtThisPosition.id,
+                    )
+                  }
+                })
+
+                Object.assign(
+                  currentMarkerSet,
+                  pointableSetUtil.merge([
+                    markersThatArentBeingReplaced,
+                    pointableSetUtil.create(
+                      sanitizedMarkers.map((marker) => [marker.id, marker]),
+                    ),
+                  ]),
+                )
+              }
+
+              export function removeMarker(options: {
+                sheetAddress: SheetAddress
+                markerId: SequenceMarkerId
+              }) {
+                const currentMarkerSet = _ensureMarkers(options.sheetAddress)
+                Object.assign(
+                  currentMarkerSet,
+                  pointableSetUtil.remove(currentMarkerSet, options.markerId),
+                )
+              }
             }
           }
         }
       }
     }
     export namespace ephemeral {
+      export function setShowOutline(
+        showOutline: StudioEphemeralState['showOutline'],
+      ) {
+        drafts().ephemeral.showOutline = showOutline
+      }
       export namespace projects {
         export namespace stateByProjectId {
           export function _ensure(p: ProjectAddress) {
@@ -312,10 +409,45 @@ namespace stateEditors {
       }
     }
     export namespace ahistoric {
+      export function setPinOutline(
+        pinOutline: StudioAhistoricState['pinOutline'],
+      ) {
+        drafts().ahistoric.pinOutline = pinOutline
+      }
+      export function setPinDetails(
+        pinDetails: StudioAhistoricState['pinDetails'],
+      ) {
+        drafts().ahistoric.pinDetails = pinDetails
+      }
       export function setVisibilityState(
         visibilityState: StudioAhistoricState['visibilityState'],
       ) {
         drafts().ahistoric.visibilityState = visibilityState
+      }
+      export function setClipboardKeyframes(
+        keyframes: KeyframeWithPathToPropFromCommonRoot[],
+      ) {
+        const commonPath = commonRootOfPathsToProps(
+          keyframes.map((kf) => kf.pathToProp),
+        )
+
+        const keyframesWithCommonRootPath = keyframes.map(
+          ({keyframe, pathToProp}) => ({
+            keyframe,
+            pathToProp: pathToProp.slice(commonPath.length),
+          }),
+        )
+
+        // save selection
+        const draft = drafts()
+        if (draft.ahistoric.clipboard) {
+          draft.ahistoric.clipboard.keyframesWithRelativePaths =
+            keyframesWithCommonRootPath
+        } else {
+          draft.ahistoric.clipboard = {
+            keyframesWithRelativePaths: keyframesWithCommonRootPath,
+          }
+        }
       }
       export namespace projects {
         export namespace stateByProjectId {
@@ -355,6 +487,25 @@ namespace stateEditors {
                 return sheetState.sequence!
               }
 
+              export namespace focusRange {
+                export function set(
+                  p: WithoutSheetInstance<SheetAddress> & {
+                    range: IRange
+                    enabled: boolean
+                  },
+                ) {
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
+                    p,
+                  ).focusRange = {range: p.range, enabled: p.enabled}
+                }
+
+                export function unset(p: WithoutSheetInstance<SheetAddress>) {
+                  stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
+                    p,
+                  ).focusRange = undefined
+                }
+              }
+
               export namespace clippedSpaceRange {
                 export function set(
                   p: WithoutSheetInstance<SheetAddress> & {
@@ -364,6 +515,34 @@ namespace stateEditors {
                   stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
                     p,
                   ).clippedSpaceRange = {...p.range}
+                }
+              }
+
+              export namespace sequenceEditorCollapsableItems {
+                function _ensure(p: WithoutSheetInstance<SheetAddress>) {
+                  const seq =
+                    stateEditors.studio.ahistoric.projects.stateByProjectId.stateBySheetId.sequence._ensure(
+                      p,
+                    )
+                  let existing = seq.collapsableItems
+                  if (!existing) {
+                    existing = seq.collapsableItems = pointableSetUtil.create()
+                  }
+                  return existing
+                }
+                export function set(
+                  p: WithoutSheetInstance<SheetAddress> & {
+                    studioSheetItemKey: StudioSheetItemKey
+                    isCollapsed: boolean
+                  },
+                ) {
+                  const collapsableSet = _ensure(p)
+                  Object.assign(
+                    collapsableSet,
+                    pointableSetUtil.add(collapsableSet, p.studioSheetItemKey, {
+                      isCollapsed: p.isCollapsed,
+                    }),
+                  )
                 }
               }
             }
@@ -400,7 +579,9 @@ namespace stateEditors {
         }
 
         export namespace sequence {
-          export function _ensure(p: WithoutSheetInstance<SheetAddress>) {
+          export function _ensure(
+            p: WithoutSheetInstance<SheetAddress>,
+          ): HistoricPositionalSequence {
             const s = stateEditors.coreByProject.historic.sheetsById._ensure(p)
             s.sequence ??= {
               subUnitsPerUnit: 30,
@@ -446,10 +627,13 @@ namespace stateEditors {
 
             const trackId = generateSequenceTrackId()
 
-            tracks.trackData[trackId] = {
+            const track: BasicKeyframedTrack = {
               type: 'BasicKeyframedTrack',
+              __debugName: `${p.objectKey}:${pathEncoded}`,
               keyframes: [],
             }
+
+            tracks.trackData[trackId] = track
             tracks.trackIdByPropPath[pathEncoded] = trackId
           }
 
@@ -459,7 +643,7 @@ namespace stateEditors {
             },
           ) {
             const tracks = _ensureTracksOfObject(p)
-            const encodedPropPath = JSON.stringify(p.pathToProp)
+            const encodedPropPath = encodePathToProp(p.pathToProp)
             const trackId = tracks.trackIdByPropPath[encodedPropPath]
 
             if (typeof trackId !== 'string') return
@@ -500,7 +684,9 @@ namespace stateEditors {
           }
 
           function _getTrack(
-            p: WithoutSheetInstance<SheetObjectAddress> & {trackId: string},
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+            },
           ) {
             return _ensureTracksOfObject(p).trackData[p.trackId]
           }
@@ -511,8 +697,9 @@ namespace stateEditors {
            */
           export function setKeyframeAtPosition<T>(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               position: number
+              handles?: [number, number, number, number]
               value: T
               snappingFunction: SnappingFunction
             },
@@ -535,10 +722,13 @@ namespace stateEditors {
             )
             if (indexOfLeftKeyframe === -1) {
               keyframes.unshift({
+                // generating the keyframe within the `setKeyframeAtPosition` makes it impossible for us
+                // to make this business logic deterministic, which is important to guarantee for collaborative
+                // editing.
                 id: generateKeyframeId(),
                 position,
                 connectedRight: true,
-                handles: [0.5, 1, 0.5, 0],
+                handles: p.handles || [0.5, 1, 0.5, 0],
                 value: p.value,
               })
               return
@@ -548,14 +738,14 @@ namespace stateEditors {
               id: generateKeyframeId(),
               position,
               connectedRight: leftKeyframe.connectedRight,
-              handles: [0.5, 1, 0.5, 0],
+              handles: p.handles || [0.5, 1, 0.5, 0],
               value: p.value,
             })
           }
 
           export function unsetKeyframeAtPosition(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               position: number
             },
           ) {
@@ -574,7 +764,7 @@ namespace stateEditors {
 
           export function transformKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               keyframeIds: KeyframeId[]
               translate: number
               scale: number
@@ -586,8 +776,8 @@ namespace stateEditors {
             if (!track) return
             const initialKeyframes = current(track.keyframes)
 
-            const selectedKeyframes = initialKeyframes.filter(
-              (kf) => p.keyframeIds.indexOf(kf.id) !== -1,
+            const selectedKeyframes = initialKeyframes.filter((kf) =>
+              p.keyframeIds.includes(kf.id),
             )
 
             const transformed = selectedKeyframes.map((untransformedKf) => {
@@ -601,9 +791,101 @@ namespace stateEditors {
             replaceKeyframes({...p, keyframes: transformed})
           }
 
+          /**
+           * Sets the easing between keyframes
+           *
+           * X = in keyframeIds
+           * * = not in keyframeIds
+           * + = modified handle
+           * ```
+           * X- --- -*- --- -X
+           * X+ --- +*- --- -X+
+           * ```
+           *
+           * TODO - explain further
+           */
+          export function setTweenBetweenKeyframes(
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+              keyframeIds: KeyframeId[]
+              handles: [number, number, number, number]
+            },
+          ) {
+            const track = _getTrack(p)
+            if (!track) return
+
+            track.keyframes = track.keyframes.map((kf, i) => {
+              const prevKf = track.keyframes[i - 1]
+              const isBeingEdited = p.keyframeIds.includes(kf.id)
+              const isAfterEditedKeyframe = p.keyframeIds.includes(prevKf?.id)
+
+              if (isBeingEdited && !isAfterEditedKeyframe) {
+                return {
+                  ...kf,
+                  handles: [
+                    kf.handles[0],
+                    kf.handles[1],
+                    p.handles[0],
+                    p.handles[1],
+                  ],
+                }
+              } else if (isBeingEdited && isAfterEditedKeyframe) {
+                return {
+                  ...kf,
+                  handles: [
+                    p.handles[2],
+                    p.handles[3],
+                    p.handles[0],
+                    p.handles[1],
+                  ],
+                }
+              } else if (isAfterEditedKeyframe) {
+                return {
+                  ...kf,
+                  handles: [
+                    p.handles[2],
+                    p.handles[3],
+                    kf.handles[2],
+                    kf.handles[3],
+                  ],
+                }
+              } else {
+                return kf
+              }
+            })
+          }
+
+          export function setHandlesForKeyframe(
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+              keyframeId: KeyframeId
+              start?: [number, number]
+              end?: [number, number]
+            },
+          ) {
+            const track = _getTrack(p)
+            if (!track) return
+            track.keyframes = track.keyframes.map((kf) => {
+              if (kf.id === p.keyframeId) {
+                // Use given value or fallback to original value,
+                // allowing the caller to customize exactly which side
+                // of the curve they are editing.
+                return {
+                  ...kf,
+                  handles: [
+                    p.end?.[0] ?? kf.handles[0],
+                    p.end?.[1] ?? kf.handles[1],
+                    p.start?.[0] ?? kf.handles[2],
+                    p.start?.[1] ?? kf.handles[3],
+                  ],
+                }
+              } else return kf
+            })
+          }
+
           export function deleteKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               keyframeIds: KeyframeId[]
             },
           ) {
@@ -615,9 +897,12 @@ namespace stateEditors {
             )
           }
 
-          export function replaceKeyframes<T>(
+          // Future: consider whether a list of "partial" keyframes requiring `id` is possible to accept
+          //  * Consider how common this pattern is, as this sort of concept would best be encountered
+          //    a few times to start to see an opportunity for improved ergonomics / crdt.
+          export function replaceKeyframes(
             p: WithoutSheetInstance<SheetObjectAddress> & {
-              trackId: string
+              trackId: SequenceTrackId
               keyframes: Array<Keyframe>
               snappingFunction: SnappingFunction
             },

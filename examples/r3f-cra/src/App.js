@@ -1,14 +1,16 @@
 import {getProject} from '@theatre/core'
 import * as THREE from 'three'
-import {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {useFrame, Canvas} from '@react-three/fiber'
 import {Shadow, softShadows} from '@react-three/drei'
-import React from 'react'
-import {editable as e, SheetProvider, extension} from '@theatre/r3f'
 import studio from '@theatre/studio'
+import {editable as e, SheetProvider} from '@theatre/r3f'
+import extension from '@theatre/r3f/dist/extension'
 
-studio.extend(extension)
-studio.initialize()
+if (process.env.NODE_ENV === 'development') {
+  studio.extend(extension)
+  studio.initialize()
+}
 
 // Soft shadows are expensive, comment and refresh when it's too slow
 softShadows()
@@ -49,7 +51,7 @@ function Button() {
       onClick={() => set(!zoom)}
       onPointerOver={() => setActive(true)}
       onPointerOut={() => setActive(false)}
-      uniqueName="The Button"
+      theatreKey="The Button"
     >
       <sphereBufferGeometry args={[0.75, 64, 64]} />
       <meshPhysicalMaterial
@@ -73,9 +75,9 @@ function Button() {
   )
 }
 
-function Plane({color, uniqueName, ...props}) {
+function Plane({color, theatreKey, ...props}) {
   return (
-    <e.mesh receiveShadow castShadow {...props} uniqueName={uniqueName}>
+    <e.mesh receiveShadow castShadow {...props} theatreKey={theatreKey}>
       <boxBufferGeometry />
       <meshStandardMaterial color={color} />
     </e.mesh>
@@ -88,25 +90,29 @@ function App() {
       <Canvas
         // @ts-ignore
         shadowMap
+        gl={{preserveDrawingBuffer: true}}
+        linear
+        frameloop="demand"
+        dpr={[1.5, 2]}
       >
         <SheetProvider
-          getSheet={() => getProject('Playground - R3F').sheet('R3F-Canvas')}
+          sheet={getProject('Playground - R3F').sheet('R3F-Canvas')}
         >
           {/* @ts-ignore */}
-          <e.perspectiveCamera makeDefault uniqueName="Camera" />
+          <e.perspectiveCamera makeDefault theatreKey="Camera" />
           <ambientLight intensity={0.4} />
           <e.pointLight
             position={[-10, -10, 5]}
             intensity={2}
             color="#ff20f0"
-            uniqueName="Light 1"
+            theatreKey="Light 1"
           />
           <e.pointLight
             position={[0, 0.5, -1]}
             distance={1}
             intensity={2}
             color="#e4be00"
-            uniqueName="Light 2"
+            theatreKey="Light 2"
           />
           <group position={[0, -0.9, -3]}>
             <Plane
@@ -114,28 +120,28 @@ function App() {
               rotation-x={-Math.PI / 2}
               position-z={2}
               scale={[4, 20, 0.2]}
-              uniqueName="plane1"
+              theatreKey="plane1"
             />
             <Plane
               color="#e4be00"
               rotation-x={-Math.PI / 2}
               position-y={1}
               scale={[4.2, 0.2, 4]}
-              uniqueName="plane2"
+              theatreKey="plane2"
             />
             <Plane
               color="#736fbd"
               rotation-x={-Math.PI / 2}
               position={[-1.7, 1, 3.5]}
               scale={[0.5, 4, 4]}
-              uniqueName="plane3"
+              theatreKey="plane3"
             />
             <Plane
               color="white"
               rotation-x={-Math.PI / 2}
               position={[0, 4.5, 3]}
               scale={[2, 0.03, 4]}
-              uniqueName="plane4"
+              theatreKey="plane4"
             />
           </group>
           <Button />

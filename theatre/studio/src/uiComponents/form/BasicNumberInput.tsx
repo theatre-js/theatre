@@ -1,11 +1,12 @@
 import {clamp, isInteger, round} from 'lodash-es'
 import type {MutableRefObject} from 'react'
+import {useState} from 'react'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import DraggableArea from '@theatre/studio/uiComponents/DraggableArea'
 import mergeRefs from 'react-merge-refs'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
+import useDrag from '@theatre/studio/uiComponents/useDrag'
 
 const Container = styled.div`
   height: 100%;
@@ -71,9 +72,9 @@ const FillIndicator = styled.div`
   }
 `
 
-function isFiniteFloat(s: string) {
-  return isFinite(parseFloat(s))
-}
+const DragWrap = styled.div`
+  display: contents;
+`
 
 type IState_NoFocus = {
   mode: 'noFocus'
@@ -87,8 +88,6 @@ type IState_EditingViaKeyboard = {
 
 type IState_Dragging = {
   mode: 'dragging'
-  valueBeforeDragging: number
-  currentDraggingValue: number
 }
 
 type IState = IState_NoFocus | IState_EditingViaKeyboard | IState_Dragging
@@ -105,7 +104,7 @@ const BasicNumberInput: React.FC<{
   value: number
   temporarilySetValue: (v: number) => void
   discardTemporaryValue: () => void
-  permenantlySetValue: (v: number) => void
+  permanentlySetValue: (v: number) => void
   className?: string
   range?: [min: number, max: number]
   isValid?: (v: number) => boolean
@@ -116,6 +115,7 @@ const BasicNumberInput: React.FC<{
    */
   onBlur?: () => void
   nudge: BasicNumberInputNudgeFn
+  autoFocus?: boolean
 }> = (propsA) => {
   const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
   const isValid = propsA.isValid ?? alwaysValid
@@ -167,7 +167,7 @@ const BasicNumberInput: React.FC<{
         if (curState.valueBeforeEditing === value) {
           propsRef.current.discardTemporaryValue()
         } else {
-          propsRef.current.permenantlySetValue(value)
+          propsRef.current.permanentlySetValue(value)
         }
       }
     }
@@ -223,53 +223,50 @@ const BasicNumberInput: React.FC<{
 
       stateRef.current = {
         mode: 'dragging',
-        valueBeforeDragging: curValue,
-        currentDraggingValue: curValue,
       }
+
+      let valueBeforeDragging = curValue
+      let valueDuringDragging = curValue
 
       bodyCursorBeforeDrag.current = document.body.style.cursor
-    }
 
-    const onDragEnd = (happened: boolean) => {
-      if (!happened) {
-        propsRef.current.discardTemporaryValue()
-        stateRef.current = {mode: 'noFocus'}
+      return {
+        // note: we use mx because we need to constrain the `valueDuringDragging`
+        // and dx will keep accumulating past any constraints
+        onDrag(_dx: number, _dy: number, e: MouseEvent, mx: number) {
+          const deltaX = e.altKey ? mx / 10 : mx
+          const newValue =
+            valueDuringDragging +
+            propsA.nudge({
+              deltaX,
+              deltaFraction: deltaX / inputWidth,
+              magnitude: 1,
+            })
 
-        inputRef.current!.focus()
-        inputRef.current!.setSelectionRange(0, 100)
-      } else {
-        const curState = stateRef.current as IState_Dragging
-        const value = curState.currentDraggingValue
-        if (curState.valueBeforeDragging === value) {
-          propsRef.current.discardTemporaryValue()
-        } else {
-          propsRef.current.permenantlySetValue(value)
-        }
-        stateRef.current = {mode: 'noFocus'}
+          valueDuringDragging = propsA.range
+            ? clamp(newValue, propsA.range[0], propsA.range[1])
+            : newValue
+
+          propsRef.current.temporarilySetValue(valueDuringDragging)
+        },
+        onDragEnd(happened: boolean) {
+          if (!happened) {
+            propsRef.current.discardTemporaryValue()
+            stateRef.current = {mode: 'noFocus'}
+          } else {
+            if (valueBeforeDragging === valueDuringDragging) {
+              propsRef.current.discardTemporaryValue()
+            } else {
+              propsRef.current.permanentlySetValue(valueDuringDragging)
+            }
+            stateRef.current = {mode: 'noFocus'}
+          }
+        },
+        onClick() {
+          inputRef.current!.focus()
+          inputRef.current!.setSelectionRange(0, 100)
+        },
       }
-    }
-
-    const onDrag = (deltaX: number, _dy: number) => {
-      const curState = stateRef.current as IState_Dragging
-
-      let newValue =
-        curState.valueBeforeDragging +
-        propsA.nudge({
-          deltaX,
-          deltaFraction: deltaX / inputWidth,
-          magnitude: 1,
-        })
-
-      if (propsA.range) {
-        newValue = clamp(newValue, propsA.range[0], propsA.range[1])
-      }
-
-      stateRef.current = {
-        ...curState,
-        currentDraggingValue: newValue,
-      }
-
-      propsRef.current.temporarilySetValue(newValue)
     }
 
     return {
@@ -279,8 +276,6 @@ const BasicNumberInput: React.FC<{
       onInputKeyDown,
       onClick,
       onFocus,
-      onDragEnd,
-      onDrag,
     }
   }, [])
 
@@ -314,6 +309,7 @@ const BasicNumberInput: React.FC<{
         e.preventDefault()
         e.stopPropagation()
       }}
+      autoFocus={propsA.autoFocus}
     />
   )
 
@@ -329,18 +325,18 @@ const BasicNumberInput: React.FC<{
     />
   ) : null
 
+  const [dragNode, setDragNode] = useState<HTMLDivElement | null>(null)
+  useDrag(dragNode, {
+    debugName: 'form/BasicNumberInput',
+    onDragStart: callbacks.transitionToDraggingMode,
+    lockCSSCursorTo: 'ew-resize',
+    shouldPointerLock: true,
+    disabled: stateRef.current.mode === 'editingViaKeyboard',
+  })
+
   return (
     <Container className={propsA.className + ' ' + stateRef.current.mode}>
-      <DraggableArea
-        key="draggableArea"
-        onDragStart={callbacks.transitionToDraggingMode}
-        onDragEnd={callbacks.onDragEnd}
-        onDrag={callbacks.onDrag}
-        enabled={stateRef.current.mode !== 'editingViaKeyboard'}
-        lockCursorTo="ew-resize"
-      >
-        {theInput}
-      </DraggableArea>
+      <DragWrap ref={setDragNode}>{theInput}</DragWrap>
       {fillIndicator}
     </Container>
   )

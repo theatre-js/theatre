@@ -6,7 +6,7 @@ import {useVal} from '@theatre/react'
 import ExtensionPaneWrapper from '@theatre/studio/panels/BasePanel/ExtensionPaneWrapper'
 import SequenceEditorPanel from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 
-const PanelsRoot: React.FC = () => {
+const PanelsRoot: React.VFC = () => {
   const panes = useVal(getStudio().paneManager.allPanesD)
   const paneEls = Object.entries(panes).map(([instanceId, paneInstance]) => {
     return (

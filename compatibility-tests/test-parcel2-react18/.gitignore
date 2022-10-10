@@ -1,0 +1,4 @@
+/.parcel-cache
+/.cache
+/dist
+/package-lock.json

@@ -52,14 +52,20 @@ const Input = styled.input`
   height: 0;
 `
 
-const BasicSwitch: React.FC<{
-  value: string
-  onChange: (val: string) => void
-  options: Record<string, string>
-}> = ({value, onChange, options}) => {
+function BasicSwitch<TLiteralOptions extends string>({
+  value,
+  onChange,
+  options,
+  autoFocus,
+}: {
+  value: TLiteralOptions
+  onChange: (val: TLiteralOptions) => void
+  options: Record<TLiteralOptions, string>
+  autoFocus?: boolean
+}) {
   const _onChange = useCallback(
     (el: React.ChangeEvent<HTMLInputElement>) => {
-      onChange(String(el.target.value))
+      onChange(String(el.target.value) as TLiteralOptions)
     },
     [onChange],
   )
@@ -74,6 +80,7 @@ const BasicSwitch: React.FC<{
             value={key}
             onChange={_onChange}
             name="switchbox"
+            autoFocus={autoFocus}
           />
         </Label>
       ))}

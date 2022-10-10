@@ -1,3 +1,3 @@
-import {createBundles} from './buildUtils'
+import {createBundles} from './createBundles'
 
 createBundles(false)

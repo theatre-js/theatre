@@ -1,6 +1,6 @@
 {
   "name": "@theatre/browser-bundles",
-  "version": "0.4.8-dev.2",
+  "version": "0.5.0",
   "license": "SEE LICENSE IN LICENSE",
   "author": {
     "name": "Aria Minaei",
@@ -16,8 +16,10 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "node -r esbuild-register ./devEnv/build.ts",
-    "prepublish": "node ../../devEnv/ensurePublishing.js"
+    "build": "yarn run build:js",
+    "build:js": "node -r esbuild-register ./devEnv/build.ts",
+    "prepublish": "node ../../devEnv/ensurePublishing.js",
+    "clean": "rm -rf ./dist && rm -f tsconfig.tsbuildinfo"
   },
   "devDependencies": {
     "esbuild": "^0.12.15",

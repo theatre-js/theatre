@@ -3,12 +3,15 @@ import type {
   SerializableMap,
   SerializableValue,
 } from '@theatre/shared/utils/types'
+import type {ObjectAddressKey, ProjectId, SheetId, SheetInstanceId} from './ids'
+import memoizeFn from './memoizeFn'
+import type {Nominal} from './Nominal'
 
 /**
  * Represents the address to a project
  */
 export interface ProjectAddress {
-  projectId: string
+  projectId: ProjectId
 }
 
 /**
@@ -22,8 +25,8 @@ export interface ProjectAddress {
  * ```
  */
 export interface SheetAddress extends ProjectAddress {
-  sheetId: string
-  sheetInstanceId: string
+  sheetId: SheetId
+  sheetInstanceId: SheetInstanceId
 }
 
 /**
@@ -36,7 +39,7 @@ export type WithoutSheetInstance<T extends SheetAddress> = Omit<
 >
 
 export type SheetInstanceOptional<T extends SheetAddress> =
-  WithoutSheetInstance<T> & {sheetInstanceId?: string | undefined}
+  WithoutSheetInstance<T> & {sheetInstanceId?: SheetInstanceId | undefined}
 
 /**
  * Represents the address to a Sheet's Object
@@ -51,15 +54,17 @@ export interface SheetObjectAddress extends SheetAddress {
    * obj.address.objectKey === 'foo'
    * ```
    */
-  objectKey: string
+  objectKey: ObjectAddressKey
 }
 
 export type PathToProp = Array<string | number>
 
-export type PathToProp_Encoded = string
+export type PathToProp_Encoded = Nominal<'PathToProp_Encoded'>
 
-export const encodePathToProp = (p: PathToProp): PathToProp_Encoded =>
-  JSON.stringify(p)
+export const encodePathToProp = memoizeFn(
+  (p: PathToProp): PathToProp_Encoded =>
+    JSON.stringify(p) as PathToProp_Encoded,
+)
 
 export const decodePathToProp = (s: PathToProp_Encoded): PathToProp =>
   JSON.parse(s)
@@ -105,4 +110,49 @@ export const getValueByPropPath = (
   }
 
   return cur
+}
+
+export function doesPathStartWith(
+  path: (string | number)[],
+  pathPrefix: (string | number)[],
+) {
+  return pathPrefix.every((pathPart, i) => pathPart === path[i])
+}
+
+export function arePathsEqual(
+  pathToPropA: (string | number)[],
+  pathToPropB: (string | number)[],
+) {
+  if (pathToPropA.length !== pathToPropB.length) return false
+  for (let i = 0; i < pathToPropA.length; i++) {
+    if (pathToPropA[i] !== pathToPropB[i]) return false
+  }
+  return true
+}
+
+/**
+ * e.g.
+ * ```
+ * commonRootOfPathsToProps([
+ *   ['a','b','c','d','e'],
+ *   ['a','b','x','y','z'],
+ *   ['a','b','c']
+ *  ]) // = ['a','b']
+ * ```
+ */
+export function commonRootOfPathsToProps(pathsToProps: (string | number)[][]) {
+  const commonPathToProp: (string | number)[] = []
+  while (true) {
+    const i = commonPathToProp.length
+    let candidatePathPart = pathsToProps[0]?.[i]
+    if (candidatePathPart === undefined) return commonPathToProp
+
+    for (const pathToProp of pathsToProps) {
+      if (candidatePathPart !== pathToProp[i]) {
+        return commonPathToProp
+      }
+    }
+
+    commonPathToProp.push(candidatePathPart)
+  }
 }

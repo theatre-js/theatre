@@ -5,23 +5,28 @@ import type {
 } from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {ConstantDerivation, prism, val} from '@theatre/dataverse'
-import logger from '@theatre/shared/logger'
+import type {IUtilContext} from '@theatre/shared/logger'
+import type {SerializableValue} from '@theatre/shared/utils/types'
 import UnitBezier from 'timing-function/lib/UnitBezier'
 
+/** `left` and `right` are not necessarily the same type.  */
 export type InterpolationTriple = {
-  left: unknown
-  right?: unknown
+  /** `left` and `right` are not necessarily the same type.  */
+  left: SerializableValue
+  /** `left` and `right` are not necessarily the same type.  */
+  right?: SerializableValue
   progression: number
 }
 
-// @remarks This new implementation supports sequencing non-scalars, but it's also heavier
+// @remarks This new implementation supports sequencing non-numeric props, but it's also heavier
 // on the GC. This shouldn't be a problem for the vast majority of users, but it's also a
 // low-hanging fruit for perf optimization.
 // It can be improved by:
 // 1. Not creating a new InterpolationTriple object on every change
-// 2. Caching propConfig.sanitize(value)
+// 2. Caching propConfig.deserializeAndSanitize(value)
 
 export default function interpolationTripleAtPosition(
+  ctx: IUtilContext,
   trackP: Pointer<TrackData | undefined>,
   timeD: IDerivation<number>,
 ): IDerivation<InterpolationTriple | undefined> {
@@ -33,9 +38,9 @@ export default function interpolationTripleAtPosition(
         if (!track) {
           return new ConstantDerivation(undefined)
         } else if (track.type === 'BasicKeyframedTrack') {
-          return _forKeyframedTrack(track, timeD)
+          return _forKeyframedTrack(ctx, track, timeD)
         } else {
-          logger.error(`Track type not yet supported.`)
+          ctx.logger.error(`Track type not yet supported.`)
           return new ConstantDerivation(undefined)
         }
       },
@@ -56,6 +61,7 @@ type IStartedState = {
 type IState = {started: false} | IStartedState
 
 function _forKeyframedTrack(
+  ctx: IUtilContext,
   track: BasicKeyframedTrack,
   timeD: IDerivation<number>,
 ): IDerivation<InterpolationTriple | undefined> {
@@ -66,7 +72,7 @@ function _forKeyframedTrack(
     const time = timeD.getValue()
 
     if (!state.started || time < state.validFrom || state.validTo <= time) {
-      stateRef.current = state = updateState(timeD, track)
+      stateRef.current = state = updateState(ctx, timeD, track)
     }
 
     return state.der.getValue()
@@ -75,10 +81,11 @@ function _forKeyframedTrack(
 
 const undefinedConstD = new ConstantDerivation(undefined)
 
-const updateState = (
+function updateState(
+  ctx: IUtilContext,
   progressionD: IDerivation<number>,
   track: BasicKeyframedTrack,
-): IStartedState => {
+): IStartedState {
   const progression = progressionD.getValue()
   if (track.keyframes.length === 0) {
     return {
@@ -96,7 +103,7 @@ const updateState = (
 
     if (!currentKeyframe) {
       if (process.env.NODE_ENV !== 'production') {
-        logger.error(`Bug here`)
+        ctx.logger.error(`Bug here`)
       }
       return states.error
     }
@@ -108,7 +115,7 @@ const updateState = (
         return states.beforeFirstKeyframe(currentKeyframe)
       } else {
         if (process.env.NODE_ENV !== 'production') {
-          logger.error(`Bug here`)
+          ctx.logger.error(`Bug here`)
         }
         return states.error
         // note: uncomment these if we support starting with currentPointIndex != 0

@@ -1,14 +1,95 @@
+import type {VoidFn} from './types'
+
 type ICallback = (t: number) => void
+
+export type RafTicker = {
+  ticker: Ticker
+  enableTicker: VoidFn
+  disableTicker: VoidFn
+}
+
+function createRafTicker(): RafTicker {
+  const ticker = new Ticker()
+  const usingAnimationFrame = !!(
+    typeof window !== 'undefined' && window.requestAnimationFrame
+  )
+  let defaultTickerEnabled = true
+  let animationFrameRequestId: number | null = null
+  let timeout: NodeJS.Timeout | null = null
+
+  function enableTicker() {
+    if (!defaultTickerEnabled) {
+      defaultTickerEnabled = true
+      maybeRequestAnimationFrame()
+    }
+  }
+
+  function disableTicker() {
+    defaultTickerEnabled = false
+    if (animationFrameRequestId) {
+      window.cancelAnimationFrame(animationFrameRequestId)
+      animationFrameRequestId = null
+    } else if (timeout) {
+      clearTimeout(timeout)
+      timeout = null
+    }
+  }
+
+  function maybeRequestAnimationFrame() {
+    if (defaultTickerEnabled) {
+      if (usingAnimationFrame && !animationFrameRequestId) {
+        animationFrameRequestId = window.requestAnimationFrame(onAnimationFrame)
+      } else if (!usingAnimationFrame && !timeout) {
+        ticker.tick(0)
+        timeout = setTimeout(() => ticker.tick(1), 0)
+      }
+    }
+  }
+
+  function onAnimationFrame(t: number) {
+    animationFrameRequestId = null
+    ticker.tick(t)
+    maybeRequestAnimationFrame()
+  }
+
+  maybeRequestAnimationFrame()
+
+  return {
+    ticker,
+    enableTicker,
+    disableTicker,
+  }
+}
+
+let rafTicker: undefined | RafTicker
 
 /**
  * The Ticker class helps schedule callbacks. Scheduled callbacks are executed per tick. Ticks can be triggered by an
  * external scheduling strategy, e.g. a raf.
  */
 export default class Ticker {
+  /** Get a shared `requestAnimationFrame` ticker. */
+  static get raf(): Ticker {
+    return this.stoppableRaf.ticker
+  }
+  static get stoppableRaf(): RafTicker {
+    if (!rafTicker) {
+      rafTicker = createRafTicker()
+    }
+    return rafTicker
+  }
   private _scheduledForThisOrNextTick: Set<ICallback>
   private _scheduledForNextTick: Set<ICallback>
   private _timeAtCurrentTick: number
   private _ticking: boolean = false
+  /**
+   * Counts up for every tick executed.
+   * Internally, this is used to measure ticks per second.
+   *
+   * This is "public" to TypeScript, because it's a tool for performance measurements.
+   * Consider this as experimental, and do not rely on it always being here in future releases.
+   */
+  public __ticks = 0
 
   constructor() {
     this._scheduledForThisOrNextTick = new Set()
@@ -87,11 +168,22 @@ export default class Ticker {
    * @see onNextTick
    */
   tick(t: number = performance.now()) {
+    if (process.env.NODE_ENV === 'development') {
+      if (!(this instanceof Ticker)) {
+        throw new Error(
+          'ticker.tick must be called while bound to the ticker. As in, "ticker.tick(time)" or "requestAnimationFrame((t) => ticker.tick(t))" for performance.',
+        )
+      }
+    }
+
+    this.__ticks++
+
     this._ticking = true
     this._timeAtCurrentTick = t
-    this._scheduledForNextTick.forEach((v) =>
-      this._scheduledForThisOrNextTick.add(v),
-    )
+    for (const v of this._scheduledForNextTick) {
+      this._scheduledForThisOrNextTick.add(v)
+    }
+
     this._scheduledForNextTick.clear()
     this._tick(0)
     this._ticking = false
@@ -110,9 +202,9 @@ export default class Ticker {
 
     const oldSet = this._scheduledForThisOrNextTick
     this._scheduledForThisOrNextTick = new Set()
-    oldSet.forEach((fn) => {
+    for (const fn of oldSet) {
       fn(time)
-    })
+    }
 
     if (this._scheduledForThisOrNextTick.size > 0) {
       return this._tick(iterationNumber + 1)

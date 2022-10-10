@@ -1,12 +1,9 @@
-import projectsSingleton from '@theatre/core/projects/projectsSingleton'
-import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
-import type {
-  IProject,
-  IProjectConfig,
-} from '@theatre/core/projects/TheatreProject'
-import TheatreProject from '@theatre/core/projects/TheatreProject'
+import projectsSingleton from './projects/projectsSingleton'
+import type {OnDiskState} from './projects/store/storeTypes'
+import type {IProject, IProjectConfig} from './projects/TheatreProject'
+import TheatreProject from './projects/TheatreProject'
 import globals from '@theatre/shared/globals'
-import * as types from '@theatre/core/propTypes'
+import * as types from './propTypes'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
@@ -15,10 +12,9 @@ import type {PointerType} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
 import {isDerivation, valueDerivation} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
-import coreTicker, {
-  enableDefaultTicker,
-  disableDefaultTicker,
-} from './coreTicker'
+import coreTicker, {enableTicker, disableTicker} from './coreTicker'
+import type {ProjectId} from '@theatre/shared/utils/ids'
+import {_coreLogger} from './_coreLogger'
 export {types}
 
 /**
@@ -47,8 +43,7 @@ export {types}
  * ```
  */
 export function getProject(id: string, config: IProjectConfig = {}): IProject {
-  const {...restOfConfig} = config
-  const existingProject = projectsSingleton.get(id)
+  const existingProject = projectsSingleton.get(id as ProjectId)
   if (existingProject) {
     if (process.env.NODE_ENV !== 'production') {
       if (!deepEqual(config, existingProject.config)) {
@@ -63,27 +58,35 @@ export function getProject(id: string, config: IProjectConfig = {}): IProject {
     return existingProject.publicApi
   }
 
+  const rootLogger = _coreLogger()
+  const plogger = rootLogger.named('Project', id)
+
   if (process.env.NODE_ENV !== 'production') {
     validateName(id, 'projectName in Theatre.getProject(projectName)', true)
     validateProjectIdOrThrow(id)
+    plogger._debug('validated projectName', {projectName: id})
   }
 
   if (config.state) {
     if (process.env.NODE_ENV !== 'production') {
-      shallowValidateOnDiskState(id, config.state)
+      shallowValidateOnDiskState(id as ProjectId, config.state)
+      plogger._debug('shallow validated config.state on disk')
     } else {
-      deepValidateOnDiskState(id, config.state)
+      deepValidateOnDiskState(id as ProjectId, config.state)
+      plogger._debug('deep validated config.state on disk')
     }
+  } else {
+    plogger._debug('no config.state')
   }
 
-  return new TheatreProject(id, restOfConfig)
+  return new TheatreProject(id, config)
 }
 
 /**
  * Lightweight validator that only makes sure the state's definitionVersion is correct.
  * Does not do a thorough validation of the state.
  */
-const shallowValidateOnDiskState = (projectId: string, s: OnDiskState) => {
+const shallowValidateOnDiskState = (projectId: ProjectId, s: OnDiskState) => {
   if (
     Array.isArray(s) ||
     s == null ||
@@ -97,7 +100,7 @@ const shallowValidateOnDiskState = (projectId: string, s: OnDiskState) => {
   }
 }
 
-const deepValidateOnDiskState = (projectId: string, s: OnDiskState) => {
+const deepValidateOnDiskState = (projectId: ProjectId, s: OnDiskState) => {
   shallowValidateOnDiskState(projectId, s)
   // @TODO do a deep validation here
 }
@@ -200,10 +203,10 @@ export {
    * this does nothing unless there was a prior call to
    * `disableDefaultTicker()`.
    */
-  enableDefaultTicker,
+  enableTicker as enableDefaultTicker,
   /**
    * Disables the default core ticker. When the default ticker is disabled,
    * you must call `Theatre.core.ticker.tick()` manually.
    */
-  disableDefaultTicker,
+  disableTicker as disableDefaultTicker,
 }

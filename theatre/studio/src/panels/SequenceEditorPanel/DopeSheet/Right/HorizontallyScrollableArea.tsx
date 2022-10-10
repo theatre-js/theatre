@@ -1,4 +1,3 @@
-import type Sequence from '@theatre/core/sequences/Sequence'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -10,8 +9,10 @@ import React, {useLayoutEffect, useMemo} from 'react'
 import styled from 'styled-components'
 import {useReceiveVerticalWheelEvent} from '@theatre/studio/panels/SequenceEditorPanel/VerticalScrollContainer'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import {useCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import type {IRange} from '@theatre/shared/utils/types'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
+import {snapToAll, snapToNone} from './KeyframeSnapTarget'
 
 const Container = styled.div`
   position: absolute;
@@ -28,10 +29,6 @@ const Container = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-`
-
-const ShiftRight = styled.div`
-  position: absolute;
 `
 
 const HorizontallyScrollableArea: React.FC<{
@@ -53,7 +50,7 @@ const HorizontallyScrollableArea: React.FC<{
   )
 
   useHandlePanAndZoom(layoutP, containerNode)
-  useDragHandlers(layoutP, containerNode)
+  useDragPlayheadHandlers(layoutP, containerNode)
   useUpdateScrollFromClippedSpaceRange(layoutP, containerNode)
 
   return (
@@ -66,56 +63,27 @@ const HorizontallyScrollableArea: React.FC<{
         '--unitSpaceToScaledSpaceMultiplier': unitSpaceToScaledSpaceMultiplier,
       }}
     >
-      <ShiftRight
-        style={{
-          left: val(layoutP.scaledSpace.leftPadding) + 'px',
-        }}
-      >
-        {children}
-      </ShiftRight>
+      {children}
     </Container>
   )
 })
 
 export default HorizontallyScrollableArea
 
-function useDragHandlers(
+function useDragPlayheadHandlers(
   layoutP: Pointer<SequenceEditorPanelLayout>,
   containerEl: HTMLDivElement | null,
 ) {
   const handlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    let posBeforeSeek = 0
-    let sequence: Sequence
-    let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
-    const setIsSeeking = val(layoutP.seeker.setIsSeeking)
-
     return {
-      onDrag(dx: number, _, event) {
-        const deltaPos = scaledSpaceToUnitSpace(dx)
-        const unsnappedPos = clamp(posBeforeSeek + deltaPos, 0, sequence.length)
-
-        let newPosition = unsnappedPos
-
-        const snapTarget = event.composedPath().find(
-          (el): el is Element =>
-            el instanceof Element &&
-            // el !== thumbNode &&
-            el.hasAttribute('data-pos'),
-        )
-
-        if (snapTarget) {
-          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
-
-          if (isFinite(snapPos)) {
-            newPosition = snapPos
-          }
-        }
-
-        sequence.position = newPosition
-      },
+      debugName: 'HorizontallyScrollableArea',
       onDragStart(event) {
-        if (event.target instanceof HTMLInputElement) return false
+        if (event.target instanceof HTMLInputElement) {
+          // editing some value
+          return false
+        }
         if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
+          // e.g. marquee selection has shiftKey
           return false
         }
         if (
@@ -123,6 +91,9 @@ function useDragHandlers(
             .composedPath()
             .some((el) => el instanceof HTMLElement && el.draggable === true)
         ) {
+          // Question: I think to check if we want another descendent element
+          // to be able to take control of this drag event.
+          // Question: e.g. for `useDragKeyframe`?
           return false
         }
 
@@ -135,23 +106,48 @@ function useDragHandlers(
           Infinity,
         )
 
-        sequence = val(layoutP.sheet).getSequence()
+        const setIsSeeking = val(layoutP.seeker.setIsSeeking)
+
+        const sequence = val(layoutP.sheet).getSequence()
 
         sequence.position = initialPositionInUnitSpace
 
-        posBeforeSeek = initialPositionInUnitSpace
-        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+        const posBeforeSeek = initialPositionInUnitSpace
+        const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
         setIsSeeking(true)
-      },
-      onDragEnd() {
-        setIsSeeking(false)
+
+        snapToAll()
+
+        return {
+          onDrag(dx: number, _, event) {
+            const deltaPos = scaledSpaceToUnitSpace(dx)
+            const unsnappedPos = clamp(
+              posBeforeSeek + deltaPos,
+              0,
+              sequence.length,
+            )
+
+            let newPosition = unsnappedPos
+
+            const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {})
+            if (snapPos != null) {
+              newPosition = snapPos
+            }
+
+            sequence.position = newPosition
+          },
+          onDragEnd() {
+            setIsSeeking(false)
+            snapToNone()
+          },
+        }
       },
     }
   }, [layoutP, containerEl])
 
-  const [isDragigng] = useDrag(containerEl, handlers)
+  const [isDragging] = useDrag(containerEl, handlers)
 
-  useCursorLock(isDragigng, 'draggingPositionInSequenceEditor', 'ew-resize')
+  useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 }
 
 function useHandlePanAndZoom(
@@ -163,23 +159,6 @@ function useHandlePanAndZoom(
     if (!node) return
 
     const receiveWheelEvent = (event: WheelEvent) => {
-      if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) {
-        // receiveVerticalWheelEvent(event)
-        event.preventDefault()
-        event.stopPropagation()
-
-        const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-        const deltaPos = scaledSpaceToUnitSpace(event.deltaX * 1)
-        const oldRange = val(layoutP.clippedSpace.range)
-        const newRange = mapValues(oldRange, (p) => p + deltaPos)
-
-        const setRange = val(layoutP.clippedSpace.setRange)
-
-        setRange(newRange)
-
-        return
-      }
-
       // pinch
       if (event.ctrlKey) {
         event.preventDefault()
@@ -211,8 +190,9 @@ function useHandlePanAndZoom(
         val(layoutP.clippedSpace.setRange)(
           normalizeRange(newRange, [0, maxEnd]),
         )
+        return
       }
-      // paning
+      // panning
       else if (event.shiftKey) {
         event.preventDefault()
         event.stopPropagation()
@@ -222,7 +202,12 @@ function useHandlePanAndZoom(
         const windowSize = oldRange.end - oldRange.start
         const speed = windowSize / sequenceLength
 
-        const delta = normalize(event.deltaY, [-50, 50])
+        // if there's no deltaY, the browser is probably assigning to deltaX because of the shiftKey
+        // it appeared that Safari + Chrome continue to use deltaY with shiftKey, while FF on macOS
+        // updates the deltaX with deltaY unchanged.
+        // this is a little awkward with track pads + shift on macOS FF, but that's not a big deal
+        // since scrolling horizontally with macOS track pads is not necessary to hold shift.
+        const delta = normalize(event.deltaY || event.deltaX, [-50, 50])
         const scaleFactor = delta * 0.05 * speed
 
         const newRange = mapValues(
@@ -231,6 +216,22 @@ function useHandlePanAndZoom(
         )
 
         val(layoutP.clippedSpace.setRange)(newRange)
+        return
+      } else {
+        receiveVerticalWheelEvent(event)
+        event.preventDefault()
+        event.stopPropagation()
+
+        const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+        const deltaPos = scaledSpaceToUnitSpace(event.deltaX * 1)
+        const oldRange = val(layoutP.clippedSpace.range)
+        const newRange = mapValues(oldRange, (p) => p + deltaPos)
+
+        const setRange = val(layoutP.clippedSpace.setRange)
+
+        setRange(newRange)
+
+        return
       }
     }
 
@@ -244,6 +245,39 @@ function useHandlePanAndZoom(
       node.removeEventListener('wheel', receiveWheelEvent, listenerOptions)
     }
   }, [node, layoutP])
+
+  useDrag(
+    node,
+    useMemo<Parameters<typeof useDrag>[1]>(() => {
+      return {
+        onDragStart(e) {
+          const oldRange = val(layoutP.clippedSpace.range)
+          const setRange = val(layoutP.clippedSpace.setRange)
+          const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+          e.preventDefault()
+          e.stopPropagation()
+
+          return {
+            onDrag(dx, dy, _, __, deltaYFromLastEvent) {
+              receiveVerticalWheelEvent({deltaY: -deltaYFromLastEvent})
+              const delta = -scaledSpaceToUnitSpace(dx)
+
+              const newRange = mapValues(
+                oldRange,
+                (originalPos) => originalPos + delta,
+              )
+
+              setRange(newRange)
+            },
+          }
+        },
+
+        debugName: 'HorizontallyScrollableArea Middle Button Drag',
+        buttons: [1],
+        lockCSSCursorTo: 'grabbing',
+      }
+    }, [layoutP]),
+  )
 }
 
 function normalize(value: number, [min, max]: [min: number, max: number]) {

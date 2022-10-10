@@ -11,7 +11,7 @@ interface NodeModule {
 
 interface ProcessEnv {
   NODE_ENV: 'development' | 'production' | 'test'
-  version: string
+  THEATRE_VERSION: string
 }
 
 declare module '*.svg' {

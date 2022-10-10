@@ -9,7 +9,6 @@ const packagesToBuild = [
   '@theatre/browser-bundles',
   '@theatre/r3f',
 ]
-
 ;(async function () {
   // better quote function from https://github.com/google/zx/pull/167
   $.quote = function quote(arg) {

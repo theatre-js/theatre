@@ -9,12 +9,12 @@ const Container = styled.div`
   position: absolute;
   z-index: 1;
   box-sizing: border-box;
-  width: 28px;
-  height: 28px;
+  width: 16px;
+  height: 16px;
   transform: translate(-50%, -50%);
   background-color: #fff;
-  border: 2px solid #fff;
-  border-radius: 4px;
+  border: 1px solid #ffffff00;
+  border-radius: 2px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
   ${StyledInteractive}:focus & {

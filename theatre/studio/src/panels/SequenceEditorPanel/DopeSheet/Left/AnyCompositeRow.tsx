@@ -1,12 +1,18 @@
 import {theme} from '@theatre/studio/css'
-import type {SequenceEditorTree_Row} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import type {
+  SequenceEditorTree_PrimitiveProp,
+  SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_Sheet,
+  SequenceEditorTree_SheetObject,
+} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {VoidFn} from '@theatre/shared/utils/types'
-import React from 'react'
+import React, {useRef} from 'react'
 import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
-import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
+import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
+import {usePropHighlightMouseEnter} from './usePropHighlightMouseEnter'
 
-export const Container = styled.li<{depth: number}>`
+export const LeftRowContainer = styled.li<{depth: number}>`
   --depth: ${(props) => props.depth};
   margin: 0;
   padding: 0;
@@ -17,11 +23,11 @@ export const BaseHeader = styled.div<{isEven: boolean}>`
   border-bottom: 1px solid #7695b705;
 `
 
-const Header = styled(BaseHeader)<{
+const LeftRowHeader = styled(BaseHeader)<{
   isSelectable: boolean
   isSelected: boolean
 }>`
-  padding-left: calc(16px + var(--depth) * 20px);
+  padding-left: calc(8px + var(--depth) * 20px);
 
   display: flex;
   align-items: stretch;
@@ -32,44 +38,75 @@ const Header = styled(BaseHeader)<{
   ${(props) => props.isSelected && `background: blue`};
 `
 
-const Head_Label = styled.span`
-  ${propNameText};
+const LeftRowHead_Label = styled.span`
+  ${propNameTextCSS};
   overflow-x: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-right: 4px;
   line-height: 26px;
   flex-wrap: nowrap;
+
+  ${LeftRowHeader}:hover & {
+    color: #ccc;
+  }
 `
 
-const Head_Icon = styled.span<{isOpen: boolean}>`
+const LeftRowHead_Icon = styled.span<{isCollapsed: boolean}>`
   width: 12px;
-  margin-right: 8px;
+  padding: 8px;
   font-size: 9px;
   display: flex;
   align-items: center;
 
-  transform: rotateZ(${(props) => (props.isOpen ? 90 : 0)}deg);
+  transition: transform 0.05s ease-out, color 0.1s ease-out;
+  transform: rotateZ(${(props) => (props.isCollapsed ? 0 : 90)}deg);
+  color: #66686a;
+
+  &:hover {
+    transform: rotateZ(${(props) => (props.isCollapsed ? 15 : 75)}deg);
+    color: #c0c4c9;
+  }
 `
 
-const Children = styled.ul`
+const LeftRowChildren = styled.ul`
   margin: 0;
   padding: 0;
   list-style: none;
 `
 
 const AnyCompositeRow: React.FC<{
-  leaf: SequenceEditorTree_Row<unknown>
+  leaf:
+    | SequenceEditorTree_Sheet
+    | SequenceEditorTree_PrimitiveProp
+    | SequenceEditorTree_PropWithChildren
+    | SequenceEditorTree_SheetObject
   label: React.ReactNode
   toggleSelect?: VoidFn
+  toggleCollapsed: VoidFn
   isSelected?: boolean
   isSelectable?: boolean
-}> = ({leaf, label, children, isSelectable, isSelected, toggleSelect}) => {
+  isCollapsed: boolean
+}> = ({
+  leaf,
+  label,
+  children,
+  isSelectable,
+  isSelected,
+  toggleSelect,
+  toggleCollapsed,
+  isCollapsed,
+}) => {
   const hasChildren = Array.isArray(children) && children.length > 0
 
-  return (
-    <Container depth={leaf.depth}>
-      <Header
+  const rowHeaderRef = useRef<HTMLDivElement | null>(null)
+
+  usePropHighlightMouseEnter(rowHeaderRef.current, leaf)
+
+  return leaf.shouldRender ? (
+    <LeftRowContainer depth={leaf.depth}>
+      <LeftRowHeader
+        ref={rowHeaderRef}
         style={{
           height: leaf.nodeHeight + 'px',
         }}
@@ -78,14 +115,14 @@ const AnyCompositeRow: React.FC<{
         onClick={toggleSelect}
         isEven={leaf.n % 2 === 0}
       >
-        <Head_Icon isOpen={true}>
+        <LeftRowHead_Icon isCollapsed={isCollapsed} onClick={toggleCollapsed}>
           <HiOutlineChevronRight />
-        </Head_Icon>
-        <Head_Label>{label}</Head_Label>
-      </Header>
-      {hasChildren && <Children>{children}</Children>}
-    </Container>
-  )
+        </LeftRowHead_Icon>
+        <LeftRowHead_Label>{label}</LeftRowHead_Label>
+      </LeftRowHeader>
+      {hasChildren && <LeftRowChildren>{children}</LeftRowChildren>}
+    </LeftRowContainer>
+  ) : null
 }
 
 export default AnyCompositeRow

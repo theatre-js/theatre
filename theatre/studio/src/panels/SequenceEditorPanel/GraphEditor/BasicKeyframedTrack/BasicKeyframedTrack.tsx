@@ -5,13 +5,19 @@ import type {
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {PathToProp} from '@theatre/shared/utils/addresses'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import React, {useMemo, useRef, useState} from 'react'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import KeyframeEditor from './KeyframeEditor/KeyframeEditor'
-import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
+import {
+  getPropConfigByPath,
+  isPropConfigComposite,
+  valueInProp,
+} from '@theatre/shared/propTypes/utils'
+import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 
 export type ExtremumSpace = {
   fromValueSpace: (v: number) => number
@@ -20,7 +26,7 @@ export type ExtremumSpace = {
   lock(): VoidFn
 }
 
-const BasicKeyframedTrack: React.FC<{
+const BasicKeyframedTrack: React.VFC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
   sheetObject: SheetObject
   pathToProp: PathToProp
@@ -32,7 +38,12 @@ const BasicKeyframedTrack: React.FC<{
     const propConfig = getPropConfigByPath(
       sheetObject.template.config,
       pathToProp,
-    )!
+    )! as PropTypeConfig_AllSimples
+
+    if (isPropConfigComposite(propConfig)) {
+      console.error(`Composite prop types cannot be keyframed`)
+      return <></>
+    }
 
     const [areExtremumsLocked, setAreExtremumsLocked] = useState<boolean>(false)
     const lockExtremums = useMemo(() => {
@@ -54,8 +65,8 @@ const BasicKeyframedTrack: React.FC<{
 
     const extremumSpace: ExtremumSpace = useMemo(() => {
       const extremums =
-        propConfig.isScalar === true
-          ? calculateScalarExtremums(trackData.keyframes)
+        propConfig.type === 'number'
+          ? calculateScalarExtremums(trackData.keyframes, propConfig)
           : calculateNonScalarExtremums(trackData.keyframes)
 
       const fromValueSpace = (val: number): number =>
@@ -84,14 +95,21 @@ const BasicKeyframedTrack: React.FC<{
 
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
       <KeyframeEditor
+        pathToProp={pathToProp}
+        propConfig={propConfig}
+        itemKey={createStudioSheetItemKey.forTrackKeyframe(
+          sheetObject,
+          trackId,
+          kf.id,
+        )}
         keyframe={kf}
         index={index}
         trackData={trackData}
         layoutP={layoutP}
         sheetObject={sheetObject}
         trackId={trackId}
-        isScalar={propConfig.isScalar === true}
-        key={'keyframe-' + kf.id}
+        isScalar={propConfig.type === 'number'}
+        key={kf.id}
         extremumSpace={cachedExtremumSpace.current}
         color={color}
       />
@@ -114,7 +132,10 @@ export default BasicKeyframedTrack
 
 type Extremums = [min: number, max: number]
 
-function calculateScalarExtremums(keyframes: Keyframe[]): Extremums {
+function calculateScalarExtremums(
+  keyframes: Keyframe[],
+  propConfig: PropTypeConfig_AllSimples,
+): Extremums {
   let min = Infinity,
     max = -Infinity
 
@@ -124,7 +145,7 @@ function calculateScalarExtremums(keyframes: Keyframe[]): Extremums {
   }
 
   keyframes.forEach((cur, i) => {
-    const curVal = typeof cur.value === 'number' ? cur.value : 0
+    const curVal = valueInProp(cur.value, propConfig) as number
     check(curVal)
     if (!cur.connectedRight) return
     const next = keyframes[i + 1]

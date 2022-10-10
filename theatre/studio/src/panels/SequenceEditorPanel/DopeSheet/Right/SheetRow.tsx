@@ -3,28 +3,36 @@ import type {SequenceEditorTree_Sheet} from '@theatre/studio/panels/SequenceEdit
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
-import styled from 'styled-components'
-import SheetObjectRow from './SheetObjectRow'
-
-const Container = styled.div``
+import RightSheetObjectRow from './SheetObjectRow'
+import RightRow from './Row'
+import {collectAggregateKeyframesInPrism} from './collectAggregateKeyframes'
+import AggregatedKeyframeTrack from './AggregatedKeyframeTrack/AggregatedKeyframeTrack'
 
 const SheetRow: React.FC<{
   leaf: SequenceEditorTree_Sheet
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({leaf, layoutP}) => {
   return usePrism(() => {
-    const node = <div />
+    const aggregatedKeyframes = collectAggregateKeyframesInPrism(leaf)
+
+    const node = (
+      <AggregatedKeyframeTrack
+        layoutP={layoutP}
+        aggregatedKeyframes={aggregatedKeyframes}
+        viewModel={leaf}
+      />
+    )
 
     return (
-      <>
+      <RightRow leaf={leaf} node={node} isCollapsed={leaf.isCollapsed}>
         {leaf.children.map((sheetObjectLeaf) => (
-          <SheetObjectRow
+          <RightSheetObjectRow
             layoutP={layoutP}
             key={'sheetObject-' + sheetObjectLeaf.sheetObject.address.objectKey}
             leaf={sheetObjectLeaf}
           />
         ))}
-      </>
+      </RightRow>
     )
   }, [leaf, layoutP])
 }

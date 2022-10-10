@@ -8,6 +8,7 @@ import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
+import type {ProjectId} from '@theatre/shared/utils/ids'
 
 const Container = styled.div`
   padding: 8px 10px;
@@ -37,7 +38,7 @@ const ChooseStateRow = styled.div`
   gap: 8px;
 `
 
-const StateConflictRow: React.FC<{projectId: string}> = ({projectId}) => {
+const StateConflictRow: React.FC<{projectId: ProjectId}> = ({projectId}) => {
   const loadingState = useVal(
     getStudio().atomP.ephemeral.coreByProject[projectId].loadingState,
   )
@@ -52,7 +53,7 @@ const StateConflictRow: React.FC<{projectId: string}> = ({projectId}) => {
 }
 
 const InConflict: React.FC<{
-  projectId: string
+  projectId: ProjectId
   loadingState: Extract<
     ProjectEphemeralState['loadingState'],
     {type: 'browserStateIsNotBasedOnDiskState'}

@@ -1,9 +1,8 @@
 import type {VoidFn} from '@theatre/shared/utils/types'
 import React from 'react'
-import {GoChevronRight, DiHtml53DEffects} from 'react-icons/all'
 import styled, {css} from 'styled-components'
-import noop from '@theatre/shared/utils/noop'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import {ChevronDown, Package} from '@theatre/studio/uiComponents/icons'
 
 export const Container = styled.li`
   margin: 0;
@@ -17,14 +16,16 @@ export const Container = styled.li`
 
 export const BaseHeader = styled.div``
 
-const baseBg = `#3e4447`
-
-const baseBorderColor = `#34343e`
-
 const Header = styled(BaseHeader)`
-  padding-left: calc(4px + var(--depth) * 16px);
+  position: relative;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  margin-left: calc(4px + var(--depth) * 16px);
+  padding-left: 4px;
   padding-right: 8px;
-  height: 28px;
+  gap: 4px;
+  height: 21px;
+  line-height: 0;
   box-sizing: border-box;
   display: flex;
   flex-wrap: nowrap;
@@ -32,29 +33,46 @@ const Header = styled(BaseHeader)`
   pointer-events: none;
   white-space: nowrap;
 
-  color: rgba(255, 255, 255, 0.75);
-  --item-bg: ${baseBg};
-  --item-border-color: ${baseBorderColor};
+  border-radius: 2px;
+  box-shadow: 0 3px 4px -1px rgba(0, 0, 0, 0.48);
+
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(40, 43, 47, 0.65);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
   &.descendant-is-selected {
-    color: rgba(255, 255, 255, 0.9);
-
-    --item-bg: #2e4244ed;
-    --item-border-color: #254355;
+    background: rgba(29, 53, 59, 0.7);
   }
 
-  &:hover {
-    color: #fff;
+  ${pointerEventsAutoInNormalMode};
+  &:not(.not-selectable):not(.selected):hover {
+    background: rgba(59, 63, 69, 0.9);
 
-    --item-bg: #1e5866;
-    --item-border-color: #152f42;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+  }
+
+  &:not(.not-selectable):not(.selected):active {
+    background: rgba(82, 88, 96, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.24);
   }
 
   &.selected {
-    color: rgba(255, 255, 255, 0.9);
+    background: rgba(30, 88, 102, 0.7);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
 
-    --item-bg: #1e5866;
-    --item-border-color: #152f42;
+  // Hit zone
+  &:before {
+    position: absolute;
+    inset: -1px 0;
+    display: block;
+    content: ' ';
+    z-index: 5;
+  }
+
+  @supports not (backdrop-filter: blur()) {
+    background: rgba(40, 43, 47, 0.95);
   }
 `
 
@@ -68,68 +86,29 @@ export const outlineItemFont = css`
 const Head_Label = styled.span`
   ${outlineItemFont};
 
-  padding: 2px 8px;
   ${pointerEventsAutoInNormalMode};
   position: relative;
+  // Compensate for border bottom
+  top: 0.5px;
   display: flex;
-  height: 17px;
+  height: 20px;
   align-items: center;
-
-  background-color: var(--item-bg);
-
-  &:after {
-    border: 1px solid var(--item-border-color);
-    position: absolute;
-    inset: 0px;
-    display: block;
-    content: ' ';
-    z-index: -1;
-    pointer-events: none;
-    border-radius: 2px;
-    box-sizing: border-box;
-    box-shadow: 0px 3px 4px -1px rgba(0, 0, 0, 0.48);
-  }
-
-  // hit-zone
-  &:before {
-    position: absolute;
-    inset: -1px -20px;
-    display: block;
-    content: ' ';
-    z-index: 0;
-    ${pointerEventsAutoInNormalMode};
-  }
+  box-sizing: border-box;
 `
 
-const Head_IconContainer = styled.span`
-  width: 18px;
-  box-sizing: border-box;
-  height: 18px;
-  margin-right: 4px;
+const Head_IconContainer = styled.div`
   font-weight: 500;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   position: relative;
   opacity: 0.99;
-
-  &:after {
-    display: block;
-    content: ' ';
-    position: absolute;
-    inset: 0px;
-    z-index: -1;
-    background-color: var(--item-bg);
-    opacity: 0.6;
-    border-radius: 2px;
-  }
 `
 
 const Head_Icon_WithDescendants = styled.span<{isOpen: boolean}>`
   font-size: 9px;
   position: relative;
   display: block;
-  transform: rotateZ(${(props) => (props.isOpen ? 90 : 0)}deg);
 `
 
 const ChildrenContainer = styled.ul`
@@ -160,14 +139,14 @@ const BaseItem: React.FC<{
         {'--depth': depth}
       }
     >
-      <Header className={selectionStatus} onClick={select ?? noop}>
+      <Header className={selectionStatus} onClick={select}>
         <Head_IconContainer>
           {canContainChildren ? (
             <Head_Icon_WithDescendants isOpen={true}>
-              <GoChevronRight />
+              <ChevronDown />
             </Head_Icon_WithDescendants>
           ) : (
-            <DiHtml53DEffects />
+            <Package />
           )}
         </Head_IconContainer>
 

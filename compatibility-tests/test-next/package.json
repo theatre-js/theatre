@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@theatre/core": "^0.0.1-COMPAT.1",
+    "@theatre/r3f": "^0.0.1-COMPAT.1",
+    "@theatre/studio": "^0.0.1-COMPAT.1",
+    "next": "latest",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

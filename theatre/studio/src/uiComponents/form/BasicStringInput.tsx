@@ -55,7 +55,7 @@ const BasicStringInput: React.FC<{
   value: string
   temporarilySetValue: (v: string) => void
   discardTemporaryValue: () => void
-  permenantlySetValue: (v: string) => void
+  permanentlySetValue: (v: string) => void
   className?: string
   isValid?: (v: string) => boolean
   inputRef?: MutableRefObject<HTMLInputElement | null>
@@ -64,6 +64,7 @@ const BasicStringInput: React.FC<{
    * before this, so use this for UI purposes such as closing a popover.
    */
   onBlur?: () => void
+  autoFocus?: boolean
 }> = (props) => {
   const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
   const isValid = props.isValid ?? alwaysValid
@@ -112,7 +113,7 @@ const BasicStringInput: React.FC<{
         if (curState.valueBeforeEditing === value) {
           propsRef.current.discardTemporaryValue()
         } else {
-          propsRef.current.permenantlySetValue(value)
+          propsRef.current.permanentlySetValue(value)
         }
       }
     }
@@ -195,6 +196,7 @@ const BasicStringInput: React.FC<{
         e.preventDefault()
         e.stopPropagation()
       }}
+      autoFocus={props.autoFocus}
     />
   )
 

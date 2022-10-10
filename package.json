@@ -1,58 +1,66 @@
 {
   "name": "theatre-monorepo",
   "license": "Apache-2.0",
-  "version": "0.4.8-dev.2",
+  "version": "0.5.0",
   "workspaces": [
     "packages/*",
     "examples/*",
-    "theatre"
+    "theatre",
+    "compatibility-tests"
   ],
   "scripts": {
     "playground": "yarn workspace playground run serve",
     "test:e2e": "yarn workspace playground run test",
     "test:e2e:ci": "yarn workspace playground run test:ci",
+    "test:compatibility:ci": "yarn workspace @theatre/compatibility-tests run test:ci",
     "typecheck": "yarn run build:ts",
     "build": "zx scripts/build.mjs",
+    "clean": "zx scripts/clean.mjs",
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
     "postinstall": "husky install",
     "release": "zx scripts/release.mjs",
-    "build:api-docs": "zx scripts/build-api-docs.mjs",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {
+    "(theatre|packages)/**/*.(t|j)s?(x)": [
+      "eslint --rulesdir ./devEnv/eslint/rules --fix"
+    ],
     "**/*.(t|j)s?(x)": [
-      "eslint --rulesdir ./devEnv/eslint/rules --fix",
       "prettier --write"
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.15.0",
-    "@babel/plugin-proposal-class-properties": "^7.14.5",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.5",
-    "@babel/plugin-proposal-optional-chaining": "^7.14.5",
-    "@babel/preset-env": "^7.15.0",
-    "@babel/preset-react": "^7.14.5",
-    "@babel/preset-typescript": "^7.15.0",
-    "@microsoft/api-documenter": "^7.13.54",
-    "@microsoft/api-extractor": "^7.18.11",
-    "@typescript-eslint/eslint-plugin": "^4.30.0",
-    "@typescript-eslint/parser": "^4.30.0",
-    "esbuild": "^0.12.24",
+    "@babel/core": "^7.18.9",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
+    "@babel/plugin-proposal-optional-chaining": "^7.18.9",
+    "@babel/preset-env": "^7.18.9",
+    "@babel/preset-react": "^7.18.6",
+    "@babel/preset-typescript": "^7.18.6",
+    "@microsoft/api-documenter": "^7.19.0",
+    "@microsoft/api-extractor": "^7.28.6",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "esbuild": "^0.14.49",
     "esbuild-jest": "^0.5.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.25.1",
-    "eslint-plugin-tsdoc": "^0.2.14",
-    "eslint-plugin-unused-imports": "^1.1.4",
+    "eslint": "^8.20.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-react": "^7.30.1",
+    "eslint-plugin-tsdoc": "^0.2.16",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^6.0.0",
     "jest": "^27.1.0",
-    "jsonc-parser": "^3.0.0",
-    "lint-staged": "^11.1.2",
-    "node-gyp": "^8.1.0",
+    "jsonc-parser": "^3.1.0",
+    "lint-staged": "^13.0.3",
+    "node-gyp": "^9.1.0",
     "prettier": "^2.3.2",
-    "typescript": "^4.4.2",
+    "typescript": "4.6.x",
     "zx": "^2.0.0"
   },
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.2.0",
+  "resolutions": {
+    "@types/react": "^17.0.9",
+    "@types/react-dom": "^17.0.9"
+  }
 }

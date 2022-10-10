@@ -1,11 +1,19 @@
 import logger from '@theatre/shared/logger'
 import {InvalidArgumentError} from './errors'
 
-const sanifySlashedPath = (p: string): string =>
+/**
+ * Make the given string's "path" slashes normalized with preceding and trailing spaces.
+ *
+ * Prev "sanifySlashedPath".
+ */
+const normalizeSlashedPath = (p: string): string =>
   p
+    // remove starting slashes
     .replace(/^[\s\/]*/, '')
+    // remove ending slashes
     .replace(/[\s\/]*$/, '')
-    .replace(/\s*\/\s*/, ' / ')
+    // make middle slashes consistent
+    .replace(/\s*\/\s*/g, ' / ')
 
 const getValidationErrorsOfSlashedPath = (p: string): void | string => {
   if (typeof p !== 'string') return `it is not a string. (it is a ${typeof p})`
@@ -25,7 +33,7 @@ export function validateAndSanitiseSlashedPathOrThrow(
   unsanitisedPath: string,
   fnName: string,
 ) {
-  const sanitisedPath = sanifySlashedPath(unsanitisedPath)
+  const sanitisedPath = normalizeSlashedPath(unsanitisedPath)
   if (process.env.NODE_ENV !== 'development') {
     return sanitisedPath
   }

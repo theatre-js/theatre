@@ -19,3 +19,9 @@
 !.yarn/sdks
 !.yarn/versions
 
+# Required by the `parcel_v2`
+# compatibility tests
+.parcel-cache
+
+/compatibility-tests/*/.yarn
+/compatibility-tests/*/build

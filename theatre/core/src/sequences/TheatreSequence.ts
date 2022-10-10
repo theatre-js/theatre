@@ -1,4 +1,3 @@
-import logger from '@theatre/shared/logger'
 import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import {defer} from '@theatre/shared/utils/defer'
 import type Sequence from './Sequence'
@@ -9,7 +8,7 @@ import type {Pointer} from '@theatre/dataverse'
 
 interface IAttachAudioArgs {
   /**
-   * Either a URL to the audio file (eg "https://localhost/audio.mp3") or an instance of AudioBuffer
+   * Either a URL to the audio file (eg "http://localhost:3000/audio.mp3") or an instance of AudioBuffer
    */
   source: string | AudioBuffer
   /**
@@ -137,7 +136,7 @@ export interface ISequence {
    * Usage:
    * ```ts
    * // Loads and decodes audio from the URL and then attaches it to the sequence
-   * await sheet.sequence.attachAudio({source: "https://localhost/audio.ogg"})
+   * await sheet.sequence.attachAudio({source: "http://localhost:3000/audio.mp3"})
    * sheet.sequence.play()
    *
    * // Providing your own AudioAPI Context, destination, etc
@@ -148,9 +147,9 @@ export interface ISequence {
    * await sheet.sequence.attachAudio({source: audioBuffer, audioContext, destinationNode})
    * ```
    *
-   * Note: It's better to provide the `audioContext` rather than allow Theatre to create it.
+   * Note: It's better to provide the `audioContext` rather than allow Theatre.js to create it.
    * That's because some browsers [suspend the audioContext](https://developer.chrome.com/blog/autoplay/#webaudio)
-   * unless it's initiated by a user gesture, like a click. If that happens, Theatre will
+   * unless it's initiated by a user gesture, like a click. If that happens, Theatre.js will
    * wait for a user gesture to resume the audioContext. But that's probably not an
    * optimal user experience. It is better to provide a button or some other UI element
    * to communicate to the user that they have to initiate the animation.
@@ -191,7 +190,7 @@ export interface ISequence {
     destinationNode: AudioNode
 
     /**
-     * This is an intermediate GainNode that Theatre feeds its audio to. It is by default
+     * This is an intermediate GainNode that Theatre.js feeds its audio to. It is by default
      * connected to destinationNode, but you can disconnect the gainNode and feed it to your own graph.
      *
      * @example
@@ -235,13 +234,14 @@ export default class TheatreSequence implements ISequence {
       direction: IPlaybackDirection
     }>,
   ): Promise<boolean> {
-    if (privateAPI(this)._project.isReady()) {
-      return privateAPI(this).play(conf)
+    const priv = privateAPI(this)
+    if (priv._project.isReady()) {
+      return priv.play(conf)
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        logger.warn(
+        console.warn(
           `You seem to have called sequence.play() before the project has finished loading.\n` +
-            `This would **not** a problem in production when using '@theatre/core', since Theatre loads instantly in core mode. ` +
+            `This would **not** a problem in production when using '@theatre/core', since Theatre.js loads instantly in core mode. ` +
             `However, when using '@theatre/studio', it takes a few milliseconds for it to load your project's state, ` +
             `before which your sequences cannot start playing.\n` +
             `\n` +
@@ -308,6 +308,11 @@ async function resolveAudioBuffer(args: IAttachAudioArgs): Promise<{
 
     // AudioContext is suspended, probably because the browser
     // has blocked it since it is not initiated by a user gesture
+
+    // if in SSR, just resolve the promise, as there is not much more to be done
+    if (typeof window === 'undefined') {
+      return Promise.resolve(ctx)
+    }
     return new Promise<AudioContext>((resolve) => {
       const listener = () => {
         ctx.resume()

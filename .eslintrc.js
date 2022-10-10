@@ -18,8 +18,9 @@
  *
  *  return atom
  * ```
+ *
+ * @type {import("eslint").Linter.Config}
  */
-
 module.exports = {
   root: true,
   plugins: ['unused-imports', 'eslint-plugin-tsdoc'],
@@ -39,7 +40,7 @@ module.exports = {
       },
     ],
   },
-  ignorePatterns: ['*.d.ts', '*.ignore.ts'],
+  ignorePatterns: ['*.d.ts', '*.ignore.ts', 'compatibility-tests/*'],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
@@ -73,6 +74,7 @@ module.exports = {
       rules: {
         'react/jsx-uses-react': 'error',
         'react/jsx-uses-vars': 'error',
+        'tsdoc/syntax': 'off',
       },
       parser: 'espree',
       parserOptions: {

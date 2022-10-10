@@ -7,6 +7,9 @@ type PointerMeta = {
   path: (string | number)[]
 }
 
+/** We are using an empty object as a WeakMap key for storing pointer meta data */
+type WeakPointerKey = {}
+
 export type UnindexableTypesForPointer =
   | number
   | string
@@ -20,12 +23,21 @@ export type UnindexablePointer = {
   [K in $IntentionalAny]: Pointer<undefined>
 }
 
-const pointerMetaWeakMap = new WeakMap<{}, PointerMeta>()
+const pointerMetaWeakMap = new WeakMap<WeakPointerKey, PointerMeta>()
+const cachedSubPathPointersWeakMap = new WeakMap<
+  WeakPointerKey,
+  Map<string | number, Pointer<unknown>>
+>()
 
 /**
  * A wrapper type for the type a `Pointer` points to.
  */
 export type PointerType<O> = {
+  /**
+   * Only accessible via the type system.
+   * This is a helper for getting the underlying pointer type
+   * via the type space.
+   */
   $$__pointer_type: O
 }
 
@@ -34,44 +46,63 @@ export type PointerType<O> = {
  * explanation of pointers.
  *
  * @see Atom
+ *
+ * @remarks
+ * The Pointer type is quite tricky because it doesn't play well with `any` and other inexact types.
+ * Here is an example that one would expect to work, but currently doesn't:
+ * ```ts
+ * declare function expectAnyPointer(pointer: Pointer<any>): void
+ *
+ * expectAnyPointer(null as Pointer<{}>) // this shows as a type error because Pointer<{}> is not assignable to Pointer<any>, even though it should
+ * ```
+ *
+ * The current solution is to just avoid using `any` with pointer-related code (or type-test it well).
+ * But if you enjoy solving typescript puzzles, consider fixing this :)
+ * Potentially, [TypeScript variance annotations in 4.7+](https://devblogs.microsoft.com/typescript/announcing-typescript-4-7-beta/#optional-variance-annotations-for-type-parameters)
+ * might be able to help us.
  */
 export type Pointer<O> = PointerType<O> &
-  (O extends UnindexableTypesForPointer
-    ? UnindexablePointer
-    : unknown extends O
-    ? UnindexablePointer
-    : O extends (infer T)[]
-    ? Pointer<T>[]
-    : O extends {}
-    ? {
-        [K in keyof O]-?: Pointer<O[K]>
-      } /*&
-        {[K in string | number]: Pointer<K extends keyof O ? O[K] : undefined>}*/
-    : UnindexablePointer)
+  // `Exclude<O, undefined>` will remove `undefined` from the first type
+  // `undefined extends O ? undefined : never` will give us `undefined` if `O` is `... | undefined`
+  PointerInner<Exclude<O, undefined>, undefined extends O ? undefined : never>
+
+// By separating the `O` (non-undefined) from the `undefined` or `never`, we
+// can properly use `O extends ...` to determine the kind of potential value
+// without actually discarding optionality information.
+type PointerInner<O, Optional> = O extends UnindexableTypesForPointer
+  ? UnindexablePointer
+  : unknown extends O
+  ? UnindexablePointer
+  : O extends (infer T)[]
+  ? Pointer<T>[]
+  : O extends {}
+  ? {
+      [K in keyof O]-?: Pointer<O[K] | Optional>
+    }
+  : UnindexablePointer
 
 const pointerMetaSymbol = Symbol('pointerMeta')
 
-const cachedSubPointersWeakMap = new WeakMap<
-  {},
-  Record<string | number, Pointer<unknown>>
->()
+const proxyHandler = {
+  get(
+    pointerKey: WeakPointerKey,
+    prop: string | typeof pointerMetaSymbol,
+  ): $IntentionalAny {
+    if (prop === pointerMetaSymbol) return pointerMetaWeakMap.get(pointerKey)!
 
-const handler = {
-  get(obj: {}, prop: string | typeof pointerMetaSymbol): $IntentionalAny {
-    if (prop === pointerMetaSymbol) return pointerMetaWeakMap.get(obj)!
-
-    let subs = cachedSubPointersWeakMap.get(obj)
-    if (!subs) {
-      subs = {}
-      cachedSubPointersWeakMap.set(obj, subs)
+    let subPathPointers = cachedSubPathPointersWeakMap.get(pointerKey)
+    if (!subPathPointers) {
+      subPathPointers = new Map()
+      cachedSubPathPointersWeakMap.set(pointerKey, subPathPointers)
     }
 
-    if (subs[prop]) return subs[prop]
+    const existing = subPathPointers.get(prop)
+    if (existing !== undefined) return existing
 
-    const meta = pointerMetaWeakMap.get(obj)!
+    const meta = pointerMetaWeakMap.get(pointerKey)!
 
     const subPointer = pointer({root: meta.root, path: [...meta.path, prop]})
-    subs[prop] = subPointer
+    subPathPointers.set(prop, subPointer)
     return subPointer
   },
 }
@@ -82,9 +113,7 @@ const handler = {
  *
  * @param p - The pointer.
  */
-export const getPointerMeta = (
-  p: Pointer<$IntentionalAny> | Pointer<{}> | Pointer<unknown>,
-): PointerMeta => {
+export const getPointerMeta = <_>(p: PointerType<_>): PointerMeta => {
   // @ts-ignore @todo
   const meta: PointerMeta = p[
     pointerMetaSymbol as unknown as $IntentionalAny
@@ -104,8 +133,8 @@ export const getPointerMeta = (
  *
  * @returns An object with two properties: `root`-the root object or the pointer, and `path`-the path of the pointer. `path` is an array of the property-chain.
  */
-export const getPointerParts = (
-  p: Pointer<$IntentionalAny> | Pointer<{}> | Pointer<unknown>,
+export const getPointerParts = <_>(
+  p: Pointer<_>,
 ): {root: {}; path: PathToProp} => {
   const {root, path} = getPointerMeta(p)
   return {root, path}
@@ -145,9 +174,9 @@ function pointer<O>(args: {root: {}; path?: Array<string | number>}) {
     root: args.root as $IntentionalAny,
     path: args.path ?? [],
   }
-  const hiddenObj = {}
-  pointerMetaWeakMap.set(hiddenObj, meta)
-  return new Proxy(hiddenObj, handler) as Pointer<O>
+  const pointerKey: WeakPointerKey = {}
+  pointerMetaWeakMap.set(pointerKey, meta)
+  return new Proxy(pointerKey, proxyHandler) as Pointer<O>
 }
 
 export default pointer

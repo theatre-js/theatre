@@ -1,4 +1,3 @@
-import type Sequence from '@theatre/core/sequences/Sequence'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import RoomToClick from '@theatre/studio/uiComponents/RoomToClick'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
@@ -12,13 +11,26 @@ import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import {
-  attributeNameThatLocksFramestamp,
+  includeLockFrameStampAttrs,
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import PlayheadPositionPopover from './PlayheadPositionPopover'
+import {getIsPlayheadAttachedToFocusRange} from '@theatre/studio/UIRoot/useKeyboardShortcuts'
+import {
+  lockedCursorCssVarName,
+  useCssCursorLock,
+} from '@theatre/studio/uiComponents/PointerEventsHandler'
+import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
+import getStudio from '@theatre/studio/getStudio'
+import {generateSequenceMarkerId} from '@theatre/shared/utils/ids'
+import DopeSnap from './DopeSnap'
+import {
+  snapToAll,
+  snapToNone,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;
@@ -40,9 +52,11 @@ const Rod = styled.div`
   height: calc(100% - 8px);
   border-left: 1px solid #27e0fd;
   z-index: 10;
+  pointer-events: none;
 
   #pointer-root.draggingPositionInSequenceEditor &:not(.seeking) {
-    pointer-events: auto;
+    /* pointer-events: auto; */
+    /* cursor: var(${lockedCursorCssVarName}); */
 
     &:after {
       position: absolute;
@@ -62,10 +76,28 @@ const Thumb = styled.div`
   left: -2px;
   z-index: 11;
   cursor: ew-resize;
+  --sunblock-color: #1f2b2b;
+
   ${pointerEventsAutoInNormalMode};
 
-  #pointer-root.draggingPositionInSequenceEditor &:not(.seeking) {
+  ${Container}.seeking > & {
+    pointer-events: none !important;
+  }
+
+  #pointer-root.draggingPositionInSequenceEditor
+    ${Container}:not(.seeking)
+    > & {
     pointer-events: auto;
+    cursor: var(${lockedCursorCssVarName});
+  }
+
+  ${Container}.playheadattachedtofocusrange > & {
+    top: -8px;
+    --sunblock-color: #005662;
+    &:before,
+    &:after {
+      border-bottom-width: 8px;
+    }
   }
 
   &:before {
@@ -75,7 +107,7 @@ const Thumb = styled.div`
     left: -2px;
     width: 0;
     height: 0;
-    border-bottom: 4px solid #1f2b2b;
+    border-bottom: 4px solid var(--sunblock-color);
     border-left: 2px solid transparent;
   }
 
@@ -86,7 +118,7 @@ const Thumb = styled.div`
     right: -2px;
     width: 0;
     height: 0;
-    border-bottom: 4px solid #1f2b2b;
+    border-bottom: 4px solid var(--sunblock-color);
     border-right: 2px solid transparent;
   }
 `
@@ -100,6 +132,14 @@ const Squinch = styled.div`
   border-right: 1px solid transparent;
   border-left: 1px solid transparent;
   pointer-events: none;
+
+  /* ${Container}.playheadattachedtofocusrange & {
+    top: 10px;
+    &:before,
+    &:after {
+      height: 15px;
+    }
+  } */
 
   &:before {
     position: absolute;
@@ -153,74 +193,77 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 }) => {
   const [thumbRef, thumbNode] = useRefAndState<HTMLElement | null>(null)
 
-  const [popoverNode, openPopover, closePopover, isPopoverOpen] = usePopover(
-    {},
-    () => {
-      return (
-        <BasicPopover>
-          <PlayheadPositionPopover
-            layoutP={layoutP}
-            onRequestClose={closePopover}
-          />
-        </BasicPopover>
-      )
-    },
-  )
+  const {
+    node: popoverNode,
+    toggle: togglePopover,
+    close: closePopover,
+  } = usePopover({debugName: 'Playhead'}, () => {
+    return (
+      <BasicPopover>
+        <PlayheadPositionPopover
+          layoutP={layoutP}
+          onRequestClose={closePopover}
+        />
+      </BasicPopover>
+    )
+  })
 
   const gestureHandlers = useMemo((): Parameters<typeof useDrag>[1] => {
-    const setIsSeeking = val(layoutP.seeker.setIsSeeking)
-
-    let posBeforeSeek = 0
-    let sequence: Sequence
-    let scaledSpaceToUnitSpace: typeof layoutP.scaledSpace.toUnitSpace.$$__pointer_type
-
     return {
+      debugName: 'RightOverlay/Playhead',
       onDragStart() {
-        sequence = val(layoutP.sheet).getSequence()
-        posBeforeSeek = sequence.position
-        scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+        const sequence = val(layoutP.sheet).getSequence()
+        const posBeforeSeek = sequence.position
+        const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
+
+        const setIsSeeking = val(layoutP.seeker.setIsSeeking)
         setIsSeeking(true)
-      },
-      onDrag(dx, _, event) {
-        const deltaPos = scaledSpaceToUnitSpace(dx)
-        const unsnappedPos = clamp(posBeforeSeek + deltaPos, 0, sequence.length)
 
-        let newPosition = unsnappedPos
+        snapToAll()
 
-        const snapTarget = event
-          .composedPath()
-          .find(
-            (el): el is Element =>
-              el instanceof Element &&
-              el !== thumbNode &&
-              el.hasAttribute('data-pos'),
-          )
+        return {
+          onDrag(dx, _, event) {
+            const deltaPos = scaledSpaceToUnitSpace(dx)
 
-        if (snapTarget) {
-          const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
-          if (isFinite(snapPos)) {
-            newPosition = snapPos
-          }
+            sequence.position =
+              DopeSnap.checkIfMouseEventSnapToPos(event, {
+                ignore: thumbNode,
+              }) ??
+              // unsnapped
+              clamp(posBeforeSeek + deltaPos, 0, sequence.length)
+          },
+          onDragEnd(dragHappened) {
+            setIsSeeking(false)
+            snapToNone()
+          },
+          onClick(e) {
+            togglePopover(e, thumbRef.current!)
+          },
         }
-
-        sequence.position = newPosition
       },
-      onDragEnd() {
-        setIsSeeking(false)
-      },
-      lockCursorTo: 'ew-resize',
     }
-  }, [])
+  }, [layoutP, thumbNode])
 
-  useDrag(thumbNode, gestureHandlers)
+  const [isDragging] = useDrag(thumbNode, gestureHandlers)
+
+  useCssCursorLock(isDragging, 'draggingPositionInSequenceEditor', 'ew-resize')
 
   // hide the frame stamp when seeking
-  useLockFrameStampPosition(useVal(layoutP.seeker.isSeeking), -1)
+  useLockFrameStampPosition(useVal(layoutP.seeker.isSeeking) || isDragging, -1)
+
+  const [contextMenu] = usePlayheadContextMenu(thumbNode, {
+    // pass in a pointer to ensure we aren't spending retrieval on every render
+    layoutP,
+  })
 
   return usePrism(() => {
     const isSeeking = val(layoutP.seeker.isSeeking)
 
     const sequence = val(layoutP.sheet).getSequence()
+
+    const isPlayheadAttachedToFocusRange = val(
+      getIsPlayheadAttachedToFocusRange(sequence),
+    )
 
     const posInUnitSpace = sequence.positionDerivation.getValue()
 
@@ -233,19 +276,19 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 
     return (
       <>
+        {contextMenu}
         {popoverNode}
         <Container
           isVisible={isVisible}
           style={{transform: `translate3d(${posInClippedSpace}px, 0, 0)`}}
-          className={isSeeking ? 'seeking' : ''}
-          {...{[attributeNameThatLocksFramestamp]: 'hide'}}
+          className={`${isSeeking && 'seeking'} ${
+            isPlayheadAttachedToFocusRange && 'playheadattachedtofocusrange'
+          }`}
+          {...includeLockFrameStampAttrs('hide')}
         >
           <Thumb
             ref={thumbRef as $IntentionalAny}
-            data-pos={posInUnitSpace.toFixed(3)}
-            onClick={(e) => {
-              openPopover(e, thumbNode!)
-            }}
+            {...DopeSnap.includePositionSnapAttrs(posInUnitSpace)}
           >
             <RoomToClick room={8} />
             <Squinch />
@@ -257,7 +300,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
           </Thumb>
 
           <Rod
-            data-pos={posInUnitSpace.toFixed(3)}
+            {...DopeSnap.includePositionSnapAttrs(posInUnitSpace)}
             className={isSeeking ? 'seeking' : ''}
           />
         </Container>
@@ -267,3 +310,37 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 }
 
 export default Playhead
+
+function usePlayheadContextMenu(
+  node: HTMLElement | null,
+  options: {layoutP: Pointer<SequenceEditorPanelLayout>},
+) {
+  return useContextMenu(node, {
+    menuItems() {
+      return [
+        {
+          label: 'Place marker',
+          callback: () => {
+            getStudio().transaction(({stateEditors}) => {
+              // only retrieve val on callback to reduce unnecessary work on every use
+              const sheet = val(options.layoutP.sheet)
+              const sheetSequence = sheet.getSequence()
+              stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.replaceMarkers(
+                {
+                  sheetAddress: sheet.address,
+                  markers: [
+                    {
+                      id: generateSequenceMarkerId(),
+                      position: sheetSequence.position,
+                    },
+                  ],
+                  snappingFunction: sheetSequence.closestGridPosition,
+                },
+              )
+            })
+          },
+        },
+      ]
+    },
+  })
+}

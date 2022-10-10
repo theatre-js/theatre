@@ -1,6 +1,6 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
-import UI from '@theatre/studio/UI'
+import type UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
 import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
 import type {
@@ -20,17 +20,51 @@ import type * as _coreExports from '@theatre/core/coreExports'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
+import type {ProjectId} from '@theatre/shared/utils/ids'
+import checkForUpdates from './checkForUpdates'
+import shallowEqual from 'shallowequal'
 
 export type CoreExports = typeof _coreExports
+
+const UIConstructorModule =
+  typeof window !== 'undefined' ? require('./UI') : null
+
+const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
+\`\`\`
+import studio from '@theatre/studio'
+studio.initialize()
+\`\`\`
+
+* If you didn't mean to import '@theatre/studio', this means that your bundler is not tree-shaking it. This is most likely a bundler misconfiguration.
+
+* If you meant to import '@theatre/studio' without showing its UI, you can do that by running:
+
+\`\`\`
+import studio from '@theatre/studio'
+studio.initialize()
+studio.ui.hide()
+\`\`\`
+`
+
+const STUDIO_INITIALIZED_LATE_MSG = `You seem to have imported '@theatre/studio' but called \`studio.initialize()\` after some delay.
+Theatre.js projects remain in pending mode (won't play their sequences) until the studio is initialized, so you should place the \`studio.initialize()\` line right after the import line:
+
+\`\`\`
+import studio from '@theatre/studio'
+// ... and other imports
+
+studio.initialize()
+\`\`\`
+`
 
 export class Studio {
   readonly ui!: UI
   readonly publicApi: IStudio
   readonly address: {studioId: string}
-  readonly _projectsProxy: PointerProxy<Record<string, Project>> =
+  readonly _projectsProxy: PointerProxy<Record<ProjectId, Project>> =
     new PointerProxy(new Atom({}).pointer)
 
-  readonly projectsP: Pointer<Record<string, Project>> =
+  readonly projectsP: Pointer<Record<ProjectId, Project>> =
     this._projectsProxy.pointer
 
   private readonly _store = new StudioStore()
@@ -39,9 +73,23 @@ export class Studio {
   private readonly _cache = new SimpleCache()
   readonly paneManager: PaneManager
 
+  /**
+   * An atom holding the exports of '\@theatre/core'. Will be undefined if '\@theatre/core' is never imported
+   */
   private _coreAtom = new Atom<{core?: CoreExports}>({})
+
+  /**
+   * A Deferred that will resolve once studio is initialized (and its state is read from storage)
+   */
   private readonly _initializedDeferred: Deferred<void> = defer()
+  /**
+   * Tracks whether studio.initialize() is called.
+   */
   private _initializeFnCalled = false
+  /**
+   * Will be set to true if studio.initialize() isn't called after 100ms.
+   */
+  private _didWarnAboutNotInitializing = false
 
   get atomP() {
     return this._store.atomP
@@ -51,26 +99,34 @@ export class Studio {
     this.address = {studioId: nanoid(10)}
     this.publicApi = new TheatreStudio(this)
 
-    if (process.env.NODE_ENV !== 'test') {
-      this.ui = new UI(this)
+    if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
+      this.ui = new UIConstructorModule.default(this)
     }
 
     this._attachToIncomingProjects()
     this.paneManager = new PaneManager(this)
 
-    /**
-     * @remarks
-     * TODO If studio.initialize() is not called within a few milliseconds,
-     * we should console.warn() the user that `@theatre/studio` is still in
-     * their bundle. This way we can avoid issues like
-     * [this](https://discord.com/channels/870988717190426644/892469755225710642/892479678797971486).
-     */
+    setTimeout(() => {
+      if (!this._initializeFnCalled) {
+        console.error(STUDIO_NOT_INITIALIZED_MESSAGE)
+        this._didWarnAboutNotInitializing = true
+      }
+    }, 100)
   }
 
   async initialize(opts?: Parameters<IStudio['initialize']>[0]) {
     if (this._initializeFnCalled) {
+      console.log(
+        `\`studio.initialize()\` is already called. Ignoring subsequent calls.`,
+      )
       return this._initializedDeferred.promise
     }
+    this._initializeFnCalled = true
+
+    if (this._didWarnAboutNotInitializing) {
+      console.warn(STUDIO_INITIALIZED_LATE_MSG)
+    }
+
     const storeOpts: Parameters<typeof this._store['initialize']>[0] = {
       persistenceKey: 'theatre-0.4',
       usePersistentStorage: true,
@@ -80,7 +136,7 @@ export class Studio {
       storeOpts.persistenceKey = opts.persistenceKey
     }
 
-    if (opts?.usePersistentStorage === false) {
+    if (opts?.usePersistentStorage === false || typeof window === 'undefined') {
       storeOpts.usePersistentStorage = false
     }
 
@@ -93,8 +149,9 @@ export class Studio {
 
     this._initializedDeferred.resolve()
 
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'test' && this.ui) {
       this.ui.render()
+      checkForUpdates()
     }
   }
 
@@ -124,7 +181,7 @@ export class Studio {
     this._setProjectsP(coreBits.projectsP)
   }
 
-  private _setProjectsP(projectsP: Pointer<Record<string, Project>>) {
+  private _setProjectsP(projectsP: Pointer<Record<ProjectId, Project>>) {
     this._projectsProxy.setPointer(projectsP)
   }
 
@@ -167,8 +224,18 @@ export class Studio {
 
     this.transaction(({drafts}) => {
       if (drafts.ephemeral.extensions.byId[extension.id]) {
+        const prevExtension = drafts.ephemeral.extensions.byId[extension.id]
+        if (
+          extension === prevExtension ||
+          shallowEqual(extension, prevExtension)
+        ) {
+          // probably running studio.extend() several times because of hot reload.
+          // as long as it's the same extension, we can safely ignore.
+          return
+        }
         throw new Error(`Extension id "${extension.id}" is already defined`)
       }
+
       drafts.ephemeral.extensions.byId[extension.id] = extension
 
       const allPaneClasses = drafts.ephemeral.extensions.paneClasses
@@ -218,6 +285,6 @@ export class Studio {
   }
 
   createContentOfSaveFile(projectId: string): OnDiskState {
-    return this._store.createContentOfSaveFile(projectId)
+    return this._store.createContentOfSaveFile(projectId as ProjectId)
   }
 }

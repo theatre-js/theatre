@@ -6,7 +6,7 @@ import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {VscTriangleUp} from 'react-icons/all'
-import {attributeNameThatLocksFramestamp} from './FrameStampPositionProvider'
+import {includeLockFrameStampAttrs} from './FrameStampPositionProvider'
 
 const Container = styled.button`
   outline: none;
@@ -52,7 +52,6 @@ const GraphEditorToggle: React.FC<{
 }> = ({layoutP}) => {
   const isOpen = useVal(layoutP.graphEditorDims.isOpen)
   const toggle = useCallback(() => {
-    const sheet = val(layoutP.sheet)
     const isOpen = val(layoutP.graphEditorDims.isOpen)
     getStudio()!.transaction(({stateEditors}) => {
       stateEditors.studio.historic.panels.sequenceEditor.graphEditor.setIsOpen({
@@ -65,7 +64,7 @@ const GraphEditorToggle: React.FC<{
       onClick={toggle}
       title={'Toggle graph editor'}
       className={isOpen ? 'open' : ''}
-      {...{[attributeNameThatLocksFramestamp]: 'hide'}}
+      {...includeLockFrameStampAttrs('hide')}
     >
       <VscTriangleUp />
     </Container>

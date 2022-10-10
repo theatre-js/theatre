@@ -8,16 +8,18 @@
     "dist/**/*"
   ],
   "scripts": {
-    "serve": "vite --config ./devEnv/vite.config.ts",
-    "typecheck": "yarn run build",
+    "serve": "node devEnv/cli.js --serve --dev",
+    "serve:ci": "node devEnv/cli.js --serve",
+    "build": "node devEnv/cli.js",
+    "build:static": "echo 'building for vercel' && yarn run build",
+    "typecheck": "tsc --noEmit",
     "test": "playwright test --config=devEnv/playwright.config.ts",
-    "test:ci": "percy exec -- playwright test --reporter=dot --config=devEnv/playwright.config.ts --project=chromium",
-    "build": "tsc --build ./tsconfig.json"
+    "test:ci": "percy exec -- playwright test --reporter=dot --config=devEnv/playwright.config.ts --project=chromium"
   },
   "devDependencies": {
-    "@percy/cli": "^1.0.0-beta.76",
-    "@percy/playwright": "^1.0.1",
-    "@playwright/test": "^1.19.1",
+    "@percy/cli": "^1.6.0",
+    "@percy/playwright": "^1.0.4",
+    "@playwright/test": "^1.23.1",
     "@react-three/drei": "^7.2.2",
     "@react-three/fiber": "^7.0.6",
     "@theatre/core": "workspace:*",
@@ -27,9 +29,8 @@
     "@types/lodash-es": "^4.17.4",
     "@types/node": "^15.6.2",
     "@types/react": "^17.0.9",
-    "@vitejs/plugin-react": "^1.2.0",
+    "esbuild": "^0.13.15",
     "three": "^0.130.1",
-    "typescript": "^4.4.2",
-    "vite": "^2.8.4"
+    "typescript": "^4.4.2"
   }
 }

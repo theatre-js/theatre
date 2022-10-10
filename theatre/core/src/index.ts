@@ -5,13 +5,11 @@
  */
 
 export * from './coreExports'
-export type {
-  IProject,
-  IProjectConfig,
-} from '@theatre/core/projects/TheatreProject'
-export type {ISequence} from '@theatre/core/sequences/TheatreSequence'
-export type {ISheetObject} from '@theatre/core/sheetObjects/TheatreSheetObject'
-export type {ISheet} from '@theatre/core/sheets/TheatreSheet'
+export type {IProject, IProjectConfig} from './projects/TheatreProject'
+export type {ISequence} from './sequences/TheatreSequence'
+export type {ISheetObject} from './sheetObjects/TheatreSheetObject'
+export type {ISheet} from './sheets/TheatreSheet'
+export type {UnknownShorthandCompoundProps} from './propTypes'
 import * as globalVariableNames from '@theatre/shared/globalVariableNames'
 import type StudioBundle from '@theatre/studio/StudioBundle'
 import CoreBundle from './CoreBundle'
@@ -29,8 +27,10 @@ function registerCoreBundle() {
   if (typeof window == 'undefined') return
 
   // another core bundle may already be registered
-  // @ts-ignore ignore
-  const existingBundle = window[globalVariableNames.coreBundle]
+
+  const existingBundle: CoreBundle | undefined =
+    // @ts-ignore ignore
+    window[globalVariableNames.coreBundle]
 
   if (typeof existingBundle !== 'undefined') {
     if (
@@ -77,7 +77,7 @@ function registerCoreBundle() {
       */
       throw new Error(
         `It seems that the module '@theatre/core' is loaded more than once. This could have two possible causes:\n` +
-          `1. You might have two separate versions of theatre in node_modules.\n` +
+          `1. You might have two separate versions of Theatre.js in node_modules.\n` +
           `2. Or this might be a bundling misconfiguration, in case you're using a bundler like Webpack/ESBuild/Rollup.\n\n` +
           `Note that it **is okay** to import '@theatre/core' multiple times. But those imports should point to the same module.`,
       )

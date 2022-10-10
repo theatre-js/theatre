@@ -1,7 +1,13 @@
 import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import Project from '@theatre/core/projects/Project'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
+
 import type {ProjectAddress} from '@theatre/shared/utils/addresses'
+import type {
+  ProjectId,
+  SheetId,
+  SheetInstanceId,
+} from '@theatre/shared/utils/ids'
 import {validateInstanceId} from '@theatre/shared/utils/sanitizers'
 import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/shared/utils/slashedPaths'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
@@ -14,10 +20,26 @@ export type IProjectConfig = {
    * The state of the project, as [exported](https://docs.theatrejs.com/in-depth/#exporting) by the studio.
    */
   state?: $IntentionalAny
+  // experiments?: IProjectConfigExperiments
 }
 
+// export type IProjectConfigExperiments = {
+//   /**
+//    * Defaults to using global `console` with style args.
+//    *
+//    * (TODO: check for browser environment before using style args)
+//    */
+//   logger?: ITheatreLoggerConfig
+//   /**
+//    * Defaults:
+//    *  * `production` builds: console - error
+//    *  * `development` builds: console - error, warning
+//    */
+//   logging?: ITheatreLoggingConfig
+// }
+
 /**
- * A Theatre project
+ * A Theatre.js project
  */
 export interface IProject {
   readonly type: 'Theatre_Project_PublicAPI'
@@ -58,7 +80,7 @@ export default class TheatreProject implements IProject {
    * @internal
    */
   constructor(id: string, config: IProjectConfig = {}) {
-    setPrivateAPI(this, new Project(id, config, this))
+    setPrivateAPI(this, new Project(id as ProjectId, config, this))
   }
 
   get ready(): Promise<void> {
@@ -87,7 +109,9 @@ export default class TheatreProject implements IProject {
       )
     }
 
-    return privateAPI(this).getOrCreateSheet(sanitizedPath, instanceId)
-      .publicApi
+    return privateAPI(this).getOrCreateSheet(
+      sanitizedPath as SheetId,
+      instanceId as SheetInstanceId,
+    ).publicApi
   }
 }

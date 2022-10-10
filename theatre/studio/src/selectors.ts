@@ -3,7 +3,9 @@ import type Sequence from '@theatre/core/sequences/Sequence'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import {val} from '@theatre/dataverse'
+import type {$IntentionalAny} from '@theatre/dataverse/src/types'
 import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
+import type {SheetId} from '@theatre/shared/utils/ids'
 import {uniq} from 'lodash-es'
 import getStudio from './getStudio'
 import type {OutlineSelectable, OutlineSelection} from './store/types'
@@ -46,7 +48,7 @@ export const getSelectedInstanceOfSheetId = (
     ]
 
   const instanceId = val(
-    projectStateP.stateBySheetId[selectedSheetId].selectedInstanceId,
+    projectStateP.stateBySheetId[selectedSheetId as SheetId].selectedInstanceId,
   )
 
   const template = val(project.sheetTemplatesP[selectedSheetId])
@@ -59,8 +61,12 @@ export const getSelectedInstanceOfSheetId = (
     // @todo #perf this will update every time an instance is added/removed.
     const allInstances = val(template.instancesP)
 
-    return allInstances[Object.keys(allInstances)[0]]
+    return allInstances[keys(allInstances)[0]]
   }
+}
+
+function keys<T extends object>(obj: T): Exclude<keyof T, symbol | number>[] {
+  return Object.keys(obj) as $IntentionalAny
 }
 
 /**

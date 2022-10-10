@@ -15,7 +15,18 @@ import type {
   DopeSheetSelection,
   SequenceEditorPanelLayout,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {SequenceEditorTree_AllRowTypes} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import type {
+  SequenceEditorTree_AllRowTypes,
+  SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_Sheet,
+  SequenceEditorTree_SheetObject,
+} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
+import {collectAggregateKeyframesInPrism} from './collectAggregateKeyframes'
+import type {ILogger, IUtilLogger} from '@theatre/shared/logger'
+import {useLogger} from '@theatre/studio/uiComponents/useLogger'
+
+const HITBOX_SIZE_PX = 5
 
 const Container = styled.div<{isShiftDown: boolean}>`
   cursor: ${(props) => (props.isShiftDown ? 'cell' : 'default')};
@@ -23,7 +34,8 @@ const Container = styled.div<{isShiftDown: boolean}>`
 
 const DopeSheetSelectionView: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
-}> = ({layoutP, children}) => {
+  height: number
+}> = ({layoutP, children, height}) => {
   const [containerRef, containerNode] = useRefAndState<HTMLDivElement | null>(
     null,
   )
@@ -33,7 +45,12 @@ const DopeSheetSelectionView: React.FC<{
   selectionBoundsRef.current = selectionBounds
 
   return (
-    <Container ref={containerRef} isShiftDown={isShiftDown}>
+    <Container
+      style={{height: height + 'px'}}
+      ref={containerRef}
+      isShiftDown={isShiftDown}
+      className="selectionview"
+    >
       {selectionBounds && (
         <SelectionRectangle state={selectionBounds} layoutP={layoutP} />
       )}
@@ -42,9 +59,20 @@ const DopeSheetSelectionView: React.FC<{
   )
 }
 
+/**
+ * The horizontal and vertical bounds of the selection, each represented by a tuple in the form of [from, to].
+ */
 type SelectionBounds = {
-  positions: [from: number, to: number]
-  ys: [from: number, to: number]
+  /**
+   * The horizontal bounds of the selection as a tuple of "from" and "to" coordinates, "from" representing the start of the drag.
+   *
+   * TODO - use nominal types here to clarify which space these numbers are in
+   */
+  h: [from: number, to: number]
+  /**
+   * The vertical bounds of the selection as a tuple of "from" and "to" coordinates, "from" representing the start of the drag.
+   */
+  v: [from: number, to: number]
 }
 
 function useCaptureSelection(
@@ -53,103 +81,197 @@ function useCaptureSelection(
 ) {
   const [ref, state] = useRefAndState<SelectionBounds | null>(null)
 
+  const logger = useLogger('useCaptureSelection')
+
   useDrag(
     containerNode,
     useMemo((): Parameters<typeof useDrag>[1] => {
       return {
+        debugName: 'DopeSheetSelectionView/useCaptureSelection',
         dontBlockMouseDown: true,
-        lockCursorTo: 'cell',
+        lockCSSCursorTo: 'cell',
         onDragStart(event) {
           if (!event.shiftKey || event.target instanceof HTMLInputElement) {
             return false
           }
           const rect = containerNode!.getBoundingClientRect()
 
-          const posInScaledSpace = event.clientX - rect.left
+          // all the `val()` calls here are meant to be read cold
+
+          const posInScaledSpace =
+            event.clientX -
+            rect.left -
+            // selection is happening in left padded space, convert it to normal space
+            val(layoutP.scaledSpace.leftPadding)
 
           const posInUnitSpace = val(layoutP.scaledSpace.toUnitSpace)(
             posInScaledSpace,
           )
 
           ref.current = {
-            positions: [posInUnitSpace, posInUnitSpace],
-            ys: [event.clientY - rect.top, event.clientY - rect.top],
+            h: [posInUnitSpace, posInUnitSpace],
+            v: [event.clientY - rect.top, event.clientY - rect.top],
           }
 
           val(layoutP.selectionAtom).setState({current: undefined})
-        },
-        onDrag(dx, dy, event) {
-          const state = ref.current!
-          const rect = containerNode!.getBoundingClientRect()
 
-          const posInScaledSpace = event.clientX - rect.left
+          return {
+            onDrag(_dx, _dy, event) {
+              // const state = ref.current!
+              const rect = containerNode!.getBoundingClientRect()
 
-          const posInUnitSpace = val(layoutP.scaledSpace.toUnitSpace)(
-            posInScaledSpace,
-          )
+              const posInScaledSpace =
+                event.clientX -
+                rect.left -
+                // selection is happening in left padded space, convert it to normal space
+                val(layoutP.scaledSpace.leftPadding)
 
-          ref.current = {
-            positions: [ref.current!.positions[0], posInUnitSpace],
-            ys: [ref.current!.ys[0], event.clientY - rect.top],
+              const posInUnitSpace = val(layoutP.scaledSpace.toUnitSpace)(
+                posInScaledSpace,
+              )
+
+              ref.current = {
+                h: [ref.current!.h[0], posInUnitSpace],
+                v: [ref.current!.v[0], event.clientY - rect.top],
+              }
+
+              const selection = utils.boundsToSelection(
+                logger,
+                val(layoutP),
+                ref.current,
+              )
+              val(layoutP.selectionAtom).setState({current: selection})
+            },
+            onDragEnd(_dragHappened) {
+              ref.current = null
+            },
           }
-
-          const selection = utils.boundsToSelection(layoutP, ref.current)
-          val(layoutP.selectionAtom).setState({current: selection})
-        },
-        onDragEnd(dragHappened) {
-          ref.current = null
         },
       }
     }, [layoutP, containerNode, ref]),
   )
 
-  // useEffect(() => {
-  //   if (!containerNode) return
-  //   const onClick = () => {
-
-  //   }
-  //   containerNode.addEventListener('click', onClick)
-
-  //   return () => {
-  //     containerNode.removeEventListener('click', onClick)
-  //   }
-  // }, [containerNode])
-
   return state
 }
 
 namespace utils {
+  const collectForAggregatedChildren = (
+    logger: IUtilLogger,
+    layout: SequenceEditorPanelLayout,
+    leaf:
+      | SequenceEditorTree_SheetObject
+      | SequenceEditorTree_PropWithChildren
+      | SequenceEditorTree_Sheet,
+    bounds: SelectionBounds,
+    selectionByObjectKey: DopeSheetSelection['byObjectKey'],
+  ) => {
+    const aggregatedKeyframes = collectAggregateKeyframesInPrism(leaf)
+
+    if (
+      leaf.top + leaf.nodeHeight / 2 + HITBOX_SIZE_PX > bounds.v[0] &&
+      leaf.top + leaf.nodeHeight / 2 - HITBOX_SIZE_PX < bounds.v[1]
+    ) {
+      for (const [position, keyframes] of aggregatedKeyframes.byPosition) {
+        const hitboxWidth = layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX)
+        const isHitboxOutsideSelection =
+          position + hitboxWidth <= bounds.h[0] ||
+          position - hitboxWidth >= bounds.h[1]
+        if (isHitboxOutsideSelection) continue
+
+        for (const keyframeWithTrack of keyframes) {
+          mutableSetDeep(
+            selectionByObjectKey,
+            (selectionByObjectKeyP) =>
+              // convenience for accessing a deep path which might not actually exist
+              // through the use of pointer proxy (so we don't have to deal with undeifned )
+              selectionByObjectKeyP[
+                keyframeWithTrack.track.sheetObject.address.objectKey
+              ].byTrackId[keyframeWithTrack.track.id].byKeyframeId[
+                keyframeWithTrack.kf.id
+              ],
+            true,
+          )
+        }
+      }
+    }
+
+    collectChildren(logger, layout, leaf, bounds, selectionByObjectKey)
+  }
+
   const collectorByLeafType: {
     [K in SequenceEditorTree_AllRowTypes['type']]?: (
-      layoutP: Pointer<SequenceEditorPanelLayout>,
+      logger: IUtilLogger,
+      layout: SequenceEditorPanelLayout,
       leaf: Extract<SequenceEditorTree_AllRowTypes, {type: K}>,
-      bounds: Exclude<SelectionBounds, null>,
-      selection: DopeSheetSelection,
+      bounds: SelectionBounds,
+      selectionByObjectKey: DopeSheetSelection['byObjectKey'],
     ) => void
   } = {
-    primitiveProp(layoutP, leaf, bounds, selection) {
+    sheet(logger, layout, leaf, bounds, selectionByObjectKey) {
+      collectForAggregatedChildren(
+        logger,
+        layout,
+        leaf,
+        bounds,
+        selectionByObjectKey,
+      )
+    },
+    propWithChildren(logger, layout, leaf, bounds, selectionByObjectKey) {
+      collectForAggregatedChildren(
+        logger,
+        layout,
+        leaf,
+        bounds,
+        selectionByObjectKey,
+      )
+    },
+    sheetObject(logger, layout, leaf, bounds, selectionByObjectKey) {
+      collectForAggregatedChildren(
+        logger,
+        layout,
+        leaf,
+        bounds,
+        selectionByObjectKey,
+      )
+    },
+    primitiveProp(logger, layout, leaf, bounds, selectionByObjectKey) {
       const {sheetObject, trackId} = leaf
       const trackData = val(
-        getStudio()!.atomP.historic.coreByProject[sheetObject.address.projectId]
+        getStudio().atomP.historic.coreByProject[sheetObject.address.projectId]
           .sheetsById[sheetObject.address.sheetId].sequence.tracksByObject[
           sheetObject.address.objectKey
         ].trackData[trackId],
       )!
-      const toCollect = trackData!.keyframes.filter(
-        (kf) =>
-          kf.position >= bounds.positions[0] &&
-          kf.position <= bounds.positions[1],
-      )
+
+      if (
+        bounds.v[0] >
+          leaf.top + leaf.heightIncludingChildren / 2 + HITBOX_SIZE_PX ||
+        leaf.top + leaf.heightIncludingChildren / 2 - HITBOX_SIZE_PX >
+          bounds.v[1]
+      ) {
+        return
+      }
 
       for (const kf of trackData.keyframes) {
-        if (kf.position <= bounds.positions[0]) continue
-        if (kf.position >= bounds.positions[1]) break
+        if (
+          kf.position + layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX) <=
+          bounds.h[0]
+        )
+          continue
+        if (
+          kf.position - layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX) >=
+          bounds.h[1]
+        )
+          break
 
         mutableSetDeep(
-          selection,
-          (p) =>
-            p.byObjectKey[sheetObject.address.objectKey].byTrackId[trackId]
-              .byKeyframeId[kf.id],
+          selectionByObjectKey,
+          (selectionByObjectKeyP) =>
+            // convenience for accessing a deep path which might not actually exist
+            // through the use of pointer proxy (so we don't have to deal with undeifned )
+            selectionByObjectKeyP[sheetObject.address.objectKey].byTrackId[
+              trackId
+            ].byKeyframeId[kf.id],
           true,
         )
       }
@@ -157,123 +279,137 @@ namespace utils {
   }
 
   const collectChildren = (
-    layoutP: Pointer<SequenceEditorPanelLayout>,
+    logger: IUtilLogger,
+    layout: SequenceEditorPanelLayout,
     leaf: SequenceEditorTree_AllRowTypes,
-    bounds: Exclude<SelectionBounds, null>,
-    selection: DopeSheetSelection,
+    bounds: SelectionBounds,
+    selectionByObjectKey: DopeSheetSelection['byObjectKey'],
   ) => {
     if ('children' in leaf) {
       for (const sub of leaf.children) {
-        collectFromAnyLeaf(layoutP, sub, bounds, selection)
+        collectFromAnyLeaf(logger, layout, sub, bounds, selectionByObjectKey)
       }
     }
   }
 
   function collectFromAnyLeaf(
-    layoutP: Pointer<SequenceEditorPanelLayout>,
+    logger: IUtilLogger,
+    layout: SequenceEditorPanelLayout,
     leaf: SequenceEditorTree_AllRowTypes,
-    bounds: Exclude<SelectionBounds, null>,
-    selection: DopeSheetSelection,
+    bounds: SelectionBounds,
+    selectionByObjectKey: DopeSheetSelection['byObjectKey'],
   ) {
+    // don't collect from non rendered
+    if (!leaf.shouldRender) return
+
     if (
-      bounds.ys[0] > leaf.top + leaf.heightIncludingChildren ||
-      leaf.top > bounds.ys[1]
+      bounds.v[0] > leaf.top + leaf.heightIncludingChildren ||
+      leaf.top > bounds.v[1]
     ) {
       return
     }
     const collector = collectorByLeafType[leaf.type]
     if (collector) {
-      collector(layoutP, leaf as $IntentionalAny, bounds, selection)
+      collector(
+        logger,
+        layout,
+        leaf as $IntentionalAny,
+        bounds,
+        selectionByObjectKey,
+      )
     } else {
-      collectChildren(layoutP, leaf, bounds, selection)
+      collectChildren(logger, layout, leaf, bounds, selectionByObjectKey)
     }
   }
 
   export function boundsToSelection(
-    layoutP: Pointer<SequenceEditorPanelLayout>,
-    bounds: Exclude<SelectionBounds, null>,
+    logger: ILogger,
+    layout: SequenceEditorPanelLayout,
+    bounds: SelectionBounds,
   ): DopeSheetSelection {
-    const sheet = val(layoutP.tree.sheet)
-    const selection: DopeSheetSelection = {
+    const selectionByObjectKey: DopeSheetSelection['byObjectKey'] = {}
+    bounds = sortBounds(bounds)
+
+    const tree = layout.tree
+    collectFromAnyLeaf(
+      logger.utilFor.internal(),
+      layout,
+      tree,
+      bounds,
+      selectionByObjectKey,
+    )
+
+    const sheet = layout.tree.sheet
+    return {
       type: 'DopeSheetSelection',
-      byObjectKey: {},
+      byObjectKey: selectionByObjectKey,
       getDragHandlers(origin) {
-        let tempTransaction: CommitOrDiscard | undefined
-
-        let toUnitSpace: SequenceEditorPanelLayout['scaledSpace']['toUnitSpace']
         return {
+          debugName: 'DopeSheetSelectionView/boundsToSelection',
           onDragStart() {
-            toUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
-          },
-          onDrag(dx, _, event) {
-            let delta = toUnitSpace(dx)
-            if (tempTransaction) {
-              tempTransaction.discard()
-              tempTransaction = undefined
-            }
+            let tempTransaction: CommitOrDiscard | undefined
 
-            const snapTarget = event
-              .composedPath()
-              .find(
-                (el): el is Element =>
-                  el instanceof Element &&
-                  el !== origin.domNode &&
-                  el.hasAttribute('data-pos'),
-              )
+            const toUnitSpace = layout.scaledSpace.toUnitSpace
 
-            if (snapTarget) {
-              const snapPos = parseFloat(snapTarget.getAttribute('data-pos')!)
-              if (isFinite(snapPos)) {
-                delta = snapPos - origin.positionAtStartOfDrag
-              }
-            }
-
-            tempTransaction = getStudio()!.tempTransaction(({stateEditors}) => {
-              const transformKeyframes =
-                stateEditors.coreByProject.historic.sheetsById.sequence
-                  .transformKeyframes
-
-              for (const objectKey of Object.keys(selection.byObjectKey)) {
-                const {byTrackId} = selection.byObjectKey[objectKey]!
-                for (const trackId of Object.keys(byTrackId)) {
-                  const {byKeyframeId} = byTrackId[trackId]!
-                  transformKeyframes({
-                    trackId,
-                    keyframeIds: Object.keys(byKeyframeId),
-                    translate: delta,
-                    scale: 1,
-                    origin: 0,
-                    snappingFunction: sheet.getSequence().closestGridPosition,
-                    objectKey,
-                    projectId: origin.projectId,
-                    sheetId: origin.sheetId,
-                  })
+            return {
+              onDrag(dx, _, event) {
+                if (tempTransaction) {
+                  tempTransaction.discard()
+                  tempTransaction = undefined
                 }
-              }
-            })
-          },
-          onDragEnd(dragHappened) {
-            if (dragHappened) {
-              if (tempTransaction) {
-                tempTransaction.commit()
-              }
-            } else {
-              if (tempTransaction) {
-                tempTransaction.discard()
-              }
+
+                const snapPos = DopeSnap.checkIfMouseEventSnapToPos(event, {
+                  ignore: origin.domNode,
+                })
+
+                const delta =
+                  snapPos != null
+                    ? snapPos - origin.positionAtStartOfDrag
+                    : toUnitSpace(dx)
+
+                tempTransaction = getStudio().tempTransaction(
+                  ({stateEditors}) => {
+                    const transformKeyframes =
+                      stateEditors.coreByProject.historic.sheetsById.sequence
+                        .transformKeyframes
+
+                    for (const objectKey of Object.keys(selectionByObjectKey)) {
+                      const {byTrackId} = selectionByObjectKey[objectKey]!
+                      for (const trackId of Object.keys(byTrackId)) {
+                        const {byKeyframeId} = byTrackId[trackId]!
+                        transformKeyframes({
+                          trackId,
+                          keyframeIds: Object.keys(byKeyframeId),
+                          translate: delta,
+                          scale: 1,
+                          origin: 0,
+                          snappingFunction:
+                            sheet.getSequence().closestGridPosition,
+                          objectKey,
+                          projectId: origin.projectId,
+                          sheetId: origin.sheetId,
+                        })
+                      }
+                    }
+                  },
+                )
+              },
+              onDragEnd(dragHappened) {
+                if (dragHappened) tempTransaction?.commit()
+                else tempTransaction?.discard()
+              },
             }
-            tempTransaction = undefined
           },
         }
       },
       delete() {
-        getStudio()!.transaction(({stateEditors}) => {
+        getStudio().transaction(({stateEditors}) => {
           const deleteKeyframes =
             stateEditors.coreByProject.historic.sheetsById.sequence
               .deleteKeyframes
 
-          for (const objectKey of Object.keys(selection.byObjectKey)) {
-            const {byTrackId} = selection.byObjectKey[objectKey]!
+          for (const objectKey of Object.keys(selectionByObjectKey)) {
+            const {byTrackId} = selectionByObjectKey[objectKey]!
             for (const trackId of Object.keys(byTrackId)) {
               const {byKeyframeId} = byTrackId[trackId]!
               deleteKeyframes({
@@ -287,13 +423,6 @@ namespace utils {
         })
       },
     }
-
-    bounds = sortBounds(bounds)
-
-    const tree = val(layoutP.tree)
-    collectFromAnyLeaf(layoutP, tree, bounds, selection)
-
-    return selection
   }
 }
 
@@ -301,20 +430,18 @@ const SelectionRectangleDiv = styled.div`
   position: absolute;
   background: rgba(255, 255, 255, 0.1);
   border: 1px dashed rgba(255, 255, 255, 0.4);
-  box-size: border-box;
+  box-sizing: border-box;
 `
 
 const sortBounds = (b: SelectionBounds): SelectionBounds => {
   return {
-    positions: [...b.positions].sort(
-      (a, b) => a - b,
-    ) as SelectionBounds['positions'],
-    ys: [...b.ys].sort((a, b) => a - b) as SelectionBounds['ys'],
+    h: [...b.h].sort((a, b) => a - b) as SelectionBounds['h'],
+    v: [...b.v].sort((a, b) => a - b) as SelectionBounds['v'],
   }
 }
 
-const SelectionRectangle: React.FC<{
-  state: Exclude<SelectionBounds, null>
+const SelectionRectangle: React.VFC<{
+  state: SelectionBounds
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({state, layoutP}) => {
   const atom = useValToAtom(state)
@@ -324,11 +451,15 @@ const SelectionRectangle: React.FC<{
     const sorted = sortBounds(state)
 
     const unitSpaceToScaledSpace = val(layoutP.scaledSpace.fromUnitSpace)
+    const leftPadding = val(layoutP.scaledSpace.leftPadding)
 
-    const positionsInScaledSpace = sorted.positions.map(unitSpaceToScaledSpace)
+    const positionsInScaledSpace = sorted.h
+      .map(unitSpaceToScaledSpace)
+      // bounds are in normal space, convert them left-padded space
+      .map((coord) => coord + leftPadding)
 
-    const top = sorted.ys[0]
-    const height = sorted.ys[1] - sorted.ys[0]
+    const top = sorted.v[0]
+    const height = sorted.v[1] - sorted.v[0]
 
     const left = positionsInScaledSpace[0]
     const width = positionsInScaledSpace[1] - positionsInScaledSpace[0]

@@ -9,6 +9,7 @@ import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {
   $FixMe,
   $IntentionalAny,
+  DeepPartialOfSerializableValue,
   SerializableMap,
   SerializableValue,
 } from '@theatre/shared/utils/types'
@@ -22,31 +23,48 @@ import type {
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
-import type {Interpolator} from '@theatre/core/propTypes'
+import type {Interpolator, PropTypeConfig} from '@theatre/core/propTypes'
 import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
+import type {ILogger, IUtilContext} from '@theatre/shared/logger'
 
-// type Everything = {
-//   final: SerializableMap
-//   statics: SerializableMap
-//   defaults: SerializableMap
-//   sequenced: SerializableMap
-// }
+/**
+ * Internally, the sheet's actual configured value is not a specific type, since we
+ * can change the prop config at will, as such this is an alias of {@link SerializableMap}.
+ *
+ * TODO: Incorporate this knowledge into SheetObject & TemplateSheetObject
+ */
+type SheetObjectPropsValue = SerializableMap
 
+/**
+ * An object on a sheet consisting of zero or more properties which can
+ * be overridden statically or overridden by being sequenced.
+ *
+ * Note that this cannot be generic over `Props`, since the user is
+ * able to change prop configs for the sheet object's properties.
+ */
 export default class SheetObject implements IdentityDerivationProvider {
   get type(): 'Theatre_SheetObject' {
     return 'Theatre_SheetObject'
   }
   readonly $$isIdentityDerivationProvider: true = true
   readonly address: SheetObjectAddress
-  readonly publicApi: TheatreSheetObject<$IntentionalAny>
-  private readonly _initialValue = new Atom<SerializableMap>({})
+  readonly publicApi: TheatreSheetObject
+  private readonly _initialValue = new Atom<SheetObjectPropsValue>({})
   private readonly _cache = new SimpleCache()
+  readonly _logger: ILogger
+  private readonly _internalUtilCtx: IUtilContext
 
   constructor(
     readonly sheet: Sheet,
     readonly template: SheetObjectTemplate,
     readonly nativeObject: unknown,
   ) {
+    this._logger = sheet._logger.named(
+      'SheetObject',
+      template.address.objectKey,
+    )
+    this._logger._trace('creating object')
+    this._internalUtilCtx = {logger: this._logger.utilFor.internal()}
     this.address = {
       ...template.address,
       sheetInstanceId: sheet.address.sheetInstanceId,
@@ -55,7 +73,7 @@ export default class SheetObject implements IdentityDerivationProvider {
     this.publicApi = new TheatreSheetObject(this)
   }
 
-  getValues(): IDerivation<Pointer<SerializableMap>> {
+  getValues(): IDerivation<Pointer<SheetObjectPropsValue>> {
     return this._cache.get('getValues()', () =>
       prism(() => {
         const defaults = val(this.template.getDefaultValues())
@@ -108,18 +126,20 @@ export default class SheetObject implements IdentityDerivationProvider {
           final = withSeqs
         }
 
-        const a = valToAtom<SerializableMap>('finalAtom', final)
+        const a = valToAtom<SheetObjectPropsValue>('finalAtom', final)
 
         return a.pointer
       }),
     )
   }
 
-  getValueByPointer(pointer: SheetObject['propsP']): SerializableValue {
+  getValueByPointer<T extends SerializableValue>(pointer: Pointer<T>): T {
     const allValuesP = val(this.getValues())
     const {path} = getPointerParts(pointer)
 
-    return val(pointerDeep(allValuesP as $FixMe, path)) as SerializableMap
+    return val(
+      pointerDeep(allValuesP as $FixMe, path),
+    ) as SerializableValue as T
   }
 
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
@@ -136,7 +156,7 @@ export default class SheetObject implements IdentityDerivationProvider {
   /**
    * Returns values of props that are sequenced.
    */
-  getSequencedValues(): IDerivation<Pointer<SerializableMap>> {
+  getSequencedValues(): IDerivation<Pointer<SheetObjectPropsValue>> {
     return prism(() => {
       const tracksToProcessD = prism.memo(
         'tracksToProcess',
@@ -145,7 +165,7 @@ export default class SheetObject implements IdentityDerivationProvider {
       )
 
       const tracksToProcess = val(tracksToProcessD)
-      const valsAtom = new Atom<SerializableMap>({})
+      const valsAtom = new Atom<SheetObjectPropsValue>({})
 
       prism.effect(
         'processTracks',
@@ -157,33 +177,32 @@ export default class SheetObject implements IdentityDerivationProvider {
             const propConfig = getPropConfigByPath(
               this.template.config,
               pathToProp,
-            )!
+            )! as Extract<PropTypeConfig, {interpolate: $IntentionalAny}>
 
-            const sanitize = propConfig.sanitize!
+            const deserializeAndSanitize = propConfig.deserializeAndSanitize
             const interpolate =
               propConfig.interpolate! as Interpolator<$IntentionalAny>
 
             const updateSequenceValueFromItsDerivation = () => {
               const triple = derivation.getValue()
 
-              if (!triple)
-                return valsAtom.setIn(pathToProp, propConfig!.default)
+              if (!triple) return valsAtom.setIn(pathToProp, undefined)
 
-              const leftSanitized = sanitize(triple.left)
+              const leftDeserialized = deserializeAndSanitize(triple.left)
 
               const left =
-                typeof leftSanitized === 'undefined'
+                leftDeserialized === undefined
                   ? propConfig.default
-                  : leftSanitized
+                  : leftDeserialized
 
               if (triple.right === undefined)
                 return valsAtom.setIn(pathToProp, left)
 
-              const rightSanitized = sanitize(triple.right)
+              const rightDeserialized = deserializeAndSanitize(triple.right)
               const right =
-                typeof rightSanitized === 'undefined'
+                rightDeserialized === undefined
                   ? propConfig.default
-                  : rightSanitized
+                  : rightDeserialized
 
               return valsAtom.setIn(
                 pathToProp,
@@ -219,20 +238,23 @@ export default class SheetObject implements IdentityDerivationProvider {
 
     const timeD = this.sheet.getSequence().positionDerivation
 
-    return interpolationTripleAtPosition(trackP, timeD)
+    return interpolationTripleAtPosition(this._internalUtilCtx, trackP, timeD)
   }
 
-  get propsP(): Pointer<$FixMe> {
+  get propsP(): Pointer<SheetObjectPropsValue> {
     return this._cache.get('propsP', () =>
       pointer<{props: {}}>({root: this, path: []}),
     ) as $FixMe
   }
 
-  validateValue(pointer: Pointer<$FixMe>, value: unknown) {
+  validateValue(
+    pointer: Pointer<SheetObjectPropsValue>,
+    value: DeepPartialOfSerializableValue<SheetObjectPropsValue>,
+  ) {
     // @todo
   }
 
-  setInitialValue(val: SerializableMap) {
+  setInitialValue(val: DeepPartialOfSerializableValue<SheetObjectPropsValue>) {
     this.validateValue(this.propsP, val)
     this._initialValue.setState(val)
   }

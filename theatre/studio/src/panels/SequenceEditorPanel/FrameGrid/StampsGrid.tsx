@@ -30,7 +30,7 @@ const TheStamps = styled.div`
   height: 100%;
   left: 0;
   overflow: hidden;
-  /* z-index: 2; */
+  z-index: 2;
   will-change: transform;
   pointer-events: none;
 `

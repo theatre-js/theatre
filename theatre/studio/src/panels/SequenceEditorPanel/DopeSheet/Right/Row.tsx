@@ -2,7 +2,7 @@ import type {SequenceEditorTree_Row} from '@theatre/studio/panels/SequenceEditor
 import React from 'react'
 import styled from 'styled-components'
 
-const Container = styled.li<{}>`
+const RightRowContainer = styled.li<{}>`
   margin: 0;
   padding: 0;
   list-style: none;
@@ -10,7 +10,7 @@ const Container = styled.li<{}>`
   position: relative;
 `
 
-const NodeWrapper = styled.div<{isEven: boolean}>`
+const RightRowNodeWrapper = styled.div<{isEven: boolean}>`
   box-sizing: border-box;
   width: 100%;
   position: relative;
@@ -29,29 +29,42 @@ const NodeWrapper = styled.div<{isEven: boolean}>`
   }
 `
 
-const Children = styled.ul`
+const RightRowChildren = styled.ul`
   margin: 0;
   padding: 0;
   list-style: none;
 `
 
-const Row: React.FC<{
-  leaf: SequenceEditorTree_Row<unknown>
+/**
+ * @remarks
+ * Right now, we're rendering a hierarchical dom tree that reflects the hierarchy of
+ * objects, compound props, and their subs. This is not necessary and makes styling complicated.
+ * Instead of this, we can simply render a list. This should be easy to do, since the view model
+ * in {@link calculateSequenceEditorTree} already includes all the vertical placement information
+ * (height and top) we need to render the nodes as a list.
+ *
+ * Note that we don't need to change {@link calculateSequenceEditorTree} to be list-based. It can
+ * retain its hierarchy. It's just the DOM tree that should be list-based.
+ */
+
+const RightRow: React.FC<{
+  leaf: SequenceEditorTree_Row<string>
   node: React.ReactElement
-}> = ({leaf, children, node}) => {
+  isCollapsed: boolean
+}> = ({leaf, children, node, isCollapsed}) => {
   const hasChildren = Array.isArray(children) && children.length > 0
 
-  return (
-    <Container>
-      <NodeWrapper
+  return leaf.shouldRender ? (
+    <RightRowContainer>
+      <RightRowNodeWrapper
         style={{height: leaf.nodeHeight + 'px'}}
         isEven={leaf.n % 2 === 0}
       >
         {node}
-      </NodeWrapper>
-      {hasChildren && <Children>{children}</Children>}
-    </Container>
-  )
+      </RightRowNodeWrapper>
+      {hasChildren && <RightRowChildren>{children}</RightRowChildren>}
+    </RightRowContainer>
+  ) : null
 }
 
-export default Row
+export default RightRow

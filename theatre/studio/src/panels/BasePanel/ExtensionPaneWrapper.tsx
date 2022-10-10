@@ -1,7 +1,7 @@
 import type {$FixMe} from '@theatre/shared/utils/types'
 import type {PanelPosition} from '@theatre/studio/store/types'
 import type {PaneInstance} from '@theatre/studio/TheatreStudio'
-import React, {useCallback} from 'react'
+import React, {useCallback, useLayoutEffect, useState} from 'react'
 import styled from 'styled-components'
 import {F2 as F2Impl, TitleBar} from './common'
 import BasePanel from './BasePanel'
@@ -11,6 +11,7 @@ import {ErrorBoundary} from 'react-error-boundary'
 import {IoClose} from 'react-icons/all'
 import getStudio from '@theatre/studio/getStudio'
 import {panelZIndexes} from '@theatre/studio/panels/BasePanel/common'
+import type {PaneInstanceId, UIPanelId} from '@theatre/shared/utils/ids'
 
 const defaultPosition: PanelPosition = {
   edges: {
@@ -28,7 +29,7 @@ const ExtensionPaneWrapper: React.FC<{
 }> = ({paneInstance}) => {
   return (
     <BasePanel
-      panelId={`pane-${paneInstance.instanceId}`}
+      panelId={`pane-${paneInstance.instanceId}` as UIPanelId}
       defaultPosition={defaultPosition}
       minDims={minDims}
     >
@@ -38,8 +39,6 @@ const ExtensionPaneWrapper: React.FC<{
 }
 
 const Container = styled(PanelWrapper)`
-  overflow: hidden;
-
   display: flex;
   flex-direction: column;
 
@@ -135,9 +134,25 @@ const ErrorFallback: React.FC<{error: Error}> = (props) => {
 const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
   paneInstance,
 }) => {
-  const Comp = paneInstance.definition.component
+  const [mountingPoint, setMountingPoint] = useState<HTMLElement | null>(null)
+
+  const mount = paneInstance.definition.mount
+
+  useLayoutEffect(() => {
+    if (!mountingPoint) return
+    const unmount = mount({
+      paneId: paneInstance.instanceId,
+      node: mountingPoint!,
+    })
+    if (typeof unmount === 'function') {
+      return unmount
+    }
+  }, [mountingPoint, mount, paneInstance.instanceId])
+
   const closePane = useCallback(() => {
-    getStudio().paneManager.destroyPane(paneInstance.instanceId)
+    getStudio().paneManager.destroyPane(
+      paneInstance.instanceId as PaneInstanceId,
+    )
   }, [paneInstance])
 
   return (
@@ -152,11 +167,9 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
           <Title>{paneInstance.instanceId}</Title>
         </TitleBar>
       </PanelDragZone>
-      <F2>
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Comp paneId={paneInstance.instanceId} />
-        </ErrorBoundary>
-      </F2>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <F2 ref={setMountingPoint} />
+      </ErrorBoundary>
     </Container>
   )
 }

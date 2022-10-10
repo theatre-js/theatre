@@ -3,14 +3,14 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import {usePrism} from '@theatre/react'
 import type {BasicNumberInputNudgeFn} from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
-import {propNameText} from '@theatre/studio/panels/DetailPanel/propEditors/utils/SingleRowPropEditor'
+import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {useLayoutEffect, useMemo, useRef} from 'react'
 import React from 'react'
 import {val} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import clamp from 'lodash-es/clamp'
 
-const greaterThanZero = (v: number) => isFinite(v) && v > 0
+const greaterThanOrEqualToZero = (v: number) => isFinite(v) && v >= 0
 
 const Container = styled.div`
   display: flex;
@@ -21,7 +21,7 @@ const Container = styled.div`
 `
 
 const Label = styled.div`
-  ${propNameText};
+  ${propNameTextCSS};
   white-space: nowrap;
 `
 
@@ -32,8 +32,8 @@ const PlayheadPositionPopover: React.FC<{
   /**
    * Called when user hits enter/escape
    */
-  onRequestClose: () => void
-}> = ({layoutP, onRequestClose}) => {
+  onRequestClose: (reason: string) => void
+}> = ({layoutP}) => {
   const sheet = val(layoutP.sheet)
   const sequence = sheet.getSequence()
 
@@ -55,7 +55,7 @@ const PlayheadPositionPopover: React.FC<{
           sequence.position = originalPosition
         }
       },
-      permenantlySetValue(newPosition: number): void {
+      permanentlySetValue(newPosition: number): void {
         if (tempPosition) {
           tempPosition = undefined
         }
@@ -74,13 +74,12 @@ const PlayheadPositionPopover: React.FC<{
 
     return (
       <Container>
-        <Label>Playhead position</Label>
+        <Label>Sequence position</Label>
         <BasicNumberInput
-          value={sequence.position}
+          value={Number(sequence.position.toFixed(3))}
           {...fns}
-          isValid={greaterThanZero}
+          isValid={greaterThanOrEqualToZero}
           inputRef={inputRef}
-          onBlur={onRequestClose}
           nudge={nudge}
         />
       </Container>

@@ -1,6 +1,6 @@
 {
   "name": "@theatre/studio",
-  "version": "0.4.8-dev.2",
+  "version": "0.5.0",
   "license": "AGPL-3.0-only",
   "description": "Motion design editor for the web",
   "repository": {
@@ -26,10 +26,7 @@
     "@theatre/core": "*"
   },
   "dependencies": {
-    "@theatre/dataverse": "workspace:*",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "styled-components": "^5.3.0"
+    "@theatre/dataverse": "workspace:*"
   },
   "//": "Add packages here to make them externals of studio. Add them to theatre/package.json if you want to bundle them with studio."
 }

@@ -4,6 +4,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import type {Studio} from './Studio'
 import {val} from '@theatre/dataverse'
+import {getMounter} from './utils/renderInPortalInContext'
+import {withStyledShadow} from './css'
+import ExtensionToolbar from './toolbars/ExtensionToolbar/ExtensionToolbar'
 
 export default class UI {
   readonly containerEl = document.createElement('div')
@@ -13,7 +16,7 @@ export default class UI {
   readonly containerShadow: ShadowRoot & HTMLElement
 
   constructor(readonly studio: Studio) {
-    // @todo we can't bootstrap theatre (as in, to design theatre using theatre), if we rely on IDed elements
+    // @todo we can't bootstrap Theatre.js (as in, to design Theatre.js using theatre), if we rely on IDed elements
     this.containerEl.id = 'theatrejs-studio-root'
 
     this.containerEl.style.cssText = `
@@ -85,5 +88,17 @@ export default class UI {
     return (
       val(this.studio.atomP.ahistoric.visibilityState) === 'everythingIsHidden'
     )
+  }
+
+  renderToolset(toolsetId: string, htmlNode: HTMLElement) {
+    const s = getMounter()
+
+    s.mountOrRender(
+      withStyledShadow(ExtensionToolbar),
+      {toolbarId: toolsetId},
+      htmlNode,
+    )
+
+    return s.unmount
   }
 }

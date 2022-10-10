@@ -1,2 +1,3 @@
 export const isMac =
-  navigator && navigator.platform.toUpperCase().indexOf('MAC') >= 0
+  typeof navigator !== 'undefined' &&
+  navigator.platform.toUpperCase().indexOf('MAC') >= 0

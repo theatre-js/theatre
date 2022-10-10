@@ -1,7 +1,7 @@
 import type Sheet from '@theatre/core/sheets/Sheet'
 import getStudio from '@theatre/studio/getStudio'
 import type useDrag from '@theatre/studio/uiComponents/useDrag'
-import type {PropAddress} from '@theatre/shared/utils/addresses'
+import type {SheetAddress} from '@theatre/shared/utils/addresses'
 import subPrism from '@theatre/shared/utils/subPrism'
 import type {
   IRange,
@@ -14,6 +14,11 @@ import {Atom, prism, val} from '@theatre/dataverse'
 import type {SequenceEditorTree} from './tree'
 import {calculateSequenceEditorTree} from './tree'
 import {clamp} from 'lodash-es'
+import type {
+  KeyframeId,
+  ObjectAddressKey,
+  SequenceTrackId,
+} from '@theatre/shared/utils/ids'
 
 // A Side is either the left side of the panel or the right side
 type DimsOfPanelPart = {
@@ -41,24 +46,22 @@ export type PanelDims = {
 export type DopeSheetSelection = {
   type: 'DopeSheetSelection'
   byObjectKey: StrictRecord<
-    string,
+    ObjectAddressKey,
     {
       byTrackId: StrictRecord<
-        string,
+        SequenceTrackId,
         {
-          byKeyframeId: StrictRecord<string, true>
+          byKeyframeId: StrictRecord<KeyframeId, true>
         }
       >
     }
   >
   getDragHandlers(
-    origin: PropAddress & {
-      trackId: string
-      keyframeId: string
+    origin: SheetAddress & {
       positionAtStartOfDrag: number
       domNode: Element
     },
-  ): Parameters<typeof useDrag>[1]
+  ): Omit<Parameters<typeof useDrag>[1], 'onClick'>
   delete(): void
 }
 
@@ -138,6 +141,9 @@ export type SequenceEditorPanelLayout = {
   }
   unitSpace: {}
   scaledSpace: {
+    /**
+     * TODO - scaledSpace with and without leftPadding are two different spaces. See if we can divide them so
+     */
     leftPadding: number
     fromUnitSpace(u: number): number
     toUnitSpace(s: number): number
@@ -156,8 +162,8 @@ export type SequenceEditorPanelLayout = {
   selectionAtom: Atom<{current?: DopeSheetSelection}>
 }
 
-// type UnitSpaceProression = Nominal<number, 'unitSpaceProgression'>
-// type ClippedSpaceProgression = Nominal<number, 'ClippedSpaceProgression'>
+// type UnitSpaceProression = number
+// type ClippedSpaceProgression = number
 
 /**
  * This means the left side of the panel is 20% of its width, and the
@@ -181,7 +187,11 @@ export function sequenceEditorPanelLayout(
       .stateBySheetId[sheet.address.sheetId]
 
   return prism(() => {
-    const tree = subPrism('tree', () => calculateSequenceEditorTree(sheet), [])
+    const tree = subPrism(
+      'tree',
+      () => calculateSequenceEditorTree(sheet, studio),
+      [],
+    )
 
     const panelDims = val(panelDimsP)
     const graphEditorState = val(

@@ -41,7 +41,7 @@ export const F2 = styled.div`
   padding: 0;
 `
 
-export const titleBarHeight = 20
+export const titleBarHeight = 18
 
 export const TitleBar = styled.div`
   height: ${titleBarHeight}px;
@@ -59,3 +59,5 @@ export const TitleBar = styled.div`
   white-space: nowrap;
   text-overflow: ellipsis;
 `
+
+export const visibleSize = 100

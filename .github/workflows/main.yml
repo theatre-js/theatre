@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  Test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -28,15 +28,24 @@ jobs:
       - uses: actions/cache@v2
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          # Note that we assume the following things about the compatibility tests here:
+          #   1. Every directory in `build_test` is a project managed with yarn
+          #   2. All these projects store their cache in `<project>/.yarn/cache`
+          # It's not that robust, but should be sufficient for us for now.
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            ${{ github.workspace }}/compatibility-tests/*/.yarn/cache
+          key:
+            ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{
+            hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-${{ matrix.node-version }}-yarn-
 
       - run: yarn install
-      - run: yarn typecheck
-      - run: yarn lint:all
+      - run: yarn lint:all --max-warnings 0
       - run: yarn test
+      - run: yarn typecheck
+      - run: yarn build
       - name: Download playwright
         run: yarn workspace playground run playwright install
       - name: Run e2e tests with percy
