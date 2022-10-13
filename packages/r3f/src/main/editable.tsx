@@ -1,9 +1,4 @@
-import type {
-  ComponentProps,
-  ComponentType,
-  MutableRefObject,
-  RefAttributes,
-} from 'react'
+import type {ComponentProps, ComponentType, Ref, RefAttributes} from 'react'
 import React, {
   forwardRef,
   useEffect,
@@ -213,7 +208,7 @@ Then you can use it in your JSX like any other editable component. Note the make
           additionalProps?: $FixMe
           objRef?: $FixMe
           // not exactly sure how to get the type of the threejs object itself
-          ref?: MutableRefObject<unknown>
+          ref?: Ref<unknown>
         }
       >
     >
@@ -227,7 +222,7 @@ Then you can use it in your JSX like any other editable component. Note the make
         objRef?: $FixMe
         editableType: keyof JSX.IntrinsicElements
         // not exactly sure how to get the type of the threejs object itself
-        ref?: MutableRefObject<unknown>
+        ref?: Ref<unknown>
       }> & {
         // Have to reproduce the primitive component's props here because we need to
         // lift this index type here to the outside to make auto-complete work
