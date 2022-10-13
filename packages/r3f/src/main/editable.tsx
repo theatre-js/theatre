@@ -1,4 +1,9 @@
-import type {ComponentProps, ComponentType, RefAttributes} from 'react'
+import type {
+  ComponentProps,
+  ComponentType,
+  MutableRefObject,
+  RefAttributes,
+} from 'react'
 import React, {
   forwardRef,
   useEffect,
@@ -64,6 +69,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
 
         const invalidate = useInvalidate()
 
+        // warn about cameras in r3f
         useEffect(() => {
           if (
             Component === 'perspectiveCamera' ||
@@ -95,6 +101,7 @@ Then you can use it in your JSX like any other editable component. Note the make
           }
         }, [Component, theatreKey])
 
+        // create sheet object and add editable to store
         useLayoutEffect(() => {
           if (!sheet) return
           const sheetObject = sheet.object(
@@ -199,27 +206,29 @@ Then you can use it in your JSX like any other editable component. Note the make
     primitive: editable('primitive', null),
   } as unknown as {
     [Property in Keys]: React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<
+      React.PropsWithRef<
         Omit<JSX.IntrinsicElements[Property], 'visible'> & {
           theatreKey: string
           visible?: boolean | 'editor'
           additionalProps?: $FixMe
           objRef?: $FixMe
-        } & React.RefAttributes<JSX.IntrinsicElements[Property]>
+          // not exactly sure how to get the type of the threejs object itself
+          ref?: MutableRefObject<unknown>
+        }
       >
     >
   } & {
     primitive: React.ForwardRefExoticComponent<
-      React.PropsWithoutRef<
-        {
-          object: any
-          theatreKey: string
-          visible?: boolean | 'editor'
-          additionalProps?: $FixMe
-          objRef?: $FixMe
-          editableType: keyof JSX.IntrinsicElements
-        } & React.RefAttributes<JSX.IntrinsicElements['primitive']>
-      > & {
+      React.PropsWithRef<{
+        object: any
+        theatreKey: string
+        visible?: boolean | 'editor'
+        additionalProps?: $FixMe
+        objRef?: $FixMe
+        editableType: keyof JSX.IntrinsicElements
+        // not exactly sure how to get the type of the threejs object itself
+        ref?: MutableRefObject<unknown>
+      }> & {
         // Have to reproduce the primitive component's props here because we need to
         // lift this index type here to the outside to make auto-complete work
         [props: string]: any
