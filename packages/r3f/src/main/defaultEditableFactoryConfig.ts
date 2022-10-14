@@ -17,6 +17,7 @@ import type {
 import {
   BoxHelper,
   CameraHelper,
+  Color,
   DirectionalLightHelper,
   PointLightHelper,
   SpotLightHelper,
@@ -38,6 +39,7 @@ const baseLightConfig = {
     intensity: createNumberPropConfig('intensity', 1),
     distance: createNumberPropConfig('distance'),
     decay: createNumberPropConfig('decay'),
+    color: createColorPropConfig('color', new Color('white')),
   }),
   dimensionless: true,
 }
@@ -80,6 +82,7 @@ const defaultEditableFactoryConfig = {
   directionalLight: {
     ...extendObjectProps(baseObjectConfig, {
       intensity: createNumberPropConfig('intensity', 1),
+      color: createColorPropConfig('color', new Color('white')),
     }),
     icon: 'sun' as const,
     dimensionless: true,
@@ -91,6 +94,23 @@ const defaultEditableFactoryConfig = {
     icon: 'lightBulb' as const,
     createHelper: (light: PointLight) =>
       new PointLightHelper(light, 1, selectionColor),
+  },
+  ambientLight: {
+    props: {
+      intensity: createNumberPropConfig('intensity', 1),
+      color: createColorPropConfig('color', new Color('white')),
+    },
+    useTransformControls: false,
+    icon: 'lightBulb' as const,
+  },
+  hemisphereLight: {
+    props: {
+      intensity: createNumberPropConfig('intensity', 1),
+      color: createColorPropConfig('color', new Color('white')),
+      groundColor: createColorPropConfig('groundColor', new Color('white')),
+    },
+    useTransformControls: false,
+    icon: 'lightBulb' as const,
   },
   perspectiveCamera: extendObjectProps(baseCameraConfig, {
     fov: createNumberPropConfig('fov', 50, {nudgeMultiplier: 0.1}),
