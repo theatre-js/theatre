@@ -1,4 +1,3 @@
-import type {} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {
   PropTypeConfig,
   PropTypeConfig_AllSimples,
@@ -359,6 +358,5 @@ export const calculateSequenceEditorTree = (
     topSoFar += row.nodeHeight
   }
 
-  console.log('tree :)', tree)
   return tree
 }

@@ -1,14 +1,7 @@
 import type {ComponentProps, ComponentType, Ref, RefAttributes} from 'react'
-import React, {
-  forwardRef,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, {forwardRef, useEffect, useLayoutEffect, useRef} from 'react'
 import {allRegisteredObjects, editorStore} from './store'
 import mergeRefs from 'react-merge-refs'
-import type {ISheetObject} from '@theatre/core'
 import useInvalidate from './useInvalidate'
 import {useCurrentSheet} from './SheetProvider'
 import defaultEditableFactoryConfig from './defaultEditableFactoryConfig'
@@ -56,11 +49,21 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
 
         const sheet = useCurrentSheet()!
 
-        const storeKey = makeStoreKey(sheet, theatreKey)
+        const sheetObject = sheet.object(
+          theatreKey,
+          Object.assign(
+            {
+              ...additionalProps,
+            },
+            // @ts-ignore
+            ...Object.values(config[actualType].props).map(
+              // @ts-ignore
+              (value) => value.type,
+            ),
+          ),
+        )
 
-        const [sheetObject, setSheetObject] = useState<
-          undefined | ISheetObject<$FixMe>
-        >(undefined)
+        const storeKey = makeStoreKey(sheetObject.address)
 
         const invalidate = useInvalidate()
 
@@ -99,21 +102,8 @@ Then you can use it in your JSX like any other editable component. Note the make
         // create sheet object and add editable to store
         useLayoutEffect(() => {
           if (!sheet) return
-          const sheetObject = sheet.object(
-            theatreKey,
-            Object.assign(
-              {
-                ...additionalProps,
-              },
-              // @ts-ignore
-              ...Object.values(config[actualType].props).map(
-                // @ts-ignore
-                (value) => value.type,
-              ),
-            ),
-          )
+
           allRegisteredObjects.add(sheetObject)
-          setSheetObject(sheetObject)
 
           if (objRef)
             typeof objRef === 'function'
