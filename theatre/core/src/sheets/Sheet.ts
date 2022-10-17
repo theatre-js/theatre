@@ -4,7 +4,7 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {SheetObjectPropTypeConfig} from '@theatre/core/sheets/TheatreSheet'
 import TheatreSheet from '@theatre/core/sheets/TheatreSheet'
 import type {SheetAddress} from '@theatre/shared/utils/addresses'
-import {Atom, valueDerivation} from '@theatre/dataverse'
+import {Atom, Box, valueDerivation} from '@theatre/dataverse'
 import type SheetTemplate from './SheetTemplate'
 import type {ObjectAddressKey, SheetInstanceId} from '@theatre/shared/utils/ids'
 import type {StrictRecord} from '@theatre/shared/utils/types'
@@ -75,20 +75,40 @@ export default class Sheet {
 
   getSequences(): Sequence[] {
     if (!this._sequences) {
-      const lengthD = valueDerivation(
+      const sequences = valueDerivation(
         this.project.pointers.historic.sheetsById[this.address.sheetId]
-          .sequences[0].length,
-      ).map(sanitizeSequenceLength)
+          .sequences,
+      )
+      // const lengthD = sequences.map((sequences) =>
+      //   sanitizeSequenceLength(sequences?.[0].length),
+      // )
+      // const subUnitsPerUnitD = sequences.map((sequences) =>
+      //   sanitizeSequenceSubUnitsPerUnit(sequences?.[0].subUnitsPerUnit),
+      // )
 
-      const subUnitsPerUnitD = valueDerivation(
-        this.project.pointers.historic.sheetsById[this.address.sheetId]
-          .sequences[0].subUnitsPerUnit,
-      ).map(sanitizeSequenceSubUnitsPerUnit)
+      // this._sequences = [
+      //   new Sequence(this.template.project, this, lengthD, subUnitsPerUnitD),
+      // ]
 
-      this._sequences = [
-        new Sequence(this.template.project, this, lengthD, subUnitsPerUnitD),
-      ]
+      const sequences2 = sequences.getValue()
+
+      this._sequences =
+        sequences2?.map((sequence) => {
+          const box = new Box(sanitizeSequenceLength(sequence.length))
+          const obox = new Box(
+            sanitizeSequenceSubUnitsPerUnit(sequence.subUnitsPerUnit),
+          )
+          return new Sequence(
+            this.template.project,
+            this,
+            box.derivation,
+            obox.derivation,
+            undefined,
+            'wow',
+          )
+        }) ?? []
     }
+
     return this._sequences
   }
 }

@@ -59,7 +59,6 @@ import {
 } from '@theatre/shared/instanceTypes'
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
-import type {PropTypeConfig} from '@theatre/core/propTypes'
 import {pointableSetUtil} from '@theatre/shared/utils/PointableSet'
 
 export const setDrafts__onlyMeantToBeCalledByTransaction = (
@@ -587,13 +586,19 @@ namespace stateEditors {
             s.sequences ??= [
               {
                 subUnitsPerUnit: 30,
+                length: 11,
+                type: 'PositionalSequence',
+                tracksByObject: {},
+              },
+              {
+                subUnitsPerUnit: 30,
                 length: 10,
                 type: 'PositionalSequence',
                 tracksByObject: {},
               },
             ]
 
-            return s.sequences!
+            return s.sequences
           }
 
           export function setLength(
@@ -606,13 +611,21 @@ namespace stateEditors {
             )
           }
 
+          export function swap(
+            p: WithoutSheetInstance<SheetAddress>,
+          ): HistoricPositionalSequence[] {
+            const sequences = _ensure(p)
+            const [a, b] = sequences
+            sequences[0] = b
+            sequences[1] = a
+
+            return sequences
+          }
+
           function _ensureTracksOfObject(
             p: WithoutSheetInstance<SheetObjectAddress>,
           ) {
-            const s =
-              stateEditors.coreByProject.historic.sheetsById.sequences._ensure(
-                p,
-              )[0].tracksByObject
+            const s = _ensure(p)[0].tracksByObject
 
             s[p.objectKey] ??= {trackData: {}, trackIdByPropPath: {}}
 
@@ -621,7 +634,6 @@ namespace stateEditors {
 
           export function setPrimitivePropAsSequenced(
             p: WithoutSheetInstance<PropAddress>,
-            config: PropTypeConfig,
           ) {
             const tracks = _ensureTracksOfObject(p)
             const pathEncoded = encodePathToProp(p.pathToProp)

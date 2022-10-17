@@ -115,6 +115,7 @@ export default class SheetObject implements IdentityDerivationProvider {
             () => this.getSequencedValues(),
             [],
           )
+          //console.log('WOW!', val(pointerToSequencedValuesD.getValue()))
           const withSeqsCache = prism.memo(
             'withSeqsCache',
             () => new WeakMap(),

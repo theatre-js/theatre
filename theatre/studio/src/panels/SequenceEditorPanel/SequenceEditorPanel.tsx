@@ -152,6 +152,7 @@ const Content: React.VFC<{}> = () => {
         [sheet, panelSizeP],
       )
       .getValue()
+    //console.log('AJHFKL', val(layoutP))
 
     if (val(layoutP.tree.children).length === 0) return <></>
 

@@ -145,6 +145,7 @@ export default class SheetObjectTemplate {
             this.address.objectKey
           ].trackIdByPropPath,
         )
+        //console.log('WOW!22', val(pointerToSheetState.sequences))
 
         if (!trackIdByPropPath) return emptyArray as $IntentionalAny
 

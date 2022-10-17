@@ -52,12 +52,13 @@ export default class Sequence {
     readonly _lengthD: IDerivation<number>,
     readonly _subUnitsPerUnitD: IDerivation<number>,
     playbackController?: IPlaybackController,
+    sequenceName: string = 'default',
   ) {
     this._logger = _project._logger
       .named('Sheet', _sheet.address.sheetId)
       .named('Instance', _sheet.address.sheetInstanceId)
 
-    this.address = {...this._sheet.address, sequenceName: 'default'}
+    this.address = {...this._sheet.address, sequenceName}
 
     this.publicApi = new TheatreSequence(this)
 
