@@ -45,6 +45,7 @@ export type EditorStore = {
   init: (scene: Scene, gl: WebGLRenderer) => void
 
   addEditable: (theatreKey: string, editable: Editable<any>) => void
+  removeEditable: (theatreKey: string) => void
   createSnapshot: () => void
   setSnapshotProxyObject: (
     proxyObject: Object3D | null,
@@ -83,6 +84,16 @@ const config: StateCreator<EditorStore> = (set, get) => {
           [theatreKey]: editable,
         },
       }))
+    },
+
+    removeEditable: (theatreKey) => {
+      set((state) => {
+        const editables = {...state.editables}
+        delete editables[theatreKey]
+        return {
+          editables,
+        }
+      })
     },
 
     createSnapshot: () => {

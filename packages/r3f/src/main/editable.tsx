@@ -1,4 +1,11 @@
-import type {ComponentProps, ComponentType, Ref, RefAttributes} from 'react'
+import {
+  ComponentProps,
+  ComponentType,
+  Ref,
+  RefAttributes,
+  useMemo,
+  useState,
+} from 'react'
 import React, {forwardRef, useEffect, useLayoutEffect, useRef} from 'react'
 import {allRegisteredObjects, editorStore} from './store'
 import mergeRefs from 'react-merge-refs'
@@ -7,7 +14,8 @@ import {useCurrentSheet} from './SheetProvider'
 import defaultEditableFactoryConfig from './defaultEditableFactoryConfig'
 import type {EditableFactoryConfig} from './editableFactoryConfigUtils'
 import {makeStoreKey} from './utils'
-import type {$FixMe} from '../types'
+import type {$FixMe, $IntentionalAny} from '../types'
+import type {ISheetObject} from '@theatre/core'
 
 const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   config: EditableFactoryConfig,
@@ -49,21 +57,18 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
 
         const sheet = useCurrentSheet()!
 
-        const sheetObject = sheet.object(
-          theatreKey,
-          Object.assign(
-            {
-              ...additionalProps,
-            },
-            // @ts-ignore
-            ...Object.values(config[actualType].props).map(
-              // @ts-ignore
-              (value) => value.type,
-            ),
-          ),
-        )
+        const [sheetObject, setSheetObject] = useState<
+          undefined | ISheetObject<$FixMe>
+        >(undefined)
 
-        const storeKey = makeStoreKey(sheetObject.address)
+        const storeKey = useMemo(
+          () =>
+            makeStoreKey({
+              ...sheet.address,
+              objectKey: theatreKey as $IntentionalAny,
+            }),
+          [sheet, theatreKey],
+        )
 
         const invalidate = useInvalidate()
 
@@ -102,22 +107,53 @@ Then you can use it in your JSX like any other editable component. Note the make
         // create sheet object and add editable to store
         useLayoutEffect(() => {
           if (!sheet) return
+          if (sheetObject) {
+            sheet.object(
+              theatreKey,
+              Object.assign(
+                {
+                  ...additionalProps,
+                },
+                // @ts-ignore
+                ...Object.values(config[actualType].props).map(
+                  // @ts-ignore
+                  (value) => value.type,
+                ),
+              ),
+              {override: true},
+            )
+            return
+          } else {
+            const sheetObject = sheet.object(
+              theatreKey,
+              Object.assign(
+                {
+                  ...additionalProps,
+                },
+                // @ts-ignore
+                ...Object.values(config[actualType].props).map(
+                  // @ts-ignore
+                  (value) => value.type,
+                ),
+              ),
+            )
+            allRegisteredObjects.add(sheetObject)
+            setSheetObject(sheetObject)
 
-          allRegisteredObjects.add(sheetObject)
+            if (objRef)
+              typeof objRef === 'function'
+                ? objRef(sheetObject)
+                : (objRef.current = sheetObject)
 
-          if (objRef)
-            typeof objRef === 'function'
-              ? objRef(sheetObject)
-              : (objRef.current = sheetObject)
-
-          editorStore.getState().addEditable(storeKey, {
-            type: actualType,
-            sheetObject,
-            visibleOnlyInEditor: visible === 'editor',
-            // @ts-ignore
-            objectConfig: config[actualType],
-          })
-        }, [sheet, storeKey])
+            editorStore.getState().addEditable(storeKey, {
+              type: actualType,
+              sheetObject,
+              visibleOnlyInEditor: visible === 'editor',
+              // @ts-ignore
+              objectConfig: config[actualType],
+            })
+          }
+        }, [sheet, storeKey, additionalProps])
 
         // store initial values of props
         useLayoutEffect(() => {
@@ -161,6 +197,9 @@ Then you can use it in your JSX like any other editable component. Note the make
 
           return () => {
             untap()
+            sheetObject.sheet.deleteObject(theatreKey)
+            allRegisteredObjects.delete(sheetObject)
+            editorStore.getState().removeEditable(storeKey)
           }
         }, [sheetObject])
 
