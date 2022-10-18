@@ -73,6 +73,13 @@ export interface ISheet {
   ): ISheetObject<Props>
 
   /**
+   * Deletes a previously created child object for the sheet
+   *
+   * @param key - Delete the child object created with this key
+   */
+  deleteObject(key: string): void
+
+  /**
    * The Sequence of this Sheet
    */
   readonly sequence: ISequence
@@ -163,6 +170,22 @@ export default class TheatreSheet implements ISheet {
 
   get address(): SheetAddress {
     return {...privateAPI(this).address}
+  }
+
+  deleteObject(key: string) {
+    const internal = privateAPI(this)
+    const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
+      key,
+      `sheet.deleteObject("${key}")`,
+    ) as ObjectAddressKey
+
+    const obj = internal.getObject(sanitizedPath)
+    if (!obj) {
+      console.warn(`Object key "${sanitizedPath}" does not exist.`)
+      return
+    }
+
+    internal.deleteObject(sanitizedPath as ObjectAddressKey)
   }
 }
 
