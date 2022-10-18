@@ -1,11 +1,5 @@
-import {
-  ComponentProps,
-  ComponentType,
-  Ref,
-  RefAttributes,
-  useMemo,
-  useState,
-} from 'react'
+import type {ComponentProps, ComponentType, Ref, RefAttributes} from 'react'
+import {useMemo, useState} from 'react'
 import React, {forwardRef, useEffect, useLayoutEffect, useRef} from 'react'
 import {allRegisteredObjects, editorStore} from './store'
 import mergeRefs from 'react-merge-refs'
