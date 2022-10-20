@@ -230,8 +230,8 @@ const createHandler =
                   __html: massageMessage(message),
                 }}
               />
-              <NotificationMessage>
-                {docs.length > 0 && (
+              {docs.length > 0 && (
+                <NotificationMessage>
                   <span>
                     Docs:{' '}
                     {docs.map((doc, i) => (
@@ -243,8 +243,8 @@ const createHandler =
                       </Fragment>
                     ))}
                   </span>
-                )}
-              </NotificationMessage>
+                </NotificationMessage>
+              )}
             </NotificationMain>
             <DismissButton
               onClick={() => {
