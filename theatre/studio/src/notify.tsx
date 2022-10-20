@@ -40,6 +40,9 @@ const notificationUniquenessChecker = (() => {
         map.delete(key)
       }
     },
+    clear: () => {
+      map.clear()
+    },
     check: (notification: Notification) =>
       map.has(hashNotification(notification)),
   }
@@ -67,6 +70,9 @@ const notificationTypeChecker = (() => {
         map.delete(type)
       }
     },
+    clear: () => {
+      map.clear()
+    },
     check: (type: NotificationType) => map.has(type),
     get types() {
       return Array.of(...map.keys())
@@ -93,6 +99,7 @@ const NotificationContainer = styled.div`
 const NotificationTitle = styled.div`
   font-size: 14px;
   font-weight: bold;
+  color: #fff;
 `
 
 const NotificationMain = styled.div`
@@ -347,6 +354,27 @@ const NotificationScroller = styled.div`
     height: 100%;
   }
 `
+
+const EmptyState = styled.div`
+  align-self: flex-end;
+  width: fit-content;
+  padding: 12px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  ${pointerEventsAutoInNormalMode};
+  background-color: rgba(40, 43, 47, 0.8);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(14px);
+  color: #b4b4b4;
+  font-size: 12px;
+  line-height: 1.4;
+
+  @supports not (backdrop-filter: blur()) {
+    background: rgba(40, 43, 47, 0.95);
+  }
+`
 //endregion
 
 /**
@@ -368,43 +396,50 @@ export const Notifier = () => {
   return (
     <NotifierContainer>
       <ButtonContainer align="side">
-        {toasts.length > 0 && (
-          <>
-            {pinNotifications && (
-              <Button onClick={() => toast.remove()} danger>
-                Clear
-              </Button>
-            )}
-            <Button onClick={() => togglePinNotifications()}>
-              <span>Notifications</span>
+        <>
+          {pinNotifications && toasts.length > 0 && (
+            <Button
+              onClick={() => {
+                notificationTypeChecker.clear()
+                notificationUniquenessChecker.clear()
+                toast.remove()
+              }}
+              danger
+            >
+              Clear
+            </Button>
+          )}
+          <Button onClick={() => togglePinNotifications()}>
+            <span>Notifications</span>
+            {notificationTypeChecker.types.length > 0 && (
               <Dots>
                 {notificationTypeChecker.types.map((type) => (
                   <NotificationsDot type={type} key={type} />
                 ))}
               </Dots>
-            </Button>
-          </>
-        )}
-      </ButtonContainer>
-      {!pinNotifications ? null : (
-        <>
-          <NotificationScroller
-            onMouseEnter={startPause}
-            onMouseLeave={endPause}
-          >
-            <div>
-              {toasts.map((toast) => {
-                return (
-                  <div key={toast.id}>
-                    {/* message is always a function in our case */}
-                    {/* @ts-ignore */}
-                    {toast.message(toast)}
-                  </div>
-                )
-              })}
-            </div>
-          </NotificationScroller>
+            )}
+          </Button>
         </>
+      </ButtonContainer>
+      {!pinNotifications ? null : toasts.length > 0 ? (
+        <NotificationScroller onMouseEnter={startPause} onMouseLeave={endPause}>
+          <div>
+            {toasts.map((toast) => {
+              return (
+                <div key={toast.id}>
+                  {/* message is always a function in our case */}
+                  {/* @ts-ignore */}
+                  {toast.message(toast)}
+                </div>
+              )
+            })}
+          </div>
+        </NotificationScroller>
+      ) : (
+        <EmptyState>
+          <NotificationTitle>No notifications</NotificationTitle>
+          Notifications will appear here when you get them.
+        </EmptyState>
       )}
     </NotifierContainer>
   )
