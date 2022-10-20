@@ -89,7 +89,7 @@ export default class SheetObjectTemplate {
     return new SheetObject(sheet, this, nativeObject)
   }
 
-  overrideConfig(config: SheetObjectPropTypeConfig) {
+  reconfigure(config: SheetObjectPropTypeConfig) {
     this._config.setState(config)
   }
 

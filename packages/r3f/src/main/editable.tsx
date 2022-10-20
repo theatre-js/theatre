@@ -135,7 +135,7 @@ Then you can use it in your JSX like any other editable component. Note the make
                   (value) => value.type,
                 ),
               ),
-              {override: true},
+              {reconfigure: true},
             )
             return
           } else {
@@ -212,7 +212,7 @@ Then you can use it in your JSX like any other editable component. Note the make
 
           return () => {
             untap()
-            sheetObject.sheet.deleteObject(theatreKey)
+            sheetObject.sheet.detachObject(theatreKey)
             allRegisteredObjects.delete(sheetObject)
             editorStore.getState().removeEditable(storeKey)
           }
