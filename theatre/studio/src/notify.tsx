@@ -243,36 +243,37 @@ const ButtonContainer = styled.div<{
 }>`
   display: flex;
   justify-content: ${({align}) => (align === 'center' ? 'center' : 'flex-end')};
+  gap: 12px;
+`
 
-  button {
-    position: relative;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    ${pointerEventsAutoInNormalMode};
-    background-color: rgba(40, 43, 47, 0.8);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(14px);
-    border: none;
-    padding: 12px;
-    color: #fff;
-    overflow: hidden;
+const Button = styled.button<{danger?: boolean}>`
+  position: relative;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  ${pointerEventsAutoInNormalMode};
+  background-color: rgba(40, 43, 47, 0.8);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(14px);
+  border: none;
+  padding: 12px;
+  color: #fff;
+  overflow: hidden;
 
-    ::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-    }
+  ::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
 
-    :hover::before {
-      background: ${({danger}) =>
-        danger ? 'rgba(255, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'};
-    }
+  :hover::before {
+    background: ${({danger}) =>
+      danger ? 'rgba(255, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'};
+  }
 
-    @supports not (backdrop-filter: blur()) {
-      background: rgba(40, 43, 47, 0.95);
-    }
+  @supports not (backdrop-filter: blur()) {
+    background: rgba(40, 43, 47, 0.95);
   }
 `
 
@@ -332,20 +333,21 @@ export const Notifier = () => {
     <NotifierContainer>
       <ButtonContainer align="side">
         {toasts.length > 0 && (
-          <button onClick={() => togglePinNotifications()}>
-            {!pinNotifications ? (
-              <>
-                <span>Notifications</span>
-                <Dots>
-                  {typeMap.types.map((type) => (
-                    <NotificationsDot type={type} key={type} />
-                  ))}
-                </Dots>
-              </>
-            ) : (
-              'Close'
+          <>
+            {pinNotifications && (
+              <Button onClick={() => toast.remove()} danger>
+                Clear
+              </Button>
             )}
-          </button>
+            <Button onClick={() => togglePinNotifications()}>
+              <span>Notifications</span>
+              <Dots>
+                {typeMap.types.map((type) => (
+                  <NotificationsDot type={type} key={type} />
+                ))}
+              </Dots>
+            </Button>
+          </>
         )}
       </ButtonContainer>
       {!pinNotifications ? null : (
@@ -366,11 +368,6 @@ export const Notifier = () => {
               })}
             </div>
           </NotificationScroller>
-          {toasts.length > 0 && (
-            <ButtonContainer align="side" danger={true}>
-              <button onClick={() => toast.remove()}>Clear</button>
-            </ButtonContainer>
-          )}
         </>
       )}
     </NotifierContainer>
