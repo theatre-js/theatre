@@ -419,6 +419,11 @@ namespace stateEditors {
       ) {
         drafts().ahistoric.pinDetails = pinDetails
       }
+      export function setPinNotifications(
+        pinNotifications: StudioAhistoricState['pinNotifications'],
+      ) {
+        drafts().ahistoric.pinNotifications = pinNotifications
+      }
       export function setVisibilityState(
         visibilityState: StudioAhistoricState['visibilityState'],
       ) {

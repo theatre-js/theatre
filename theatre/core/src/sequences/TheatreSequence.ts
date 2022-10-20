@@ -5,6 +5,7 @@ import type {IPlaybackDirection, IPlaybackRange} from './Sequence'
 import AudioPlaybackController from './playbackControllers/AudioPlaybackController'
 import coreTicker from '@theatre/core/coreTicker'
 import type {Pointer} from '@theatre/dataverse'
+import {notify} from '@theatre/shared/notify'
 
 interface IAttachAudioArgs {
   /**
@@ -239,16 +240,25 @@ export default class TheatreSequence implements ISequence {
       return priv.play(conf)
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        console.warn(
-          `You seem to have called sequence.play() before the project has finished loading.\n` +
-            `This would **not** a problem in production when using '@theatre/core', since Theatre.js loads instantly in core mode. ` +
-            `However, when using '@theatre/studio', it takes a few milliseconds for it to load your project's state, ` +
+        notify.warning(
+          "Sequence can't be played",
+          'You seem to have called `sequence.play()` before the project has finished loading.\n\n' +
+            'This would **not** a problem in production when using `@theatre/core`, since Theatre.js loads instantly in core mode. ' +
+            "However, when using `@theatre/studio`, it takes a few milliseconds for it to load your project's state, " +
             `before which your sequences cannot start playing.\n` +
             `\n` +
-            `To fix this, simply defer calling sequence.play() until after the project is loaded, like this:\n` +
+            'To fix this, simply defer calling `sequence.play()` until after the project is loaded, like this:\n' +
+            '```\n' +
             `project.ready.then(() => {\n` +
             `  sequence.play()\n` +
-            `})`,
+            `})\n` +
+            '```\n',
+          [
+            {
+              url: 'https://www.theatrejs.com/docs/0.5/api/core#project.ready',
+              title: 'Project.ready',
+            },
+          ],
         )
       }
       const d = defer<boolean>()

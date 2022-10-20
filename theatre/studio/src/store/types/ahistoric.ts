@@ -23,6 +23,7 @@ export type StudioAhistoricState = {
    * undefined means the detail panel is pinned
    */
   pinDetails?: boolean
+  pinNotifications?: boolean
   visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
   clipboard?: {
     keyframesWithRelativePaths?: KeyframeWithPathToPropFromCommonRoot[]

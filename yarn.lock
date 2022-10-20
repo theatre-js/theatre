@@ -17217,6 +17217,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"goober@npm:^2.1.10":
+  version: 2.1.11
+  resolution: "goober@npm:2.1.11"
+  peerDependencies:
+    csstype: ^3.0.10
+  checksum: c37c14f476f65f7c66d94ac1a1686a130b4fa42fc512175444e3c708fa1815f6ea579e1b23567e57d41de2e62ff8b5913915ec829f05a3b995d1a7a0016c0bdf
+  languageName: node
+  linkType: hard
+
 "graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.15, graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.4, graceful-fs@npm:^4.2.6":
   version: 4.2.6
   resolution: "graceful-fs@npm:4.2.6"
@@ -26134,6 +26143,18 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-hot-toast@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "react-hot-toast@npm:2.4.0"
+  dependencies:
+    goober: ^2.1.10
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 910214496d6821af8e643c5f7087eff6c76f1395756f3d6cf1fc07a599c582c443cbb5a4cadfc58205acf0845b77a2a10a4ca49b385e772b72edc57dfd38d016
+  languageName: node
+  linkType: hard
+
 "react-icons@npm:*, react-icons@npm:^4.2.0":
   version: 4.2.0
   resolution: "react-icons@npm:4.2.0"
@@ -28211,6 +28232,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"snarkdown@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "snarkdown@npm:2.0.0"
+  checksum: e92bb254aad8c50da610e2f5f770360542b8412cb1dd6512aaf1f213322f474acd71c882d557cfadb54c34dd1041ee8677bc44061568d60df7cee54134e047e5
+  languageName: node
+  linkType: hard
+
 "sockjs-client@npm:^1.5.0":
   version: 1.5.1
   resolution: "sockjs-client@npm:1.5.1"
@@ -29684,6 +29712,7 @@ fsevents@^1.2.7:
     react-colorful: ^5.5.1
     react-dom: ^17.0.2
     react-error-boundary: ^3.1.3
+    react-hot-toast: ^2.4.0
     react-icons: ^4.2.0
     react-is: ^17.0.2
     react-merge-refs: ^1.1.0
@@ -29697,6 +29726,7 @@ fsevents@^1.2.7:
     rollup: ^2.56.3
     rollup-plugin-dts: ^4.0.0
     shallowequal: ^1.1.0
+    snarkdown: ^2.0.0
     styled-components: ^5.3.5
     svg-inline-loader: ^0.8.2
     timing-function: ^0.2.3

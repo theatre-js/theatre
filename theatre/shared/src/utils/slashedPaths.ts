@@ -1,5 +1,5 @@
-import logger from '@theatre/shared/logger'
 import {InvalidArgumentError} from './errors'
+import {notify} from '@theatre/shared/notify'
 
 /**
  * Make the given string's "path" slashes normalized with preceding and trailing spaces.
@@ -46,9 +46,20 @@ export function validateAndSanitiseSlashedPathOrThrow(
     )
   }
   if (unsanitisedPath !== sanitisedPath) {
-    logger.warn(
-      // @todo better error message needed. What's the call to action?
-      `The path in ${fnName}("${unsanitisedPath}") was sanitised to "${sanitisedPath}".`,
+    notify.warning(
+      'Invalid path provided to object',
+      `The path in \`${fnName}("${unsanitisedPath}")\` was sanitized to \`"${sanitisedPath}"\`.\n\n` +
+        'Please replace the path with the sanitized one, otherwise it will likely break in the future.',
+      [
+        {
+          url: 'https://www.theatrejs.com/docs/latest/manual/objects#creating-sheet-objects',
+          title: 'Sheet Objects',
+        },
+        {
+          url: 'https://www.theatrejs.com/docs/latest/api/core#sheet.object',
+          title: 'API',
+        },
+      ],
     )
   }
   return sanitisedPath
