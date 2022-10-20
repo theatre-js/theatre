@@ -19,17 +19,22 @@ export interface IDerivation<V> {
   isHot: boolean
 
   /**
-   * Returns a `Tappable` of the changes of this derivation.
+   * Returns a `Tappable` of the changes of this derivation. Only notifies when the
+   * ticker ticks and if the value of the derivation is different than previous.
    */
   changes(ticker: Ticker): Tappable<V>
 
   /**
+   * @deprecated use onStaleWithoutValues instead
    * Like {@link changes} but with a different performance model. `changesWithoutValues` returns a {@link Tappable} that
    * updates every time the derivation is updated, even if the value didn't change, and the callback is called without
    * the value. The advantage of this is that you have control over when the derivation is freshened, it won't
    * automatically be kept fresh.
    */
   changesWithoutValues(): Tappable<void>
+
+  onStaleWithoutValues(): Tappable<void>
+  onStale(): Tappable<V>
 
   /**
    * Keep the derivation hot, even if there are no tappers (subscribers).

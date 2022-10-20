@@ -65,14 +65,12 @@ function _forKeyframedTrack(
   track: BasicKeyframedTrack,
   timeD: IDerivation<number>,
 ): IDerivation<InterpolationTriple | undefined> {
+  let state: IState = {started: false}
   return prism(() => {
-    let stateRef = prism.ref<IState>('state', {started: false})
-    let state = stateRef.current
-
     const time = timeD.getValue()
 
     if (!state.started || time < state.validFrom || state.validTo <= time) {
-      stateRef.current = state = updateState(ctx, timeD, track)
+      state = updateState(ctx, timeD, track)
     }
 
     return state.der.getValue()

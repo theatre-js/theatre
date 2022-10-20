@@ -2,6 +2,7 @@ import type Ticker from '../Ticker'
 import type {$IntentionalAny, VoidFn} from '../types'
 import type Tappable from '../utils/Tappable'
 import DerivationEmitter from './DerivationEmitter'
+import DerivationEmitterTickerless from './DerivationEmitterTickerless'
 import DerivationValuelessEmitter from './DerivationValuelessEmitter'
 import flatMap from './flatMap'
 import type {IDerivation} from './IDerivation'
@@ -96,7 +97,12 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
   changesWithoutValues(): Tappable<void> {
     return new DerivationValuelessEmitter(this).tappable()
   }
-
+  onStaleWithoutValues(): Tappable<void> {
+    return new DerivationValuelessEmitter(this).tappable()
+  }
+  onStale(): Tappable<V> {
+    return new DerivationEmitterTickerless(this).tappable()
+  }
   /**
    * Keep the derivation hot, even if there are no tappers (subscribers).
    */

@@ -8,9 +8,9 @@ import type {IDerivation} from './IDerivation'
  * this is that you have control over when the underlying derivation is freshened, it won't automatically be freshened
  * by the emitter.
  */
-export default class DerivationValuelessEmitter<V> {
+export default class DerivationValuelessEmitterTickerless<V> {
   _derivation: IDerivation<V>
-  _emitter: Emitter<void>
+  _emitter: Emitter<V>
   _hadTappers: boolean
 
   constructor(derivation: IDerivation<V>) {
@@ -23,8 +23,8 @@ export default class DerivationValuelessEmitter<V> {
     return this
   }
 
-  private _emit = () => {
-    this._emitter.emit()
+  private _emit = (derivation: IDerivation<V>) => {
+    this._emitter.emit(derivation.getValue())
   }
 
   _reactToNumberOfTappersChange() {
@@ -42,7 +42,7 @@ export default class DerivationValuelessEmitter<V> {
   /**
    * The tappable associated with the emitter. You can use it to tap (subscribe to) the underlying derivation.
    */
-  tappable(): Tappable<void> {
+  tappable(): Tappable<V> {
     return this._emitter.tappable
   }
 }

@@ -10,6 +10,7 @@ import pointer, {getPointerMeta} from './pointer'
 import type {$FixMe, $IntentionalAny} from './types'
 import type {PathBasedReducer} from './utils/PathBasedReducer'
 import updateDeep from './utils/updateDeep'
+import Box from './Box'
 
 type Listener = (newVal: unknown) => void
 
@@ -323,5 +324,27 @@ export const val = <
     return input.getValue() as $IntentionalAny
   } else {
     return input as $IntentionalAny
+  }
+}
+
+export const toDerivation = <
+  P extends
+    | PointerType<$IntentionalAny>
+    | IDerivation<$IntentionalAny>
+    | undefined
+    | null,
+>(
+  input: P,
+): P extends PointerType<infer T>
+  ? IDerivation<T>
+  : P extends IDerivation<infer T>
+  ? IDerivation<T>
+  : IDerivation<P> => {
+  if (isPointer(input)) {
+    return valueDerivation(input) as $IntentionalAny
+  } else if (isDerivation(input)) {
+    return input as $IntentionalAny
+  } else {
+    return new Box(input).derivation as $IntentionalAny
   }
 }
