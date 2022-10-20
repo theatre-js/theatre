@@ -22,6 +22,9 @@ export type Notify = (
   allowDuplicates?: boolean,
 ) => void
 export type Notifiers = {
+  /**
+   * Show a success notification.
+   */
   success: Notify
   /**
    * Show a warning notification.
@@ -30,6 +33,9 @@ export type Notifiers = {
    * In the message, start with 1) a reassurance, then 2) explain why it happened, and 3) what the user can do about it.
    */
   warning: Notify
+  /**
+   * Show an info notification.
+   */
   info: Notify
 }
 

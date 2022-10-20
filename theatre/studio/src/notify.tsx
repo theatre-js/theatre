@@ -12,10 +12,16 @@ import type {
 import {useVal} from '@theatre/react'
 import getStudio from './getStudio'
 
+/**
+ * Creates a string key unique to a notification with a certain title and message.
+ */
 const hashNotification = ({title, message}: Notification) =>
   `${title} ${message}`
 
-const uniquenessMap = (() => {
+/**
+ * Used to check if a notification with a certain title and message is already displayed.
+ */
+const notificationUniquenessChecker = (() => {
   const map = new Map<string, number>()
   return {
     add: (notification: Notification) => {
@@ -39,8 +45,12 @@ const uniquenessMap = (() => {
   }
 })()
 
-// massive hack, we should be able to attach this info to toasts
-const typeMap = (() => {
+/**
+ * Used to check if a notification with a certain type is already displayed.
+ *
+ * Massive hack, we should be able to attach this info to toasts.
+ */
+const notificationTypeChecker = (() => {
   const map = new Map<NotificationType, number>()
   return {
     add: (type: NotificationType) => {
@@ -64,6 +74,7 @@ const typeMap = (() => {
   }
 })()
 
+//region Styles
 const NotificationContainer = styled.div`
   width: 100%;
   border-radius: 4px;
@@ -173,21 +184,41 @@ const IndicatorDot = styled.div<{type: NotificationType}>`
     background-color: ${({type}) => COLORS[type]};
   }
 `
+//endregion
 
+/**
+ * Replaces <br /> tags with <hr /> tags. We do this because snarkdown outputs <br />
+ * between paragraphs, which are not styleable.
+ *
+ * A better solution would be to use a markdown parser that outputs <p> tags instead of <br />.
+ */
 const replaceBrWithHr = (text: string) => {
   return text.replace(/<br \/>/g, '<hr />')
 }
 
+/**
+ * Transforms the provided notification message into HTML.
+ */
 const massageMessage = (message: string) => {
   return replaceBrWithHr(snarkdown(message))
 }
 
+/**
+ * Creates handlers for different types of notifications.
+ */
 const createHandler =
   (type: 'warning' | 'success' | 'info'): Notify =>
   (title, message, docs = [], allowDuplicates = false) => {
-    if (allowDuplicates || !uniquenessMap.check({title, message})) {
-      uniquenessMap.add({title, message})
-      typeMap.add(type)
+    // We can disallow duplicates. We do this through checking the notification contents
+    // against a registry of already displayed notifications.
+    if (
+      allowDuplicates ||
+      !notificationUniquenessChecker.check({title, message})
+    ) {
+      notificationUniquenessChecker.add({title, message})
+      // We have not way sadly to attach custom notification types to react-hot-toast toasts,
+      // so we use our own data structure for it.
+      notificationTypeChecker.add(type)
       toast.custom(
         (t) => (
           <NotificationContainer>
@@ -218,8 +249,8 @@ const createHandler =
             <DismissButton
               onClick={() => {
                 toast.remove(t.id)
-                uniquenessMap.delete({title, message})
-                typeMap.delete(type)
+                notificationUniquenessChecker.delete({title, message})
+                notificationTypeChecker.delete(type)
               }}
             >
               Close
@@ -237,6 +268,7 @@ export const notify: Notifiers = {
   info: createHandler('info'),
 }
 
+//region Styles
 const ButtonContainer = styled.div<{
   align: 'center' | 'side'
   danger?: boolean
@@ -315,7 +347,11 @@ const NotificationScroller = styled.div`
     height: 100%;
   }
 `
+//endregion
 
+/**
+ * The component responsible for rendering the notifications.
+ */
 export const Notifier = () => {
   const {toasts, handlers} = useToaster()
   const {startPause, endPause} = handlers
@@ -342,7 +378,7 @@ export const Notifier = () => {
             <Button onClick={() => togglePinNotifications()}>
               <span>Notifications</span>
               <Dots>
-                {typeMap.types.map((type) => (
+                {notificationTypeChecker.types.map((type) => (
                   <NotificationsDot type={type} key={type} />
                 ))}
               </Dots>
