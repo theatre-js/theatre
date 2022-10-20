@@ -73,7 +73,7 @@ function registerStudioBundle() {
 // export {default as ToolbarIconButton} from './uiComponents/toolbar/ToolbarIconButton'
 export {default as ToolbarDropdownSelect} from './uiComponents/toolbar/ToolbarDropdownSelect'
 
-import {notify} from './notify'
+import {notify} from '@theatre/studio/notify'
 // @ts-ignore
 window[globalVariableNames.notifications] = {
   notify,
