@@ -3,24 +3,21 @@ import ReactDOM from 'react-dom'
 import studio, {notify} from '@theatre/studio'
 import {getProject} from '@theatre/core'
 import {Scene} from './Scene'
-/**
- * This is a basic example of using Theatre.js for manipulating the DOM.
- *
- * It also uses {@link IStudio.selection | studio.selection} to customize
- * the selection behavior.
- */
 
 studio.initialize()
 
-// trigger warning
+// trigger warning notification
 getProject('Sample project').sheet('Scene').sequence.play()
 
+// fire an info notification
 notify.info(
-  'Welcome to the Theatre.js playground!',
-  'This is a basic example of using Theatre.js for manipulating the DOM.',
+  'Welcome to the notifications playground!',
+  'This is a basic example of a notification! You can see the code for this notification ' +
+    '(and all others) at the start of index.tsx. You can also see examples of success and warnign notifications.',
 )
 
 getProject('Sample project').ready.then(() => {
+  // fire a success notification on project load
   notify.success(
     'Project loaded!',
     'Now you can start calling `sequence.play()` to trigger animations. ;)',
