@@ -11,6 +11,7 @@ import type {
   IPlaybackController,
   IPlaybackState,
 } from './DefaultPlaybackController'
+import {notify} from '@theatre/shared/notify'
 
 export default class AudioPlaybackController implements IPlaybackController {
   _mainGain: GainNode
@@ -186,8 +187,22 @@ export default class AudioPlaybackController implements IPlaybackController {
     currentSource.playbackRate.value = rate
 
     if (iterationCount > 1000) {
-      console.warn(
-        `Audio-controlled sequences cannot have an iterationCount larger than 1000. It has been clamped to 1000.`,
+      notify.warning(
+        "Can't play sequences with audio more than 1000 times",
+        `The sequence will still play, but only 1000 times. The \`iterationCount: ${iterationCount}\` provided to \`sequence.play()\`
+is too high for a sequence with audio.
+
+To fix this, either set \`iterationCount\` to a lower value, or remove the audio from the sequence.`,
+        [
+          {
+            url: 'https://www.theatrejs.com/docs/latest/manual/audio',
+            title: 'Using Audio',
+          },
+          {
+            url: 'https://www.theatrejs.com/docs/latest/api/core#sequence.attachaudio',
+            title: 'Audio API',
+          },
+        ],
       )
       iterationCount = 1000
     }

@@ -18,6 +18,7 @@ import type {
 } from '@theatre/core/propTypes/internals'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {ObjectAddressKey} from '@theatre/shared/utils/ids'
+import {notify} from '@theatre/shared/notify'
 
 export type SheetObjectPropTypeConfig =
   PropTypeConfig_Compound<UnknownValidCompoundProps>
@@ -181,6 +182,12 @@ export default class TheatreSheet implements ISheet {
 
     const obj = internal.getObject(sanitizedPath)
     if (!obj) {
+      notify.warning(
+        `Couldn\'t delete object "${sanitizedPath}"`,
+        `There is no object with key "${sanitizedPath}".
+
+To fix this, make sure you are calling \`sheet.deleteObject("${sanitizedPath}")\` with the correct key.`,
+      )
       console.warn(`Object key "${sanitizedPath}" does not exist.`)
       return
     }
