@@ -15,6 +15,7 @@ import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import coreTicker from './coreTicker'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import {_coreLogger} from './_coreLogger'
+export {notify} from '@theatre/shared/notify'
 export {types}
 
 /**

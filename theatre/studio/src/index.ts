@@ -78,7 +78,6 @@ import {notify} from '@theatre/studio/notify'
 window[globalVariableNames.notifications] = {
   notify,
 }
-export {notify}
 
 export type {IScrub} from '@theatre/studio/Scrub'
 export type {
