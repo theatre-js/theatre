@@ -1,7 +1,6 @@
 import React, {Fragment} from 'react'
 import toast, {useToaster} from 'react-hot-toast/headless'
 import styled from 'styled-components'
-import snarkdown from 'snarkdown'
 import {pointerEventsAutoInNormalMode} from './css'
 import type {
   Notification,
@@ -11,6 +10,7 @@ import type {
 } from '@theatre/shared/notify'
 import {useVal} from '@theatre/react'
 import getStudio from './getStudio'
+import {marked} from 'marked'
 
 /**
  * Creates a string key unique to a notification with a certain title and message.
@@ -120,11 +120,6 @@ const NotificationMessage = styled.div`
     color: rgba(255, 255, 255, 0.9);
   }
 
-  hr {
-    visibility: hidden;
-    height: 8px;
-  }
-
   em {
     font-style: italic;
   }
@@ -134,24 +129,29 @@ const NotificationMessage = styled.div`
     color: #d5d5d5;
   }
 
-  .code {
-    overflow: auto;
-    font-family: monospace;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 4px;
+  p {
     margin-bottom: 8px;
-    margin-top: 8px;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  :not(.code) > code {
+  code {
     font-family: monospace;
     background: rgba(0, 0, 0, 0.3);
     padding: 1px 1px 2px;
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     white-space: pre-wrap;
+  }
+
+  pre > code {
+    white-space: pre;
+    display: block;
+    overflow: auto;
+    padding: 4px;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    margin-bottom: 8px;
   }
 `
 
@@ -196,23 +196,6 @@ const IndicatorDot = styled.div<{type: NotificationType}>`
 //endregion
 
 /**
- * Replaces <br /> tags with <hr /> tags. We do this because snarkdown outputs <br />
- * between paragraphs, which are not styleable.
- *
- * A better solution would be to use a markdown parser that outputs <p> tags instead of <br />.
- */
-const replaceBrWithHr = (text: string) => {
-  return text.replace(/<br \/>/g, '<hr />')
-}
-
-/**
- * Transforms the provided notification message into HTML.
- */
-const massageMessage = (message: string) => {
-  return replaceBrWithHr(snarkdown(message))
-}
-
-/**
  * Creates handlers for different types of notifications.
  */
 const createHandler =
@@ -236,7 +219,7 @@ const createHandler =
               <NotificationTitle>{title}</NotificationTitle>
               <NotificationMessage
                 dangerouslySetInnerHTML={{
-                  __html: massageMessage(message),
+                  __html: marked.parse(message),
                 }}
               />
               {docs.length > 0 && (

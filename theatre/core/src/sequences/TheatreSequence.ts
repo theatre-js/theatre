@@ -247,12 +247,12 @@ export default class TheatreSequence implements ISequence {
             "However, when using `@theatre/studio`, it takes a few milliseconds for it to load your project's state, " +
             `before which your sequences cannot start playing.\n` +
             `\n` +
-            'To fix this, simply defer calling `sequence.play()` until after the project is loaded, like this:\n' +
+            'To fix this, simply defer calling `sequence.play()` until after the project is loaded, like this:\n\n' +
             '```\n' +
             `project.ready.then(() => {\n` +
             `  sequence.play()\n` +
             `})\n` +
-            '```\n',
+            '```',
           [
             {
               url: 'https://www.theatrejs.com/docs/0.5/api/core#project.ready',

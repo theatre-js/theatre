@@ -78,6 +78,13 @@ export const notify: Notifiers = {
 window?.addEventListener('error', (e) => {
   notify.error(
     `An error occurred`,
-    `${e.message}\n\nSee **console** for details.`,
+    `<pre>${e.message}</pre>\n\nSee **console** for details.`,
+  )
+})
+
+window?.addEventListener('unhandledrejection', (e) => {
+  notify.error(
+    `An error occurred`,
+    `<pre>${e.reason}</pre>\n\nSee **console** for details.`,
   )
 })

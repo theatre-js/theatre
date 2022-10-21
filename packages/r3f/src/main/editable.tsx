@@ -36,7 +36,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
 
     if (Component !== 'primitive' && !type) {
       throw new Error(
-        `You must provide the type of the component out of which you're creating an editable. For example: editable(MyComponent, 'mesh').`,
+        `You must provide the type of the component you're creating an editable for. For example: editable(MyComponent, 'mesh').`,
       )
     }
 
@@ -103,7 +103,8 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
 The easiest way to create a custom animatable \`${dreiComponent}\` is to import it from \`@react-three/drei\`, and make it editable.
 \`\`\`
 import {${dreiComponent}} from '@react-three/drei'
-const EditableCamera = 
+
+const EditableCamera =
   editable(${dreiComponent}, '${Component}')
 \`\`\`
 Then you can use it in your JSX like any other editable component. Note the makeDefault prop exposed by drei, which makes r3f use it for rendering.
