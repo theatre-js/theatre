@@ -135,6 +135,7 @@ const NotificationMessage = styled.div`
   }
 
   .code {
+    overflow: auto;
     font-family: monospace;
     background: rgba(0, 0, 0, 0.3);
     padding: 4px;
@@ -175,6 +176,7 @@ const COLORS = {
   info: '#3b82f6',
   success: '#10b981',
   warning: '#f59e0b',
+  error: '#ef4444',
 }
 
 const IndicatorDot = styled.div<{type: NotificationType}>`
@@ -214,7 +216,7 @@ const massageMessage = (message: string) => {
  * Creates handlers for different types of notifications.
  */
 const createHandler =
-  (type: 'warning' | 'success' | 'info'): Notify =>
+  (type: NotificationType): Notify =>
   (title, message, docs = [], allowDuplicates = false) => {
     // We can disallow duplicates. We do this through checking the notification contents
     // against a registry of already displayed notifications.
@@ -273,6 +275,7 @@ export const notify: Notifiers = {
   warning: createHandler('warning'),
   success: createHandler('success'),
   info: createHandler('info'),
+  error: createHandler('error'),
 }
 
 //region Styles

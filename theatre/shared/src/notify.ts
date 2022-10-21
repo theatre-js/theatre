@@ -2,7 +2,7 @@ import logger from './logger'
 import * as globalVariableNames from './globalVariableNames'
 
 export type Notification = {title: string; message: string}
-export type NotificationType = 'info' | 'success' | 'warning'
+export type NotificationType = 'info' | 'success' | 'warning' | 'error'
 export type Notify = (
   /**
    * The title of the notification.
@@ -37,13 +37,31 @@ export type Notifiers = {
    * Show an info notification.
    */
   info: Notify
+  /**
+   * Show an error notification.
+   */
+  error: Notify
 }
 
 const createHandler =
   (type: NotificationType): Notify =>
   (...args) => {
-    if (type === 'warning') {
-      logger.warn(args[1])
+    switch (type) {
+      case 'success': {
+        logger.debug(args.slice(0, 2).join('\n'))
+        break
+      }
+      case 'info': {
+        logger.debug(args.slice(0, 2).join('\n'))
+        break
+      }
+      case 'warning': {
+        logger.warn(args.slice(0, 2).join('\n'))
+        break
+      }
+      case 'error': {
+        // don't log errors, they're already logged by the browser
+      }
     }
 
     // @ts-ignore
@@ -54,4 +72,12 @@ export const notify: Notifiers = {
   warning: createHandler('warning'),
   success: createHandler('success'),
   info: createHandler('info'),
+  error: createHandler('error'),
 }
+
+window?.addEventListener('error', (e) => {
+  notify.error(
+    `An error occurred`,
+    `${e.message}\n\nSee **console** for details.`,
+  )
+})

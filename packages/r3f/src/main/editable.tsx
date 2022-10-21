@@ -10,6 +10,7 @@ import type {EditableFactoryConfig} from './editableFactoryConfigUtils'
 import {makeStoreKey} from './utils'
 import type {$FixMe, $IntentionalAny} from '../types'
 import type {ISheetObject} from '@theatre/core'
+import {notify} from '@theatre/core'
 
 const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   config: EditableFactoryConfig,
@@ -33,6 +34,12 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
         : {}) &
       RefAttributes<JSX.IntrinsicElements[U]>
 
+    if (Component !== 'primitive' && !type) {
+      throw new Error(
+        `You must provide the type of the component out of which you're creating an editable. For example: editable(MyComponent, 'mesh').`,
+      )
+    }
+
     return forwardRef(
       (
         {
@@ -45,6 +52,20 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
         }: Props,
         ref,
       ) => {
+        //region Runtime type checks
+        if (typeof theatreKey !== 'string') {
+          throw new Error(
+            `No valid theatreKey was provided to the editable component. theatreKey must be a string. Received: ${theatreKey}`,
+          )
+        }
+
+        if (Component === 'primitive' && !editableType) {
+          throw new Error(
+            `When using the primitive component, you must provide the editableType prop. Received: ${editableType}`,
+          )
+        }
+        //endregion
+
         const actualType = type ?? editableType
 
         const objectRef = useRef<JSX.IntrinsicElements[U]>()
@@ -75,25 +96,24 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
             const dreiComponent =
               Component.charAt(0).toUpperCase() + Component.slice(1)
 
-            console.warn(
-              `You seem to have declared the camera %c${theatreKey}%c simply as <e.${Component} ... />. This alone won't make r3f use it for rendering.
+            notify.warning(
+              `Possibly incorrect use of <e.${Component} />`,
+              `You seem to have declared the camera "${theatreKey}" simply as \`<e.${Component} ... />\`. This alone won't make r3f use it for rendering.
 
-The easiest way to create a custom animatable ${dreiComponent} is to import it from @react-three/drei, and make it editable.
-
-%cimport {${dreiComponent}} from '@react-three/drei'
-const EditableCamera = editable(${dreiComponent}, '${Component}')%c
-
+The easiest way to create a custom animatable \`${dreiComponent}\` is to import it from \`@react-three/drei\`, and make it editable.
+\`\`\`
+import {${dreiComponent}} from '@react-three/drei'
+const EditableCamera = 
+  editable(${dreiComponent}, '${Component}')
+\`\`\`
 Then you can use it in your JSX like any other editable component. Note the makeDefault prop exposed by drei, which makes r3f use it for rendering.
-
-%c<EditableCamera
+\`\`\`
+<EditableCamera
   theatreKey="${theatreKey}"
   makeDefault
->`,
-              'font-style: italic;',
-              'font-style: inherit;',
-              'background: black; color: white;',
-              'background: inherit; color: inherit',
-              'background: black; color: white;',
+>
+\`\`\`
+`,
             )
           }
         }, [Component, theatreKey])
