@@ -47,7 +47,7 @@ const createHandler =
     }
 
     // @ts-ignore
-    return window[globalVariableNames.notifications]?.notify[type](...args)
+    return window?.[globalVariableNames.notifications]?.notify[type](...args)
   }
 
 export const notify: Notifiers = {
