@@ -19,6 +19,7 @@ import {
   TheatreLoggerLevel,
 } from '@theatre/shared/logger'
 import {ProvideLogger} from '@theatre/studio/uiComponents/useLogger'
+import {Notifier} from '@theatre/studio/notify'
 
 const MakeRootHostContainStatic =
   typeof window !== 'undefined'
@@ -32,7 +33,7 @@ const MakeRootHostContainStatic =
 const Container = styled(PointerEventsHandler)`
   z-index: 50;
   position: fixed;
-  inset: 0px;
+  inset: 0;
 
   &.invisible {
     pointer-events: none !important;
@@ -99,6 +100,7 @@ export default function UIRoot() {
                     <PortalLayer ref={portalLayerRef} />
                     <GlobalToolbar />
                     <PanelsRoot />
+                    <Notifier />
                   </Container>
                 </>
               </ProvideStyles>
