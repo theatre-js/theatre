@@ -16,6 +16,7 @@ import DefaultPlaybackController from './playbackControllers/DefaultPlaybackCont
 import TheatreSequence from './TheatreSequence'
 import type {ILogger} from '@theatre/shared/logger'
 import type {ISequence} from '..'
+import {notify} from '@theatre/shared/notify'
 
 export type IPlaybackRange = [from: number, to: number]
 
@@ -231,10 +232,23 @@ export default class Sequence {
       }
 
       if (range[1] > sequenceDuration) {
-        console.warn(
-          `Argument conf.range[1] in sequence.play(conf) cannot be longer than the duration of the sequence, which is ${sequenceDuration}s. ${JSON.stringify(
+        notify.warning(
+          "Couldn't play sequence in given range",
+          `Your animation will still play until the end of the sequence, however the argument \`conf.range[1]\` given in \`sequence.play(conf)\` (${JSON.stringify(
             range[1],
-          )} given.`,
+          )}s) is longer than the duration of the sequence (${sequenceDuration}s).
+
+To fix this, either set \`conf.range[1]\` to be less the duration of the sequence, or adjust the sequence duration in the UI.`,
+          [
+            {
+              url: 'https://www.theatrejs.com/docs/latest/manual/sequences',
+              title: 'Sequences',
+            },
+            {
+              url: 'https://www.theatrejs.com/docs/latest/manual/sequences',
+              title: 'Playback API',
+            },
+          ],
         )
         range[1] = sequenceDuration
       }
