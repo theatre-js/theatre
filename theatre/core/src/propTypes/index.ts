@@ -651,7 +651,7 @@ const defaultNumberNudgeFn: NumberNudgeFn = ({
   magnitude,
 }) => {
   const {range} = config
-  if (range) {
+  if (range && !range.includes(Infinity) && !range.includes(-Infinity)) {
     return (
       deltaFraction * (range[1] - range[0]) * magnitude * config.nudgeMultiplier
     )
