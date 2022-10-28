@@ -17,7 +17,11 @@ studio.initialize()
 
 const objConfig = {
   startingPoint: {
-    x: types.number(0.5, {range: [0, 1]}),
+    x: types.number(0.5, {
+      range: [-1, 1],
+      nudgeMultiplier: 0.1,
+      nudgeIgnoreRange: true,
+    }),
     y: types.number(0.5, {range: [0, 1]}),
   },
   scale: types.number(1, {range: [0.1, 1000]}),

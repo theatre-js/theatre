@@ -186,6 +186,7 @@ export const number = (
     range?: PropTypeConfig_Number['range']
     nudgeMultiplier?: number
     label?: string
+    nudgeIgnoreRange?: boolean
   } = {},
 ): PropTypeConfig_Number => {
   if (process.env.NODE_ENV !== 'production') {
@@ -635,6 +636,7 @@ export interface PropTypeConfig_Number
   range?: [min: number, max: number]
   nudgeFn: NumberNudgeFn
   nudgeMultiplier: number
+  nudgeIgnoreRange?: boolean
 }
 
 export type NumberNudgeFn = (p: {
@@ -651,7 +653,12 @@ const defaultNumberNudgeFn: NumberNudgeFn = ({
   magnitude,
 }) => {
   const {range} = config
-  if (range && !range.includes(Infinity) && !range.includes(-Infinity)) {
+  if (
+    !config.nudgeIgnoreRange &&
+    range &&
+    !range.includes(Infinity) &&
+    !range.includes(-Infinity)
+  ) {
     return (
       deltaFraction * (range[1] - range[0]) * magnitude * config.nudgeMultiplier
     )
