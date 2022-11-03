@@ -1,15 +1,20 @@
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import type {DeepPartialOfSerializableValue, SerializableMap} from './types'
 
+/**
+ *
+ * say `base = {position: {x: 10}, rotation: {x: 0, y: 0, z: 0}}`
+ * and `override = {position: {x: 20}, rotation: {x: 0, y: 0, z: 0}}`
+ * then this function merges them while ensuring `base.rotation === override.rotation`
+ * i.e. it preserves referencial equality of objects in base as long as override's objects doesn't
+ * have different values.
+ *
+ */
 export default function deepMergeWithCache<T extends SerializableMap>(
   base: T,
   override: DeepPartialOfSerializableValue<T>,
-  cache: WeakMap<{}, unknown>,
+  cache: WeakMap<SerializableMap, {override: T; merged: T}>,
 ): T {
-  const _cache: WeakMap<SerializableMap, {override: T; merged: T}> =
-    cache as $IntentionalAny
-
-  const possibleCachedValue = _cache.get(base)
+  const possibleCachedValue = cache.get(base)
 
   if (possibleCachedValue && possibleCachedValue.override === override) {
     return possibleCachedValue.merged

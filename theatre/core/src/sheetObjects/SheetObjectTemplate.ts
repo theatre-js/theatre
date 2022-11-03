@@ -96,106 +96,116 @@ export default class SheetObjectTemplate {
   /**
    * Returns the default values (all defaults are read from the config)
    */
-  getDefaultValues(): IDerivation<SerializableMap> {
-    return this._cache.get('getDefaultValues()', () =>
-      prism(() => {
-        const config = val(this.configPointer)
-        return getPropDefaultsOfSheetObject(config)
-      }),
+  private getDefaultValues(): SerializableMap {
+    prism.ensurePrism()
+    const config = val(this.configPointer)
+    return getPropDefaultsOfSheetObject(config)
+  }
+  get defaultValues(): IDerivation<SerializableMap> {
+    // lazy initialization
+    return this._cache.getOrInit('defaultValues', () =>
+      prism(() => this.getDefaultValues()),
     )
   }
 
   /**
    * Returns values that are set statically (ie, not sequenced, and not defaults)
    */
-  getStaticValues(): IDerivation<SerializableMap> {
-    return this._cache.get('getDerivationOfStatics', () =>
-      prism(() => {
-        const pointerToSheetState =
-          this.sheetTemplate.project.pointers.historic.sheetsById[
-            this.address.sheetId
-          ]
+  private getStaticValues(): SerializableMap {
+    prism.ensurePrism()
+    const pointerToSheetState =
+      this.sheetTemplate.project.pointers.historic.sheetsById[
+        this.address.sheetId
+      ]
 
-        const json =
-          val(
-            pointerToSheetState.staticOverrides.byObject[
-              this.address.objectKey
-            ],
-          ) ?? {}
+    const json =
+      val(
+        pointerToSheetState.staticOverrides.byObject[this.address.objectKey],
+      ) ?? {}
 
-        const config = val(this.configPointer)
-        const deserialized = config.deserializeAndSanitize(json) || {}
-        return deserialized
-      }),
+    const config = val(this.configPointer)
+    const deserialized = config.deserializeAndSanitize(json) || {}
+    return deserialized
+  }
+  get staticValues(): IDerivation<SerializableMap> {
+    // lazy initialization
+    return this._cache.getOrInit('staticValues', () =>
+      prism(() => this.getStaticValues()),
     )
   }
 
+  private getValidSequenceTracks(): Array<{
+    pathToProp: PathToProp
+    trackId: SequenceTrackId
+  }> {
+    prism.ensurePrism()
+    const pointerToSheetState =
+      this.project.pointers.historic.sheetsById[this.address.sheetId]
+
+    const trackIdByPropPath = val(
+      pointerToSheetState.sequence.tracksByObject[this.address.objectKey]
+        .trackIdByPropPath,
+    )
+
+    if (!trackIdByPropPath) return emptyArray as $IntentionalAny
+
+    const arrayOfIds: Array<{
+      pathToProp: PathToProp
+      trackId: SequenceTrackId
+    }> = []
+
+    if (!trackIdByPropPath) return emptyArray as $IntentionalAny
+
+    const objectConfig = val(this.configPointer)
+
+    const _entries = Object.entries(trackIdByPropPath)
+    for (const [pathToPropInString, trackId] of _entries) {
+      const pathToProp = parsePathToProp(pathToPropInString)
+      if (!pathToProp) continue
+
+      const propConfig = getPropConfigByPath(objectConfig, pathToProp)
+
+      const isSequencable = propConfig && isPropConfSequencable(propConfig)
+
+      if (!isSequencable) continue
+
+      arrayOfIds.push({pathToProp, trackId: trackId!})
+    }
+
+    const mapping = getOrderingOfPropTypeConfig(objectConfig)
+
+    arrayOfIds.sort((a, b) => {
+      const pathToPropA = a.pathToProp
+      const pathToPropB = b.pathToProp
+
+      const indexA = mapping.get(JSON.stringify(pathToPropA))!
+      const indexB = mapping.get(JSON.stringify(pathToPropB))!
+
+      if (indexA > indexB) {
+        return 1
+      }
+
+      return -1
+    })
+
+    if (arrayOfIds.length === 0) {
+      return emptyArray as $IntentionalAny
+    } else {
+      return arrayOfIds
+    }
+  }
   /**
-   * Filters through the sequenced tracks and returns those tracks who are valid
+   * A derivation that filters through the sequenced tracks and returns those tracks who are valid
    * according to the object's prop types, then sorted in the same order as the config
    *
    * Returns an array.
    */
-  getArrayOfValidSequenceTracks(): IDerivation<
+  get validSequenceTracks(): IDerivation<
     Array<{pathToProp: PathToProp; trackId: SequenceTrackId}>
   > {
-    return this._cache.get('getArrayOfValidSequenceTracks', () =>
-      prism((): Array<{pathToProp: PathToProp; trackId: SequenceTrackId}> => {
-        const pointerToSheetState =
-          this.project.pointers.historic.sheetsById[this.address.sheetId]
-
-        const trackIdByPropPath = val(
-          pointerToSheetState.sequence.tracksByObject[this.address.objectKey]
-            .trackIdByPropPath,
-        )
-
-        if (!trackIdByPropPath) return emptyArray as $IntentionalAny
-
-        const arrayOfIds: Array<{
-          pathToProp: PathToProp
-          trackId: SequenceTrackId
-        }> = []
-
-        if (!trackIdByPropPath) return emptyArray as $IntentionalAny
-
-        const objectConfig = val(this.configPointer)
-
-        const _entries = Object.entries(trackIdByPropPath)
-        for (const [pathToPropInString, trackId] of _entries) {
-          const pathToProp = parsePathToProp(pathToPropInString)
-          if (!pathToProp) continue
-
-          const propConfig = getPropConfigByPath(objectConfig, pathToProp)
-
-          const isSequencable = propConfig && isPropConfSequencable(propConfig)
-
-          if (!isSequencable) continue
-
-          arrayOfIds.push({pathToProp, trackId: trackId!})
-        }
-
-        const mapping = getOrderingOfPropTypeConfig(objectConfig)
-
-        arrayOfIds.sort((a, b) => {
-          const pathToPropA = a.pathToProp
-          const pathToPropB = b.pathToProp
-
-          const indexA = mapping.get(JSON.stringify(pathToPropA))!
-          const indexB = mapping.get(JSON.stringify(pathToPropB))!
-
-          if (indexA > indexB) {
-            return 1
-          }
-
-          return -1
-        })
-
-        if (arrayOfIds.length === 0) {
-          return emptyArray as $IntentionalAny
-        } else {
-          return arrayOfIds
-        }
-      }),
+    // lazy derivation initialization with cache
+    return this._cache.getOrInit('validSequenceTracks', () =>
+      prism(() => this.getValidSequenceTracks()),
     )
   }
 
@@ -208,8 +218,8 @@ export default class SheetObjectTemplate {
    * Not available in core.
    */
   getMapOfValidSequenceTracks_forStudio(): IDerivation<IPropPathToTrackIdTree> {
-    return this._cache.get('getMapOfValidSequenceTracks_forStudio', () =>
-      this.getArrayOfValidSequenceTracks().map((arr) => {
+    return this._cache.getOrInit('getMapOfValidSequenceTracks_forStudio', () =>
+      this.validSequenceTracks.map((arr) => {
         let map = {}
 
         for (const {pathToProp, trackId} of arr) {
@@ -225,7 +235,7 @@ export default class SheetObjectTemplate {
     pointer: Pointer<unknown>,
   ): SerializableValue | undefined {
     const {path} = getPointerParts(pointer)
-    const defaults = this.getDefaultValues().getValue()
+    const defaults = this.defaultValues.getValue()
 
     const defaultsAtPath = getDeep(defaults, path)
     return defaultsAtPath as $FixMe

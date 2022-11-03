@@ -285,7 +285,7 @@ function createDerivation<T extends SerializablePrimitive>(
       })
     }
 
-    const statics = val(obj.template.getStaticValues())
+    const statics = val(obj.template.staticValues)
 
     if (typeof getDeep(statics, pathToProp) !== 'undefined') {
       const ret: EditingToolsStatic<T> = {

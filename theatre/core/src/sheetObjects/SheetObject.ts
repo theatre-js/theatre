@@ -11,9 +11,9 @@ import type {
   $IntentionalAny,
   DeepPartialOfSerializableValue,
   SerializableMap,
+  SerializablePrimitive,
   SerializableValue,
 } from '@theatre/shared/utils/types'
-import {valToAtom} from '@theatre/shared/utils/valToAtom'
 import type {
   IdentityDerivationProvider,
   IDerivation,
@@ -23,7 +23,11 @@ import type {
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
-import type {Interpolator, PropTypeConfig} from '@theatre/core/propTypes'
+import type {
+  Interpolator,
+  PropTypeConfig,
+  PropTypeConfig_AllSimples,
+} from '@theatre/core/propTypes'
 import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 import type {ILogger, IUtilContext} from '@theatre/shared/logger'
 
@@ -73,161 +77,106 @@ export default class SheetObject implements IdentityDerivationProvider {
     this.publicApi = new TheatreSheetObject(this)
   }
 
-  getValues(): IDerivation<Pointer<SheetObjectPropsValue>> {
-    return this._cache.get('getValues()', () =>
-      prism(() => {
-        const defaults = val(this.template.getDefaultValues())
+  private initOrUpdateFinalAtom() {
+    prism.ensurePrism()
+    // `prism.memo` initialises these values the first time `initOrUpdateFinalAtom` is called
+    const initialsCache = prism.memo('initialsCache', () => new WeakMap(), [])
+    const staticsCache = prism.memo('staticsCache', () => new WeakMap(), [])
+    const seqsCache = prism.memo('seqsCache', () => new WeakMap(), [])
+    const finalAtom = prism.memo(
+      'finalAtom',
+      () => new Atom<SheetObjectPropsValue>({}),
+      [],
+    )
 
-        const initial = val(this._initialValue.pointer)
+    const defaults = val(this.template.defaultValues)
+    const initial = val(this._initialValue.pointer)
+    const statics = val(this.template.staticValues)
+    const sequenced = val(val(this.sequencedValues))
 
-        const withInitialCache = prism.memo(
-          'withInitialCache',
-          () => new WeakMap(),
-          [],
-        )
-
-        const withInitial = deepMergeWithCache(
-          defaults,
-          initial,
-          withInitialCache,
-        )
-
-        const statics = val(this.template.getStaticValues())
-
-        const withStaticsCache = prism.memo(
-          'withStatics',
-          () => new WeakMap(),
-          [],
-        )
-
-        const withStatics = deepMergeWithCache(
-          withInitial,
+    finalAtom.setState(
+      deepMergeWithCache(
+        deepMergeWithCache(
+          deepMergeWithCache(defaults, initial, initialsCache),
           statics,
-          withStaticsCache,
-        )
-
-        let final = withStatics
-        let sequenced
-
-        {
-          const pointerToSequencedValuesD = prism.memo(
-            'seq',
-            () => this.getSequencedValues(),
-            [],
-          )
-          const withSeqsCache = prism.memo(
-            'withSeqsCache',
-            () => new WeakMap(),
-            [],
-          )
-          sequenced = val(val(pointerToSequencedValuesD))
-
-          const withSeqs = deepMergeWithCache(final, sequenced, withSeqsCache)
-          final = withSeqs
-        }
-
-        const a = valToAtom<SheetObjectPropsValue>('finalAtom', final)
-
-        return a.pointer
-      }),
+          staticsCache,
+        ),
+        sequenced,
+        seqsCache,
+      ),
+    )
+    return finalAtom.pointer
+  }
+  get values(): IDerivation<Pointer<SheetObjectPropsValue>> {
+    // The cache is for lazy initialization of this derivation
+    return this._cache.getOrInit('values', () =>
+      prism(() => this.initOrUpdateFinalAtom()),
     )
   }
 
   getValueByPointer<T extends SerializableValue>(pointer: Pointer<T>): T {
-    const allValuesP = val(this.getValues())
     const {path} = getPointerParts(pointer)
-
-    return val(
-      pointerDeep(allValuesP as $FixMe, path),
-    ) as SerializableValue as T
+    return val(this.getIdentityDerivation(path)) as T
   }
 
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
-    /**
-     * @remarks
-     * TODO perf: Too much indirection here.
-     */
+    // this is what gets called when s.o says `val(object.props.position.x)`, which becomes valueDerivation(object.props.position.x).getValue(),
+    // which becomes objectPrivateApi.getIdentityDerivation(['position', 'x']).getValue()
+    //
     return prism(() => {
-      const allValuesP = val(this.getValues())
-      return val(pointerDeep(allValuesP as $FixMe, path)) as SerializableMap
+      const allValuesP = val(this.values)
+      return val(pointerDeep(allValuesP as $FixMe, path)) as SerializableValue
     })
   }
 
   /**
-   * Returns values of props that are sequenced.
+   * calculates values of props that are sequenced.
    */
-  getSequencedValues(): IDerivation<Pointer<SheetObjectPropsValue>> {
-    return prism(() => {
-      const tracksToProcessD = prism.memo(
-        'tracksToProcess',
-        () => this.template.getArrayOfValidSequenceTracks(),
-        [],
-      )
+  private initOrUpdateSequencedAtom() {
+    prism.ensurePrism()
+    // `prism.memo` initializes this atom the first time `initOrUpdateSequencedAtom` is called
+    const sequencedAtom = prism.memo(
+      'seq',
+      () => new Atom<SheetObjectPropsValue>({}),
+      [],
+    )
 
-      const tracksToProcess = val(tracksToProcessD)
-      const valsAtom = new Atom<SheetObjectPropsValue>({})
-      const config = val(this.template.configPointer)
+    const tracksToProcess = val(this.template.validSequenceTracks)
+    const config = val(this.template.configPointer)
 
-      prism.effect(
-        'processTracks',
-        () => {
-          const untaps: Array<() => void> = []
-
-          for (const {trackId, pathToProp} of tracksToProcess) {
-            const derivation = this._trackIdToDerivation(trackId)
+    prism.effect(
+      'processTracks',
+      () => {
+        const untaps: Array<() => void> = tracksToProcess.map(
+          ({trackId, pathToProp}) => {
             const propConfig = getPropConfigByPath(
               config,
               pathToProp,
             )! as Extract<PropTypeConfig, {interpolate: $IntentionalAny}>
+            const sequenceValueD = this._trackIdToDerivation(trackId).map(
+              (triple) => interpolateTriple(propConfig, triple),
+            )
 
-            const deserializeAndSanitize = propConfig.deserializeAndSanitize
-            const interpolate =
-              propConfig.interpolate! as Interpolator<$IntentionalAny>
-
-            const updateSequenceValueFromItsDerivation = () => {
-              const triple = derivation.getValue()
-
-              if (!triple) return valsAtom.setIn(pathToProp, undefined)
-
-              const leftDeserialized = deserializeAndSanitize(triple.left)
-
-              const left =
-                leftDeserialized === undefined
-                  ? propConfig.default
-                  : leftDeserialized
-
-              if (triple.right === undefined)
-                return valsAtom.setIn(pathToProp, left)
-
-              const rightDeserialized = deserializeAndSanitize(triple.right)
-              const right =
-                rightDeserialized === undefined
-                  ? propConfig.default
-                  : rightDeserialized
-
-              return valsAtom.setIn(
-                pathToProp,
-                interpolate(left, right, triple.progression),
-              )
-            }
-            const untap = derivation
+            sequencedAtom.setIn(pathToProp, sequenceValueD.getValue())
+            return sequenceValueD
               .changesWithoutValues()
-              .tap(updateSequenceValueFromItsDerivation)
+              .tap(() =>
+                sequencedAtom.setIn(pathToProp, sequenceValueD.getValue()),
+              )
+          },
+        )
+        return () => untaps.forEach((untap) => untap())
+      },
+      [config, ...tracksToProcess],
+    )
 
-            updateSequenceValueFromItsDerivation()
-            untaps.push(untap)
-          }
-          return () => {
-            for (const untap of untaps) {
-              untap()
-            }
-          }
-        },
-        [config, ...tracksToProcess],
-      )
-
-      return valsAtom.pointer
-    })
+    return sequencedAtom.pointer
+  }
+  get sequencedValues(): IDerivation<Pointer<SheetObjectPropsValue>> {
+    // lazy initialization with cache
+    return this._cache.getOrInit('sequencedValues', () =>
+      prism(() => this.initOrUpdateSequencedAtom()),
+    )
   }
 
   protected _trackIdToDerivation(
@@ -243,7 +192,7 @@ export default class SheetObject implements IdentityDerivationProvider {
   }
 
   get propsP(): Pointer<SheetObjectPropsValue> {
-    return this._cache.get('propsP', () =>
+    return this._cache.getOrInit('propsP', () =>
       pointer<{props: {}}>({root: this, path: []}),
     ) as $FixMe
   }
@@ -259,4 +208,29 @@ export default class SheetObject implements IdentityDerivationProvider {
     this.validateValue(this.propsP, val)
     this._initialValue.setState(val)
   }
+}
+
+const interpolateTriple = (
+  propConfig: PropTypeConfig_AllSimples,
+  triple: InterpolationTriple | undefined,
+) => {
+  const interpolate = propConfig.interpolate! as Interpolator<$IntentionalAny>
+
+  const left = deserializeAndSanitizeOrDefault(propConfig, triple?.left)
+  const right = deserializeAndSanitizeOrDefault(propConfig, triple?.right)
+
+  return triple === undefined
+    ? undefined
+    : right === undefined
+    ? left
+    : interpolate(left, right, triple.progression)
+}
+
+const deserializeAndSanitizeOrDefault = (
+  propConfig: PropTypeConfig_AllSimples,
+  value: SerializableValue<SerializablePrimitive> | undefined,
+) => {
+  if (value === undefined) return undefined
+  const deserialized = propConfig.deserializeAndSanitize(value)
+  return deserialized === undefined ? propConfig.default : deserialized
 }

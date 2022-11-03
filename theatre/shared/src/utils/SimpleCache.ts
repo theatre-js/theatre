@@ -4,11 +4,11 @@ export default class SimpleCache {
   protected _values: Record<string, unknown> = {}
   constructor() {}
 
-  get<T>(key: string, producer: () => T): T {
+  getOrInit<T>(key: string, initializer: () => T): T {
     if (this.has(key)) {
       return this._values[key] as $IntentionalAny
     } else {
-      const cachedValue = producer()
+      const cachedValue = initializer()
       this._values[key] = cachedValue
       return cachedValue
     }

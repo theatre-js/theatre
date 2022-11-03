@@ -21,7 +21,7 @@ export default class PaneManager {
   }
 
   private _getAllPanes() {
-    return this._cache.get('_getAllPanels()', () =>
+    return this._cache.getOrInit('_getAllPanels()', () =>
       prism((): StrictRecord<PaneInstanceId, PaneInstance<string>> => {
         const core = val(this._studio.coreP)
         if (!core) return {}

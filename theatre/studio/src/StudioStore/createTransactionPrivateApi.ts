@@ -200,7 +200,7 @@ export default function createTransactionPrivateApi(
           .getValue()
 
         const defaultValue = getDeep(
-          root.template.getDefaultValues().getValue(),
+          root.template.defaultValues.getValue(),
           path,
         )
 

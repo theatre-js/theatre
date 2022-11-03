@@ -35,7 +35,7 @@ describe(`SheetObjectTemplate`, () => {
         },
       })
 
-      const iter = iterateOver(obj.template.getArrayOfValidSequenceTracks())
+      const iter = iterateOver(obj.template.validSequenceTracks)
 
       const validTracks = iter.next().value
       expect(validTracks).toHaveLength(1)
@@ -59,7 +59,7 @@ describe(`SheetObjectTemplate`, () => {
           tracksByObject: {},
         },
       })
-      const iter = iterateOver(obj.template.getArrayOfValidSequenceTracks())
+      const iter = iterateOver(obj.template.validSequenceTracks)
 
       expect(iter.next().value).toHaveLength(0)
     })

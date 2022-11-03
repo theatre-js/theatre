@@ -411,7 +411,7 @@ export default class TheatreStudio implements IStudio {
   }
 
   private _getSelectionDerivation(): IDerivation<(ISheetObject | ISheet)[]> {
-    return this._cache.get('_getStateDerivation()', () =>
+    return this._cache.getOrInit('_getStateDerivation()', () =>
       prism((): (ISheetObject | ISheet)[] => {
         return getOutlineSelection()
           .filter(

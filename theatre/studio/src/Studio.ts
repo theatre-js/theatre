@@ -267,11 +267,13 @@ export class Studio {
   }
 
   getStudioProject(core: CoreExports): IProject {
-    return this._cache.get('getStudioProject', () => core.getProject('Studio'))
+    return this._cache.getOrInit('getStudioProject', () =>
+      core.getProject('Studio'),
+    )
   }
 
   getExtensionSheet(extensionId: string, core: CoreExports): ISheet {
-    return this._cache.get('extensionSheet-' + extensionId, () =>
+    return this._cache.getOrInit('extensionSheet-' + extensionId, () =>
       this.getStudioProject(core)!.sheet('Extension ' + extensionId),
     )
   }
