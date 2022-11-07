@@ -178,7 +178,7 @@ const GlobalToolbar: React.FC = () => {
           onClick={() => {
             getStudio().transaction(({stateEditors, drafts}) => {
               stateEditors.studio.ahistoric.setPinNotifications(
-                !(drafts.ahistoric.pinNotifications ?? true),
+                !(drafts.ahistoric.pinNotifications ?? false),
               )
             })
           }}

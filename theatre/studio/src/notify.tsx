@@ -359,7 +359,7 @@ export const Notifier = () => {
   const {startPause, endPause} = handlers
 
   const pinNotifications =
-    useVal(getStudio().atomP.ahistoric.pinNotifications) ?? true
+    useVal(getStudio().atomP.ahistoric.pinNotifications) ?? false
 
   return (
     <NotifierContainer>
