@@ -302,28 +302,16 @@ const Button = styled.button<{danger?: boolean}>`
   }
 `
 
-const Dots = styled.span`
-  display: flex;
-  gap: 4px;
-`
-
-const NotificationsDot = styled.div<{type: NotificationType}>`
-  width: 8px;
-  height: 8px;
-  border-radius: 999999px;
-  background-color: ${({type}) => COLORS[type]};
-`
-
 const NotifierContainer = styled.div`
-  z-index: 9999;
+  z-index: 10;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   gap: 8px;
   position: fixed;
   right: 8px;
-  bottom: 8px;
+  top: 50px;
   width: 500px;
-  height: 50vh;
+  height: 85vh;
   min-height: 400px;
 `
 
@@ -372,41 +360,9 @@ export const Notifier = () => {
 
   const pinNotifications =
     useVal(getStudio().atomP.ahistoric.pinNotifications) ?? true
-  const togglePinNotifications = () =>
-    getStudio().transaction(({stateEditors, drafts}) => {
-      stateEditors.studio.ahistoric.setPinNotifications(
-        !(drafts.ahistoric.pinNotifications ?? true),
-      )
-    })
 
   return (
     <NotifierContainer>
-      <ButtonContainer align="side">
-        <>
-          {pinNotifications && toasts.length > 0 && (
-            <Button
-              onClick={() => {
-                notificationTypeChecker.clear()
-                notificationUniquenessChecker.clear()
-                toast.remove()
-              }}
-              danger
-            >
-              Clear
-            </Button>
-          )}
-          <Button onClick={() => togglePinNotifications()}>
-            <span>Notifications</span>
-            {notificationTypeChecker.types.length > 0 && (
-              <Dots>
-                {notificationTypeChecker.types.map((type) => (
-                  <NotificationsDot type={type} key={type} />
-                ))}
-              </Dots>
-            )}
-          </Button>
-        </>
-      </ButtonContainer>
       {!pinNotifications ? null : toasts.length > 0 ? (
         <NotificationScroller onMouseEnter={startPause} onMouseLeave={endPause}>
           <div>
@@ -427,6 +383,28 @@ export const Notifier = () => {
           Notifications will appear here when you get them.
         </EmptyState>
       )}
+      <ButtonContainer align="side">
+        {pinNotifications && toasts.length > 0 && (
+          <Button
+            onClick={() => {
+              notificationTypeChecker.clear()
+              notificationUniquenessChecker.clear()
+              toast.remove()
+            }}
+            danger
+          >
+            Clear
+          </Button>
+        )}
+      </ButtonContainer>
     </NotifierContainer>
   )
+}
+
+export const useNotifications = () => {
+  const {toasts} = useToaster()
+
+  return {
+    hasNotifications: toasts.length > 0,
+  }
 }

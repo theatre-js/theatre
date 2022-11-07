@@ -9,12 +9,18 @@ import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 import {val} from '@theatre/dataverse'
 import ExtensionToolbar from './ExtensionToolbar/ExtensionToolbar'
 import PinButton from './PinButton'
-import {Details, Ellipsis, Outline} from '@theatre/studio/uiComponents/icons'
+import {
+  Details,
+  Ellipsis,
+  Outline,
+  Bell,
+} from '@theatre/studio/uiComponents/icons'
 import DoubleChevronLeft from '@theatre/studio/uiComponents/icons/DoubleChevronLeft'
 import DoubleChevronRight from '@theatre/studio/uiComponents/icons/DoubleChevronRight'
 import ToolbarIconButton from '@theatre/studio/uiComponents/toolbar/ToolbarIconButton'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import MoreMenu from './MoreMenu/MoreMenu'
+import {useNotifications} from '@theatre/studio/notify'
 
 const Container = styled.div`
   height: 36px;
@@ -47,9 +53,9 @@ const SubContainer = styled.div`
   gap: 8px;
 `
 
-const HasUpdatesBadge = styled.div`
+const HasUpdatesBadge = styled.div<{type: 'info' | 'warning'}>`
   position: absolute;
-  background: #40aaa4;
+  background: ${({type}) => (type === 'info' ? '#40aaa4' : '#f59e0b')};
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -139,6 +145,8 @@ const GlobalToolbar: React.FC = () => {
     return hasUpdates
   }, [hasUpdates])
 
+  const {hasNotifications} = useNotifications()
+
   return (
     <Container>
       <SubContainer>
@@ -166,6 +174,18 @@ const GlobalToolbar: React.FC = () => {
         <ExtensionToolbar showLeftDivider toolbarId="global" />
       </SubContainer>
       <SubContainer>
+        <ToolbarIconButton
+          onClick={() => {
+            getStudio().transaction(({stateEditors, drafts}) => {
+              stateEditors.studio.ahistoric.setPinNotifications(
+                !(drafts.ahistoric.pinNotifications ?? true),
+              )
+            })
+          }}
+        >
+          <Bell />
+          {hasNotifications && <HasUpdatesBadge type="warning" />}
+        </ToolbarIconButton>
         {moreMenu.node}
         <ToolbarIconButton
           ref={moreMenuTriggerRef}
@@ -174,7 +194,7 @@ const GlobalToolbar: React.FC = () => {
           }}
         >
           <Ellipsis />
-          {showUpdatesBadge && <HasUpdatesBadge />}
+          {showUpdatesBadge && <HasUpdatesBadge type="info" />}
         </ToolbarIconButton>
         <PinButton
           ref={triggerButtonRef as $IntentionalAny}
