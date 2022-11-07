@@ -2,11 +2,11 @@ import type {$FixMe, $IntentionalAny} from '../types'
 
 export default function updateDeep<S>(
   state: S,
-  path: (string | number | undefined)[],
+  path: (string | number)[],
   reducer: (...args: $IntentionalAny[]) => $IntentionalAny,
 ): S {
   if (path.length === 0) return reducer(state)
-  return hoop(state, path as $IntentionalAny, reducer)
+  return hoop(state, path, reducer)
 }
 
 const hoop = (

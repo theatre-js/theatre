@@ -19,22 +19,18 @@ enum ValueTypes {
   Other,
 }
 
+export const pathedDerivation: unique symbol = Symbol()
+
 /**
- * Interface for objects that can provide a derivation at a certain path.
+ * Interface for objects that can provide a derivation at a given path.
  */
-export interface IdentityDerivationProvider {
-  /**
-   * @internal
-   * Future: We could consider using a `Symbol.for("dataverse/IdentityDerivationProvider")` as a key here, similar to
-   * how {@link Iterable} works for `of`.
-   */
-  readonly $$isIdentityDerivationProvider: true
+export interface PathedDerivable {
   /**
    * Returns a derivation of the value at the provided path.
    *
    * @param path - The path to create the derivation at.
    */
-  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown>
+  [pathedDerivation](path: Array<string | number>): IDerivation<unknown>
 }
 
 const getTypeOfValue = (v: unknown): ValueTypes => {
@@ -115,14 +111,8 @@ class Scope {
 /**
  * Wraps an object whose (sub)properties can be individually tracked.
  */
-export default class Atom<State extends {}>
-  implements IdentityDerivationProvider
-{
+export default class Atom<State extends {}> implements PathedDerivable {
   private _currentState: State
-  /**
-   * @internal
-   */
-  readonly $$isIdentityDerivationProvider = true
   private readonly _rootScope: Scope
   /**
    * Convenience property that gives you a pointer to the root of the atom.
@@ -239,14 +229,14 @@ export default class Atom<State extends {}>
       scope.identityChangeListeners.delete(cb)
     }
     return untap
-  }
+  };
 
   /**
    * Returns a new derivation of the value at the provided path.
    *
    * @param path - The path to create the derivation at.
    */
-  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
+  [pathedDerivation](path: Array<string | number>): IDerivation<unknown> {
     return new DerivationFromSource<$IntentionalAny>(
       (listener) => this._onPathValueChange(path, listener),
       () => this.getIn(path),
@@ -254,7 +244,7 @@ export default class Atom<State extends {}>
   }
 }
 
-const identityDerivationWeakMap = new WeakMap<{}, IDerivation<unknown>>()
+const pathedDerivationWeakMap = new WeakMap<{}, IDerivation<unknown>>()
 
 /**
  * Returns a derivation of the value at the provided pointer. Derivations are
@@ -267,28 +257,26 @@ export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
 ): IDerivation<P extends PointerType<infer T> ? T : void> => {
   const meta = getPointerMeta(pointer)
 
-  let derivation = identityDerivationWeakMap.get(meta)
+  let derivation = pathedDerivationWeakMap.get(meta)
   if (!derivation) {
     const root = meta.root
-    if (!isIdentityDerivationProvider(root)) {
+    if (!isPathedDerivable(root)) {
       throw new Error(
         `Cannot run valueDerivation() on a pointer whose root is not an IdentityChangeProvider`,
       )
     }
     const {path} = meta
-    derivation = root.getIdentityDerivation(path)
-    identityDerivationWeakMap.set(meta, derivation)
+    derivation = root[pathedDerivation](path)
+    pathedDerivationWeakMap.set(meta, derivation)
   }
   return derivation as $IntentionalAny
 }
 
-function isIdentityDerivationProvider(
-  val: unknown,
-): val is IdentityDerivationProvider {
+function isPathedDerivable(val: unknown): val is PathedDerivable {
   return (
     typeof val === 'object' &&
     val !== null &&
-    (val as $IntentionalAny)['$$isIdentityDerivationProvider'] === true
+    (val as $IntentionalAny)[pathedDerivation] !== undefined
   )
 }
 

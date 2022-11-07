@@ -18,6 +18,7 @@ import type {
   SerializableValue,
 } from '@theatre/shared/utils/types'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
+import {pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
 import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
@@ -28,6 +29,7 @@ import {
   isPropConfSequencable,
 } from '@theatre/shared/propTypes/utils'
 import getOrderingOfPropTypeConfig from './getOrderingOfPropTypeConfig'
+import {pathedDerivation} from '@theatre/dataverse/src/Atom'
 
 /**
  * Given an object like: `{transform: {type: 'absolute', position: {x: 0}}}`,
@@ -94,17 +96,23 @@ export default class SheetObjectTemplate {
   }
 
   /**
-   * Returns the default values (all defaults are read from the config)
+   * Returns an identity derivation provider of the default values (all defaults are read from the config)
    */
-  private getDefaultValues(): SerializableMap {
-    prism.ensurePrism()
-    const config = val(this.configPointer)
-    return getPropDefaultsOfSheetObject(config)
+  private getDefaultValueIdentityDerivationProvider() {
+    const allDefaultValuesD = this._cache.getOrInit('allDefaultValuesD', () =>
+      prism(() => getPropDefaultsOfSheetObject(val(this.configPointer))),
+    )
+    return {
+      [pathedDerivation](path: (string | number)[]) {
+        return allDefaultValuesD.map((v) => getDeep(v, path))
+      },
+    }
   }
-  get defaultValues(): IDerivation<SerializableMap> {
+  get defaultValues(): Pointer<SerializableMap> {
+    // Should this actually just be an IDerivation<SerializableMap>
     // lazy initialization
     return this._cache.getOrInit('defaultValues', () =>
-      prism(() => this.getDefaultValues()),
+      pointer({root: this.getDefaultValueIdentityDerivationProvider()}),
     )
   }
 
@@ -153,8 +161,6 @@ export default class SheetObjectTemplate {
       pathToProp: PathToProp
       trackId: SequenceTrackId
     }> = []
-
-    if (!trackIdByPropPath) return emptyArray as $IntentionalAny
 
     const objectConfig = val(this.configPointer)
 
@@ -235,7 +241,7 @@ export default class SheetObjectTemplate {
     pointer: Pointer<unknown>,
   ): SerializableValue | undefined {
     const {path} = getPointerParts(pointer)
-    const defaults = this.defaultValues.getValue()
+    const defaults = val(this.defaultValues)
 
     const defaultsAtPath = getDeep(defaults, path)
     return defaultsAtPath as $FixMe

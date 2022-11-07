@@ -1,7 +1,11 @@
 import type {InterpolationTriple} from '@theatre/core/sequences/interpolationTripleAtPosition'
 import interpolationTripleAtPosition from '@theatre/core/sequences/interpolationTripleAtPosition'
 import type Sheet from '@theatre/core/sheets/Sheet'
-import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
+import type {
+  PathToProp,
+  SheetObjectAddress,
+} from '@theatre/shared/utils/addresses'
+
 import deepMergeWithCache from '@theatre/shared/utils/deepMergeWithCache'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import pointerDeep from '@theatre/shared/utils/pointerDeep'
@@ -14,22 +18,29 @@ import type {
   SerializablePrimitive,
   SerializableValue,
 } from '@theatre/shared/utils/types'
-import type {
-  IdentityDerivationProvider,
-  IDerivation,
-  Pointer,
-} from '@theatre/dataverse'
+import type {IDerivation, Pointer} from '@theatre/dataverse'
 
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
 import TheatreSheetObject from './TheatreSheetObject'
 import type {
   Interpolator,
-  PropTypeConfig,
   PropTypeConfig_AllSimples,
 } from '@theatre/core/propTypes'
 import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 import type {ILogger, IUtilContext} from '@theatre/shared/logger'
+import type {PathedDerivable} from '@theatre/dataverse/src/Atom'
+import {pathedDerivation} from '@theatre/dataverse/src/Atom'
+import getDeep from '@theatre/shared/utils/getDeep'
+import type {IPropPathToTrackIdTree} from './SheetObjectTemplate'
+
+type IPropPathToInterpolationTripleTree =
+  | {
+      [propName in string]?:
+        | InterpolationTriple
+        | IPropPathToInterpolationTripleTree
+    }
+  | InterpolationTriple
 
 /**
  * Internally, the sheet's actual configured value is not a specific type, since we
@@ -46,11 +57,10 @@ type SheetObjectPropsValue = SerializableMap
  * Note that this cannot be generic over `Props`, since the user is
  * able to change prop configs for the sheet object's properties.
  */
-export default class SheetObject implements IdentityDerivationProvider {
+export default class SheetObject implements PathedDerivable {
   get type(): 'Theatre_SheetObject' {
     return 'Theatre_SheetObject'
   }
-  readonly $$isIdentityDerivationProvider: true = true
   readonly address: SheetObjectAddress
   readonly publicApi: TheatreSheetObject
   private readonly _initialValue = new Atom<SheetObjectPropsValue>({})
@@ -92,7 +102,7 @@ export default class SheetObject implements IdentityDerivationProvider {
     const defaults = val(this.template.defaultValues)
     const initial = val(this._initialValue.pointer)
     const statics = val(this.template.staticValues)
-    const sequenced = val(val(this.sequencedValues))
+    const sequenced = val(this.sequencedValues)
 
     finalAtom.setState(
       deepMergeWithCache(
@@ -105,6 +115,7 @@ export default class SheetObject implements IdentityDerivationProvider {
         seqsCache,
       ),
     )
+
     return finalAtom.pointer
   }
   get values(): IDerivation<Pointer<SheetObjectPropsValue>> {
@@ -116,66 +127,95 @@ export default class SheetObject implements IdentityDerivationProvider {
 
   getValueByPointer<T extends SerializableValue>(pointer: Pointer<T>): T {
     const {path} = getPointerParts(pointer)
-    return val(this.getIdentityDerivation(path)) as T
+    return val(this[pathedDerivation](path)) as T
   }
 
-  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
-    // this is what gets called when s.o says `val(object.props.position.x)`, which becomes valueDerivation(object.props.position.x).getValue(),
-    // which becomes objectPrivateApi.getIdentityDerivation(['position', 'x']).getValue()
-    //
-    return prism(() => {
-      const allValuesP = val(this.values)
-      return val(pointerDeep(allValuesP as $FixMe, path)) as SerializableValue
-    })
-  }
+  [pathedDerivation] = pathedDerivationFromPointerDerivation(this.values)
 
+  // private processTrack(
+  //   sequencedAtom: Atom<SheetObjectPropsValue>,
+  //   {trackId, pathToProp}: {trackId: SequenceTrackId; pathToProp: PathToProp},
+  //   config: SheetObjectPropTypeConfig,
+  // ) {
+  //   const propConfig = getPropConfigByPath(config, pathToProp)! as Extract<
+  //     PropTypeConfig,
+  //     {interpolate: $IntentionalAny}
+  //   >
+  //   const sequenceValueD = this._trackIdToDerivation(trackId).map((triple) =>
+  //     interpolateTriple(propConfig, triple),
+  //   )
+
+  //   sequencedAtom.setIn(pathToProp, sequenceValueD.getValue())
+  //   const untap = sequenceValueD
+  //     .changesWithoutValues()
+  //     .tap(() => sequencedAtom.setIn(pathToProp, sequenceValueD.getValue()))
+  //   return untap
+  // }
   /**
    * calculates values of props that are sequenced.
    */
-  private initOrUpdateSequencedAtom() {
-    prism.ensurePrism()
-    // `prism.memo` initializes this atom the first time `initOrUpdateSequencedAtom` is called
-    const sequencedAtom = prism.memo(
-      'seq',
-      () => new Atom<SheetObjectPropsValue>({}),
-      [],
-    )
+  // private updateSequencedAtom(
+  //   sequencedAtom: Atom<SheetObjectPropsValue>,
+  //   tracksToProcess: {trackId: SequenceTrackId; pathToProp: PathToProp}[],
+  //   config: SheetObjectPropTypeConfig,
+  // ) {
+  //   const untaps: Array<() => void> = tracksToProcess.map((track) =>
+  //     this.processTrack(sequencedAtom, track, config),
+  //   )
+  //   const untapAll = () => untaps.forEach((untap) => untap())
+  //   return untapAll
+  // }
 
-    const tracksToProcess = val(this.template.validSequenceTracks)
-    const config = val(this.template.configPointer)
+  /**
+   * Returns an identity derivation provider of the default values (all defaults are read from the config)
+   */
+  // a.k.a. getSequencedValuesIdentityDerivationProvider
+  // private getSequencedValuesPathedDerivable(): PathedDerivable {
+  //   const sequencedAtom = new Atom<SheetObjectPropsValue>({})
+  //   const allSequencedValuesD = prism(() => {
+  //     const tracksToProcess = val(this.template.validSequenceTracks)
+  //     const config = val(this.template.configPointer)
+  //     prism.effect(
+  //       'processTracks',
+  //       () => this.updateSequencedAtom(sequencedAtom, tracksToProcess, config),
+  //       [config, ...tracksToProcess],
+  //     )
+  //     return sequencedAtom.pointer
+  //   })
 
-    prism.effect(
-      'processTracks',
-      () => {
-        const untaps: Array<() => void> = tracksToProcess.map(
-          ({trackId, pathToProp}) => {
-            const propConfig = getPropConfigByPath(
-              config,
-              pathToProp,
-            )! as Extract<PropTypeConfig, {interpolate: $IntentionalAny}>
-            const sequenceValueD = this._trackIdToDerivation(trackId).map(
-              (triple) => interpolateTriple(propConfig, triple),
-            )
+  //   return {
+  //     [pathedDerivation]: pathedDerivationFromPointerDerivation(allSequencedValuesD),
+  //   }
+  // }
+  private sequencedValuesPathedDerivation(
+    path: (string | number)[],
+  ): IDerivation<IPropPathToInterpolationTripleTree | undefined> {
+    // should be cached per-path
+    return prism(() => {
+      const tracks = val(this.template.getMapOfValidSequenceTracks_forStudio()) // `getMapOfValidSequenceTracks_forStudio` should return a pointer for this
+      const trackTree = getDeep(tracks, path) as IPropPathToTrackIdTree
+      const config = val(this.template.configPointer)
 
-            sequencedAtom.setIn(pathToProp, sequenceValueD.getValue())
-            return sequenceValueD
-              .changesWithoutValues()
-              .tap(() =>
-                sequencedAtom.setIn(pathToProp, sequenceValueD.getValue()),
-              )
-          },
-        )
-        return () => untaps.forEach((untap) => untap())
-      },
-      [config, ...tracksToProcess],
-    )
-
-    return sequencedAtom.pointer
+      return objMap(
+        path,
+        trackTree,
+        (trackId: SequenceTrackId, p: PathToProp) =>
+          interpolateTriple(
+            getPropConfigByPath(config, p) as PropTypeConfig_AllSimples,
+            val(this._trackIdToDerivation(trackId)),
+          ),
+      )
+    }) // just need to cache these objects by path and perf is off the chain
   }
-  get sequencedValues(): IDerivation<Pointer<SheetObjectPropsValue>> {
+  get sequencedValues(): Pointer<SheetObjectPropsValue> {
     // lazy initialization with cache
     return this._cache.getOrInit('sequencedValues', () =>
-      prism(() => this.initOrUpdateSequencedAtom()),
+      pointer({
+        root: {
+          [pathedDerivation]: this.sequencedValuesPathedDerivation.bind(this),
+          //pathedDerivationFromPointerDerivation(allSequencedValuesD),
+        },
+      }),
     )
   }
 
@@ -234,3 +274,25 @@ const deserializeAndSanitizeOrDefault = (
   const deserialized = propConfig.deserializeAndSanitize(value)
   return deserialized === undefined ? propConfig.default : deserialized
 }
+
+const pathedDerivationFromPointerDerivation =
+  <T>(d: IDerivation<Pointer<T>>) =>
+  (path: (string | number)[]): IDerivation<unknown> =>
+    prism(() => val(pointerDeep(val(d), path)))
+
+function objMap(path: (number | string)[], value: any, valMap: any): any {
+  const isObj =
+    typeof value === 'object' && !Array.isArray(value) && value !== null
+  if (!isObj) return valMap(value, path)
+  return Object.fromEntries(
+    Object.entries(value).map(([key, value]) => [
+      key,
+      objMap([...path, key], value, valMap),
+    ]),
+  )
+}
+
+/*
+// dependency-freee (defaults+initial+static+sequenced)
+// dependent (expression)
+*/

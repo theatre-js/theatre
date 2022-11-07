@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-export type {IdentityDerivationProvider} from './Atom'
+export type {PathedDerivable} from './Atom'
 export {default as Atom, val, valueDerivation} from './Atom'
 export {default as Box} from './Box'
 export type {IBox} from './Box'

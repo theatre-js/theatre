@@ -17,6 +17,7 @@ import TheatreSequence from './TheatreSequence'
 import type {ILogger} from '@theatre/shared/logger'
 import type {ISequence} from '..'
 import {notify} from '@theatre/shared/notify'
+import * as Atom from '@theatre/dataverse/src/Atom'
 
 export type IPlaybackRange = [from: number, to: number]
 
@@ -44,7 +45,6 @@ export default class Sequence {
   _playableRangeD: undefined | IDerivation<{start: number; end: number}>
 
   readonly pointer: ISequence['pointer'] = pointer({root: this, path: []})
-  readonly $$isIdentityDerivationProvider = true
   readonly _logger: ILogger
 
   constructor(
@@ -79,7 +79,7 @@ export default class Sequence {
     )
   }
 
-  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
+  [Atom.pathedDerivation](path: Array<string | number>): IDerivation<unknown> {
     if (path.length === 0) {
       return prism((): ISequence['pointer']['$$__pointer_type'] => ({
         length: val(this.pointer.length),

@@ -1,4 +1,4 @@
-import type {IdentityDerivationProvider} from './Atom'
+import * as Atom from './Atom'
 import type {Pointer} from './pointer'
 import pointer from './pointer'
 import type {IBox} from './Box'
@@ -14,12 +14,8 @@ import {valueDerivation} from './Atom'
  * to the proxied pointer too.
  */
 export default class PointerProxy<O extends {}>
-  implements IdentityDerivationProvider
+  implements Atom.PathedDerivable
 {
-  /**
-   * @internal
-   */
-  readonly $$isIdentityDerivationProvider = true
   private readonly _currentPointerBox: IBox<Pointer<O>>
   /**
    * Convenience pointer pointing to the root of this PointerProxy.
@@ -47,7 +43,7 @@ export default class PointerProxy<O extends {}>
    *
    * @param path - The path to create the derivation at.
    */
-  getIdentityDerivation(path: Array<string | number>) {
+  [Atom.pathedDerivation](path: Array<string | number>) {
     return this._currentPointerBox.derivation.flatMap((p) => {
       const subPointer = path.reduce(
         (pointerSoFar, pathItem) => (pointerSoFar as $IntentionalAny)[pathItem],
