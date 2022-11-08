@@ -31,6 +31,7 @@ import type {
   IRange,
   SerializableMap,
   SerializablePrimitive,
+  SerializableValue,
 } from '@theatre/shared/utils/types'
 import {current} from 'immer'
 import findLastIndex from 'lodash-es/findLastIndex'
@@ -578,7 +579,10 @@ namespace stateEditors {
             drafts().historic.coreByProject[p.projectId].sheetsById
 
           if (!sheetsById[p.sheetId]) {
-            sheetsById[p.sheetId] = {staticOverrides: {byObject: {}}}
+            sheetsById[p.sheetId] = {
+              staticOverrides: {byObject: {}},
+              expressionOverrides: {byObject: {}},
+            }
           }
           return sheetsById[p.sheetId]!
         }
@@ -700,12 +704,12 @@ namespace stateEditors {
            * Sets a keyframe at the exact specified position.
            * Any position snapping should be done by the caller.
            */
-          export function setKeyframeAtPosition<T>(
+          export function setKeyframeAtPosition(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: SequenceTrackId
               position: number
               handles?: [number, number, number, number]
-              value: T
+              value: SerializableValue<SerializablePrimitive>
               snappingFunction: SnappingFunction
             },
           ) {
@@ -950,6 +954,27 @@ namespace stateEditors {
             )
 
             track.keyframes = sorted
+          }
+        }
+
+        export namespace expressionOverrides {
+          export namespace byObject {
+            function _ensure(p: WithoutSheetInstance<SheetObjectAddress>) {
+              const sheetsById =
+                stateEditors.coreByProject.historic.sheetsById._ensure(p)
+              sheetsById.expressionOverrides ??= {byObject: {}}
+              sheetsById.expressionOverrides.byObject ??= {}
+              sheetsById.expressionOverrides.byObject[p.objectKey] ??= {}
+              return sheetsById.expressionOverrides.byObject[p.objectKey]!
+            }
+
+            export function setExpressionOfPrimitiveProp(
+              p: WithoutSheetInstance<PropAddress> & {
+                expression: string
+              },
+            ) {
+              set(_ensure(p), p.pathToProp, p.expression)
+            }
           }
         }
 

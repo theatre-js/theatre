@@ -21,9 +21,9 @@ export interface SheetState_Historic {
   staticOverrides: {
     byObject: StrictRecord<ObjectAddressKey, SerializableMap>
   }
-  // expressionOverrides?: {
-  //   byObject: StrictRecord<ObjectAddressKey, nestedStringOrSomething>
-  // }
+  expressionOverrides?: {
+    byObject: StrictRecord<ObjectAddressKey, SerializableMap>
+  }
   sequence?: HistoricPositionalSequence
 }
 

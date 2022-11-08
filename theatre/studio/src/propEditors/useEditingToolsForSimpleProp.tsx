@@ -69,7 +69,7 @@ function createDerivation<T extends SerializablePrimitive>(
   return prism(() => {
     const pathToProp = getPointerParts(pointerToProp).path
 
-    const final = obj.getValueByPointer(pointerToProp) as T
+    const final = val(pointerToProp) as T
 
     const editPropValue = prism.memo(
       'editPropValue',
@@ -150,7 +150,7 @@ function createDerivation<T extends SerializablePrimitive>(
               stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsStatic(
                 {
                   ...propAddress,
-                  value: obj.getValueByPointer(pointerToProp) as T,
+                  value: val(pointerToProp) as T,
                 },
               )
             })

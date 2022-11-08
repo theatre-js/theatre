@@ -4,7 +4,6 @@ import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextM
 import getDeep from '@theatre/shared/utils/getDeep'
 import {usePrism} from '@theatre/react'
 import type {
-  $IntentionalAny,
   SerializablePrimitive,
 } from '@theatre/shared/utils/types'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
@@ -177,7 +176,7 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
               stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsStatic(
                 {
                   ...propAddress,
-                  value: obj.getValueByPointer(pointerToSub as $IntentionalAny),
+                  value: val(pointerToSub) as SerializablePrimitive,
                 },
               )
             }
