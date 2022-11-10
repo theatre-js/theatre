@@ -970,7 +970,7 @@ namespace stateEditors {
 
             export function setExpressionOfPrimitiveProp(
               p: WithoutSheetInstance<PropAddress> & {
-                expression: string
+                expression: string | undefined
               },
             ) {
               set(_ensure(p), p.pathToProp, p.expression)

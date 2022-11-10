@@ -40,7 +40,6 @@ const PopoverAutoCloseLock = React.createContext({
 })
 
 type Opts = {
-  debugName: string
   closeWhenPointerIsDistant?: boolean
   pointerDistanceThreshold?: number
   closeOnClickOutside?: boolean
@@ -64,8 +63,6 @@ export default function usePopover(
   opts: Opts | (() => Opts),
   render: () => React.ReactElement,
 ): IPopover {
-  const _debug = (...args: any) => {}
-
   // want to make sure that we don't close a popover when dragging something (like a curve editor handle)
   // I think this could be improved to handle closing after done dragging, better.
   const {isPointerBeingCaptured} = usePointerCapturing(`usePopover`)
@@ -77,7 +74,6 @@ export default function usePopover(
   const optsRef = useRef(opts)
 
   const close = useCallback<CloseFn>((reason: string): void => {
-    _debug(`closing due to "${reason}"`)
     stateRef.current = {isOpen: false}
   }, [])
 
@@ -130,7 +126,6 @@ export default function usePopover(
    * close a child popover.
    */
   const lock = useAutoCloseLockState({
-    _debug,
     state,
   })
 
@@ -178,20 +173,15 @@ export default function usePopover(
  * When child popovers are opened, we want to suspend all auto-closing
  * behaviors for parenting popovers.
  */
-function useAutoCloseLockState(options: {
-  state: State
-  _debug: (message: string, args?: object) => void
-}) {
+function useAutoCloseLockState(options: {state: State}) {
   const parentLock = useContext(PopoverAutoCloseLock)
 
   useEffect(() => {
     if (options.state.isOpen) {
       // when this "popover" is open, then take focus from parent
       const focused = parentLock.takeFocus()
-      options._debug('take focus')
       return () => {
         // when closed / unmounted, release focus
-        options._debug('release focus')
         focused.releaseFocus()
       }
     }

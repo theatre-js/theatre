@@ -75,7 +75,7 @@ function RgbaPropEditor({
     [editingTools],
   )
 
-  const popover = usePopover({debugName: 'RgbaPropEditor'}, () => (
+  const popover = usePopover({}, () => (
     <RgbaPopover>
       <RgbaColorPicker
         color={{

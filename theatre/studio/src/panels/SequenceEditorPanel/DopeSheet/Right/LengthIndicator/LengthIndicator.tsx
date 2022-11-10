@@ -142,7 +142,7 @@ const LengthIndicator: React.FC<IProps> = ({layoutP}) => {
     node: popoverNode,
     toggle: togglePopover,
     close: closePopover,
-  } = usePopover({debugName: 'LengthIndicator'}, () => {
+  } = usePopover({}, () => {
     return (
       <BasicPopover>
         <LengthEditorPopover layoutP={layoutP} onRequestClose={closePopover} />

@@ -8,12 +8,8 @@ import {getProject} from '@theatre/core'
 import type {ITurtle} from './turtle'
 import TurtleRenderer from './TurtleRenderer'
 import {useBoundingClientRect} from './utils'
-import getStudio from '@theatre/studio/getStudio'
-import type {
-  ObjectAddressKey,
-  ProjectId,
-  SheetId,
-} from '@theatre/shared/utils/ids'
+
+
 
 const project = getProject('Turtle Playground')
 
@@ -59,15 +55,3 @@ const TurtleExample: React.FC<{}> = (props) => {
 }
 
 render(<TurtleExample />, document.getElementById('root'))
-
-getStudio()!.transaction(({stateEditors}) => {
-  stateEditors.coreByProject.historic.sheetsById.expressionOverrides.byObject.setExpressionOfPrimitiveProp(
-    {
-      projectId: 'Turtle Playground' as ProjectId,
-      sheetId: 'Turtle' as SheetId,
-      objectKey: 'Renderer' as ObjectAddressKey,
-      pathToProp: ['startingPoint', 'x'],
-      expression: '(t) => t.startingPoint.y',
-    },
-  )
-})

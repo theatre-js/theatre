@@ -1,5 +1,5 @@
 import get from 'lodash-es/get'
-import React from 'react'
+import React, {useRef, useState} from 'react'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
@@ -20,6 +20,11 @@ import type {NearbyKeyframes} from './getNearbyKeyframesOfTrack'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
+import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
+import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
+import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput'
+import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import pointerDeep from '@theatre/shared/utils/pointerDeep'
 
 interface EditingToolsCommon<T> {
   value: T
@@ -71,6 +76,18 @@ function createDerivation<T extends SerializablePrimitive>(
 
     const final = val(pointerToProp) as T
 
+    const expression = val(
+      pointerDeep(
+        obj.template.project.pointers.historic.sheetsById[obj.address.sheetId]
+          .expressionOverrides.byObject[obj.address.objectKey],
+        pathToProp,
+      ),
+    )
+    const parseExpressionTest =
+      typeof expression === 'string'
+        ? pointerDeep(obj.propsP, expression.split('+')?.[0]?.split('.'))
+        : undefined
+
     const editPropValue = prism.memo(
       'editPropValue',
       () => {
@@ -81,9 +98,18 @@ function createDerivation<T extends SerializablePrimitive>(
             if (!currentScrub) {
               currentScrub = getStudio()!.scrub()
             }
-            currentScrub.capture((api) => {
-              api.set(pointerToProp, v)
-            })
+            if (parseExpressionTest && typeof expression === 'string') {
+              currentScrub.capture((api) => {
+                api.set(
+                  parseExpressionTest,
+                  (v as number) - Number(expression.split('+')?.[1] ?? 0),
+                )
+              })
+            } else {
+              currentScrub.capture((api) => {
+                api.set(pointerToProp, v)
+              })
+            }
           },
           discardTemporaryValue(): void {
             if (currentScrub) {
@@ -93,15 +119,33 @@ function createDerivation<T extends SerializablePrimitive>(
           },
           permanentlySetValue(v: T): void {
             if (currentScrub) {
-              currentScrub.capture((api) => {
-                api.set(pointerToProp, v)
-              })
+              if (parseExpressionTest && typeof expression === 'string') {
+                currentScrub.capture((api) => {
+                  api.set(
+                    parseExpressionTest,
+                    (v as number) - Number(expression.split('+')?.[1] ?? 0),
+                  )
+                })
+              } else {
+                currentScrub.capture((api) => {
+                  api.set(pointerToProp, v)
+                })
+              }
               currentScrub.commit()
               currentScrub = null
             } else {
-              getStudio()!.transaction((api) => {
-                api.set(pointerToProp, v)
-              })
+              if (parseExpressionTest && typeof expression === 'string') {
+                getStudio()!.transaction((api) => {
+                  api.set(
+                    parseExpressionTest,
+                    (v as number) - Number(expression.split('+')?.[1] ?? 0),
+                  )
+                })
+              } else {
+                getStudio()!.transaction((api) => {
+                  api.set(pointerToProp, v)
+                })
+              }
             }
           },
         }
@@ -132,6 +176,23 @@ function createDerivation<T extends SerializablePrimitive>(
     }
 
     const isSequencable = isPropConfSequencable(propConfig)
+
+    if (expression !== undefined) {
+      contextMenuItems.push({
+        label: 'Make not expression',
+        callback: () => {
+          getStudio()!.transaction(({stateEditors}) => {
+            stateEditors.coreByProject.historic.sheetsById.expressionOverrides.byObject.setExpressionOfPrimitiveProp(
+              {
+                ...obj.address,
+                pathToProp,
+                expression: undefined,
+              },
+            )
+          })
+        },
+      })
+    }
 
     if (isSequencable) {
       const validSequencedTracks = val(
@@ -244,9 +305,12 @@ function createDerivation<T extends SerializablePrimitive>(
               : undefined,
         }
 
-        const nextPrevKeyframeCursors = (
-          <NextPrevKeyframeCursors {...controls} />
-        )
+        const nextPrevKeyframeCursors =
+          expression === undefined ? (
+            <NextPrevKeyframeCursors {...controls} />
+          ) : (
+            <Popover obj={obj} pathToProp={pathToProp} />
+          )
 
         const ret: EditingToolsSequenced<T> = {
           ...common,
@@ -260,16 +324,18 @@ function createDerivation<T extends SerializablePrimitive>(
       }
     }
 
-    contextMenuItems.push({
-      label: 'Reset to default',
-      callback: () => {
-        getStudio()!.transaction(({unset: unset}) => {
-          unset(pointerToProp)
-        })
-      },
-    })
+    if (expression === undefined) {
+      contextMenuItems.push({
+        label: 'Reset to default',
+        callback: () => {
+          getStudio()!.transaction(({unset: unset}) => {
+            unset(pointerToProp)
+          })
+        },
+      })
+    }
 
-    if (isSequencable) {
+    if (isSequencable && expression === undefined) {
       contextMenuItems.push({
         label: 'Sequence',
         callback: () => {
@@ -283,6 +349,22 @@ function createDerivation<T extends SerializablePrimitive>(
           })
         },
       })
+      contextMenuItems.push({
+        label: 'Make expression',
+        callback: () => {
+          getStudio()!.transaction(({stateEditors}) => {
+            stateEditors.coreByProject.historic.sheetsById.expressionOverrides.byObject.setExpressionOfPrimitiveProp(
+              {
+                ...obj.address,
+                pathToProp,
+                expression: String(
+                  val(pointerDeep(obj.template.defaultValues, pathToProp)),
+                ),
+              },
+            )
+          })
+        },
+      })
     }
 
     const statics = val(obj.template.staticValues)
@@ -292,9 +374,12 @@ function createDerivation<T extends SerializablePrimitive>(
         ...common,
         type: 'Static',
         shade: common.beingScrubbed ? 'Static_BeingScrubbed' : 'Static',
-        controlIndicators: (
-          <DefaultOrStaticValueIndicator hasStaticOverride={true} />
-        ),
+        controlIndicators:
+          expression === undefined ? (
+            <DefaultOrStaticValueIndicator hasStaticOverride={true} />
+          ) : (
+            <Popover obj={obj} pathToProp={pathToProp} />
+          ),
       }
       return ret
     }
@@ -303,13 +388,90 @@ function createDerivation<T extends SerializablePrimitive>(
       ...common,
       type: 'Default',
       shade: 'Default',
-      controlIndicators: (
-        <DefaultOrStaticValueIndicator hasStaticOverride={false} />
-      ),
+      controlIndicators:
+        expression === undefined ? (
+          <DefaultOrStaticValueIndicator hasStaticOverride={true} />
+        ) : (
+          <Popover obj={obj} pathToProp={pathToProp} />
+        ),
     }
 
     return ret
   })
+}
+
+function Popover(props: {obj: SheetObject; pathToProp: (string | number)[]}) {
+  let refee = useRef<HTMLDivElement>(null!)
+
+  const thing = val(
+    props.obj.template.project.pointers.historic.sheetsById[
+      props.obj.address.sheetId
+    ].expressionOverrides.byObject[props.obj.address.objectKey],
+  )
+
+  const a = getDeep(thing ?? {}, props.pathToProp)
+
+  const [temp, setTemp] = useState<CommitOrDiscard>()
+
+  const popover = usePopover({}, () => (
+    <BasicPopover showPopoverEdgeTriangle>
+      <div style={{fontFamily: 'monospace'}}>
+        <BasicStringInput
+          value={a as string}
+          temporarilySetValue={(expression) =>
+            setTemp(
+              getStudio().tempTransaction(({stateEditors}) => {
+                stateEditors.coreByProject.historic.sheetsById.expressionOverrides.byObject.setExpressionOfPrimitiveProp(
+                  {
+                    ...props.obj.address,
+                    pathToProp: props.pathToProp,
+                    expression,
+                  },
+                )
+              }),
+            )
+          }
+          discardTemporaryValue={() => {
+            temp?.discard()
+            setTemp(undefined)
+          }}
+          permanentlySetValue={(expression) =>
+            getStudio().transaction(({stateEditors}) => {
+              setTemp(undefined)
+              stateEditors.coreByProject.historic.sheetsById.expressionOverrides.byObject.setExpressionOfPrimitiveProp(
+                {
+                  ...props.obj.address,
+                  pathToProp: props.pathToProp,
+                  expression,
+                },
+              )
+            })
+          }
+          autoFocus={true}
+        />
+      </div>
+    </BasicPopover>
+  ))
+
+  return (
+    <div
+      ref={refee}
+      onClick={(e) => popover.open(e, refee.current)}
+      style={{
+        fontFamily: 'monospace',
+        color: 'orange',
+        width: '16px',
+        margin: '0 0 0 2px',
+        cursor: 'pointer',
+        display: 'flex',
+        flex: '0 0',
+        justifyContent: 'center',
+      }}
+    >
+      {a ? '𝑓' : ''}
+      {popover.node}
+    </div>
+  )
 }
 
 function getDerivation<T extends SerializablePrimitive>(

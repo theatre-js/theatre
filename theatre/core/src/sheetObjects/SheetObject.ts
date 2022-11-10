@@ -181,15 +181,20 @@ export default class SheetObject implements PathedDerivable {
   ): IDerivation<IPropPathToExprFunctionTree | undefined> {
     // prism should be cached per-path
     return prism(() => {
-      const tracks = val(this.template.getMapOfValidSequenceTracks_forStudio()) // `getMapOfValidSequenceTracks_forStudio` should return a pointer for this
-      const trackTree = getDeep(tracks, path) as IPropPathToTrackIdTree
-
       const exprP =
         this.template.project.pointers.historic.sheetsById[this.address.sheetId]
           .expressionOverrides.byObject[this.address.objectKey]
 
-      return objMap(path, trackTree, (_: SequenceTrackId, p: PathToProp) =>
-        eval(val(pointerDeep(exprP, p)) as string),
+      return objMap(
+        path,
+        val(pointerDeep(exprP, path)),
+        (expr: string | undefined) => {
+          if (expr === undefined) return
+          const args = Object.keys(val(this.template.defaultValues)!)
+          const destructureArgsString = `{${args.join(',')}}`
+          const fnString = `(${destructureArgsString}) => ${expr}`
+          return tryEvalFn(fnString)
+        },
       )
     }) // just need to cache these objects by path and perf is off the chain
   }
@@ -275,6 +280,14 @@ function objMap(path: (number | string)[], value: any, valMap: any): any {
       objMap([...path, key], value, valMap),
     ]),
   )
+}
+
+function tryEvalFn(fnStr: string) {
+  return (...args: any) => {
+    try {
+      return eval(fnStr)(...args)
+    } catch (e) {}
+  }
 }
 
 /*

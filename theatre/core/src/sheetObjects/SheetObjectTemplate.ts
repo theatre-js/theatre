@@ -150,6 +150,9 @@ export default class SheetObjectTemplate {
     const pointerToSheetState =
       this.project.pointers.historic.sheetsById[this.address.sheetId]
 
+    const expressionOverridesByPropPath = val(
+      pointerToSheetState.expressionOverrides.byObject[this.address.objectKey],
+    )
     const trackIdByPropPath = val(
       pointerToSheetState.sequence.tracksByObject[this.address.objectKey]
         .trackIdByPropPath,
@@ -169,6 +172,7 @@ export default class SheetObjectTemplate {
       const pathToProp = parsePathToProp(pathToPropInString)
       if (!pathToProp) continue
 
+      if (getDeep(expressionOverridesByPropPath ?? {}, pathToProp)) continue
       const propConfig = getPropConfigByPath(objectConfig, pathToProp)
 
       const isSequencable = propConfig && isPropConfSequencable(propConfig)

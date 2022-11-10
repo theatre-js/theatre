@@ -62,22 +62,16 @@ const ProjectDetails: React.FC<{
     }, 40000)
   }, [])
 
-  const exportTooltip = usePopover(
-    {debugName: 'ProjectDetails', pointerDistanceThreshold: 50},
-    () => (
-      <ExportTooltip>
-        This will create a JSON file with the state of your project. You can
-        commit this file to your git repo and include it in your production
-        bundle.
-        <a
-          href="https://docs.theatrejs.com/in-depth/#exporting"
-          target="_blank"
-        >
-          Here is a quick guide on how to export to production.
-        </a>
-      </ExportTooltip>
-    ),
-  )
+  const exportTooltip = usePopover({pointerDistanceThreshold: 50}, () => (
+    <ExportTooltip>
+      This will create a JSON file with the state of your project. You can
+      commit this file to your git repo and include it in your production
+      bundle.
+      <a href="https://docs.theatrejs.com/in-depth/#exporting" target="_blank">
+        Here is a quick guide on how to export to production.
+      </a>
+    </ExportTooltip>
+  ))
 
   return (
     <>

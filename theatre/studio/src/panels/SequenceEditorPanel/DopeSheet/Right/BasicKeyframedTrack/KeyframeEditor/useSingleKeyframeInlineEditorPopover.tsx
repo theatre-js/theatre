@@ -17,7 +17,7 @@ import type {UnknownValidCompoundProps} from '@theatre/core/propTypes/internals'
 export function useKeyframeInlineEditorPopover(
   props: EditingOptionsTree[] | null,
 ) {
-  return usePopover({debugName: 'useKeyframeInlineEditorPopover'}, () => (
+  return usePopover({}, () => (
     <BasicPopover showPopoverEdgeTriangle>
       <div style={{margin: '1px 2px 1px 10px'}}>
         {!Array.isArray(props)
