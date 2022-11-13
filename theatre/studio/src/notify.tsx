@@ -11,6 +11,8 @@ import type {
 import {useVal} from '@theatre/react'
 import getStudio from './getStudio'
 import {marked} from 'marked'
+import useTooltip from './uiComponents/Popover/useTooltip'
+import MinimalTooltip from './uiComponents/Popover/MinimalTooltip'
 
 /**
  * Creates a string key unique to a notification with a certain title and message.
@@ -181,9 +183,9 @@ const COLORS = {
 
 const IndicatorDot = styled.div<{type: NotificationType}>`
   display: flex;
-  align-items: center;
   justify-content: center;
   margin-left: 12px;
+  padding-top: 21px;
 
   ::before {
     content: '';
@@ -308,7 +310,7 @@ const NotifierContainer = styled.div`
   flex-direction: column;
   gap: 8px;
   position: fixed;
-  right: 8px;
+  right: 92px;
   top: 50px;
   width: 500px;
   height: 85vh;
@@ -330,26 +332,30 @@ const NotificationScroller = styled.div`
 `
 
 const EmptyState = styled.div`
-  align-self: flex-end;
   width: fit-content;
-  padding: 12px;
+  padding: 8px;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  ${pointerEventsAutoInNormalMode};
-  background-color: rgba(40, 43, 47, 0.8);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(14px);
   color: #b4b4b4;
   font-size: 12px;
   line-height: 1.4;
-
-  @supports not (backdrop-filter: blur()) {
-    background: rgba(40, 43, 47, 0.95);
-  }
 `
 //endregion
+
+export const useEmptyNotificationsTooltip = () => {
+  const {hasNotifications} = useNotifications()
+
+  return useTooltip({enabled: !hasNotifications}, () => (
+    <MinimalTooltip>
+      <EmptyState>
+        <NotificationTitle>No notifications</NotificationTitle>
+        Notifications will appear here when you get them.
+      </EmptyState>
+    </MinimalTooltip>
+  ))
+}
 
 /**
  * The component responsible for rendering the notifications.
@@ -363,26 +369,26 @@ export const Notifier = () => {
 
   return (
     <NotifierContainer>
-      {!pinNotifications ? null : toasts.length > 0 ? (
-        <NotificationScroller onMouseEnter={startPause} onMouseLeave={endPause}>
-          <div>
-            {toasts.map((toast) => {
-              return (
-                <div key={toast.id}>
-                  {/* message is always a function in our case */}
-                  {/* @ts-ignore */}
-                  {toast.message(toast)}
-                </div>
-              )
-            })}
-          </div>
-        </NotificationScroller>
-      ) : (
-        <EmptyState>
-          <NotificationTitle>No notifications</NotificationTitle>
-          Notifications will appear here when you get them.
-        </EmptyState>
-      )}
+      {!pinNotifications
+        ? null
+        : toasts.length > 0 && (
+            <NotificationScroller
+              onMouseEnter={startPause}
+              onMouseLeave={endPause}
+            >
+              <div>
+                {toasts.map((toast) => {
+                  return (
+                    <div key={toast.id}>
+                      {/* message is always a function in our case */}
+                      {/* @ts-ignore */}
+                      {toast.message(toast)}
+                    </div>
+                  )
+                })}
+              </div>
+            </NotificationScroller>
+          )}
       <ButtonContainer align="side">
         {pinNotifications && toasts.length > 0 && (
           <Button
