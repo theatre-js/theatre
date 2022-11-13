@@ -20,7 +20,10 @@ import DoubleChevronRight from '@theatre/studio/uiComponents/icons/DoubleChevron
 import ToolbarIconButton from '@theatre/studio/uiComponents/toolbar/ToolbarIconButton'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import MoreMenu from './MoreMenu/MoreMenu'
-import {useNotifications} from '@theatre/studio/notify'
+import {
+  useNotifications,
+  useEmptyNotificationsTooltip,
+} from '@theatre/studio/notify'
 
 const Container = styled.div`
   height: 36px;
@@ -147,6 +150,9 @@ const GlobalToolbar: React.FC = () => {
 
   const {hasNotifications} = useNotifications()
 
+  const [notificationsTooltip, notificationsTriggerRef] =
+    useEmptyNotificationsTooltip()
+
   return (
     <Container>
       <SubContainer>
@@ -174,7 +180,9 @@ const GlobalToolbar: React.FC = () => {
         <ExtensionToolbar showLeftDivider toolbarId="global" />
       </SubContainer>
       <SubContainer>
-        <ToolbarIconButton
+        {notificationsTooltip}
+        <PinButton
+          ref={notificationsTriggerRef as $IntentionalAny}
           onClick={() => {
             getStudio().transaction(({stateEditors, drafts}) => {
               stateEditors.studio.ahistoric.setPinNotifications(
@@ -182,10 +190,13 @@ const GlobalToolbar: React.FC = () => {
               )
             })
           }}
+          icon={<Bell />}
+          pinHintIcon={<Bell />}
+          unpinHintIcon={<Bell />}
+          pinned={useVal(getStudio().atomP.ahistoric.pinNotifications) ?? false}
         >
-          <Bell />
           {hasNotifications && <HasUpdatesBadge type="warning" />}
-        </ToolbarIconButton>
+        </PinButton>
         {moreMenu.node}
         <ToolbarIconButton
           ref={moreMenuTriggerRef}
