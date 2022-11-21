@@ -1,5 +1,6 @@
 import styled from 'styled-components'
-import type {MutableRefObject} from 'react'
+import type {MutableRefObject} from 'react';
+import { useEffect} from 'react'
 import React, {useMemo, useRef} from 'react'
 import mergeRefs from 'react-merge-refs'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -166,6 +167,13 @@ const BasicStringInput: React.FC<{
       onInputKeyDown,
       onClick,
       onFocus,
+    }
+  }, [])
+
+  // Call onBlur on unmount. Because technically it _is_ a blur, but also, otherwise edits wouldn't be committed.
+  useEffect(() => {
+    return () => {
+      callbacks.onBlur()
     }
   }, [])
 
