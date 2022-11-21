@@ -1,5 +1,6 @@
 import {clamp, isInteger, round} from 'lodash-es'
-import type {MutableRefObject} from 'react'
+import type {MutableRefObject} from 'react';
+import { useEffect} from 'react'
 import {useState} from 'react'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
@@ -276,6 +277,13 @@ const BasicNumberInput: React.FC<{
       onInputKeyDown,
       onClick,
       onFocus,
+    }
+  }, [])
+
+  // Call onBlur on unmount. Because technically it _is_ a blur, but also, otherwise edits wouldn't be committed.
+  useEffect(() => {
+    return () => {
+      callbacks.onBlur()
     }
   }, [])
 
