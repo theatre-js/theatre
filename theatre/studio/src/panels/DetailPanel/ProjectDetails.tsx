@@ -60,7 +60,7 @@ const ProjectDetails: React.FC<{
     setTimeout(() => {
       URL.revokeObjectURL(objUrl)
     }, 40000)
-  }, [])
+  }, [project, suggestedFileName])
 
   const exportTooltip = usePopover(
     {debugName: 'ProjectDetails', pointerDistanceThreshold: 50},
