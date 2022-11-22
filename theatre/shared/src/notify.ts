@@ -64,8 +64,10 @@ const createHandler =
       }
     }
 
-    // @ts-ignore
-    return window?.[globalVariableNames.notifications]?.notify[type](...args)
+    return typeof window !== 'undefined'
+      ? // @ts-ignore
+        window[globalVariableNames.notifications]?.notify[type](...args)
+      : undefined
   }
 
 export const notify: Notifiers = {
@@ -75,16 +77,18 @@ export const notify: Notifiers = {
   error: createHandler('error'),
 }
 
-window?.addEventListener('error', (e) => {
-  notify.error(
-    `An error occurred`,
-    `<pre>${e.message}</pre>\n\nSee **console** for details.`,
-  )
-})
+if (typeof window !== 'undefined') {
+  window.addEventListener('error', (e) => {
+    notify.error(
+      `An error occurred`,
+      `<pre>${e.message}</pre>\n\nSee **console** for details.`,
+    )
+  })
 
-window?.addEventListener('unhandledrejection', (e) => {
-  notify.error(
-    `An error occurred`,
-    `<pre>${e.reason}</pre>\n\nSee **console** for details.`,
-  )
-})
+  window.addEventListener('unhandledrejection', (e) => {
+    notify.error(
+      `An error occurred`,
+      `<pre>${e.reason}</pre>\n\nSee **console** for details.`,
+    )
+  })
+}
