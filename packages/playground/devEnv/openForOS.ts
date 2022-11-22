@@ -2,7 +2,7 @@ import {spawn} from 'child_process'
 
 export function openForOS(hostedAt: string) {
   const open = {
-    darwin: ['open'],
+    darwin: ['open', '-a', 'Google Chrome'],
     linux: ['xdg-open'],
     win32: ['cmd', '/c', 'start'],
   }
