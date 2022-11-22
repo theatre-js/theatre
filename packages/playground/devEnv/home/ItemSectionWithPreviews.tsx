@@ -15,9 +15,9 @@ export const ItemSectionWithPreviews = (props: {
           return (
             <ItemContainer key={`li-${moduleName}`}>
               <ItemLink href={href}>
-                <PreviewContainer>
+                {/* <PreviewContainer>
                   <iframe src={href} frameBorder="0" tabIndex={-1} />
-                </PreviewContainer>
+                </PreviewContainer> */}
                 <ItemDesc>
                   <h3>{moduleName}</h3>
                   <p>{href}</p>
@@ -80,9 +80,9 @@ const ItemContainer = styled.div`
 `
 
 const ItemListContainer = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
-  flex-wrap: wrap;
 
   margin-bottom: 2rem;
 `
