@@ -141,8 +141,77 @@ export default class SheetObject implements PathedDerivable {
       prism(() => this.initOrUpdateFinalAtom()),
     )
   }
+  get values2(): Pointer<SheetObjectPropsValue> {
+    // The cache is for lazy initialization of this derivation
+    return this._cache.getOrInit('values', () =>
+      pointer({
+        root: {
+          [pathedDerivation]: this.ok.bind(this),
+        },
+      }),
+    )
+  }
 
-  [pathedDerivation] = pathedDerivationFromPointerDerivation(this.values)
+  get values3(): Pointer<SheetObjectPropsValue> {
+    return this._cache.getOrInit('values3', () =>
+      combinePointers({
+        combiner: ([valueP, exprP]) => {
+          const value = val(valueP)
+          const expr = val(exprP)
+          return expr instanceof Function ? expr(value) : value
+        },
+        pointers: [
+          combinePointersOverrideValues(
+            this.template.defaultValues,
+            this._initialValue.pointer,
+            this.template.staticValues,
+            this.sequencedValues,
+          ),
+          this.expressionValues,
+        ],
+      }),
+    )
+  }
+  [pathedDerivation] = (path: (string | number)[]) =>
+    prism(() => val(pointerDeep(this.values3, path)))
+
+  ok(path: (string | number)[]) {
+    return prism(() => {
+      const defaults = val(
+        pointerDeep(this.template.defaultValues, path),
+      ) as SerializableMap
+      const initial = pointerDeep(this._initialValue.pointer, path)
+      const statics = pointerDeep(this.template.staticValues, path)
+      const sequenced = pointerDeep(this.sequencedValues, path)
+
+      // deepMergeWithCache is used so that things are not unecessarily recalculated if one of
+      // defaults, initial, statics, or sequenced hasn't changed
+      const state = objMap(
+        [],
+        defaults,
+        (value: SerializablePrimitive, p: (string | number)[]) =>
+          val(pointerDeep(sequenced, p)) ?? // null is a valid value so this should be !== undefined rather
+          val(pointerDeep(statics, p)) ??
+          val(pointerDeep(initial, p)) ??
+          value,
+      )
+
+      const exprs = val(
+        pointerDeep(this.expressionValues, path),
+      ) as SerializableMap
+      // apply expr functions to respective places
+      const exprdState = objMap(
+        [],
+        state,
+        (val: SerializablePrimitive, p: (string | number)[]) => {
+          const expr = getDeep(exprs, p)
+          return expr instanceof Function ? expr(state) : val
+        },
+      )
+
+      return exprdState
+    })
+  }
 
   private sequencedValuesPathedDerivation(
     path: (string | number)[],
@@ -270,10 +339,10 @@ const pathedDerivationFromPointerDerivation =
   (path: (string | number)[]): IDerivation<unknown> =>
     prism(() => val(pointerDeep(val(d), path)))
 
+const isObj = (value: any): value is Object =>
+  typeof value === 'object' && !Array.isArray(value) && value !== null
 function objMap(path: (number | string)[], value: any, valMap: any): any {
-  const isObj =
-    typeof value === 'object' && !Array.isArray(value) && value !== null
-  if (!isObj) return valMap(value, path)
+  if (!isObj(value)) return valMap(value, path)
   return Object.fromEntries(
     Object.entries(value).map(([key, value]) => [
       key,
@@ -294,3 +363,45 @@ function tryEvalFn(fnStr: string) {
 // dependency-freee (defaults+initial+static+sequenced)
 // dependent (expression)
 */
+
+function combinePointers({
+  combiner,
+  pointers,
+}: {
+  combiner: (
+    pointersAtPath: Pointer<SerializableMap>[],
+  ) => SerializableMap | undefined
+  pointers: Pointer<SerializableMap>[]
+}): Pointer<SerializableMap> {
+  return pointer({
+    root: {
+      [pathedDerivation]: (path: (string | number)[]) =>
+        prism(() =>
+          objMap(
+            path,
+            val(pointerDeep(pointers[0], path)),
+            (_: any, path: (string | number)[]) =>
+              combiner(
+                pointers.map(
+                  (pointer) =>
+                    pointerDeep(pointer, path) as Pointer<SerializableMap>,
+                ),
+              ),
+          ),
+        ),
+    },
+  })
+}
+
+function combinePointersOverrideValues(
+  ...overrides: Pointer<SerializableMap>[]
+): Pointer<SerializableMap> {
+  return combinePointers({
+    combiner: (pds) =>
+      pds.reduceRight(
+        (prev, cur) => prev ?? val(cur),
+        undefined as SerializableMap | undefined,
+      ),
+    pointers: overrides,
+  })
+}

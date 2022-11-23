@@ -151,7 +151,7 @@ export default class TheatreSheetObject<
     return this._cache.getOrInit('onValuesChangeDerivation', () => {
       const sheetObject = privateAPI(this)
       const d: IDerivation<PropsValue<Props>> = prism(() => {
-        return val(sheetObject.values.getValue()) as $FixMe
+        return val(sheetObject.values) as $FixMe
       })
       return d
     })

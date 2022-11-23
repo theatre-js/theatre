@@ -119,26 +119,33 @@ export default class SheetObjectTemplate {
   /**
    * Returns values that are set statically (ie, not sequenced, and not defaults)
    */
-  private getStaticValues(): SerializableMap {
-    prism.ensurePrism()
-    const pointerToSheetState =
-      this.sheetTemplate.project.pointers.historic.sheetsById[
-        this.address.sheetId
-      ]
+  private staticValuesPathedDerivation(
+    path: (string | number)[],
+  ): IDerivation<SerializableMap> {
+    return prism(() => {
+      const pointerToSheetState =
+        this.sheetTemplate.project.pointers.historic.sheetsById[
+          this.address.sheetId
+        ]
 
-    const json =
-      val(
-        pointerToSheetState.staticOverrides.byObject[this.address.objectKey],
-      ) ?? {}
+      const json =
+        val(
+          pointerToSheetState.staticOverrides.byObject[this.address.objectKey],
+        ) ?? {}
 
-    const config = val(this.configPointer)
-    const deserialized = config.deserializeAndSanitize(json) || {}
-    return deserialized
+      const config = val(this.configPointer)
+      const deserialized = config.deserializeAndSanitize(json) || {}
+      return getDeep(deserialized, path) as SerializableMap
+    })
   }
-  get staticValues(): IDerivation<SerializableMap> {
+  get staticValues(): Pointer<SerializableMap> {
     // lazy initialization
     return this._cache.getOrInit('staticValues', () =>
-      prism(() => this.getStaticValues()),
+      pointer({
+        root: {
+          [pathedDerivation]: this.staticValuesPathedDerivation.bind(this),
+        },
+      }),
     )
   }
 
