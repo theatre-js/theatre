@@ -70,7 +70,7 @@ const ProjectDetails: React.FC<{
         commit this file to your git repo and include it in your production
         bundle.
         <a
-          href="https://docs.theatrejs.com/in-depth/#exporting"
+          href="https://www.theatrejs.com/docs/latest/manual/projects#state"
           target="_blank"
         >
           Here is a quick guide on how to export to production.

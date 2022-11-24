@@ -124,7 +124,7 @@ const MoreMenu = React.forwardRef((props: {}, ref) => {
     <Container ref={ref as $IntentionalAny}>
       <Link
         as="a"
-        href="https://docs.theatrejs.com"
+        href="https://www.theatrejs.com/docs/latest"
         className=""
         target="_blank"
       >
@@ -133,7 +133,7 @@ const MoreMenu = React.forwardRef((props: {}, ref) => {
 
       <Link
         as="a"
-        href={`https://docs.theatrejs.com/changelog`}
+        href={`https://www.theatrejs.com/docs/latest/releases`}
         className=""
         target="_blank"
       >
@@ -184,7 +184,7 @@ const MoreMenu = React.forwardRef((props: {}, ref) => {
           <Divider />
           <Link
             as="a"
-            href={`https://docs.theatrejs.com/update#${encodeURIComponent(
+            href={`https://www.theatrejs.com/docs/latest/releases${encodeURIComponent(
               untaggedVersion,
             )}`}
             className=""
@@ -195,7 +195,7 @@ const MoreMenu = React.forwardRef((props: {}, ref) => {
           </Link>
           <Link
             as="a"
-            href={`https://docs.theatrejs.com/changelog#${encodeURIComponent(
+            href={`https://www.theatrejs.com/docs/latest/releases#${encodeURIComponent(
               untaggedVersion,
             )}`}
             className=""

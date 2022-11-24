@@ -17,7 +17,7 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
  */
 export type IProjectConfig = {
   /**
-   * The state of the project, as [exported](https://docs.theatrejs.com/in-depth/#exporting) by the studio.
+   * The state of the project, as [exported](https://www.theatrejs.com/docs/latest/manual/projects#state) by the studio.
    */
   state?: $IntentionalAny
   // experiments?: IProjectConfigExperiments
@@ -67,7 +67,7 @@ export interface IProject {
    * @param instanceId - Optionally provide an `instanceId` if you want to create multiple instances of the same Sheet
    * @returns The newly created Sheet
    *
-   * **Docs: https://docs.theatrejs.com/in-depth/#sheets**
+   * **Docs: https://www.theatrejs.com/docs/latest/manual/sheets**
    */
   sheet(sheetId: string, instanceId?: string): ISheet
 }

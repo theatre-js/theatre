@@ -24,7 +24,7 @@ export {types}
  * @remarks
  * If \@theatre/studio is also loaded, then the state of the project will be managed by the studio.
  *
- * [Learn more about exporting](https://docs.theatrejs.com/in-depth/#exporting)
+ * [Learn more about exporting](https://www.theatrejs.com/docs/latest/manual/projects#state)
  *
  * @example
  * Usage:
@@ -96,7 +96,7 @@ const shallowValidateOnDiskState = (projectId: ProjectId, s: OnDiskState) => {
     throw new InvalidArgumentError(
       `Error validating conf.state in Theatre.getProject(${JSON.stringify(
         projectId,
-      )}, conf). The state seems to be formatted in a way that is unreadable to Theatre.js. Read more at https://docs.theatrejs.com`,
+      )}, conf). The state seems to be formatted in a way that is unreadable to Theatre.js. Read more at https://www.theatrejs.com/docs/latest/manual/projects#state`,
     )
   }
 }
