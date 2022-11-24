@@ -2,7 +2,7 @@ import padEnd from 'lodash-es/padEnd'
 import logger from '@theatre/shared/logger'
 
 /**
- * Returns the _aesthetically pleasing_ (aka "nicest") number `c`, such that `a <= c <= b`.
+ * Returns the _most aesthetically pleasing_ (aka "nicest") number `c`, such that `a <= c <= b`.
  * This is useful when a numeric value is being "nudged" by the user (e.g. dragged via mouse pointer),
  * and we want to avoid setting it to weird value like `101.1239293814314`, when we know that the user
  * probably just meant `100`.

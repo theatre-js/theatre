@@ -4,7 +4,9 @@ import {notify} from '@theatre/shared/notify'
 /**
  * Make the given string's "path" slashes normalized with preceding and trailing spaces.
  *
- * Prev "sanifySlashedPath".
+ * - It removes starting and trailing slashes: `/foo/bar/` becomes `foo / bar`
+ * - It adds wraps each slash with a single space, so that `foo/bar` becomes `foo / bar`
+ *
  */
 const normalizeSlashedPath = (p: string): string =>
   p
@@ -29,6 +31,11 @@ const getValidationErrorsOfSlashedPath = (p: string): void | string => {
   }
 }
 
+/**
+ * Sanitizes a `path` and warns the user if the input doesn't match the sanitized output.
+ *
+ * See {@link normalizeSlashedPath} for examples of how we do sanitization.
+ */
 export function validateAndSanitiseSlashedPathOrThrow(
   unsanitisedPath: string,
   fnName: string,
