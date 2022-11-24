@@ -1,29 +1,39 @@
 import padEnd from 'lodash-es/padEnd'
-import type {IUtilContext} from '@theatre/shared/logger'
+import logger from '@theatre/shared/logger'
 
-export function roundestNumberBetween(
-  ctx: IUtilContext,
-  _a: number,
-  _b: number,
-): number {
+/**
+ * Returns the _roundest_ number `c`, such that `a <= c <= b`. This is useful
+ * when a number value is beinged "nudged" by a user, and we want to avoid setting
+ * it to weird value like `101.1239293814314`, when we know that the user probably just meant `100`.
+ *
+ * Examples
+ * ```ts
+ * roundestNumberBetween(0.1111111123, 0.2943439448) // 0.25
+ * roundestNumberBetween(0.19, 0.23) // 0.2
+ * roundestNumberBetween(1921, 1998) // 1950
+ * roundestNumberBetween(10, 110) // 100
+ * // There are many more examples at `./numberRoundingUtils.test.ts`
+ * ```
+ */
+export function roundestNumberBetween(_a: number, _b: number): number {
   if (_b < _a) {
-    return roundestNumberBetween(ctx, _b, _a)
+    return roundestNumberBetween(_b, _a)
   }
 
   if (_a < 0 && _b < 0) {
-    return noMinusZero(roundestNumberBetween(ctx, -_b, -_a) * -1)
+    return noMinusZero(roundestNumberBetween(-_b, -_a) * -1)
   }
 
   if (_a <= 0 && _b >= 0) return 0
 
   const aCeiling = Math.ceil(_a)
   if (aCeiling <= _b) {
-    return roundestIntegerBetween(ctx, aCeiling, Math.floor(_b))
+    return roundestIntegerBetween(aCeiling, Math.floor(_b))
   } else {
     const [a, b] = [_a, _b]
     const integer = Math.floor(a)
 
-    return integer + roundestFloat(ctx, a - integer, b - integer)
+    return integer + roundestFloat(a - integer, b - integer)
   }
 }
 
@@ -32,7 +42,6 @@ const halvesAndQuartiles = [5, 2.5, 7.5]
 const multipliersWithoutQuartiles = [5, 2, 4, 6, 8, 1, 3, 7, 9]
 
 export function roundestIntegerBetween(
-  ctx: IUtilContext,
   _a: number,
   _b: number,
   decimalsAllowed: boolean = true,
@@ -82,9 +91,7 @@ export function roundestIntegerBetween(
     base = highestTotalFound
 
     if (currentExponentiationOfTen === 1) {
-      ctx.logger.error(
-        `Coudn't find a human-readable number between ${a} and ${b}`,
-      )
+      logger.error(`Coudn't find a human-readable number between ${a} and ${b}`)
       return _a
     } else {
       currentExponentiationOfTen /= 10
@@ -133,11 +140,7 @@ export const stringifyNumber = (n: number): string => {
 /**
  * it is expected that both args are 0 \< arg \< 1
  */
-export const roundestFloat = (
-  ctx: IUtilContext,
-  a: number,
-  b: number,
-): number => {
+export const roundestFloat = (a: number, b: number): number => {
   const inString = {
     a: stringifyNumber(a),
     b: stringifyNumber(b),
@@ -171,7 +174,6 @@ export const roundestFloat = (
   }
 
   const roundestInt = roundestIntegerBetween(
-    ctx,
     parseInt(withPaddedDecimals.a, 10) * Math.pow(10, maxNumberOfLeadingZeros),
     parseInt(withPaddedDecimals.b, 10) * Math.pow(10, maxNumberOfLeadingZeros),
     true,
