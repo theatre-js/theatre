@@ -5,6 +5,28 @@ export interface Deferred<PromiseType> {
   status: 'pending' | 'resolved' | 'rejected'
 }
 
+/**
+ * A simple imperative API for resolving/rejecting a promise.
+ *
+ * Example:
+ * ```ts
+ * function doSomethingAsync() {
+ *  const deferred = defer()
+ *
+ *  setTimeout(() => {
+ *    if (Math.random() > 0.5) {
+ *      deferred.resolve('success')
+ *    } else {
+ *      deferred.reject('Something went wrong')
+ *    }
+ *  }, 1000)
+ *
+ *  // we're just returning the promise, so that the caller cannot resolve/reject it
+ *  return deferred.promise
+ * }
+ *
+ * ```
+ */
 export function defer<PromiseType>(): Deferred<PromiseType> {
   let resolve: (d: PromiseType) => void
   let reject: (d: unknown) => void

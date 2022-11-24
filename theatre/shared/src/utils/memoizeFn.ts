@@ -1,5 +1,7 @@
 /**
- * Memoizes a unary function using a simple weakmap.
+ * Memoizes a unary function using a simple weakmap. The argument to the unary
+ * function must be WeakCache-able, which means it must be an object and not a plain
+ * number/string/boolean/etc.
  *
  * @example
  * ```ts

@@ -21,10 +21,6 @@ function typeOfValue(v: unknown): ValueType {
   }
 }
 
-/**
- * @remarks
- * TODO explain what this does.
- */
 export default function minimalOverride<T>(base: T, override: T): T {
   const typeofOverride = typeOfValue(override)
   if (typeofOverride === ValueType.Opaque) {

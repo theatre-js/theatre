@@ -1,5 +1,8 @@
-import identity from '@theatre/shared/utils/identity'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+
+function identity<T>(a: T) {
+  return a
+}
 
 interface Transformer<
   Input extends $IntentionalAny,

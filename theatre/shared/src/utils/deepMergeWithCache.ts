@@ -39,7 +39,7 @@ import type {DeepPartialOfSerializableValue, SerializableMap} from './types'
  *
  * 4. Both `base` and `override` must be plain JSON values and *NO* arrays, so: `boolean, string, number, undefined, {}`
  *
- * Rationale: This is used in {@link SheetObject.getValues()} to deep-merge static and sequenced
+ * Rationale: This is used in {@link SheetObject.getValues} to deep-merge static and sequenced
  * and other types of overrides. If we were to do a deep-merge without a cache, we'd be creating and discarding
  * several JS objects on each frame for every Theatre object, and that would pressure the GC.
  * Plus, keeping the values referentially stable helps lib authors optimize how they patch these values
