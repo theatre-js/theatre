@@ -8,13 +8,21 @@ import type {
 import type {PathToProp} from '@theatre/shared/utils/addresses'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
-/** Either compound or enum properties can be considered "composite" */
+/**
+ * Either compound or enum properties can be considered "composite"
+ * */
 export function isPropConfigComposite(
   c: PropTypeConfig,
 ): c is PropTypeConfig_Compound<{}> | PropTypeConfig_Enum {
   return c.type === 'compound' || c.type === 'enum'
 }
 
+/**
+ * Returns the prop config at the given path. Traverses composite props until
+ * it reaches the deepest prop config. Returns `undefined` if none is found.
+ *
+ * This is _NOT_ type-safe, so use with caution.
+ */
 export function getPropConfigByPath(
   parentConf: PropTypeConfig | undefined,
   path: PathToProp,
@@ -52,6 +60,10 @@ export function valueInProp<PropConfig extends PropTypeConfig_AllSimples>(
   }
 }
 
+/**
+ * Returns true if the prop can be sequenced according to its config. This basically returns false for composite props,
+ * and true for everything else.
+ */
 export function isPropConfSequencable(
   conf: PropTypeConfig,
 ): conf is Extract<PropTypeConfig, {interpolate: any}> {
@@ -106,20 +118,39 @@ function compoundHasSimpleDescendantsImpl(
   return false
 }
 
+/**
+ * Iterates recursively over the simple props of a compound prop. Returns a generator.
+ *
+ *
+ * @param conf - The prop config
+ * @param pathPrefix - The path prefix to prepend to the paths of the props
+ * @returns A generator that yields the path and the config of each simple prop
+ *
+ *  * Example:
+ * ```ts
+ * const conf = types.compound({a: {b: 1, c: {d: 2}}})
+ * for (const {path, conf} of iteratePropType(conf, ['foo'])) {
+ *   console.log({path, conf})
+ * }
+ * // logs:
+ * // {path: ['foo', 'a', 'b'], conf: {type: 'number', default: 1}}
+ * // {path: ['foo', 'a', 'c', 'd'], conf: {type: 'number', default: 2}}
+ * ```
+ */
 export function* iteratePropType(
   conf: PropTypeConfig,
-  pathUpToThisPoint: PathToProp,
+  pathPrefix: PathToProp,
 ): Generator<{path: PathToProp; conf: PropTypeConfig}, void, void> {
   if (conf.type === 'compound') {
     for (const key in conf.props) {
       yield* iteratePropType(conf.props[key] as PropTypeConfig, [
-        ...pathUpToThisPoint,
+        ...pathPrefix,
         key,
       ])
     }
   } else if (conf.type === 'enum') {
     throw new Error(`Not implemented yet`)
   } else {
-    return yield {path: pathUpToThisPoint, conf}
+    return yield {path: pathPrefix, conf}
   }
 }
