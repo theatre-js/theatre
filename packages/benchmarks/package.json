@@ -1,0 +1,30 @@
+{
+  "name": "benchmarks",
+  "version": "1.0.0-dev",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "serve": "node -r esbuild-register devEnv/serveBenchmarks.ts",
+    "typecheck": "yarn run build",
+    "build": "tsc --build ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@theatre/core": "workspace:*",
+    "@theatre/core-0.5.0": "npm:@theatre/core@0.5.0",
+    "@theatre/dataverse-0.5.0": "npm:@theatre/dataverse@0.5.0",
+    "@theatre/r3f": "workspace:*",
+    "@theatre/studio": "workspace:*",
+    "@theatre/studio-0.5.0": "npm:@theatre/studio@0.5.0",
+    "@types/jest": "^29.2.3",
+    "@types/lodash-es": "^4.17.6",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
+    "esbuild": "^0.15.15",
+    "esbuild-register": "^3.4.1",
+    "typescript": "4.6.x"
+  }
+}

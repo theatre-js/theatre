@@ -1,10 +1,11 @@
 import type {IdentityDerivationProvider} from './Atom'
+import {val} from './Atom'
 import type {Pointer} from './pointer'
 import pointer from './pointer'
 import type {IBox} from './Box'
 import Box from './Box'
 import type {$FixMe, $IntentionalAny} from './types'
-import {valueDerivation} from './Atom'
+import prism from './derivations/prism/prism'
 
 /**
  * Allows creating pointer-derivations where the pointer can be switched out.
@@ -48,12 +49,13 @@ export default class PointerProxy<O extends {}>
    * @param path - The path to create the derivation at.
    */
   getIdentityDerivation(path: Array<string | number>) {
-    return this._currentPointerBox.derivation.flatMap((p) => {
+    return prism(() => {
+      const currentPointer = this._currentPointerBox.derivation.getValue()
       const subPointer = path.reduce(
         (pointerSoFar, pathItem) => (pointerSoFar as $IntentionalAny)[pathItem],
-        p,
+        currentPointer,
       )
-      return valueDerivation(subPointer)
+      return val(subPointer)
     })
   }
 }

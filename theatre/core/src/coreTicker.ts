@@ -1,5 +1,17 @@
 import {Ticker} from '@theatre/dataverse'
 
-const coreTicker = Ticker.raf
+let coreTicker: Ticker
 
-export default coreTicker
+export function setCoreTicker(ticker: Ticker) {
+  if (coreTicker) {
+    throw new Error(`coreTicker is already set`)
+  }
+  coreTicker = ticker
+}
+
+export function getCoreTicker(): Ticker {
+  if (!coreTicker) {
+    coreTicker = Ticker.raf
+  }
+  return coreTicker
+}

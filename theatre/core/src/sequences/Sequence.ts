@@ -1,12 +1,11 @@
 import type Project from '@theatre/core/projects/Project'
-import coreTicker from '@theatre/core/coreTicker'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SequenceAddress} from '@theatre/shared/utils/addresses'
 import didYouMean from '@theatre/shared/utils/didYouMean'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import type {IBox, IDerivation, Pointer} from '@theatre/dataverse'
 import {pointer} from '@theatre/dataverse'
-import {Box, prism, val, valueDerivation} from '@theatre/dataverse'
+import {Box, prism, val} from '@theatre/dataverse'
 import {padStart} from 'lodash-es'
 import type {
   IPlaybackController,
@@ -17,6 +16,7 @@ import TheatreSequence from './TheatreSequence'
 import type {ILogger} from '@theatre/shared/logger'
 import type {ISequence} from '..'
 import {notify} from '@theatre/shared/notify'
+import {getCoreTicker} from '@theatre/core/coreTicker'
 
 export type IPlaybackRange = [from: number, to: number]
 
@@ -63,20 +63,22 @@ export default class Sequence {
     this.publicApi = new TheatreSequence(this)
 
     this._playbackControllerBox = new Box(
-      playbackController ?? new DefaultPlaybackController(coreTicker),
+      playbackController ?? new DefaultPlaybackController(getCoreTicker()),
     )
 
-    this._statePointerDerivation = this._playbackControllerBox.derivation.map(
-      (playbackController) => playbackController.statePointer,
+    this._statePointerDerivation = prism(
+      () => this._playbackControllerBox.derivation.getValue().statePointer,
     )
 
-    this._positionD = this._statePointerDerivation.flatMap((statePointer) =>
-      valueDerivation(statePointer.position),
-    )
+    this._positionD = prism(() => {
+      const statePointer = this._statePointerDerivation.getValue()
+      return val(statePointer.position)
+    })
 
-    this._positionFormatterD = this._subUnitsPerUnitD.map(
-      (subUnitsPerUnit) => new TimeBasedPositionFormatter(subUnitsPerUnit),
-    )
+    this._positionFormatterD = prism(() => {
+      const subUnitsPerUnit = val(this._subUnitsPerUnitD)
+      return new TimeBasedPositionFormatter(subUnitsPerUnit)
+    })
   }
 
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {

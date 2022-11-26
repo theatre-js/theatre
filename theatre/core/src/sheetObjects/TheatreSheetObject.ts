@@ -1,6 +1,6 @@
 import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import type {IProject} from '@theatre/core/projects/TheatreProject'
-import coreTicker from '@theatre/core/coreTicker'
+import {getCoreTicker} from '@theatre/core/coreTicker'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
@@ -158,7 +158,7 @@ export default class TheatreSheetObject<
   }
 
   onValuesChange(fn: (values: this['value']) => void): VoidFn {
-    return this._valuesDerivation().tapImmediate(coreTicker, fn)
+    return this._valuesDerivation().tapImmediate(getCoreTicker(), fn)
   }
 
   // internal: Make the deviration keepHot if directly read

@@ -12,9 +12,9 @@ import type {PointerType} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
 import {isDerivation, valueDerivation} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
-import coreTicker from './coreTicker'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import {_coreLogger} from './_coreLogger'
+import {getCoreTicker} from './coreTicker'
 export {notify} from '@theatre/shared/notify'
 export {types}
 
@@ -156,9 +156,9 @@ export function onChange<P extends PointerType<$IntentionalAny>>(
 ): VoidFn {
   if (isPointer(pointer)) {
     const derivation = valueDerivation(pointer)
-    return derivation.tapImmediate(coreTicker, callback as $IntentionalAny)
+    return derivation.tapImmediate(getCoreTicker(), callback as $IntentionalAny)
   } else if (isDerivation(pointer)) {
-    return pointer.tapImmediate(coreTicker, callback as $IntentionalAny)
+    return pointer.tapImmediate(getCoreTicker(), callback as $IntentionalAny)
   } else {
     throw new Error(
       `Called onChange(p) where p is neither a pointer nor a derivation.`,

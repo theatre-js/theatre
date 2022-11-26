@@ -251,10 +251,9 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
   protected _becomeCold() {}
 
   /**
-   * Creates a new derivation from this derivation using the provided mapping function. The new derivation's value will be
-   * `fn(thisDerivation.getValue())`.
+   * A simple mapping function similar to Array.map()
    *
-   * @param fn - The mapping function to use. Note: it accepts a plain value, not a derivation.
+   * @deprecated This is a remnant of the old monadic api. Now it's functionally equal to `prism(() => fn(der.getValue()))`, so use that instead.
    */
   map<T>(fn: (v: V) => T): IDerivation<T> {
     return map(this, fn)
@@ -263,6 +262,8 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
   /**
    * Same as {@link AbstractDerivation.map}, but the mapping function can also return a derivation, in which case the derivation returned
    * by `flatMap` takes the value of that derivation.
+   *
+   * @deprecated This is a remnant of the old monadic api. Now it's functionally equal to `prism(() => val(fn(val(der))))`
    *
    * @example
    * ```ts
