@@ -107,6 +107,7 @@ export class PrismDerivation<V> extends AbstractDerivation<V> {
 class PrismScope {
   isPrismScope = true
   private _subs: Record<string, PrismScope> = {}
+  readonly effects: Map<string, IEffect> = new Map()
 
   sub(key: string) {
     if (!this._subs[key]) {
@@ -118,23 +119,20 @@ class PrismScope {
   get subs() {
     return this._subs
   }
+
+  cleanupEffects() {
+    for (const effect of this.effects.values()) {
+      safelyRun(effect.cleanup, undefined)
+    }
+    this.effects.clear()
+  }
 }
 
 function cleanupScopeStack(scope: PrismScope) {
   for (const sub of Object.values(scope.subs)) {
     cleanupScopeStack(sub)
   }
-  cleanupEffects(scope)
-}
-
-function cleanupEffects(scope: PrismScope) {
-  const effects = effectsWeakMap.get(scope)
-  if (effects) {
-    for (const effect of effects.values()) {
-      safelyRun(effect.cleanup, undefined)
-    }
-  }
-  effectsWeakMap.delete(scope)
+  scope.cleanupEffects()
 }
 
 function safelyRun<T, U>(
@@ -160,7 +158,6 @@ const refsWeakMap = new WeakMap<PrismScope, Map<string, IRef<unknown>>>()
 type IRef<T> = {
   current: T
 }
-const effectsWeakMap = new WeakMap<PrismScope, Map<string, IEffect>>()
 
 type IEffect = {
   deps: undefined | unknown[]
@@ -209,20 +206,14 @@ function effect(key: string, cb: () => () => void, deps?: unknown[]): void {
   if (!scope) {
     throw new Error(`prism.effect() is called outside of a prism() call.`)
   }
-  let effects = effectsWeakMap.get(scope)
 
-  if (effects === undefined) {
-    effects = new Map()
-    effectsWeakMap.set(scope, effects)
-  }
-
-  let effect = effects.get(key)
+  let effect = scope.effects.get(key)
   if (effect === undefined) {
     effect = {
       cleanup: voidFn,
       deps: undefined,
     }
-    effects.set(key, effect)
+    scope.effects.set(key, effect)
   }
 
   if (depsHaveChanged(effect.deps, deps)) {
