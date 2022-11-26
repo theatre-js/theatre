@@ -10,6 +10,7 @@ enum UPDATE_NEEDED_FROM {
 }
 
 const makeFlatMapDerivationClass = () => {
+  // TODO once prism and AbstractDerivation are merged into one, we should delete this file
   class FlatMapDerivation<V, DepType> extends AbstractDerivation<V> {
     private _innerDerivation: undefined | null | IDerivation<V>
     private _staleDependency: UPDATE_NEEDED_FROM

@@ -256,6 +256,7 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
    * @deprecated This is a remnant of the old monadic api. Now it's functionally equal to `prism(() => fn(der.getValue()))`, so use that instead.
    */
   map<T>(fn: (v: V) => T): IDerivation<T> {
+    // TODO once prism and AbstractDerivation are merged into one, we should replace this with prism(() => fn(der.getValue()))
     return map(this, fn)
   }
 
@@ -279,6 +280,7 @@ export default abstract class AbstractDerivation<V> implements IDerivation<V> {
   flatMap<R>(
     fn: (v: V) => R,
   ): IDerivation<R extends IDerivation<infer T> ? T : R> {
+    // TODO once prism and AbstractDerivation are merged into one, we should replace this with prism(() => val(fn(val(der))))
     return flatMap(this, fn)
   }
 }

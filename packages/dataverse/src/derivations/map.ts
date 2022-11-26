@@ -3,6 +3,7 @@ import type {IDerivation} from './IDerivation'
 
 // Exporting from a function because of the circular dependency with AbstractDerivation
 const makeMapDerivationClass = () =>
+  // TODO once prism and AbstractDerivation are merged into one, we should delete this file
   class MapDerivation<T, V> extends AbstractDerivation<V> {
     constructor(
       private readonly _dep: IDerivation<T>,
