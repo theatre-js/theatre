@@ -106,20 +106,20 @@ export class PrismDerivation<V> extends AbstractDerivation<V> {
 
 class PrismScope {
   isPrismScope = true
-  private _subs: Record<string, PrismScope> = {}
+
+  // NOTE probably not a great idea to eager-allocate all of these objects/maps for every scope,
+  // especially because most wouldn't get used in the majority of cases. However, back when these
+  // were stored on weakmaps, they were uncomfortable to inspect in the debugger.
+  readonly subs: Record<string, PrismScope> = {}
   readonly effects: Map<string, IEffect> = new Map()
   readonly memos: Map<string, IMemo> = new Map()
   readonly refs: Map<string, IRef<unknown>> = new Map()
 
   sub(key: string) {
-    if (!this._subs[key]) {
-      this._subs[key] = new PrismScope()
+    if (!this.subs[key]) {
+      this.subs[key] = new PrismScope()
     }
-    return this._subs[key]
-  }
-
-  get subs() {
-    return this._subs
+    return this.subs[key]
   }
 
   cleanupEffects() {
