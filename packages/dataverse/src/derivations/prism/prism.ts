@@ -108,6 +108,8 @@ class PrismScope {
   isPrismScope = true
   private _subs: Record<string, PrismScope> = {}
   readonly effects: Map<string, IEffect> = new Map()
+  readonly memos: Map<string, IMemo> = new Map()
+  readonly refs: Map<string, IRef<unknown>> = new Map()
 
   sub(key: string) {
     if (!this._subs[key]) {
@@ -153,8 +155,6 @@ function safelyRun<T, U>(
 
 const hookScopeStack = new Stack<PrismScope>()
 
-const refsWeakMap = new WeakMap<PrismScope, Map<string, IRef<unknown>>>()
-
 type IRef<T> = {
   current: T
 }
@@ -163,8 +163,6 @@ type IEffect = {
   deps: undefined | unknown[]
   cleanup: VoidFn
 }
-
-const memosWeakMap = new WeakMap<PrismScope, Map<string, IMemo>>()
 
 type IMemo = {
   deps: undefined | unknown[] | ReadonlyArray<unknown>
@@ -176,20 +174,15 @@ function ref<T>(key: string, initialValue: T): IRef<T> {
   if (!scope) {
     throw new Error(`prism.ref() is called outside of a prism() call.`)
   }
-  let refs = refsWeakMap.get(scope)
-  if (refs === undefined) {
-    refs = new Map()
-    refsWeakMap.set(scope, refs)
-  }
 
-  let ref = refs.get(key)
+  let ref = scope.refs.get(key)
   if (ref !== undefined) {
     return ref as $IntentionalAny as IRef<T>
   } else {
     const ref = {
       current: initialValue,
     }
-    refs.set(key, ref)
+    scope.refs.set(key, ref)
     return ref
   }
 }
@@ -262,21 +255,14 @@ function memo<T>(
     throw new Error(`prism.memo() is called outside of a prism() call.`)
   }
 
-  let memos = memosWeakMap.get(scope)
-
-  if (!memos) {
-    memos = new Map()
-    memosWeakMap.set(scope, memos)
-  }
-
-  let memo = memos.get(key)
+  let memo = scope.memos.get(key)
   if (memo === undefined) {
     memo = {
       cachedValue: null,
       // undefined will always indicate "deps have changed", so we set it's initial value as such
       deps: undefined,
     }
-    memos.set(key, memo)
+    scope.memos.set(key, memo)
   }
 
   if (depsHaveChanged(memo.deps, deps)) {
