@@ -5,7 +5,7 @@ import Atom, {val} from '../../Atom'
 import Ticker from '../../Ticker'
 import type {$FixMe, $IntentionalAny} from '../../types'
 import iterateAndCountTicks from '../iterateAndCountTicks'
-import prism, {PrismDerivation} from './prism'
+import prism from './prism'
 
 describe('prism', () => {
   let ticker: Ticker
@@ -15,7 +15,7 @@ describe('prism', () => {
 
   it('should work', () => {
     const o = new Atom({foo: 'foo'})
-    const d = new PrismDerivation(() => {
+    const d = prism(() => {
       return val(o.pointer.foo) + 'boo'
     })
     expect(d.getValue()).toEqual('fooboo')

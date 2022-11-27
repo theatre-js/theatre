@@ -20,7 +20,7 @@ type IDependent = (msgComingFrom: IDerivation<$IntentionalAny>) => void
 
 const voidFn = () => {}
 
-export class PrismDerivation<V> implements IDerivation<V> {
+class PrismDerivation<V> implements IDerivation<V> {
   protected _cacheOfDendencyValues: Map<IDerivation<unknown>, unknown> =
     new Map()
   protected _possiblyStaleDeps = new Set<IDerivation<unknown>>()
@@ -123,7 +123,6 @@ export class PrismDerivation<V> implements IDerivation<V> {
    *
    * @see removeDependent
    */
-  // TODO: document this better, what are dependents?
   addDependent(d: IDependent) {
     const hadDepsBefore = this._dependents.size > 0
     this._dependents.add(d)
