@@ -85,12 +85,16 @@ class PrismDerivation<V> implements IDerivation<V> {
   }
 
   /**
-   * Like {@link AbstractDerivation.changes} but with a different performance model. `changesWithoutValues` returns a `Tappable` that
-   * updates every time the derivation is updated, even if the value didn't change, and the callback is called without
-   * the value. The advantage of this is that you have control over when the derivation is freshened, it won't
-   * automatically be kept fresh.
+   * @deprecated This is renamed to {@link PrismDerivation.onStale}.
    */
   changesWithoutValues(): Tappable<void> {
+    return this.onStale()
+  }
+
+  /**
+   * Returns a tappable that fires every time the prism's state goes from `fresh-\>stale.`
+   */
+  onStale(): Tappable<void> {
     return new DerivationValuelessEmitter(this).tappable()
   }
 
@@ -98,7 +102,7 @@ class PrismDerivation<V> implements IDerivation<V> {
    * Keep the derivation hot, even if there are no tappers (subscribers).
    */
   keepHot() {
-    return this.changesWithoutValues().tap(() => {})
+    return this.onStale().tap(() => {})
   }
 
   /**
