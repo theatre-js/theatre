@@ -20,25 +20,21 @@ type IDependent = (msgComingFrom: IDerivation<$IntentionalAny>) => void
 
 const voidFn = () => {}
 
-class PrismDerivation<V> implements IDerivation<V> {
+class HotHandle<V> {
+  get hasDependents(): boolean {
+    return this._dependents.size > 0
+  }
+  removeDependent(d: IDependent) {
+    this._dependents.delete(d)
+  }
+  addDependent(d: IDependent) {
+    // having no dependents means the prism is currently cold
+    this._dependents.add(d)
+  }
+  private _didMarkDependentsAsStale: boolean = false
+  private _isFresh: boolean = false
   protected _cacheOfDendencyValues: Map<IDerivation<unknown>, unknown> =
     new Map()
-  protected _possiblyStaleDeps = new Set<IDerivation<unknown>>()
-  private _prismScope = new PrismScope()
-
-  /**
-   * Whether the object is a derivation.
-   */
-  readonly isDerivation: true = true
-  private _didMarkDependentsAsStale: boolean = false
-  private _isHot: boolean = false
-
-  private _isFresh: boolean = false
-
-  /**
-   * @internal
-   */
-  protected _lastValue: undefined | V = undefined
 
   /**
    * @internal
@@ -50,13 +46,123 @@ class PrismDerivation<V> implements IDerivation<V> {
    */
   protected _dependencies: Set<IDerivation<$IntentionalAny>> = new Set()
 
-  constructor(readonly _fn: () => V) {}
+  protected _possiblyStaleDeps = new Set<IDerivation<unknown>>()
+  private _scope = new HotScope()
 
   /**
-   * Whether the derivation is hot.
+   * @internal
    */
-  get isHot(): boolean {
-    return this._isHot
+  protected _lastValue: undefined | V = undefined
+
+  constructor(
+    private readonly _fn: () => V,
+    private readonly _prismInstance: PrismDerivation<V>,
+  ) {
+    for (const d of this._dependencies) {
+      d.addDependent(this._markAsStale)
+    }
+
+    this._scope = new HotScope()
+    startIgnoringDependencies()
+    this.getValue()
+    stopIgnoringDependencies()
+  }
+
+  destroy() {
+    for (const d of this._dependencies) {
+      d.removeDependent(this._markAsStale)
+    }
+    cleanupScopeStack(this._scope)
+  }
+
+  getValue(): V {
+    if (!this._isFresh) {
+      const newValue = this._recalculate()
+      this._lastValue = newValue
+      this._isFresh = true
+      this._didMarkDependentsAsStale = false
+    }
+    return this._lastValue!
+  }
+
+  _recalculate() {
+    let value: V
+
+    if (this._possiblyStaleDeps.size > 0) {
+      let anActuallyStaleDepWasFound = false
+      startIgnoringDependencies()
+      for (const dep of this._possiblyStaleDeps) {
+        if (this._cacheOfDendencyValues.get(dep) !== dep.getValue()) {
+          anActuallyStaleDepWasFound = true
+          break
+        }
+      }
+      stopIgnoringDependencies()
+      this._possiblyStaleDeps.clear()
+      if (!anActuallyStaleDepWasFound) {
+        return this._lastValue!
+      }
+    }
+
+    const newDeps: Set<IDerivation<unknown>> = new Set()
+    this._cacheOfDendencyValues.clear()
+
+    const collector = (observedDep: IDerivation<unknown>): void => {
+      newDeps.add(observedDep)
+      this._addDependency(observedDep)
+    }
+
+    pushCollector(collector)
+
+    hookScopeStack.push(this._scope)
+    try {
+      value = this._fn()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      const topOfTheStack = hookScopeStack.pop()
+      if (topOfTheStack !== this._scope) {
+        console.warn(
+          // @todo guide the user to report the bug in an issue
+          `The Prism hook stack has slipped. This is a bug.`,
+        )
+      }
+    }
+
+    popCollector(collector)
+
+    for (const dep of this._dependencies) {
+      if (!newDeps.has(dep)) {
+        this._removeDependency(dep)
+      }
+    }
+
+    this._dependencies = newDeps
+
+    startIgnoringDependencies()
+    for (const dep of newDeps) {
+      this._cacheOfDendencyValues.set(dep, dep.getValue())
+    }
+    stopIgnoringDependencies()
+
+    return value!
+  }
+
+  protected _markAsStale = (which: IDerivation<$IntentionalAny>) => {
+    this._reactToDependencyBecomingStale(which)
+
+    if (this._didMarkDependentsAsStale) return
+
+    this._didMarkDependentsAsStale = true
+    this._isFresh = false
+
+    for (const dependent of this._dependents) {
+      dependent(this._prismInstance)
+    }
+  }
+
+  _reactToDependencyBecomingStale(msgComingFrom: IDerivation<unknown>) {
+    this._possiblyStaleDeps.add(msgComingFrom)
   }
 
   /**
@@ -65,7 +171,7 @@ class PrismDerivation<V> implements IDerivation<V> {
   protected _addDependency(d: IDerivation<$IntentionalAny>) {
     if (this._dependencies.has(d)) return
     this._dependencies.add(d)
-    if (this._isHot) d.addDependent(this._markAsStale)
+    d.addDependent(this._markAsStale)
   }
 
   /**
@@ -74,7 +180,30 @@ class PrismDerivation<V> implements IDerivation<V> {
   protected _removeDependency(d: IDerivation<$IntentionalAny>) {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
-    if (this._isHot) d.removeDependent(this._markAsStale)
+    d.removeDependent(this._markAsStale)
+  }
+}
+
+class PrismDerivation<V> implements IDerivation<V> {
+  /**
+   * Whether the object is a derivation.
+   */
+  readonly isDerivation: true = true
+
+  private _state:
+    | {hot: false; handle: undefined}
+    | {hot: true; handle: HotHandle<V>} = {
+    hot: false,
+    handle: undefined,
+  }
+
+  constructor(private readonly _fn: () => V) {}
+
+  /**
+   * Whether the derivation is hot.
+   */
+  get isHot(): boolean {
+    return this._state.hot
   }
 
   /**
@@ -128,11 +257,17 @@ class PrismDerivation<V> implements IDerivation<V> {
    * @see removeDependent
    */
   addDependent(d: IDependent) {
-    const hadDepsBefore = this._dependents.size > 0
-    this._dependents.add(d)
-    const hasDepsNow = this._dependents.size > 0
-    if (hadDepsBefore !== hasDepsNow) {
-      this._reactToNumberOfDependentsChange()
+    if (!this._state.hot) {
+      this._goHot()
+    }
+    this._state.handle!.addDependent(d)
+  }
+
+  private _goHot() {
+    const hotHandle = new HotHandle(this._fn, this)
+    this._state = {
+      hot: true,
+      handle: hotHandle,
     }
   }
 
@@ -144,24 +279,15 @@ class PrismDerivation<V> implements IDerivation<V> {
    * @see addDependent
    */
   removeDependent(d: IDependent) {
-    const hadDepsBefore = this._dependents.size > 0
-    this._dependents.delete(d)
-    const hasDepsNow = this._dependents.size > 0
-    if (hadDepsBefore !== hasDepsNow) {
-      this._reactToNumberOfDependentsChange()
+    const state = this._state
+    if (!state.hot) {
+      return
     }
-  }
-
-  protected _markAsStale = (which: IDerivation<$IntentionalAny>) => {
-    this._reactToDependencyBecomingStale(which)
-
-    if (this._didMarkDependentsAsStale) return
-
-    this._didMarkDependentsAsStale = true
-    this._isFresh = false
-
-    for (const dependent of this._dependents) {
-      dependent(this)
+    const handle = state.handle
+    handle.removeDependent(d)
+    if (!handle.hasDependents) {
+      this._state = {hot: false, handle: undefined}
+      handle.destroy()
     }
   }
 
@@ -196,38 +322,17 @@ class PrismDerivation<V> implements IDerivation<V> {
      */
     reportResolutionStart(this)
 
-    if (!this._isFresh) {
-      const newValue = this._recalculate()
-      this._lastValue = newValue
-      if (this._isHot) {
-        this._isFresh = true
-        this._didMarkDependentsAsStale = false
-      }
+    const state = this._state
+
+    let val: V
+    if (state.hot) {
+      val = state.handle.getValue()
+    } else {
+      val = ColdStuff.calculateColdPrism(this._fn)
     }
 
     reportResolutionEnd(this)
-    return this._lastValue!
-  }
-
-  private _reactToNumberOfDependentsChange() {
-    const shouldBecomeHot = this._dependents.size > 0
-
-    if (shouldBecomeHot === this._isHot) return
-
-    this._isHot = shouldBecomeHot
-    this._didMarkDependentsAsStale = false
-    this._isFresh = false
-    if (shouldBecomeHot) {
-      for (const d of this._dependencies) {
-        d.addDependent(this._markAsStale)
-      }
-      this._keepHot()
-    } else {
-      for (const d of this._dependencies) {
-        d.removeDependent(this._markAsStale)
-      }
-      this._becomeCold()
-    }
+    return val
   }
 
   /**
@@ -266,103 +371,107 @@ class PrismDerivation<V> implements IDerivation<V> {
       return possibleDerivationToValue(fn(this.getValue()))
     })
   }
-
-  _recalculate() {
-    let value: V
-
-    if (this._possiblyStaleDeps.size > 0) {
-      let anActuallyStaleDepWasFound = false
-      startIgnoringDependencies()
-      for (const dep of this._possiblyStaleDeps) {
-        if (this._cacheOfDendencyValues.get(dep) !== dep.getValue()) {
-          anActuallyStaleDepWasFound = true
-          break
-        }
-      }
-      stopIgnoringDependencies()
-      this._possiblyStaleDeps.clear()
-      if (!anActuallyStaleDepWasFound) {
-        // console.log('ok')
-
-        return this._lastValue!
-      }
-    }
-
-    const newDeps: Set<IDerivation<unknown>> = new Set()
-    this._cacheOfDendencyValues.clear()
-
-    const collector = (observedDep: IDerivation<unknown>): void => {
-      newDeps.add(observedDep)
-      this._addDependency(observedDep)
-    }
-
-    pushCollector(collector)
-
-    hookScopeStack.push(this._prismScope)
-    try {
-      value = this._fn()
-    } catch (error) {
-      console.error(error)
-    } finally {
-      const topOfTheStack = hookScopeStack.pop()
-      if (topOfTheStack !== this._prismScope) {
-        console.warn(
-          // @todo guide the user to report the bug in an issue
-          `The Prism hook stack has slipped. This is a bug.`,
-        )
-      }
-    }
-
-    popCollector(collector)
-
-    for (const dep of this._dependencies) {
-      if (!newDeps.has(dep)) {
-        this._removeDependency(dep)
-      }
-    }
-
-    this._dependencies = newDeps
-
-    startIgnoringDependencies()
-    for (const dep of newDeps) {
-      this._cacheOfDendencyValues.set(dep, dep.getValue())
-    }
-    stopIgnoringDependencies()
-
-    return value!
-  }
-
-  _reactToDependencyBecomingStale(msgComingFrom: IDerivation<unknown>) {
-    this._possiblyStaleDeps.add(msgComingFrom)
-  }
-
-  _keepHot() {
-    this._prismScope = new PrismScope()
-    startIgnoringDependencies()
-    this.getValue()
-    stopIgnoringDependencies()
-  }
-
-  _becomeCold() {
-    cleanupScopeStack(this._prismScope)
-    this._prismScope = new PrismScope()
-  }
 }
 
-class PrismScope {
+interface PrismScope {
+  effect(key: string, cb: () => () => void, deps?: unknown[]): void
+  memo<T>(
+    key: string,
+    fn: () => T,
+    deps: undefined | $IntentionalAny[] | ReadonlyArray<$IntentionalAny>,
+  ): T
+  state<T>(key: string, initialValue: T): [T, (val: T) => void]
+  ref<T>(key: string, initialValue: T): IRef<T>
+  sub(key: string): PrismScope
+}
+
+class HotScope implements PrismScope {
+  protected readonly _refs: Map<string, IRef<unknown>> = new Map()
+  ref<T>(key: string, initialValue: T): IRef<T> {
+    let ref = this._refs.get(key)
+    if (ref !== undefined) {
+      return ref as $IntentionalAny as IRef<T>
+    } else {
+      const ref = {
+        current: initialValue,
+      }
+      this._refs.set(key, ref)
+      return ref
+    }
+  }
   isPrismScope = true
 
   // NOTE probably not a great idea to eager-allocate all of these objects/maps for every scope,
   // especially because most wouldn't get used in the majority of cases. However, back when these
   // were stored on weakmaps, they were uncomfortable to inspect in the debugger.
-  readonly subs: Record<string, PrismScope> = {}
+  readonly subs: Record<string, HotScope> = {}
   readonly effects: Map<string, IEffect> = new Map()
-  readonly memos: Map<string, IMemo> = new Map()
-  readonly refs: Map<string, IRef<unknown>> = new Map()
 
-  sub(key: string) {
+  effect(key: string, cb: () => () => void, deps?: unknown[]): void {
+    let effect = this.effects.get(key)
+    if (effect === undefined) {
+      effect = {
+        cleanup: voidFn,
+        deps: undefined,
+      }
+      this.effects.set(key, effect)
+    }
+
+    if (depsHaveChanged(effect.deps, deps)) {
+      effect.cleanup()
+
+      startIgnoringDependencies()
+      effect.cleanup = safelyRun(cb, voidFn).value
+      stopIgnoringDependencies()
+      effect.deps = deps
+    }
+  }
+
+  readonly memos: Map<string, IMemo> = new Map()
+
+  memo<T>(
+    key: string,
+    fn: () => T,
+    deps: undefined | $IntentionalAny[] | ReadonlyArray<$IntentionalAny>,
+  ): T {
+    let memo = this.memos.get(key)
+    if (memo === undefined) {
+      memo = {
+        cachedValue: null,
+        // undefined will always indicate "deps have changed", so we set its initial value as such
+        deps: undefined,
+      }
+      this.memos.set(key, memo)
+    }
+
+    if (depsHaveChanged(memo.deps, deps)) {
+      startIgnoringDependencies()
+
+      memo.cachedValue = safelyRun(fn, undefined).value
+      stopIgnoringDependencies()
+      memo.deps = deps
+    }
+
+    return memo.cachedValue as $IntentionalAny as T
+  }
+
+  state<T>(key: string, initialValue: T): [T, (val: T) => void] {
+    const {b, setValue} = this.memo(
+      'state/' + key,
+      () => {
+        const b = new Box<T>(initialValue)
+        const setValue = (val: T) => b.set(val)
+        return {b, setValue}
+      },
+      [],
+    )
+
+    return [b.derivation.getValue(), setValue]
+  }
+
+  sub(key: string): HotScope {
     if (!this.subs[key]) {
-      this.subs[key] = new PrismScope()
+      this.subs[key] = new HotScope()
     }
     return this.subs[key]
   }
@@ -375,7 +484,7 @@ class PrismScope {
   }
 }
 
-function cleanupScopeStack(scope: PrismScope) {
+function cleanupScopeStack(scope: HotScope) {
   for (const sub of Object.values(scope.subs)) {
     cleanupScopeStack(sub)
   }
@@ -420,16 +529,7 @@ function ref<T>(key: string, initialValue: T): IRef<T> {
     throw new Error(`prism.ref() is called outside of a prism() call.`)
   }
 
-  let ref = scope.refs.get(key)
-  if (ref !== undefined) {
-    return ref as $IntentionalAny as IRef<T>
-  } else {
-    const ref = {
-      current: initialValue,
-    }
-    scope.refs.set(key, ref)
-    return ref
-  }
+  return scope.ref(key, initialValue)
 }
 
 /**
@@ -445,23 +545,7 @@ function effect(key: string, cb: () => () => void, deps?: unknown[]): void {
     throw new Error(`prism.effect() is called outside of a prism() call.`)
   }
 
-  let effect = scope.effects.get(key)
-  if (effect === undefined) {
-    effect = {
-      cleanup: voidFn,
-      deps: undefined,
-    }
-    scope.effects.set(key, effect)
-  }
-
-  if (depsHaveChanged(effect.deps, deps)) {
-    effect.cleanup()
-
-    startIgnoringDependencies()
-    effect.cleanup = safelyRun(cb, voidFn).value
-    stopIgnoringDependencies()
-    effect.deps = deps
-  }
+  return scope.effect(key, cb, deps)
 }
 
 function depsHaveChanged(
@@ -500,25 +584,7 @@ function memo<T>(
     throw new Error(`prism.memo() is called outside of a prism() call.`)
   }
 
-  let memo = scope.memos.get(key)
-  if (memo === undefined) {
-    memo = {
-      cachedValue: null,
-      // undefined will always indicate "deps have changed", so we set it's initial value as such
-      deps: undefined,
-    }
-    scope.memos.set(key, memo)
-  }
-
-  if (depsHaveChanged(memo.deps, deps)) {
-    startIgnoringDependencies()
-
-    memo.cachedValue = safelyRun(fn, undefined).value
-    stopIgnoringDependencies()
-    memo.deps = deps
-  }
-
-  return memo.cachedValue as $IntentionalAny as T
+  return scope.memo(key, fn, deps)
 }
 
 /**
@@ -556,17 +622,12 @@ function memo<T>(
  * ```
  */
 function state<T>(key: string, initialValue: T): [T, (val: T) => void] {
-  const {b, setValue} = prism.memo(
-    'state/' + key,
-    () => {
-      const b = new Box<T>(initialValue)
-      const setValue = (val: T) => b.set(val)
-      return {b, setValue}
-    },
-    [],
-  )
+  const scope = hookScopeStack.peek()
+  if (!scope) {
+    throw new Error(`prism.state() is called outside of a prism() call.`)
+  }
 
-  return [b.derivation.getValue(), setValue]
+  return scope.state(key, initialValue)
 }
 
 /**
@@ -653,6 +714,50 @@ type IPrismFn = {
  */
 const prism: IPrismFn = (fn) => {
   return new PrismDerivation(fn)
+}
+
+class ColdScope implements PrismScope {
+  effect(key: string, cb: () => () => void, deps?: unknown[]): void {
+    console.warn(`prism.effect() does not run in cold prisms`)
+  }
+  memo<T>(
+    key: string,
+    fn: () => T,
+    deps: any[] | readonly any[] | undefined,
+  ): T {
+    return fn()
+  }
+  state<T>(key: string, initialValue: T): [T, (val: T) => void] {
+    return [initialValue, () => {}]
+  }
+  ref<T>(key: string, initialValue: T): IRef<T> {
+    return {current: initialValue}
+  }
+  sub(key: string): ColdScope {
+    return new ColdScope()
+  }
+}
+
+namespace ColdStuff {
+  export function calculateColdPrism<V>(fn: () => V): V {
+    const scope = new ColdScope()
+    hookScopeStack.push(scope)
+    let value: V
+    try {
+      value = fn()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      const topOfTheStack = hookScopeStack.pop()
+      if (topOfTheStack !== scope) {
+        console.warn(
+          // @todo guide the user to report the bug in an issue
+          `The Prism hook stack has slipped. This is a bug.`,
+        )
+      }
+    }
+    return value!
+  }
 }
 
 prism.ref = ref

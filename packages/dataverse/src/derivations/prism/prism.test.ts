@@ -36,7 +36,9 @@ describe('prism', () => {
       return bD.getValue()
     })
     expect(cD.getValue()).toEqual(2)
-    expect((cD as $IntentionalAny)._dependencies.size).toEqual(1)
+    const untap = cD.keepHot()
+    expect((cD as $IntentionalAny)._state.handle._dependencies.size).toEqual(1)
+    untap()
   })
 
   describe('prism.ref()', () => {
