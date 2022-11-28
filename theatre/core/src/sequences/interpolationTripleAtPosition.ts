@@ -5,7 +5,6 @@ import type {
 } from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {IDerivation, Pointer} from '@theatre/dataverse'
 import {ConstantDerivation, prism, val} from '@theatre/dataverse'
-import type {IUtilContext} from '@theatre/shared/logger'
 import type {SerializableValue} from '@theatre/shared/utils/types'
 import UnitBezier from 'timing-function/lib/UnitBezier'
 
@@ -26,7 +25,6 @@ export type InterpolationTriple = {
 // 2. Caching propConfig.deserializeAndSanitize(value)
 
 export default function interpolationTripleAtPosition(
-  ctx: IUtilContext,
   trackP: Pointer<TrackData | undefined>,
   timeD: IDerivation<number>,
 ): IDerivation<InterpolationTriple | undefined> {
@@ -34,16 +32,10 @@ export default function interpolationTripleAtPosition(
     const track = val(trackP)
     const driverD = prism.memo(
       'driver',
-      () => {
-        if (!track) {
-          return new ConstantDerivation(undefined)
-        } else if (track.type === 'BasicKeyframedTrack') {
-          return _forKeyframedTrack(ctx, track, timeD)
-        } else {
-          ctx.logger.error(`Track type not yet supported.`)
-          return new ConstantDerivation(undefined)
-        }
-      },
+      () =>
+        track?.type === 'BasicKeyframedTrack'
+          ? _forKeyframedTrack(track, timeD)
+          : new ConstantDerivation(undefined),
       [track],
     )
 
@@ -61,7 +53,6 @@ type IStartedState = {
 type IState = {started: false} | IStartedState
 
 function _forKeyframedTrack(
-  ctx: IUtilContext,
   track: BasicKeyframedTrack,
   timeD: IDerivation<number>,
 ): IDerivation<InterpolationTriple | undefined> {
@@ -72,7 +63,7 @@ function _forKeyframedTrack(
     const time = timeD.getValue()
 
     if (!state.started || time < state.validFrom || state.validTo <= time) {
-      stateRef.current = state = updateState(ctx, timeD, track)
+      stateRef.current = state = updateState(timeD, track)
     }
 
     return state.der.getValue()
@@ -82,7 +73,6 @@ function _forKeyframedTrack(
 const undefinedConstD = new ConstantDerivation(undefined)
 
 function updateState(
-  ctx: IUtilContext,
   progressionD: IDerivation<number>,
   track: BasicKeyframedTrack,
 ): IStartedState {
@@ -102,9 +92,6 @@ function updateState(
     const currentKeyframe = track.keyframes[currentKeyframeIndex]
 
     if (!currentKeyframe) {
-      if (process.env.NODE_ENV !== 'production') {
-        ctx.logger.error(`Bug here`)
-      }
       return states.error
     }
 
@@ -114,9 +101,6 @@ function updateState(
       if (currentKeyframeIndex === 0) {
         return states.beforeFirstKeyframe(currentKeyframe)
       } else {
-        if (process.env.NODE_ENV !== 'production') {
-          ctx.logger.error(`Bug here`)
-        }
         return states.error
         // note: uncomment these if we support starting with currentPointIndex != 0
         // currentPointIndex--
