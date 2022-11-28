@@ -1,5 +1,5 @@
-import DerivationFromSource from './derivations/DerivationFromSource'
 import type {IDerivation} from './derivations/IDerivation'
+import prism from './derivations/prism/prism'
 import Emitter from './utils/Emitter'
 
 /**
@@ -51,10 +51,12 @@ export default class Box<V> implements IBox<V> {
      */
     protected _value: V,
   ) {
-    this._publicDerivation = new DerivationFromSource(
-      (listener) => this._emitter.tappable.tap(listener),
-      this.get.bind(this),
-    )
+    const subscribe = (listener: (val: V) => void) =>
+      this._emitter.tappable.tap(listener)
+    const getValue = () => this._value
+    this._publicDerivation = prism(() => {
+      return prism.source('value', subscribe, getValue)
+    })
   }
 
   /**

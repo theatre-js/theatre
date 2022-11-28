@@ -1,7 +1,6 @@
 import get from 'lodash-es/get'
 import isPlainObject from 'lodash-es/isPlainObject'
 import last from 'lodash-es/last'
-import DerivationFromSource from './derivations/DerivationFromSource'
 import type {IDerivation} from './derivations/IDerivation'
 import {isDerivation} from './derivations/IDerivation'
 import type {Pointer, PointerType} from './pointer'
@@ -10,6 +9,7 @@ import pointer, {getPointerMeta} from './pointer'
 import type {$FixMe, $IntentionalAny} from './types'
 import type {PathBasedReducer} from './utils/PathBasedReducer'
 import updateDeep from './utils/updateDeep'
+import prism from './derivations/prism/prism'
 
 type Listener = (newVal: unknown) => void
 
@@ -247,10 +247,14 @@ export default class Atom<State extends {}>
    * @param path - The path to create the derivation at.
    */
   getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
-    return new DerivationFromSource<$IntentionalAny>(
-      (listener) => this._onPathValueChange(path, listener),
-      () => this.getIn(path),
-    )
+    const subscribe = (listener: (val: unknown) => void) =>
+      this._onPathValueChange(path, listener)
+
+    const getValue = () => this.getIn(path)
+
+    return prism(() => {
+      return prism.source('value', subscribe, getValue)
+    })
   }
 }
 

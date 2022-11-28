@@ -28,7 +28,6 @@ class HotHandle<V> {
     this._dependents.delete(d)
   }
   addDependent(d: IDependent) {
-    // having no dependents means the prism is currently cold
     this._dependents.add(d)
   }
   private _didMarkDependentsAsStale: boolean = false
@@ -328,7 +327,7 @@ class PrismDerivation<V> implements IDerivation<V> {
     if (state.hot) {
       val = state.handle.getValue()
     } else {
-      val = ColdStuff.calculateColdPrism(this._fn)
+      val = calculateColdPrism(this._fn)
     }
 
     reportResolutionEnd(this)
@@ -383,6 +382,11 @@ interface PrismScope {
   state<T>(key: string, initialValue: T): [T, (val: T) => void]
   ref<T>(key: string, initialValue: T): IRef<T>
   sub(key: string): PrismScope
+  source<V>(
+    key: string,
+    subscribe: (fn: (val: V) => void) => VoidFn,
+    getValue: () => V,
+  ): V
 }
 
 class HotScope implements PrismScope {
@@ -482,6 +486,12 @@ class HotScope implements PrismScope {
     }
     this.effects.clear()
   }
+
+  source<V>(
+    key: string,
+    subscribe: (fn: (val: V) => void) => VoidFn,
+    getValue: () => V,
+  ): V {}
 }
 
 function cleanupScopeStack(scope: HotScope) {
@@ -694,6 +704,19 @@ const possibleDerivationToValue = <
   }
 }
 
+function source<V>(
+  key: string,
+  subscribe: (fn: (val: V) => void) => VoidFn,
+  getValue: () => V,
+): V {
+  const scope = hookScopeStack.peek()
+  if (!scope) {
+    throw new Error(`prism.source() is called outside of a prism() call.`)
+  }
+
+  return scope.source(key, subscribe, getValue)
+}
+
 type IPrismFn = {
   <T>(fn: () => T): IDerivation<T>
   ref: typeof ref
@@ -704,6 +727,7 @@ type IPrismFn = {
   scope: typeof scope
   sub: typeof sub
   inPrism: typeof inPrism
+  source: typeof source
 }
 
 /**
@@ -736,28 +760,33 @@ class ColdScope implements PrismScope {
   sub(key: string): ColdScope {
     return new ColdScope()
   }
+  source<V>(
+    key: string,
+    subscribe: (fn: (val: V) => void) => VoidFn,
+    getValue: () => V,
+  ): V {
+    return getValue()
+  }
 }
 
-namespace ColdStuff {
-  export function calculateColdPrism<V>(fn: () => V): V {
-    const scope = new ColdScope()
-    hookScopeStack.push(scope)
-    let value: V
-    try {
-      value = fn()
-    } catch (error) {
-      console.error(error)
-    } finally {
-      const topOfTheStack = hookScopeStack.pop()
-      if (topOfTheStack !== scope) {
-        console.warn(
-          // @todo guide the user to report the bug in an issue
-          `The Prism hook stack has slipped. This is a bug.`,
-        )
-      }
+function calculateColdPrism<V>(fn: () => V): V {
+  const scope = new ColdScope()
+  hookScopeStack.push(scope)
+  let value: V
+  try {
+    value = fn()
+  } catch (error) {
+    console.error(error)
+  } finally {
+    const topOfTheStack = hookScopeStack.pop()
+    if (topOfTheStack !== scope) {
+      console.warn(
+        // @todo guide the user to report the bug in an issue
+        `The Prism hook stack has slipped. This is a bug.`,
+      )
     }
-    return value!
   }
+  return value!
 }
 
 prism.ref = ref
@@ -768,5 +797,6 @@ prism.state = state
 prism.scope = scope
 prism.sub = sub
 prism.inPrism = inPrism
+prism.source = source
 
 export default prism
