@@ -254,7 +254,7 @@ class PrismInstance<V> implements Prism<V> {
   }
 
   /**
-   * Returns a tappable that fires every time the prism's state goes from `fresh-\>stale.`
+   * Calls `callback` every time the prism's state goes from `fresh-\>stale.` Returns an `unsubscribe()` function.
    */
   onStale(callback: () => void): VoidFn {
     const untap = () => {
