@@ -2,7 +2,7 @@ import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
 import type UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
-import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
+import {Atom, PointerProxy, pointerToPrism} from '@theatre/dataverse'
 import type {
   CommitOrDiscard,
   ITransactionPrivateApi,
@@ -171,7 +171,7 @@ export class Studio {
   }
 
   _attachToIncomingProjects() {
-    const projectsD = valueDerivation(this.projectsP)
+    const projectsD = pointerToPrism(this.projectsP)
 
     const attachToProjects = (projects: Record<string, Project>) => {
       for (const project of Object.values(projects)) {

@@ -26,7 +26,7 @@ export default class PointerProxy<O extends {}>
    * Convenience pointer pointing to the root of this PointerProxy.
    *
    * @remarks
-   * Allows convenient use of {@link valueDerivation} and {@link val}.
+   * Allows convenient use of {@link pointerToPrism} and {@link val}.
    */
   readonly pointer: Pointer<O>
 

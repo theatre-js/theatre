@@ -1,4 +1,4 @@
-import {valueDerivation} from '../Atom'
+import {pointerToPrism} from '../Atom'
 import type {Pointer} from '../pointer'
 import {isPointer} from '../pointer'
 import Ticker from '../Ticker'
@@ -10,7 +10,7 @@ export default function* iterateOver<V>(
 ): Generator<V, void, void> {
   let d
   if (isPointer(pointerOrDerivation)) {
-    d = valueDerivation(pointerOrDerivation) as Prism<V>
+    d = pointerToPrism(pointerOrDerivation) as Prism<V>
   } else if (isPrism(pointerOrDerivation)) {
     d = pointerOrDerivation
   } else {

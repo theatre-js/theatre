@@ -10,7 +10,7 @@ import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfVal
 import deepEqual from 'fast-deep-equal'
 import type {PointerType} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
-import {isPrism, valueDerivation} from '@theatre/dataverse'
+import {isPrism, pointerToPrism} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import {_coreLogger} from './_coreLogger'
@@ -155,7 +155,7 @@ export function onChange<P extends PointerType<$IntentionalAny>>(
   callback: (value: P extends PointerType<infer T> ? T : unknown) => void,
 ): VoidFn {
   if (isPointer(pointer)) {
-    const derivation = valueDerivation(pointer)
+    const derivation = pointerToPrism(pointer)
     return derivation.onChange(
       getCoreTicker(),
       callback as $IntentionalAny,
@@ -189,7 +189,7 @@ export function onChange<P extends PointerType<$IntentionalAny>>(
  */
 export function val<T>(pointer: PointerType<T>): T {
   if (isPointer(pointer)) {
-    return valueDerivation(pointer).getValue() as $IntentionalAny
+    return pointerToPrism(pointer).getValue() as $IntentionalAny
   } else {
     throw new Error(`Called val(p) where p is not a pointer.`)
   }

@@ -266,7 +266,7 @@ const identityDerivationWeakMap = new WeakMap<{}, Prism<unknown>>()
  *
  * @param pointer - The pointer to return the derivation at.
  */
-export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
+export const pointerToPrism = <P extends PointerType<$IntentionalAny>>(
   pointer: P,
 ): Prism<P extends PointerType<infer T> ? T : void> => {
   const meta = getPointerMeta(pointer)
@@ -276,7 +276,7 @@ export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
     const root = meta.root
     if (!isIdentityDerivationProvider(root)) {
       throw new Error(
-        `Cannot run valueDerivation() on a pointer whose root is not an IdentityChangeProvider`,
+        `Cannot run pointerToPrism() on a pointer whose root is not an IdentityChangeProvider`,
       )
     }
     const {path} = meta
@@ -322,7 +322,7 @@ export const val = <
   ? P
   : unknown => {
   if (isPointer(input)) {
-    return valueDerivation(input).getValue() as $IntentionalAny
+    return pointerToPrism(input).getValue() as $IntentionalAny
   } else if (isPrism(input)) {
     return input.getValue() as $IntentionalAny
   } else {

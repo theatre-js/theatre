@@ -3,7 +3,7 @@ import type {StrictRecord} from '@theatre/shared/utils/types'
 import React, {useMemo} from 'react'
 import {useEffect} from 'react'
 import {useLogger} from './useLogger'
-import {Box, prism, valueDerivation} from '@theatre/dataverse'
+import {Box, prism, pointerToPrism} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import {useDerivation} from '@theatre/react'
 import {selectClosestHTMLAncestor} from '@theatre/studio/utils/selectClosestHTMLAncestor'
@@ -69,10 +69,10 @@ function createPresenceContext(options: {
         if (!itemKey) return undefinedD
         // this is the thing being hovered
         const currentD = currentUserHoverItemB.derivation
-        const primaryFocusDer = valueDerivation(
+        const primaryFocusDer = pointerToPrism(
           currentUserHoverFlagItemsAtom.pointer[itemKey],
         )
-        const relationsDer = valueDerivation(relationsAtom.pointer[itemKey])
+        const relationsDer = pointerToPrism(relationsAtom.pointer[itemKey])
         return prism(() => {
           const primary = primaryFocusDer.getValue()
           if (primary) {
