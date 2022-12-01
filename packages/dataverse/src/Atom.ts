@@ -256,7 +256,7 @@ export default class Atom<State extends {}> implements IdentityPrismProvider {
   }
 }
 
-const identityDerivationWeakMap = new WeakMap<{}, Prism<unknown>>()
+const identifyPrismWeakMap = new WeakMap<{}, Prism<unknown>>()
 
 /**
  * Returns a derivation of the value at the provided pointer. Derivations are
@@ -269,7 +269,7 @@ export const pointerToPrism = <P extends PointerType<$IntentionalAny>>(
 ): Prism<P extends PointerType<infer T> ? T : void> => {
   const meta = getPointerMeta(pointer)
 
-  let derivation = identityDerivationWeakMap.get(meta)
+  let derivation = identifyPrismWeakMap.get(meta)
   if (!derivation) {
     const root = meta.root
     if (!isIdentityPrismProvider(root)) {
@@ -279,7 +279,7 @@ export const pointerToPrism = <P extends PointerType<$IntentionalAny>>(
     }
     const {path} = meta
     derivation = root.getIdentityPrism(path)
-    identityDerivationWeakMap.set(meta, derivation)
+    identifyPrismWeakMap.set(meta, derivation)
   }
   return derivation as $IntentionalAny
 }
