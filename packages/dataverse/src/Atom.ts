@@ -20,7 +20,7 @@ enum ValueTypes {
 }
 
 /**
- * Interface for objects that can provide a derivation at a certain path.
+ * Interface for objects that can provide a prism at a certain path.
  */
 export interface IdentityPrismProvider {
   /**
@@ -30,9 +30,9 @@ export interface IdentityPrismProvider {
    */
   readonly $$isIdentityPrismProvider: true
   /**
-   * Returns a derivation of the value at the provided path.
+   * Returns a prism of the value at the provided path.
    *
-   * @param path - The path to create the derivation at.
+   * @param path - The path to create the prism at.
    */
   getIdentityPrism(path: Array<string | number>): Prism<unknown>
 }
@@ -240,9 +240,9 @@ export default class Atom<State extends {}> implements IdentityPrismProvider {
   }
 
   /**
-   * Returns a new derivation of the value at the provided path.
+   * Returns a new prism of the value at the provided path.
    *
-   * @param path - The path to create the derivation at.
+   * @param path - The path to create the prism at.
    */
   getIdentityPrism(path: Array<string | number>): Prism<unknown> {
     const subscribe = (listener: (val: unknown) => void) =>
@@ -259,18 +259,18 @@ export default class Atom<State extends {}> implements IdentityPrismProvider {
 const identifyPrismWeakMap = new WeakMap<{}, Prism<unknown>>()
 
 /**
- * Returns a derivation of the value at the provided pointer. Derivations are
+ * Returns a prism of the value at the provided pointer. Prisms are
  * cached per pointer.
  *
- * @param pointer - The pointer to return the derivation at.
+ * @param pointer - The pointer to return the prism at.
  */
 export const pointerToPrism = <P extends PointerType<$IntentionalAny>>(
   pointer: P,
 ): Prism<P extends PointerType<infer T> ? T : void> => {
   const meta = getPointerMeta(pointer)
 
-  let derivation = identifyPrismWeakMap.get(meta)
-  if (!derivation) {
+  let prismInstance = identifyPrismWeakMap.get(meta)
+  if (!prismInstance) {
     const root = meta.root
     if (!isIdentityPrismProvider(root)) {
       throw new Error(
@@ -278,10 +278,10 @@ export const pointerToPrism = <P extends PointerType<$IntentionalAny>>(
       )
     }
     const {path} = meta
-    derivation = root.getIdentityPrism(path)
-    identifyPrismWeakMap.set(meta, derivation)
+    prismInstance = root.getIdentityPrism(path)
+    identifyPrismWeakMap.set(meta, prismInstance)
   }
-  return derivation as $IntentionalAny
+  return prismInstance as $IntentionalAny
 }
 
 function isIdentityPrismProvider(val: unknown): val is IdentityPrismProvider {
@@ -294,10 +294,10 @@ function isIdentityPrismProvider(val: unknown): val is IdentityPrismProvider {
 
 /**
  * Convenience function that returns a plain value from its argument, whether it
- * is a pointer, a derivation or a plain value itself.
+ * is a pointer, a prism or a plain value itself.
  *
  * @remarks
- * For pointers, the value is returned by first creating a derivation, so it is
+ * For pointers, the value is returned by first creating a prism, so it is
  * reactive e.g. when used in a `prism`.
  *
  * @param input - The argument to return a value from.

@@ -147,7 +147,7 @@ export default class TheatreSheetObject<
     return {...privateAPI(this).address}
   }
 
-  private _valuesDerivation(): Prism<this['value']> {
+  private _valuesPrism(): Prism<this['value']> {
     return this._cache.get('onValuesChangeDerivation', () => {
       const sheetObject = privateAPI(this)
       const d: Prism<PropsValue<Props>> = prism(() => {
@@ -158,15 +158,15 @@ export default class TheatreSheetObject<
   }
 
   onValuesChange(fn: (values: this['value']) => void): VoidFn {
-    return this._valuesDerivation().onChange(getCoreTicker(), fn, true)
+    return this._valuesPrism().onChange(getCoreTicker(), fn, true)
   }
 
   // internal: Make the deviration keepHot if directly read
   get value(): PropsValue<Props> {
-    const der = this._valuesDerivation()
+    const der = this._valuesPrism()
     if (KEEP_HOT_FOR_MS != null) {
       if (!der.isHot) {
-        // derivation not hot, so keep it hot and set up `_keepHotUntapDebounce`
+        // prism not hot, so keep it hot and set up `_keepHotUntapDebounce`
         if (this._keepHotUntapDebounce != null) {
           // defensive checks
           if (process.env.NODE_ENV === 'development') {

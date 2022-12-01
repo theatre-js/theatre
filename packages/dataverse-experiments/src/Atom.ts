@@ -175,8 +175,8 @@ export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
 ): IDerivation<P extends PointerType<infer T> ? T : void> => {
   const meta = getPointerMeta(pointer)
 
-  let derivation = identityDerivationWeakMap.get(meta)
-  if (!derivation) {
+  let pr = identityDerivationWeakMap.get(meta)
+  if (!pr) {
     const root = meta.root
     if (!(root instanceof Atom)) {
       throw new Error(
@@ -184,13 +184,13 @@ export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
       )
     }
     const {path} = meta
-    derivation = new DerivationFromSource<$IntentionalAny>(
+    pr = new DerivationFromSource<$IntentionalAny>(
       (listener) => root.onPathValueChange(path, listener),
       () => root.getIn(path),
     )
-    identityDerivationWeakMap.set(meta, derivation)
+    identityDerivationWeakMap.set(meta, pr)
   }
-  return derivation as $IntentionalAny
+  return pr as $IntentionalAny
 }
 
 export const val = <P>(

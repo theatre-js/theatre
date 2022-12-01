@@ -78,7 +78,7 @@ const stateB = new Box<
     }
 >({mode: 'snapToNone'})
 
-export const snapPositionsStateD = stateB.derivation
+export const snapPositionsStateD = stateB.prism
 
 export function snapToAll() {
   stateB.set({mode: 'snapToAll'})

@@ -43,7 +43,7 @@ class HotHandle<V> {
   protected _lastValue: undefined | V = undefined
 
   /**
-   * If true, the derivation is stale even though its dependencies aren't
+   * If true, the prism is stale even though its dependencies aren't
    * marked as such. This is used by `prism.source()` and `prism.state()`
    * to mark the prism as stale.
    */
@@ -200,7 +200,7 @@ const emptyObject = {}
 
 class PrismDerivation<V> implements Prism<V> {
   /**
-   * Whether the object is a derivation.
+   * Whether the object is a prism.
    */
   readonly isPrism: true = true
 
@@ -214,7 +214,7 @@ class PrismDerivation<V> implements Prism<V> {
   constructor(private readonly _fn: () => V) {}
 
   /**
-   * Whether the derivation is hot.
+   * Whether the prism is hot.
    */
   get isHot(): boolean {
     return this._state.hot
@@ -266,16 +266,16 @@ class PrismDerivation<V> implements Prism<V> {
   }
 
   /**
-   * Keep the derivation hot, even if there are no tappers (subscribers).
+   * Keep the prism hot, even if there are no tappers (subscribers).
    */
   keepHot() {
     return this.onStale(() => {})
   }
 
   /**
-   * Add a derivation as a dependent of this derivation.
+   * Add a prism as a dependent of this prism.
    *
-   * @param d - The derivation to be made a dependent of this derivation.
+   * @param d - The prism to be made a dependent of this prism.
    *
    * @see _removeDependent
    */
@@ -295,9 +295,9 @@ class PrismDerivation<V> implements Prism<V> {
   }
 
   /**
-   * Remove a derivation as a dependent of this derivation.
+   * Remove a prism as a dependent of this prism.
    *
-   * @param d - The derivation to be removed from as a dependent of this derivation.
+   * @param d - The prism to be removed from as a dependent of this prism.
    *
    * @see _addDependent
    */
@@ -315,23 +315,23 @@ class PrismDerivation<V> implements Prism<V> {
   }
 
   /**
-   * Gets the current value of the derivation. If the value is stale, it causes the derivation to freshen.
+   * Gets the current value of the prism. If the value is stale, it causes the prism to freshen.
    */
   getValue(): V {
     /**
      * TODO We should prevent (or warn about) a common mistake users make, which is reading the value of
-     * a derivation in the body of a react component (e.g. `der.getValue()` (often via `val()`) instead of `useVal()`
+     * a prism in the body of a react component (e.g. `der.getValue()` (often via `val()`) instead of `useVal()`
      * or `uesPrism()`).
      *
      * Although that's the most common example of this mistake, you can also find it outside of react components.
      * Basically the user runs `der.getValue()` assuming the read is detected by a wrapping prism when it's not.
      *
-     * Sometiems the derivation isn't even hot when the user assumes it is.
+     * Sometiems the prism isn't even hot when the user assumes it is.
      *
      * We can fix this type of mistake by:
-     * 1. Warning the user when they call `getValue()` on a cold derivation.
-     * 2. Warning the user about calling `getValue()` on a hot-but-stale derivation
-     *    if `getValue()` isn't called by a known mechanism like a `DerivationEmitter`.
+     * 1. Warning the user when they call `getValue()` on a cold prism.
+     * 2. Warning the user about calling `getValue()` on a hot-but-stale prism
+     *    if `getValue()` isn't called by a known mechanism like a `PrismEmitter`.
      *
      * Design constraints:
      * - This fix should not have a perf-penalty in production. Perhaps use a global flag + `process.env.NODE_ENV !== 'production'`
@@ -616,7 +616,7 @@ function memo<T>(
  * ```ts
  * import {prism} from 'dataverse'
  *
- * // This derivation holds the current mouse position and updates when the mouse moves
+ * // This prism holds the current mouse position and updates when the mouse moves
  * const mousePositionD = prism(() => {
  *   const [pos, setPos] = prism.state<[x: number, y: number]>('pos', [0, 0])
  *
@@ -736,10 +736,10 @@ type IPrismFn = {
 }
 
 /**
- * Creates a derivation from the passed function that adds all derivations referenced
+ * Creates a prism from the passed function that adds all prisms referenced
  * in it as dependencies, and reruns the function when these change.
  *
- * @param fn - The function to rerun when the derivations referenced in it change.
+ * @param fn - The function to rerun when the prisms referenced in it change.
  */
 const prism: IPrismFn = (fn) => {
   return new PrismDerivation(fn)

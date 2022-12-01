@@ -41,7 +41,7 @@ export const useTooltipOpenState = (): [
 
 const TooltipContext: React.FC<{}> = ({children}) => {
   const currentTooltipId = useMemo(() => new Box(-1), [])
-  const cur = currentTooltipId.derivation
+  const cur = currentTooltipId.prism
 
   const set = useMemo(() => {
     let lastTimeout: NodeJS.Timeout | undefined = undefined

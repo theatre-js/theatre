@@ -40,7 +40,7 @@ const ExtensionToolsetRender: React.FC<{
     if (typeof detach === 'function') return detach
   }, [extension, toolbarId])
 
-  const config = useVal(toolsetConfigBox.derivation)
+  const config = useVal(toolsetConfigBox.prism)
 
   return <Toolset config={config} />
 }

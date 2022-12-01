@@ -68,7 +68,7 @@ function createPresenceContext(options: {
       const focusD = useMemo(() => {
         if (!itemKey) return undefinedD
         // this is the thing being hovered
-        const currentD = currentUserHoverItemB.derivation
+        const currentD = currentUserHoverItemB.prism
         const primaryFocusDer = pointerToPrism(
           currentUserHoverFlagItemsAtom.pointer[itemKey],
         )

@@ -44,13 +44,13 @@ export default class PointerProxy<O extends {}>
   }
 
   /**
-   * Returns a derivation of the value at the provided sub-path of the proxied pointer.
+   * Returns a prism of the value at the provided sub-path of the proxied pointer.
    *
-   * @param path - The path to create the derivation at.
+   * @param path - The path to create the prism at.
    */
   getIdentityPrism(path: Array<string | number>) {
     return prism(() => {
-      const currentPointer = this._currentPointerBox.derivation.getValue()
+      const currentPointer = this._currentPointerBox.prism.getValue()
       const subPointer = path.reduce(
         (pointerSoFar, pathItem) => (pointerSoFar as $IntentionalAny)[pathItem],
         currentPointer,

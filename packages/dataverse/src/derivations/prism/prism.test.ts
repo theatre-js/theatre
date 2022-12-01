@@ -93,7 +93,7 @@ describe('prism', () => {
 
       const a = new Atom({letter: 'a'})
 
-      const derivation = prism(() => {
+      const prsm = prism(() => {
         const n = val(a.pointer.letter)
         const iterationAtTimeOfCall = iteration
         sequence.push({derivationCall: iterationAtTimeOfCall})
@@ -112,7 +112,7 @@ describe('prism', () => {
         return n
       })
 
-      const untap = derivation.onChange(ticker, (change) => {
+      const untap = prsm.onChange(ticker, (change) => {
         sequence.push({change})
       })
 
@@ -153,7 +153,7 @@ describe('prism', () => {
 
       const a = new Atom({letter: 'a'})
 
-      const derivation = prism(() => {
+      const prsm = prism(() => {
         const n = val(a.pointer.letter)
         const iterationAtTimeOfCall = iteration
         sequence.push({derivationCall: iterationAtTimeOfCall})
@@ -172,7 +172,7 @@ describe('prism', () => {
         return n
       })
 
-      const untap = derivation.onChange(ticker, (change) => {
+      const untap = prsm.onChange(ticker, (change) => {
         sequence.push({change})
       })
 

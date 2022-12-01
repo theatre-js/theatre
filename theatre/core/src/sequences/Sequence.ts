@@ -67,7 +67,7 @@ export default class Sequence {
     )
 
     this._statePointerDerivation = prism(
-      () => this._playbackControllerBox.derivation.getValue().statePointer,
+      () => this._playbackControllerBox.prism.getValue().statePointer,
     )
 
     this._positionD = prism(() => {
@@ -189,7 +189,7 @@ export default class Sequence {
    * @remarks
    *   One use case for this is to play the playback within the focus range.
    *
-   * @param rangeD - The derivation that contains the range that will be used for the playback
+   * @param rangeD - The prism that contains the range that will be used for the playback
    *
    * @returns  a promise that gets rejected if the playback stopped for whatever reason
    *

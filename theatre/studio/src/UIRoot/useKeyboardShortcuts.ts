@@ -54,7 +54,7 @@ export default function useKeyboardShortcuts() {
             const {projectId, sheetId} = seq.address
 
             /*
-             * The value of this derivation is an array that contains the
+             * The value of this prism is an array that contains the
              * range of the playback (start and end), and a boolean that is
              * `true` if the playback should be played within that range.
              */
@@ -162,7 +162,7 @@ const getPlaybackStateBox = memoizeFn(
 )
 
 /*
- * A memoized function that returns a derivation with a boolean value.
+ * A memoized function that returns a prism with a boolean value.
  * This value is set to `true` if:
  * 1. the playback is playing and using the focus range instead of the whole sequence
  * 2. the playback is stopped, but would use the focus range if it were started.
@@ -171,7 +171,7 @@ export const getIsPlayheadAttachedToFocusRange = memoizeFn(
   (sequence: Sequence) =>
     prism<boolean>(() => {
       const controlledPlaybackState =
-        getPlaybackStateBox(sequence).derivation.getValue()
+        getPlaybackStateBox(sequence).prism.getValue()
       if (controlledPlaybackState) {
         return controlledPlaybackState.getValue().isFollowingARange
       } else {

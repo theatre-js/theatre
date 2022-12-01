@@ -70,8 +70,8 @@ export default class SheetObject implements IdentityPrismProvider {
   }
 
   getValues(): Prism<Pointer<SheetObjectPropsValue>> {
-    // Cache the derivation because only one is needed per SheetObject.
-    // Also, if `onValuesChange()` is unsubscribed from, this derivation will go cold
+    // Cache the prism because only one is needed per SheetObject.
+    // Also, if `onValuesChange()` is unsubscribed from, this prism will go cold
     // and free its resources. So it's no problem to still keep it on the cache.
     return this._cache.get('getValues()', () =>
       prism(() => {
@@ -107,7 +107,7 @@ export default class SheetObject implements IdentityPrismProvider {
 
         /**
          * The lowest layer is the default value of the root prop. Since an object's config
-         * _could_ change, we read it as a derivation. Otherwise, we could have just `getDefaultsOfPropTypeConfig(this.template.staticConfig)`.
+         * _could_ change, we read it as a prism. Otherwise, we could have just `getDefaultsOfPropTypeConfig(this.template.staticConfig)`.
          *
          * Note: If studio is not present, there is no known use-case for the config of an object to change on the fly, so
          * we could read this value statically.
@@ -168,7 +168,7 @@ export default class SheetObject implements IdentityPrismProvider {
         let sequenced
 
         {
-          // NOTE: we're reading the sequenced values as a derivation to a pointer. This should be refactored
+          // NOTE: we're reading the sequenced values as a prism to a pointer. This should be refactored
           // to a simple pointer.
           const pointerToSequencedValuesD = prism.memo(
             'seq',
@@ -185,7 +185,7 @@ export default class SheetObject implements IdentityPrismProvider {
           )
 
           // read the sequenced values
-          // (val(val(x))) unwraps the pointer and the derivation
+          // (val(val(x))) unwraps the pointer and the prism
           sequenced = val(val(pointerToSequencedValuesD))
 
           // deep-merge the sequenced values with the previous layer
@@ -243,7 +243,7 @@ export default class SheetObject implements IdentityPrismProvider {
           const untaps: Array<() => void> = []
 
           for (const {trackId, pathToProp} of tracksToProcess) {
-            const derivation = this._trackIdToDerivation(trackId)
+            const pr = this._trackIdToPrism(trackId)
             const propConfig = getPropConfigByPath(
               config,
               pathToProp,
@@ -254,7 +254,7 @@ export default class SheetObject implements IdentityPrismProvider {
               propConfig.interpolate! as Interpolator<$IntentionalAny>
 
             const updateSequenceValueFromItsDerivation = () => {
-              const triple = derivation.getValue()
+              const triple = pr.getValue()
 
               if (!triple) return valsAtom.setIn(pathToProp, undefined)
 
@@ -279,9 +279,7 @@ export default class SheetObject implements IdentityPrismProvider {
                 interpolate(left, right, triple.progression),
               )
             }
-            const untap = derivation.onStale(
-              updateSequenceValueFromItsDerivation,
-            )
+            const untap = pr.onStale(updateSequenceValueFromItsDerivation)
 
             updateSequenceValueFromItsDerivation()
             untaps.push(untap)
@@ -299,7 +297,7 @@ export default class SheetObject implements IdentityPrismProvider {
     })
   }
 
-  protected _trackIdToDerivation(
+  protected _trackIdToPrism(
     trackId: SequenceTrackId,
   ): Prism<InterpolationTriple | undefined> {
     const trackP =

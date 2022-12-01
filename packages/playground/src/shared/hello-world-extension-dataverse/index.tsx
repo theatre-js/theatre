@@ -31,7 +31,7 @@ studio.extend({
       const untapFn = prism<ToolsetConfig>(() => [
         {
           type: 'Switch',
-          value: val(exampleBox.derivation),
+          value: val(exampleBox.prism),
           onChange: (value) => exampleBox.set(value),
           options: [
             {
@@ -55,7 +55,7 @@ studio.extend({
           },
         },
       ])
-        // listen to changes to this derivation using the requestAnimationFrame shared ticker
+        // listen to changes to this prism using the requestAnimationFrame shared ticker
         .onChange(
           Ticker.raf,
           (value) => {

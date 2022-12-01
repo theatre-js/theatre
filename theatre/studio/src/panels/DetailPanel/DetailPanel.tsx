@@ -199,8 +199,8 @@ const isDetailPanelHotspotActiveB = new Box<boolean>(false)
 const isDetailPanelHoveredB = new Box<boolean>(false)
 
 export const shouldShowDetailD = prism<boolean>(() => {
-  const isHovered = val(isDetailPanelHoveredB.derivation)
-  const isHotspotActive = val(isDetailPanelHotspotActiveB.derivation)
+  const isHovered = val(isDetailPanelHoveredB.prism)
+  const isHotspotActive = val(isDetailPanelHotspotActiveB.prism)
 
   return isHovered || isHotspotActive
 })

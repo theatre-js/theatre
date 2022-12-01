@@ -155,17 +155,13 @@ export function onChange<P extends PointerType<$IntentionalAny>>(
   callback: (value: P extends PointerType<infer T> ? T : unknown) => void,
 ): VoidFn {
   if (isPointer(pointer)) {
-    const derivation = pointerToPrism(pointer)
-    return derivation.onChange(
-      getCoreTicker(),
-      callback as $IntentionalAny,
-      true,
-    )
+    const pr = pointerToPrism(pointer)
+    return pr.onChange(getCoreTicker(), callback as $IntentionalAny, true)
   } else if (isPrism(pointer)) {
     return pointer.onChange(getCoreTicker(), callback as $IntentionalAny, true)
   } else {
     throw new Error(
-      `Called onChange(p) where p is neither a pointer nor a derivation.`,
+      `Called onChange(p) where p is neither a pointer nor a prism.`,
     )
   }
 }

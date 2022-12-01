@@ -83,8 +83,8 @@ const isOutlinePanelHotspotActiveB = new Box<boolean>(false)
 const isOutlinePanelHoveredB = new Box<boolean>(false)
 
 export const shouldShowOutlineD = prism<boolean>(() => {
-  const isHovered = val(isOutlinePanelHoveredB.derivation)
-  const isHotspotActive = val(isOutlinePanelHotspotActiveB.derivation)
+  const isHovered = val(isOutlinePanelHoveredB.prism)
+  const isHotspotActive = val(isOutlinePanelHotspotActiveB.prism)
 
   return isHovered || isHotspotActive
 })

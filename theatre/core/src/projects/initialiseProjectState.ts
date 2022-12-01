@@ -7,7 +7,7 @@ import globals from '@theatre/shared/globals'
 
 /**
  * @remarks
- * TODO this could be turned into a simple derivation, like:
+ * TODO this could be turned into a simple prism, like:
  * `editor.isReady: Prism<{isReady: true} | {isReady: false, reason: 'conflictBetweenDiskStateAndBrowserState'}>`
  */
 export default async function initialiseProjectState(

@@ -153,7 +153,7 @@ export const getPointerParts = <_>(
  *
  * @example
  * ```ts
- * // Here, sum is a derivation that updates whenever the a or b prop of someAtom does.
+ * // Here, sum is a prism that updates whenever the a or b prop of someAtom does.
  * const sum = prism(() => {
  *   return val(pointer({root: someAtom, path: ['a']})) + val(pointer({root: someAtom, path: ['b']}));
  * });

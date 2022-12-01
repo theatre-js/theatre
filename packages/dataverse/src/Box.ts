@@ -17,24 +17,23 @@ export interface IBox<V> {
    * Gets the value of the Box.
    *
    * @remarks
-   * Usages of `get()` aren't tracked, they are only for retrieving the value. To track changes, you need to
-   * create a derivation.
+   * Usages of `get()` aren't tracked, they are only for retrieving the value. To track changes, you need use a prism.
    *
-   * @see derivation
+   * @see prism
    */
   get(): V
 
   /**
-   * Creates a derivation of the Box that you can use to track changes to it.
+   * Returns a prism of the Box that you can use to track changes to it.
    */
-  derivation: Prism<V>
+  prism: Prism<V>
 }
 
 /**
  * Wraps a single value.
  *
  * @remarks
- * Derivations created with {@link Box.derivation} update based on strict equality (`===`) of the old value and the new one.
+ * Derivations created with {@link Box.prism} update based on strict equality (`===`) of the old value and the new one.
  * This also means that property-changes of objects won't be tracked, and that for objects, updates will trigger on changes of
  * reference even if the objects are structurally equal.
  */
@@ -74,18 +73,18 @@ export default class Box<V> implements IBox<V> {
    * Gets the value of the Box.
    *
    * Note: usages of `get()` aren't tracked, they are only for retrieving the value. To track changes, you need to
-   * create a derivation.
+   * use a prism.
    *
-   * @see Box.derivation
+   * @see Box.prism
    */
   get() {
     return this._value
   }
 
   /**
-   * Creates a derivation of the Box that you can use to track changes to it.
+   * Returns a prism of the Box that you can use to track changes to it.
    */
-  get derivation() {
+  get prism() {
     return this._publicDerivation
   }
 }
