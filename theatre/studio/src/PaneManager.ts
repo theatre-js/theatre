@@ -15,7 +15,7 @@ export default class PaneManager {
 
   private _instantiatePanesAsTheyComeIn() {
     const allPanesD = this._getAllPanes()
-    allPanesD.changesWithoutValues().tap(() => {
+    allPanesD.onStale(() => {
       allPanesD.getValue()
     })
   }

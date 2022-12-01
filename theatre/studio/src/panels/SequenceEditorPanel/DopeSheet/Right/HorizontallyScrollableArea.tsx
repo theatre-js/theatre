@@ -311,7 +311,7 @@ function useUpdateScrollFromClippedSpaceRange(
       const rangeStartInScaledSpace = d.getValue()
       node.scrollLeft = rangeStartInScaledSpace
     }
-    const untap = d.changesWithoutValues().tap(update)
+    const untap = d.onStale(update)
 
     update()
     const timeout = setTimeout(update, 100)

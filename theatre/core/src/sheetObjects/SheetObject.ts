@@ -283,9 +283,9 @@ export default class SheetObject implements IdentityDerivationProvider {
                 interpolate(left, right, triple.progression),
               )
             }
-            const untap = derivation
-              .changesWithoutValues()
-              .tap(updateSequenceValueFromItsDerivation)
+            const untap = derivation.onStale(
+              updateSequenceValueFromItsDerivation,
+            )
 
             updateSequenceValueFromItsDerivation()
             untaps.push(untap)

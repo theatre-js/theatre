@@ -180,7 +180,7 @@ export class Studio {
         }
       }
     }
-    projectsD.changesWithoutValues().tap(() => {
+    projectsD.onStale(() => {
       attachToProjects(projectsD.getValue())
     })
     attachToProjects(projectsD.getValue())

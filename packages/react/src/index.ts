@@ -132,9 +132,9 @@ type QueueItem<T = unknown> = {
        */
       | `queueUpdate()`
       /**
-       * `cb` in `item.der.changesWithoutValues(cb)` was called
+       * `cb` in `item.der.onStale(cb)` was called
        */
-      | `changesWithoutValues(cb)`
+      | `onStale(cb)`
       /**
        * Item was rendered
        */
@@ -158,7 +158,7 @@ type QueueItem<T = unknown> = {
    */
   queueUpdate: () => void
   /**
-   * Untaps from `this.der.changesWithoutValues()`
+   * Untaps from `this.der.unStale()`
    */
   untap: () => void
 }
@@ -327,9 +327,9 @@ export function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
         }
         pushToQueue(ref.current)
       },
-      untap: der.changesWithoutValues().tap(() => {
+      untap: der.onStale(() => {
         if (TRACE) {
-          ref.current.debug!.history.push(`changesWithoutValues(cb)`)
+          ref.current.debug!.history.push(`onStale(cb)`)
         }
         ref.current!.queueUpdate()
       }),

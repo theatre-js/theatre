@@ -49,7 +49,7 @@ export default class AudioPlaybackController implements IPlaybackController {
 
     // We're keeping the rangeD hot, so we can read from it on every tick without
     // causing unnecessary recalculations
-    const untapFromRangeD = rangeD.changesWithoutValues().tap(play)
+    const untapFromRangeD = rangeD.onStale(play)
     play()
 
     this._stopPlayCallback = () => {

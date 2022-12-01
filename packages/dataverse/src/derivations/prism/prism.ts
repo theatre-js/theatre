@@ -232,24 +232,17 @@ class PrismDerivation<V> implements IDerivation<V> {
   }
 
   /**
-   * @deprecated This is renamed to {@link PrismDerivation.onStale}.
-   */
-  changesWithoutValues(): Tappable<void> {
-    return this.onStale()
-  }
-
-  /**
    * Returns a tappable that fires every time the prism's state goes from `fresh-\>stale.`
    */
-  onStale(): Tappable<void> {
-    return new DerivationValuelessEmitter(this).tappable()
+  onStale(callback: () => void): VoidFn {
+    return new DerivationValuelessEmitter(this).tappable().tap(callback)
   }
 
   /**
    * Keep the derivation hot, even if there are no tappers (subscribers).
    */
   keepHot() {
-    return this.onStale().tap(() => {})
+    return this.onStale(() => {})
   }
 
   /**

@@ -23,13 +23,7 @@ export interface IDerivation<V> {
    */
   changes(ticker: Ticker): Tappable<V>
 
-  /**
-   * Like {@link changes} but with a different performance model. `changesWithoutValues` returns a {@link Tappable} that
-   * updates every time the derivation is updated, even if the value didn't change, and the callback is called without
-   * the value. The advantage of this is that you have control over when the derivation is freshened, it won't
-   * automatically be kept fresh.
-   */
-  changesWithoutValues(): Tappable<void>
+  onStale(cb: () => void): VoidFn
 
   /**
    * Keep the derivation hot, even if there are no tappers (subscribers).

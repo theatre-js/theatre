@@ -17,7 +17,7 @@ export default function* iterateAndCountTicks<V>(
   }
 
   let ticksCountedSinceLastYield = 0
-  const untap = d.changesWithoutValues().tap(() => {
+  const untap = d.onStale(() => {
     ticksCountedSinceLastYield++
   })
 

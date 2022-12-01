@@ -29,7 +29,7 @@ export const useTooltipOpenState = (): [
   }, [])
 
   useEffect(() => {
-    return cur.changesWithoutValues().tap(() => {
+    return cur.onStale(() => {
       const flag = cur.getValue() === id
 
       if (isOpenRef.current !== flag) isOpenRef.current = flag
