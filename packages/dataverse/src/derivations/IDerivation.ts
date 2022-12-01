@@ -18,9 +18,13 @@ export interface IDerivation<V> {
   isHot: boolean
 
   /**
-   * Returns a `Tappable` of the changes of this derivation.
+   * Calls `listener` with a fresh value every time the prism _has_ a new value, throttled by Ticker.
    */
-  onChange(ticker: Ticker, listener: (v: V) => void): VoidFn
+  onChange(
+    ticker: Ticker,
+    listener: (v: V) => void,
+    immediate?: boolean,
+  ): VoidFn
 
   onStale(cb: () => void): VoidFn
 
@@ -28,17 +32,6 @@ export interface IDerivation<V> {
    * Keep the derivation hot, even if there are no tappers (subscribers).
    */
   keepHot(): VoidFn
-
-  /**
-   * Convenience method that taps (subscribes to) the derivation using `this.changes(ticker).tap(fn)` and immediately calls
-   * the callback with the current value.
-   *
-   * @param ticker - The ticker to use for batching.
-   * @param fn - The callback to call on update.
-   *
-   * @see onChange
-   */
-  tapImmediate(ticker: Ticker, fn: (cb: V) => void): VoidFn
 
   /**
    * Add a derivation as a dependent of this derivation.

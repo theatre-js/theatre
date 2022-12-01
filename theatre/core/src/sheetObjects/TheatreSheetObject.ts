@@ -158,7 +158,7 @@ export default class TheatreSheetObject<
   }
 
   onValuesChange(fn: (values: this['value']) => void): VoidFn {
-    return this._valuesDerivation().tapImmediate(getCoreTicker(), fn)
+    return this._valuesDerivation().onChange(getCoreTicker(), fn, true)
   }
 
   // internal: Make the deviration keepHot if directly read

@@ -13,9 +13,9 @@ import {Box, prism, Ticker, val} from '@theatre/dataverse'
  *
  * Without going into the details of `prism`, `Ticker`, and `val`, note that by wrapping our `ToolsetConfig` in a prism, our
  * ```ts
- * ... .tapImmediate(Ticker.raf, (toolset) => {
+ * ... .onChange(Ticker.raf, (toolset) => {
  *       set(toolset)
- *     })
+ *     }, true)
  * ```
  * code will be called whenever `val(obj.props.exampleProp)` changes (whenever the user clicks the switch and the `onChange` callback is called).
  * This will ensure that our switch's value matches its state and is reflected in the UI via `set(toolset)`.
@@ -56,9 +56,13 @@ studio.extend({
         },
       ])
         // listen to changes to this derivation using the requestAnimationFrame shared ticker
-        .tapImmediate(Ticker.raf, (value) => {
-          set(value)
-        })
+        .onChange(
+          Ticker.raf,
+          (value) => {
+            set(value)
+          },
+          true,
+        )
 
       return untapFn
     },

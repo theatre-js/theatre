@@ -35,9 +35,13 @@ const r3fExtension: IExtension = {
           },
         ]
       })
-      return calc.tapImmediate(Ticker.raf, () => {
-        set(calc.getValue())
-      })
+      return calc.onChange(
+        Ticker.raf,
+        () => {
+          set(calc.getValue())
+        },
+        true,
+      )
     },
     'snapshot-editor': (set, studio) => {
       const {createSnapshot} = useExtensionStore.getState()
@@ -136,9 +140,13 @@ const r3fExtension: IExtension = {
           },
         ]
       })
-      return calc.tapImmediate(Ticker.raf, () => {
-        set(calc.getValue())
-      })
+      return calc.onChange(
+        Ticker.raf,
+        () => {
+          set(calc.getValue())
+        },
+        true,
+      )
     },
   },
   panes: [

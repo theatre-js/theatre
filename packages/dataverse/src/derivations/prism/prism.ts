@@ -222,8 +222,18 @@ class PrismDerivation<V> implements IDerivation<V> {
     return this._state.hot
   }
 
-  onChange(ticker: Ticker, listener: (v: V) => void): VoidFn {
-    return new DerivationEmitter(this, ticker).tappable().tap(listener)
+  onChange(
+    ticker: Ticker,
+    listener: (v: V) => void,
+    immediate: boolean = false,
+  ): VoidFn {
+    const unsubscribe = new DerivationEmitter(this, ticker)
+      .tappable()
+      .tap(listener)
+    if (immediate) {
+      listener(this.getValue())
+    }
+    return unsubscribe
   }
 
   /**
@@ -243,21 +253,6 @@ class PrismDerivation<V> implements IDerivation<V> {
    */
   keepHot() {
     return this.onStale(() => {})
-  }
-
-  /**
-   * Convenience method that taps (subscribes to) the derivation using `this.changes(ticker).tap(fn)` and immediately calls
-   * the callback with the current value.
-   *
-   * @param ticker - The ticker to use for batching.
-   * @param fn - The callback to call on update.
-   *
-   * @see onChange
-   */
-  tapImmediate(ticker: Ticker, fn: (cb: V) => void): VoidFn {
-    const untap = this.onChange(ticker, fn)
-    fn(this.getValue())
-    return untap
   }
 
   /**

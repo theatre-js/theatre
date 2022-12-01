@@ -156,9 +156,13 @@ export function onChange<P extends PointerType<$IntentionalAny>>(
 ): VoidFn {
   if (isPointer(pointer)) {
     const derivation = valueDerivation(pointer)
-    return derivation.tapImmediate(getCoreTicker(), callback as $IntentionalAny)
+    return derivation.onChange(
+      getCoreTicker(),
+      callback as $IntentionalAny,
+      true,
+    )
   } else if (isDerivation(pointer)) {
-    return pointer.tapImmediate(getCoreTicker(), callback as $IntentionalAny)
+    return pointer.onChange(getCoreTicker(), callback as $IntentionalAny, true)
   } else {
     throw new Error(
       `Called onChange(p) where p is neither a pointer nor a derivation.`,

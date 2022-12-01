@@ -440,7 +440,7 @@ export default class TheatreStudio implements IStudio {
   }
 
   onSelectionChange(fn: (s: (ISheetObject | ISheet)[]) => void): VoidFn {
-    return this._getSelectionDerivation().tapImmediate(studioTicker, fn)
+    return this._getSelectionDerivation().onChange(studioTicker, fn, true)
   }
 
   get selection(): Array<ISheetObject | ISheet> {
