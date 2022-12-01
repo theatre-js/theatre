@@ -1,4 +1,4 @@
-import type {IdentityDerivationProvider} from './Atom'
+import type {IdentityPrismProvider} from './Atom'
 import {val} from './Atom'
 import type {Pointer} from './pointer'
 import pointer from './pointer'
@@ -15,12 +15,12 @@ import prism from './derivations/prism/prism'
  * to the proxied pointer too.
  */
 export default class PointerProxy<O extends {}>
-  implements IdentityDerivationProvider
+  implements IdentityPrismProvider
 {
   /**
    * @internal
    */
-  readonly $$isIdentityDerivationProvider = true
+  readonly $$isIdentityPrismProvider = true
   private readonly _currentPointerBox: IBox<Pointer<O>>
   /**
    * Convenience pointer pointing to the root of this PointerProxy.
@@ -48,7 +48,7 @@ export default class PointerProxy<O extends {}>
    *
    * @param path - The path to create the derivation at.
    */
-  getIdentityDerivation(path: Array<string | number>) {
+  getIdentityPrism(path: Array<string | number>) {
     return prism(() => {
       const currentPointer = this._currentPointerBox.derivation.getValue()
       const subPointer = path.reduce(

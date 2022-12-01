@@ -22,19 +22,19 @@ enum ValueTypes {
 /**
  * Interface for objects that can provide a derivation at a certain path.
  */
-export interface IdentityDerivationProvider {
+export interface IdentityPrismProvider {
   /**
    * @internal
-   * Future: We could consider using a `Symbol.for("dataverse/IdentityDerivationProvider")` as a key here, similar to
+   * Future: We could consider using a `Symbol.for("dataverse/IdentityPrismProvider")` as a key here, similar to
    * how {@link Iterable} works for `of`.
    */
-  readonly $$isIdentityDerivationProvider: true
+  readonly $$isIdentityPrismProvider: true
   /**
    * Returns a derivation of the value at the provided path.
    *
    * @param path - The path to create the derivation at.
    */
-  getIdentityDerivation(path: Array<string | number>): Prism<unknown>
+  getIdentityPrism(path: Array<string | number>): Prism<unknown>
 }
 
 const getTypeOfValue = (v: unknown): ValueTypes => {
@@ -115,14 +115,12 @@ class Scope {
 /**
  * Wraps an object whose (sub)properties can be individually tracked.
  */
-export default class Atom<State extends {}>
-  implements IdentityDerivationProvider
-{
+export default class Atom<State extends {}> implements IdentityPrismProvider {
   private _currentState: State
   /**
    * @internal
    */
-  readonly $$isIdentityDerivationProvider = true
+  readonly $$isIdentityPrismProvider = true
   private readonly _rootScope: Scope
   /**
    * Convenience property that gives you a pointer to the root of the atom.
@@ -246,7 +244,7 @@ export default class Atom<State extends {}>
    *
    * @param path - The path to create the derivation at.
    */
-  getIdentityDerivation(path: Array<string | number>): Prism<unknown> {
+  getIdentityPrism(path: Array<string | number>): Prism<unknown> {
     const subscribe = (listener: (val: unknown) => void) =>
       this._onPathValueChange(path, listener)
 
@@ -274,25 +272,23 @@ export const pointerToPrism = <P extends PointerType<$IntentionalAny>>(
   let derivation = identityDerivationWeakMap.get(meta)
   if (!derivation) {
     const root = meta.root
-    if (!isIdentityDerivationProvider(root)) {
+    if (!isIdentityPrismProvider(root)) {
       throw new Error(
-        `Cannot run pointerToPrism() on a pointer whose root is not an IdentityChangeProvider`,
+        `Cannot run pointerToPrism() on a pointer whose root is not an IdentityPrismProvider`,
       )
     }
     const {path} = meta
-    derivation = root.getIdentityDerivation(path)
+    derivation = root.getIdentityPrism(path)
     identityDerivationWeakMap.set(meta, derivation)
   }
   return derivation as $IntentionalAny
 }
 
-function isIdentityDerivationProvider(
-  val: unknown,
-): val is IdentityDerivationProvider {
+function isIdentityPrismProvider(val: unknown): val is IdentityPrismProvider {
   return (
     typeof val === 'object' &&
     val !== null &&
-    (val as $IntentionalAny)['$$isIdentityDerivationProvider'] === true
+    (val as $IntentionalAny)['$$isIdentityPrismProvider'] === true
   )
 }
 

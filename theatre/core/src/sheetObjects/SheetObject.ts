@@ -14,11 +14,7 @@ import type {
   SerializableValue,
 } from '@theatre/shared/utils/types'
 import {valToAtom} from '@theatre/shared/utils/valToAtom'
-import type {
-  IdentityDerivationProvider,
-  Prism,
-  Pointer,
-} from '@theatre/dataverse'
+import type {IdentityPrismProvider, Prism, Pointer} from '@theatre/dataverse'
 
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
@@ -42,11 +38,11 @@ type SheetObjectPropsValue = SerializableMap
  * Note that this cannot be generic over `Props`, since the user is
  * able to change prop configs for the sheet object's properties.
  */
-export default class SheetObject implements IdentityDerivationProvider {
+export default class SheetObject implements IdentityPrismProvider {
   get type(): 'Theatre_SheetObject' {
     return 'Theatre_SheetObject'
   }
-  readonly $$isIdentityDerivationProvider: true = true
+  readonly $$isIdentityPrismProvider: true = true
   readonly address: SheetObjectAddress
   readonly publicApi: TheatreSheetObject
   private readonly _initialValue = new Atom<SheetObjectPropsValue>({})
@@ -215,7 +211,7 @@ export default class SheetObject implements IdentityDerivationProvider {
     ) as SerializableValue as T
   }
 
-  getIdentityDerivation(path: Array<string | number>): Prism<unknown> {
+  getIdentityPrism(path: Array<string | number>): Prism<unknown> {
     /**
      * @remarks
      * TODO perf: Too much indirection here.

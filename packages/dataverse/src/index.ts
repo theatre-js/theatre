@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-export type {IdentityDerivationProvider} from './Atom'
+export type {IdentityPrismProvider} from './Atom'
 export {default as Atom, val, pointerToPrism} from './Atom'
 export {default as Box} from './Box'
 export type {IBox} from './Box'
