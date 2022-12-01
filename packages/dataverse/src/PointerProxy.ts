@@ -1,9 +1,7 @@
 import type {IdentityPrismProvider} from './Atom'
-import {val} from './Atom'
+import Atom, {val} from './Atom'
 import type {Pointer} from './pointer'
 import pointer from './pointer'
-import type {IBox} from './Box'
-import Box from './Box'
 import type {$FixMe, $IntentionalAny} from './types'
 import prism from './prism/prism'
 
@@ -21,7 +19,7 @@ export default class PointerProxy<O extends {}>
    * @internal
    */
   readonly $$isIdentityPrismProvider = true
-  private readonly _currentPointerBox: IBox<Pointer<O>>
+  private readonly _currentPointerBox: Atom<Pointer<O>>
   /**
    * Convenience pointer pointing to the root of this PointerProxy.
    *
@@ -31,7 +29,7 @@ export default class PointerProxy<O extends {}>
   readonly pointer: Pointer<O>
 
   constructor(currentPointer: Pointer<O>) {
-    this._currentPointerBox = new Box(currentPointer)
+    this._currentPointerBox = new Atom(currentPointer)
     this.pointer = pointer({root: this as $FixMe, path: []})
   }
 
