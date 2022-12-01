@@ -2,7 +2,7 @@ import type Ticker from '../../Ticker'
 import type {$IntentionalAny, VoidFn} from '../../types'
 import Stack from '../../utils/Stack'
 import type {Prism} from '../IDerivation'
-import {isDerivation} from '../IDerivation'
+import {isPrism} from '../IDerivation'
 import {
   startIgnoringDependencies,
   stopIgnoringDependencies,
@@ -202,7 +202,7 @@ class PrismDerivation<V> implements Prism<V> {
   /**
    * Whether the object is a derivation.
    */
-  readonly isDerivation: true = true
+  readonly isPrism: true = true
 
   private _state:
     | {hot: false; handle: undefined}
@@ -703,7 +703,7 @@ function inPrism(): boolean {
 const possibleDerivationToValue = <P extends Prism<$IntentionalAny> | unknown>(
   input: P,
 ): P extends Prism<infer T> ? T : P => {
-  if (isDerivation(input)) {
+  if (isPrism(input)) {
     return input.getValue() as $IntentionalAny
   } else {
     return input as $IntentionalAny

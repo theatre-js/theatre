@@ -1,4 +1,4 @@
-import {isDerivation, prism, val} from '@theatre/dataverse'
+import {isPrism, prism, val} from '@theatre/dataverse'
 import type {Prism, Pointer} from '@theatre/dataverse'
 import {useDerivation} from '@theatre/react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
@@ -70,7 +70,7 @@ export function deriver<Props extends {}>(
       }
       for (const key in props) {
         const value = props[key]
-        if (isDerivation(value)) {
+        if (isPrism(value)) {
           observableArr.push(value)
           observables[key] = value
         } else {

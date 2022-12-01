@@ -10,7 +10,7 @@ export interface Prism<V> {
   /**
    * Whether the object is a derivation.
    */
-  isDerivation: true
+  isPrism: true
 
   /**
    * Whether the derivation is hot.
@@ -63,6 +63,6 @@ export interface Prism<V> {
 /**
  * Returns whether `d` is a derivation.
  */
-export function isDerivation(d: any): d is Prism<unknown> {
-  return d && d.isDerivation && d.isDerivation === true
+export function isPrism(d: any): d is Prism<unknown> {
+  return d && d.isPrism && d.isPrism === true
 }

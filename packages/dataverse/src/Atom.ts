@@ -2,7 +2,7 @@ import get from 'lodash-es/get'
 import isPlainObject from 'lodash-es/isPlainObject'
 import last from 'lodash-es/last'
 import type {Prism} from './derivations/IDerivation'
-import {isDerivation} from './derivations/IDerivation'
+import {isPrism} from './derivations/IDerivation'
 import type {Pointer, PointerType} from './pointer'
 import {isPointer} from './pointer'
 import pointer, {getPointerMeta} from './pointer'
@@ -323,7 +323,7 @@ export const val = <
   : unknown => {
   if (isPointer(input)) {
     return valueDerivation(input).getValue() as $IntentionalAny
-  } else if (isDerivation(input)) {
+  } else if (isPrism(input)) {
     return input.getValue() as $IntentionalAny
   } else {
     return input as $IntentionalAny

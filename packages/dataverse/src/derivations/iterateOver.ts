@@ -3,7 +3,7 @@ import type {Pointer} from '../pointer'
 import {isPointer} from '../pointer'
 import Ticker from '../Ticker'
 import type {Prism} from './IDerivation'
-import {isDerivation} from './IDerivation'
+import {isPrism} from './IDerivation'
 
 export default function* iterateOver<V>(
   pointerOrDerivation: Prism<V> | Pointer<V>,
@@ -11,7 +11,7 @@ export default function* iterateOver<V>(
   let d
   if (isPointer(pointerOrDerivation)) {
     d = valueDerivation(pointerOrDerivation) as Prism<V>
-  } else if (isDerivation(pointerOrDerivation)) {
+  } else if (isPrism(pointerOrDerivation)) {
     d = pointerOrDerivation
   } else {
     throw new Error(`Only pointers and derivations are supported`)

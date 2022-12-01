@@ -2,7 +2,7 @@ import {valueDerivation} from '../Atom'
 import type {Pointer} from '../pointer'
 import {isPointer} from '../pointer'
 import type {Prism} from './IDerivation'
-import {isDerivation} from './IDerivation'
+import {isPrism} from './IDerivation'
 
 export default function* iterateAndCountTicks<V>(
   pointerOrDerivation: Prism<V> | Pointer<V>,
@@ -10,7 +10,7 @@ export default function* iterateAndCountTicks<V>(
   let d
   if (isPointer(pointerOrDerivation)) {
     d = valueDerivation(pointerOrDerivation) as Prism<V>
-  } else if (isDerivation(pointerOrDerivation)) {
+  } else if (isPrism(pointerOrDerivation)) {
     d = pointerOrDerivation
   } else {
     throw new Error(`Only pointers and derivations are supported`)
