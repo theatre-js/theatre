@@ -1,4 +1,3 @@
-import Box from '../../Box'
 import type Ticker from '../../Ticker'
 import type {$IntentionalAny, VoidFn} from '../../types'
 import Stack from '../../utils/Stack'
@@ -489,17 +488,20 @@ class HotScope implements PrismScope {
   }
 
   state<T>(key: string, initialValue: T): [T, (val: T) => void] {
-    const {b, setValue} = this.memo(
+    const {value, setValue} = this.memo(
       'state/' + key,
       () => {
-        const b = new Box<T>(initialValue)
-        const setValue = (val: T) => b.set(val)
-        return {b, setValue}
+        const value = {current: initialValue}
+        const setValue = (newValue: T) => {
+          value.current = newValue
+          this._hotHandle.forceStale()
+        }
+        return {value, setValue}
       },
       [],
     )
 
-    return [b.derivation.getValue(), setValue]
+    return [value.current, setValue]
   }
 
   sub(key: string): HotScope {
