@@ -4,7 +4,7 @@ import App from './App'
 import type {ToolsetConfig} from '@theatre/studio'
 import studio from '@theatre/studio'
 import extension from '@theatre/r3f/dist/extension'
-import {Box, prism, Ticker, val} from '@theatre/dataverse'
+import {Atom, prism, Ticker, val} from '@theatre/dataverse'
 
 /**
  * Let's take a look at how we can use `prism`, `Ticker`, and `val` from Theatre.js's Dataverse library
@@ -26,7 +26,7 @@ studio.extend({
   id: '@theatre/hello-world-extension',
   toolbars: {
     global(set, studio) {
-      const exampleBox = new Box('mobile')
+      const exampleBox = new Atom('mobile')
 
       const untapFn = prism<ToolsetConfig>(() => [
         {

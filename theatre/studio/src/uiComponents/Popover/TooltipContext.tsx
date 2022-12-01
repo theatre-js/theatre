@@ -1,5 +1,5 @@
-import type {Prism} from '@theatre/dataverse'
-import {Box} from '@theatre/dataverse'
+import type { Prism} from '@theatre/dataverse';
+import {Atom} from '@theatre/dataverse'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {
   createContext,
@@ -40,7 +40,7 @@ export const useTooltipOpenState = (): [
 }
 
 const TooltipContext: React.FC<{}> = ({children}) => {
-  const currentTooltipId = useMemo(() => new Box(-1), [])
+  const currentTooltipId = useMemo(() => new Atom(-1), [])
   const cur = currentTooltipId.prism
 
   const set = useMemo(() => {

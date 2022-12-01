@@ -1,6 +1,7 @@
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {Pointer} from '@theatre/dataverse'
-import {Box, val} from '@theatre/dataverse'
+import type { Pointer} from '@theatre/dataverse';
+import {Atom} from '@theatre/dataverse'
+import {val} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
 import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
@@ -62,7 +63,7 @@ export type KeyframeSnapPositions = {
   }
 }
 
-const stateB = new Box<
+const stateB = new Atom<
   | {
       // all keyframes must be snap targets
       mode: 'snapToAll'

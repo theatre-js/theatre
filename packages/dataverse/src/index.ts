@@ -6,8 +6,6 @@
 
 export type {IdentityPrismProvider} from './Atom'
 export {default as Atom, val, pointerToPrism} from './Atom'
-export {default as Box} from './Box'
-export type {IBox} from './Box'
 export {isPrism} from './prism/Interface'
 export type {Prism} from './prism/Interface'
 export {default as iterateAndCountTicks} from './prism/iterateAndCountTicks'

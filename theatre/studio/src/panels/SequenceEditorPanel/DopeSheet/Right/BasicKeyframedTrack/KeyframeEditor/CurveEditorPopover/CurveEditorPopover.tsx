@@ -1,4 +1,4 @@
-import {Box, prism} from '@theatre/dataverse'
+import {Atom, prism} from '@theatre/dataverse'
 import type {KeyboardEvent} from 'react'
 import React, {
   useEffect,
@@ -532,7 +532,7 @@ function areConnectedKeyframesTheSameAs({
 
 const {isCurveEditorOpenD, isConnectionEditingInCurvePopover, getLock} =
   (() => {
-    const connectionsInCurvePopoverEdit = new Box<
+    const connectionsInCurvePopoverEdit = new Atom<
       Array<KeyframeConnectionWithAddress>
     >([])
 

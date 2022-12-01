@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-import type {Prism} from '@theatre/dataverse'
-import {Box} from '@theatre/dataverse'
+import type { Prism} from '@theatre/dataverse';
+import {Atom} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {findIndex} from 'lodash-es'
 import queueMicrotask from 'queue-microtask'
@@ -58,17 +58,17 @@ export function usePrism<T>(
   debugLabel?: string,
 ): T {
   const fnAsCallback = useCallback(fn, deps)
-  const boxRef = useRef<Box<typeof fn>>(null as $IntentionalAny)
-  if (!boxRef.current) {
-    boxRef.current = new Box(fnAsCallback)
+  const atomRef = useRef<Atom<typeof fn>>(null as $IntentionalAny)
+  if (!atomRef.current) {
+    atomRef.current = new Atom(fnAsCallback)
   } else {
-    boxRef.current.set(fnAsCallback)
+    atomRef.current.setState(fnAsCallback)
   }
 
   const prsm = useMemo(
     () =>
       prism(() => {
-        const fn = boxRef.current.prism.getValue()
+        const fn = atomRef.current.prism.getValue()
         return fn()
       }),
     [],

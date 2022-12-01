@@ -115,7 +115,7 @@ class Scope {
 /**
  * Wraps an object whose (sub)properties can be individually tracked.
  */
-export default class Atom<State extends {}> implements IdentityPrismProvider {
+export default class Atom<State> implements IdentityPrismProvider {
   private _currentState: State
   /**
    * @internal
@@ -130,6 +130,8 @@ export default class Atom<State extends {}> implements IdentityPrismProvider {
    */
   readonly pointer: Pointer<State>
 
+  readonly prism: Prism<State> = this.getIdentityPrism([]) as $IntentionalAny
+
   constructor(initialState: State) {
     this._currentState = initialState
     this._rootScope = new Scope(undefined, [])
@@ -141,7 +143,7 @@ export default class Atom<State extends {}> implements IdentityPrismProvider {
    *
    * @param newState - The new state of the atom.
    */
-  setState(newState: State) {
+  set(newState: State) {
     const oldState = this._currentState
     this._currentState = newState
 
@@ -150,9 +152,21 @@ export default class Atom<State extends {}> implements IdentityPrismProvider {
 
   /**
    * Gets the current state of the atom.
+   * @deprecated
    */
   getState() {
     return this._currentState
+  }
+
+  get() {
+    return this.getState()
+  }
+
+  /**
+   * @deprecated
+   */
+  setState(newState: State) {
+    this.set(newState)
   }
 
   /**

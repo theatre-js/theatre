@@ -3,7 +3,7 @@ import type {StrictRecord} from '@theatre/shared/utils/types'
 import React, {useMemo} from 'react'
 import {useEffect} from 'react'
 import {useLogger} from './useLogger'
-import {Box, prism, pointerToPrism} from '@theatre/dataverse'
+import {prism, pointerToPrism} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import {usePrismInstance} from '@theatre/react'
 import {selectClosestHTMLAncestor} from '@theatre/studio/utils/selectClosestHTMLAncestor'
@@ -24,7 +24,7 @@ undefinedD.keepHot() // constant anyway...
 function createPresenceContext(options: {
   enabled: boolean
 }): InternalPresenceContext {
-  const currentUserHoverItemB = new Box<StudioSheetItemKey | undefined>(
+  const currentUserHoverItemB = new Atom<StudioSheetItemKey | undefined>(
     undefined,
   )
   const currentUserHoverFlagItemsAtom = new Atom(
@@ -98,14 +98,14 @@ function createPresenceContext(options: {
       return usePrismInstance(focusD)
     },
     setUserHover(itemKeyOpt) {
-      const prev = currentUserHoverItemB.get()
+      const prev = currentUserHoverItemB.getState()
       if (prev === itemKeyOpt) {
         return
       }
       if (prev) {
         currentUserHoverFlagItemsAtom.setIn([prev], false)
       }
-      currentUserHoverItemB.set(itemKeyOpt)
+      currentUserHoverItemB.setState(itemKeyOpt)
       if (itemKeyOpt) {
         currentUserHoverFlagItemsAtom.setIn([itemKeyOpt], true)
       }
