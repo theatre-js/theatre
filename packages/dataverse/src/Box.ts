@@ -1,6 +1,5 @@
 import type {Prism} from './prism/Interface'
 import prism from './prism/prism'
-import EventEmitter from './utils/EventEmitter'
 
 /**
  * Common interface for Box types. Boxes wrap a single value.
@@ -39,7 +38,7 @@ export interface IBox<V> {
  */
 export default class Box<V> implements IBox<V> {
   private _publicPrism: Prism<V>
-  private _emitter = new EventEmitter()
+  private _changeListeners = new Set<(newVal: V) => void>()
 
   /**
    * @param _value - The initial value of the Box.
@@ -51,8 +50,8 @@ export default class Box<V> implements IBox<V> {
     protected _value: V,
   ) {
     const subscribe = (listener: (val: V) => void) => {
-      this._emitter.addEventListener('change', listener)
-      return () => this._emitter.removeEventListener('change', listener)
+      this._changeListeners.add(listener)
+      return () => this._changeListeners.delete(listener)
     }
 
     const getValue = () => this._value
@@ -69,7 +68,9 @@ export default class Box<V> implements IBox<V> {
   set(v: V) {
     if (v === this._value) return
     this._value = v
-    this._emitter.emit('change', v)
+    this._changeListeners.forEach((listener) => {
+      listener(v)
+    })
   }
 
   /**
