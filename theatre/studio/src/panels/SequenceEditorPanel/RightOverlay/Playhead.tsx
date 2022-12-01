@@ -265,7 +265,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
       getIsPlayheadAttachedToFocusRange(sequence),
     )
 
-    const posInUnitSpace = sequence.positionDerivation.getValue()
+    const posInUnitSpace = sequence.positionPrism.getValue()
 
     const posInClippedSpace = val(layoutP.clippedSpace.fromUnitSpace)(
       posInUnitSpace,

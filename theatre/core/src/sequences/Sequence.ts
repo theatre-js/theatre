@@ -118,7 +118,7 @@ export default class Sequence {
     return this._lengthD.getValue()
   }
 
-  get positionDerivation() {
+  get positionPrism() {
     return this._positionD
   }
 

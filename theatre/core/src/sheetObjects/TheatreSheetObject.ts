@@ -148,7 +148,7 @@ export default class TheatreSheetObject<
   }
 
   private _valuesPrism(): Prism<this['value']> {
-    return this._cache.get('onValuesChangeDerivation', () => {
+    return this._cache.get('_valuesPrism', () => {
       const sheetObject = privateAPI(this)
       const d: Prism<PropsValue<Props>> = prism(() => {
         return val(sheetObject.getValues().getValue()) as $FixMe

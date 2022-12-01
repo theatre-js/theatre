@@ -410,8 +410,8 @@ export default class TheatreStudio implements IStudio {
     })
   }
 
-  private _getSelectionDerivation(): Prism<(ISheetObject | ISheet)[]> {
-    return this._cache.get('_getStateDerivation()', () =>
+  private _getSelectionPrism(): Prism<(ISheetObject | ISheet)[]> {
+    return this._cache.get('_getSelectionPrism()', () =>
       prism((): (ISheetObject | ISheet)[] => {
         return getOutlineSelection()
           .filter(
@@ -424,7 +424,7 @@ export default class TheatreStudio implements IStudio {
   }
 
   private _getSelection(): (ISheetObject | ISheet)[] {
-    return this._getSelectionDerivation().getValue()
+    return this._getSelectionPrism().getValue()
   }
 
   setSelection(selection: Array<ISheetObject | ISheet>): void {
@@ -440,7 +440,7 @@ export default class TheatreStudio implements IStudio {
   }
 
   onSelectionChange(fn: (s: (ISheetObject | ISheet)[]) => void): VoidFn {
-    return this._getSelectionDerivation().onChange(studioTicker, fn, true)
+    return this._getSelectionPrism().onChange(studioTicker, fn, true)
   }
 
   get selection(): Array<ISheetObject | ISheet> {

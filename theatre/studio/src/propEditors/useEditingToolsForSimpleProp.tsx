@@ -65,7 +65,7 @@ const cache = new WeakMap<{}, Prism<EditingTools<$IntentionalAny>>>()
  * Note: we're able to get `obj` and `propConfig` from `pointerToProp`,
  * so the only reason they're still in the arguments list is that
  */
-function createDerivation<T extends SerializablePrimitive>(
+function createPrism<T extends SerializablePrimitive>(
   pointerToProp: Pointer<T>,
   obj: SheetObject,
   propConfig: PropTypeConfig_AllSimples,
@@ -181,9 +181,7 @@ function createDerivation<T extends SerializablePrimitive>(
                 sequenceTrackId
               ],
             )
-            const sequencePosition = val(
-              obj.sheet.getSequence().positionDerivation,
-            )
+            const sequencePosition = val(obj.sheet.getSequence().positionPrism)
             return getNearbyKeyframesOfTrack(
               obj,
               track && {
@@ -325,7 +323,7 @@ function createDerivation<T extends SerializablePrimitive>(
   })
 }
 
-function getDerivation<T extends SerializablePrimitive>(
+function getPrism<T extends SerializablePrimitive>(
   pointerToProp: Pointer<T>,
   obj: SheetObject,
   propConfig: PropTypeConfig_AllSimples,
@@ -333,7 +331,7 @@ function getDerivation<T extends SerializablePrimitive>(
   if (cache.has(pointerToProp)) {
     return cache.get(pointerToProp)!
   } else {
-    const d = createDerivation(pointerToProp, obj, propConfig)
+    const d = createPrism(pointerToProp, obj, propConfig)
     cache.set(pointerToProp, d)
     return d
   }
@@ -354,7 +352,7 @@ export function useEditingToolsForSimplePropInDetailsPanel<
   obj: SheetObject,
   propConfig: PropTypeConfig_AllSimples,
 ): EditingTools<T> {
-  const der = getDerivation(pointerToProp, obj, propConfig)
+  const der = getPrism(pointerToProp, obj, propConfig)
   return usePrismInstance(der)
 }
 

@@ -128,7 +128,7 @@ export default class SheetObjectTemplate {
    * Returns values that are set statically (ie, not sequenced, and not defaults)
    */
   getStaticValues(): Prism<SerializableMap> {
-    return this._cache.get('getDerivationOfStatics', () =>
+    return this._cache.get('getStaticValues', () =>
       prism(() => {
         const pointerToSheetState =
           this.sheetTemplate.project.pointers.historic.sheetsById[

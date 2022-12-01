@@ -253,7 +253,7 @@ export default class SheetObject implements IdentityPrismProvider {
             const interpolate =
               propConfig.interpolate! as Interpolator<$IntentionalAny>
 
-            const updateSequenceValueFromItsDerivation = () => {
+            const updateSequenceValueFromItsPrism = () => {
               const triple = pr.getValue()
 
               if (!triple) return valsAtom.setIn(pathToProp, undefined)
@@ -279,9 +279,9 @@ export default class SheetObject implements IdentityPrismProvider {
                 interpolate(left, right, triple.progression),
               )
             }
-            const untap = pr.onStale(updateSequenceValueFromItsDerivation)
+            const untap = pr.onStale(updateSequenceValueFromItsPrism)
 
-            updateSequenceValueFromItsDerivation()
+            updateSequenceValueFromItsPrism()
             untaps.push(untap)
           }
           return () => {
@@ -304,7 +304,7 @@ export default class SheetObject implements IdentityPrismProvider {
       this.template.project.pointers.historic.sheetsById[this.address.sheetId]
         .sequence.tracksByObject[this.address.objectKey].trackData[trackId]
 
-    const timeD = this.sheet.getSequence().positionDerivation
+    const timeD = this.sheet.getSequence().positionPrism
 
     return interpolationTripleAtPosition(this._internalUtilCtx, trackP, timeD)
   }
