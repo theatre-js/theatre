@@ -5,7 +5,7 @@ import {useEffect} from 'react'
 import {useLogger} from './useLogger'
 import {Box, prism, pointerToPrism} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
-import {useDerivation} from '@theatre/react'
+import {usePrismInstance} from '@theatre/react'
 import {selectClosestHTMLAncestor} from '@theatre/studio/utils/selectClosestHTMLAncestor'
 
 /** To mean the presence value */
@@ -95,7 +95,7 @@ function createPresenceContext(options: {
           }
         })
       }, [itemKey])
-      return useDerivation(focusD)
+      return usePrismInstance(focusD)
     },
     setUserHover(itemKeyOpt) {
       const prev = currentUserHoverItemB.get()

@@ -8,7 +8,7 @@ import type {$FixMe, $IntentionalAny} from './types'
 import prism from './prisms/prism/prism'
 
 /**
- * Allows creating pointer-derivations where the pointer can be switched out.
+ * Allows creating pointer-prisms where the pointer can be switched out.
  *
  * @remarks
  * This allows reacting not just to value changes at a certain pointer, but changes

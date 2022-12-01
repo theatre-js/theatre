@@ -96,7 +96,7 @@ describe('prism', () => {
       const prsm = prism(() => {
         const n = val(a.pointer.letter)
         const iterationAtTimeOfCall = iteration
-        sequence.push({derivationCall: iterationAtTimeOfCall})
+        sequence.push({prismCall: iterationAtTimeOfCall})
 
         prism.effect(
           'f',
@@ -116,13 +116,13 @@ describe('prism', () => {
         sequence.push({change})
       })
 
-      expect(sequence).toMatchObject([{derivationCall: 0}, {effectCall: 0}])
+      expect(sequence).toMatchObject([{prismCall: 0}, {effectCall: 0}])
       sequence.length = 0
 
       iteration++
       a.setIn(['letter'], 'b')
       ticker.tick()
-      expect(sequence).toMatchObject([{derivationCall: 1}, {change: 'b'}])
+      expect(sequence).toMatchObject([{prismCall: 1}, {change: 'b'}])
       sequence.length = 0
 
       deps = [1]
@@ -130,7 +130,7 @@ describe('prism', () => {
       a.setIn(['letter'], 'c')
       ticker.tick()
       expect(sequence).toMatchObject([
-        {derivationCall: 2},
+        {prismCall: 2},
         {cleanupCall: 0},
         {effectCall: 2},
         {change: 'c'},
@@ -156,7 +156,7 @@ describe('prism', () => {
       const prsm = prism(() => {
         const n = val(a.pointer.letter)
         const iterationAtTimeOfCall = iteration
-        sequence.push({derivationCall: iterationAtTimeOfCall})
+        sequence.push({prismCall: iterationAtTimeOfCall})
 
         const resultOfMemo = prism.memo(
           'memo',
@@ -177,7 +177,7 @@ describe('prism', () => {
       })
 
       expect(sequence).toMatchObject([
-        {derivationCall: 0},
+        {prismCall: 0},
         {memoCall: 0},
         {resultOfMemo: 0},
       ])
@@ -187,7 +187,7 @@ describe('prism', () => {
       a.setIn(['letter'], 'b')
       ticker.tick()
       expect(sequence).toMatchObject([
-        {derivationCall: 1},
+        {prismCall: 1},
         {resultOfMemo: 0},
         {change: 'b'},
       ])
@@ -198,7 +198,7 @@ describe('prism', () => {
       a.setIn(['letter'], 'c')
       ticker.tick()
       expect(sequence).toMatchObject([
-        {derivationCall: 2},
+        {prismCall: 2},
         {memoCall: 2},
         {resultOfMemo: 2},
         {change: 'c'},

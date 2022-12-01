@@ -7,7 +7,7 @@ import getStudio from '@theatre/studio/getStudio'
 import type Scrub from '@theatre/studio/Scrub'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getDeep from '@theatre/shared/utils/getDeep'
-import {useDerivation} from '@theatre/react'
+import {usePrismInstance} from '@theatre/react'
 import type {
   $IntentionalAny,
   SerializablePrimitive as SerializablePrimitive,
@@ -355,7 +355,7 @@ export function useEditingToolsForSimplePropInDetailsPanel<
   propConfig: PropTypeConfig_AllSimples,
 ): EditingTools<T> {
   const der = getDerivation(pointerToProp, obj, propConfig)
-  return useDerivation(der)
+  return usePrismInstance(der)
 }
 
 type Shade =

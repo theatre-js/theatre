@@ -6,15 +6,15 @@ import type {Prism} from './Interface'
 import {isPrism} from './Interface'
 
 export default function* iterateOver<V>(
-  pointerOrDerivation: Prism<V> | Pointer<V>,
+  pointerOrPrism: Prism<V> | Pointer<V>,
 ): Generator<V, void, void> {
   let d
-  if (isPointer(pointerOrDerivation)) {
-    d = pointerToPrism(pointerOrDerivation) as Prism<V>
-  } else if (isPrism(pointerOrDerivation)) {
-    d = pointerOrDerivation
+  if (isPointer(pointerOrPrism)) {
+    d = pointerToPrism(pointerOrPrism) as Prism<V>
+  } else if (isPrism(pointerOrPrism)) {
+    d = pointerOrPrism
   } else {
-    throw new Error(`Only pointers and derivations are supported`)
+    throw new Error(`Only pointers and prisms are supported`)
   }
 
   const ticker = new Ticker()

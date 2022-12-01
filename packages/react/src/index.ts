@@ -65,7 +65,7 @@ export function usePrism<T>(
     boxRef.current.set(fnAsCallback)
   }
 
-  const pr = useMemo(
+  const prsm = useMemo(
     () =>
       prism(() => {
         const fn = boxRef.current.prism.getValue()
@@ -74,7 +74,7 @@ export function usePrism<T>(
     [],
   )
 
-  return useDerivation(pr, debugLabel)
+  return usePrismInstance(prsm, debugLabel)
 }
 
 export const useVal: typeof val = (p: $IntentionalAny, debugLabel?: string) => {
@@ -107,7 +107,7 @@ type QueueItem<T = unknown> = {
    */
   debug?: {
     /**
-     * The `debugLabel` given to `usePrism()/useDerivation()`
+     * The `debugLabel` given to `usePrism()/usePrismInstance()`
      */
     label?: string
     /**
@@ -115,8 +115,8 @@ type QueueItem<T = unknown> = {
      */
     traceOfFirstTimeRender: Error
     /**
-     * An array of the operations done on/about this useDerivation. This is helpful to trace
-     * why a useDerivation's update was added to the queue and why it re-rendered
+     * An array of the operations done on/about this usePrismInstance. This is helpful to trace
+     * why a usePrismInstance's update was added to the queue and why it re-rendered
      */
     history: Array<
       /**
@@ -150,11 +150,11 @@ type QueueItem<T = unknown> = {
    */
   lastValue: T
   /**
-   * Would be set to true if the element hosting the `useDerivation()` was unmounted
+   * Would be set to true if the element hosting the `usePrismInstance()` was unmounted
    */
   unmounted: boolean
   /**
-   * Adds the `useDerivation` to the update queue
+   * Adds the `usePrismInstance` to the update queue
    */
   queueUpdate: () => void
   /**
@@ -224,7 +224,7 @@ function queueIfNeeded() {
             item.debug?.history.push(`queue: der.getValue() errored`)
           }
           console.error(
-            'A `der.getValue()` in `useDerivation(der)` threw an error. ' +
+            'A `der.getValue()` in `usePrismInstance(der)` threw an error. ' +
               "This may be a zombie child issue, so we're gonna try to get its value again in a normal react render phase." +
               'If you see the same error again, then you either have an error in your prism code, or the deps array in `usePrism(fn, deps)` is missing ' +
               'a dependency and causing the prism to read stale values.',
@@ -268,19 +268,19 @@ function queueIfNeeded() {
  *
  * # Remove cold prism reads
  *
- * Prior to the latest change, the first render of every `useDerivation()` resulted in a cold read of its inner prism.
+ * Prior to the latest change, the first render of every `usePrismInstance()` resulted in a cold read of its inner prism.
  * Cold reads are predictably slow. The reason we'd run cold reads was to comply with react's rule of not running side-effects
  * during render. (Turning a prism hot is _technically_ a side-effect).
  *
  * However, now that users are animating scenes with hundreds of objects in the same sequence, the lag started to be noticable.
  *
- * This commit changes `useDerivation()` so that it turns its prism hot before rendering them.
+ * This commit changes `usePrismInstance()` so that it turns its prism hot before rendering them.
  *
  * # Freshen prisms before render
  *
  * Previously in order to avoid the zombie child problem (https://kaihao.dev/posts/stale-props-and-zombie-children-in-redux)
  * we deferred freshening the prisms to the render phase of components. This meant that if a prism's dependencies
- * changed, `useDerivation()` would schedule a re-render, regardless of whether that change actually affected the prism's
+ * changed, `usePrismInstance()` would schedule a re-render, regardless of whether that change actually affected the prism's
  * value. Here is a contrived example:
  *
  * ```ts
@@ -288,7 +288,7 @@ function queueIfNeeded() {
  * const isPositiveD = prism(() => num.prism.getValue() >= 0)
  *
  * const Comp = () => {
- *   return <div>{useDerivation(isPositiveD)}</div>
+ *   return <div>{usePrismInstance(isPositiveD)}</div>
  * }
  *
  * num.set(2) // would cause Comp to re-render- even though 1 is still a positive number
@@ -301,9 +301,9 @@ function queueIfNeeded() {
  * the mounting tree.
  *
  * On the off-chance that one of them still turns out to be a zombile child, `runQueue` will defer that particular
- * `useDerivation()` to be read inside a normal react render phase.
+ * `usePrismInstance()` to be read inside a normal react render phase.
  */
-export function useDerivation<T>(der: Prism<T>, debugLabel?: string): T {
+export function usePrismInstance<T>(der: Prism<T>, debugLabel?: string): T {
   const _forceUpdate = useForceUpdate(debugLabel)
 
   const ref = useRef<QueueItem<T>>(undefined as $IntentionalAny)
@@ -347,7 +347,7 @@ export function useDerivation<T>(der: Prism<T>, debugLabel?: string): T {
   if (process.env.NODE_ENV !== 'production') {
     if (der !== ref.current.der) {
       console.error(
-        'Argument `der` in `useDerivation(der)` should not change between renders.',
+        'Argument `der` in `usePrismInstance(der)` should not change between renders.',
       )
     }
   }
@@ -389,7 +389,7 @@ export function usePrismWithoutReRender<T>(
 ): Prism<T> {
   const pr = useMemo(() => prism(fn), deps)
 
-  return useDerivationWithoutReRender(pr)
+  return usePrismInstanceWithoutReRender(pr)
 }
 
 /**
@@ -398,7 +398,7 @@ export function usePrismWithoutReRender<T>(
  * return the value of the prism, and it does not
  * re-render the component if the value of the prism changes.
  */
-export function useDerivationWithoutReRender<T>(der: Prism<T>): Prism<T> {
+export function usePrismInstanceWithoutReRender<T>(der: Prism<T>): Prism<T> {
   useEffect(() => {
     const untap = der.keepHot()
 

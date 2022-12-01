@@ -144,7 +144,7 @@ export const getPointerParts = <_>(
  * Creates a pointer to a (nested) property of an {@link Atom}.
  *
  * @remarks
- * Pointers are used to make derivations of properties or nested properties of
+ * Pointers are used to make prisms of properties or nested properties of
  * {@link Atom|Atoms}.
  *
  * Pointers also allow easy construction of new pointers pointing to nested members

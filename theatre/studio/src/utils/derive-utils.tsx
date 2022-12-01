@@ -1,6 +1,6 @@
 import {isPrism, prism, val} from '@theatre/dataverse'
 import type {Prism, Pointer} from '@theatre/dataverse'
-import {useDerivation} from '@theatre/react'
+import {usePrismInstance} from '@theatre/react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import React, {useMemo, useRef} from 'react'
 import {invariant} from './invariant'
@@ -86,7 +86,7 @@ export function deriver<Props extends {}>(
       )
 
       const allD = useMemo(() => deriveAllD(observables), observableArr)
-      const observedPropState = useDerivation(allD)
+      const observedPropState = usePrismInstance(allD)
 
       return (
         observedPropState &&

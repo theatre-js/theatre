@@ -51,7 +51,7 @@ class HotHandle<V> {
 
   constructor(
     private readonly _fn: () => V,
-    private readonly _prismInstance: PrismDerivation<V>,
+    private readonly _prismInstance: PrismInstance<V>,
   ) {
     for (const d of this._dependencies) {
       d._addDependent(this._reactToDependencyGoingStale)
@@ -198,7 +198,7 @@ class HotHandle<V> {
 
 const emptyObject = {}
 
-class PrismDerivation<V> implements Prism<V> {
+class PrismInstance<V> implements Prism<V> {
   /**
    * Whether the object is a prism.
    */
@@ -336,8 +336,8 @@ class PrismDerivation<V> implements Prism<V> {
      * Design constraints:
      * - This fix should not have a perf-penalty in production. Perhaps use a global flag + `process.env.NODE_ENV !== 'production'`
      *   to enable it.
-     * - In the case of `DerivationValuelessEmitter`, we don't control when the user calls
-     *   `getValue()` (as opposed to `DerivationEmitter` which calls `getValue()` directly).
+     * - In the case of `onStale()`, we don't control when the user calls
+     *   `getValue()` (as opposed to `onChange()` which calls `getValue()` directly).
      *   Perhaps we can disable the check in that case.
      * - Probably the best place to add this check is right here in this method plus some changes to `reportResulutionStart()`,
      *   which would have to be changed to let the caller know if there is an actual collector (a prism)
@@ -700,7 +700,7 @@ function inPrism(): boolean {
   return !!hookScopeStack.peek()
 }
 
-const possibleDerivationToValue = <P extends Prism<$IntentionalAny> | unknown>(
+const possiblePrismToValue = <P extends Prism<$IntentionalAny> | unknown>(
   input: P,
 ): P extends Prism<infer T> ? T : P => {
   if (isPrism(input)) {
@@ -742,7 +742,7 @@ type IPrismFn = {
  * @param fn - The function to rerun when the prisms referenced in it change.
  */
 const prism: IPrismFn = (fn) => {
-  return new PrismDerivation(fn)
+  return new PrismInstance(fn)
 }
 
 class ColdScope implements PrismScope {
