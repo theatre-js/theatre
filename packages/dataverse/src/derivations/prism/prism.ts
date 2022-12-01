@@ -1,7 +1,6 @@
 import type Ticker from '../../Ticker'
 import type {$IntentionalAny, VoidFn} from '../../types'
 import Stack from '../../utils/Stack'
-import DerivationEmitter from '../DerivationEmitter'
 import type {IDerivation} from '../IDerivation'
 import {isDerivation} from '../IDerivation'
 import {
@@ -200,6 +199,8 @@ class HotHandle<V> {
   }
 }
 
+const emptyObject = {}
+
 class PrismDerivation<V> implements IDerivation<V> {
   /**
    * Whether the object is a derivation.
@@ -227,12 +228,31 @@ class PrismDerivation<V> implements IDerivation<V> {
     listener: (v: V) => void,
     immediate: boolean = false,
   ): VoidFn {
-    const unsubscribe = new DerivationEmitter(this, ticker)
-      .tappable()
-      .tap(listener)
-    if (immediate) {
-      listener(this.getValue())
+    const dependent = () => {
+      ticker.onThisOrNextTick(refresh)
     }
+
+    let lastValue = emptyObject
+
+    const refresh = () => {
+      const newValue = this.getValue()
+      if (newValue === lastValue) return
+
+      lastValue = newValue
+      listener(newValue)
+    }
+
+    this.addDependent(dependent)
+
+    if (immediate) {
+      lastValue = this.getValue()
+      listener(lastValue as $IntentionalAny as V)
+    }
+
+    const unsubscribe = () => {
+      this.removeDependent(dependent)
+    }
+
     return unsubscribe
   }
 

@@ -183,7 +183,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
     return studio.onSelectionChange((newState) => {
       setSelection(newState)
     })
-  })
+  }, [])
 
   const containerRef = useRef<HTMLDivElement>(null!)
 
