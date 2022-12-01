@@ -152,7 +152,7 @@ export default class Atom<State> implements IdentityPrismProvider {
 
   /**
    * Gets the current state of the atom.
-   * @deprecated
+   * @deprecated use {@link Atom.get} instead
    */
   getState() {
     return this._currentState
@@ -163,7 +163,7 @@ export default class Atom<State> implements IdentityPrismProvider {
   }
 
   /**
-   * @deprecated
+   * @deprecated use {@link Atom.set} instead
    */
   setState(newState: State) {
     this.set(newState)
