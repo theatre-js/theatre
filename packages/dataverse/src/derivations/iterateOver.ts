@@ -19,7 +19,7 @@ export default function* iterateOver<V>(
 
   const ticker = new Ticker()
 
-  const untap = d.changes(ticker).tap((v) => {})
+  const untap = d.onChange(ticker, (v) => {})
 
   try {
     while (true) {

@@ -1,6 +1,5 @@
 import type Ticker from '../Ticker'
 import type {$IntentionalAny, VoidFn} from '../types'
-import type Tappable from '../utils/Tappable'
 
 type IDependent = (msgComingFrom: IDerivation<$IntentionalAny>) => void
 
@@ -21,7 +20,7 @@ export interface IDerivation<V> {
   /**
    * Returns a `Tappable` of the changes of this derivation.
    */
-  changes(ticker: Ticker): Tappable<V>
+  onChange(ticker: Ticker, listener: (v: V) => void): VoidFn
 
   onStale(cb: () => void): VoidFn
 
@@ -37,7 +36,7 @@ export interface IDerivation<V> {
    * @param ticker - The ticker to use for batching.
    * @param fn - The callback to call on update.
    *
-   * @see changes
+   * @see onChange
    */
   tapImmediate(ticker: Ticker, fn: (cb: V) => void): VoidFn
 

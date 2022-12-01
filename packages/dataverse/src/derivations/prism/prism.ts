@@ -1,7 +1,6 @@
 import type Ticker from '../../Ticker'
 import type {$IntentionalAny, VoidFn} from '../../types'
 import Stack from '../../utils/Stack'
-import type Tappable from '../../utils/Tappable'
 import DerivationEmitter from '../DerivationEmitter'
 import type {IDerivation} from '../IDerivation'
 import {isDerivation} from '../IDerivation'
@@ -223,11 +222,8 @@ class PrismDerivation<V> implements IDerivation<V> {
     return this._state.hot
   }
 
-  /**
-   * Returns a `Tappable` of the changes of this derivation.
-   */
-  changes(ticker: Ticker): Tappable<V> {
-    return new DerivationEmitter(this, ticker).tappable()
+  onChange(ticker: Ticker, listener: (v: V) => void): VoidFn {
+    return new DerivationEmitter(this, ticker).tappable().tap(listener)
   }
 
   /**
@@ -256,10 +252,10 @@ class PrismDerivation<V> implements IDerivation<V> {
    * @param ticker - The ticker to use for batching.
    * @param fn - The callback to call on update.
    *
-   * @see changes
+   * @see onChange
    */
   tapImmediate(ticker: Ticker, fn: (cb: V) => void): VoidFn {
-    const untap = this.changes(ticker).tap(fn)
+    const untap = this.onChange(ticker, fn)
     fn(this.getValue())
     return untap
   }

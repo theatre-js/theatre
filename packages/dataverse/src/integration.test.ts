@@ -20,7 +20,7 @@ describe(`v2 atom`, () => {
       expect(d.getValue()).toEqual(0)
       const ticker = new Ticker()
       const changes: number[] = []
-      d.changes(ticker).tap((c) => {
+      d.onChange(ticker, (c) => {
         changes.push(c)
       })
       a.setState({...data, bar: 1})

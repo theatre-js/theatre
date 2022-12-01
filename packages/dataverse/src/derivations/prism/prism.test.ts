@@ -21,7 +21,7 @@ describe('prism', () => {
     expect(d.getValue()).toEqual('fooboo')
 
     const changes: Array<$FixMe> = []
-    d.changes(ticker).tap((c) => {
+    d.onChange(ticker, (c) => {
       changes.push(c)
     })
 
@@ -112,7 +112,7 @@ describe('prism', () => {
         return n
       })
 
-      const untap = derivation.changes(ticker).tap((change) => {
+      const untap = derivation.onChange(ticker, (change) => {
         sequence.push({change})
       })
 
@@ -172,7 +172,7 @@ describe('prism', () => {
         return n
       })
 
-      const untap = derivation.changes(ticker).tap((change) => {
+      const untap = derivation.onChange(ticker, (change) => {
         sequence.push({change})
       })
 
