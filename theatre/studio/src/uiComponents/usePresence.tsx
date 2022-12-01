@@ -7,6 +7,7 @@ import {prism, pointerToPrism} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import {usePrismInstance} from '@theatre/react'
 import {selectClosestHTMLAncestor} from '@theatre/studio/utils/selectClosestHTMLAncestor'
+import pointerDeep from '@theatre/shared/utils/pointerDeep'
 
 /** To mean the presence value */
 export enum PresenceFlag {
@@ -53,12 +54,15 @@ function createPresenceContext(options: {
           flag: rel.flag,
         }
         const path = [rel.affects, itemKey, relationId]
-        relationsAtom.setIn(path, presence)
+        relationsAtom.setByPointer((p) => pointerDeep(p, path), presence)
         return path
       })
       return () => {
         for (const pathToUndo of undoAtPaths) {
-          relationsAtom.setIn(pathToUndo, undefined)
+          relationsAtom.setByPointer(
+            (p) => pointerDeep(p, pathToUndo),
+            undefined,
+          )
         }
       }
     },
@@ -98,16 +102,16 @@ function createPresenceContext(options: {
       return usePrismInstance(focusD)
     },
     setUserHover(itemKeyOpt) {
-      const prev = currentUserHoverItemB.getState()
+      const prev = currentUserHoverItemB.get()
       if (prev === itemKeyOpt) {
         return
       }
       if (prev) {
-        currentUserHoverFlagItemsAtom.setIn([prev], false)
+        currentUserHoverFlagItemsAtom.setByPointer((p) => p[prev], false)
       }
-      currentUserHoverItemB.setState(itemKeyOpt)
+      currentUserHoverItemB.set(itemKeyOpt)
       if (itemKeyOpt) {
-        currentUserHoverFlagItemsAtom.setIn([itemKeyOpt], true)
+        currentUserHoverFlagItemsAtom.setByPointer((p) => p[itemKeyOpt], true)
       }
     },
   }

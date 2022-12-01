@@ -4,10 +4,10 @@ import last from 'lodash-es/last'
 import type {Prism} from './prism/Interface'
 import {isPrism} from './prism/Interface'
 import type {Pointer, PointerType} from './pointer'
+import {getPointerParts} from './pointer'
 import {isPointer} from './pointer'
 import pointer, {getPointerMeta} from './pointer'
 import type {$FixMe, $IntentionalAny} from './types'
-import type {PathBasedReducer} from './utils/PathBasedReducer'
 import updateDeep from './utils/updateDeep'
 import prism from './prism/prism'
 
@@ -176,39 +176,22 @@ export default class Atom<State> implements IdentityPrismProvider {
     return path.length === 0 ? this.getState() : get(this.getState(), path)
   }
 
-  /**
-   * Creates a new state object from the current one, where the value at `path`
-   * is replaced by the return value of `reducer`, then sets it.
-   *
-   * @remarks
-   * Doesn't mutate the old state, and preserves referential equality between
-   * values of the old state and the new state where possible.
-   *
-   * @example
-   * ```ts
-   * someAtom.getIn(['a']) // 1
-   * someAtom.reduceState(['a'], (state) => state + 1);
-   * someAtom.getIn(['a']) // 2
-   * ```
-   *
-   * @param path - The path to call the reducer at.
-   * @param reducer - The function to use for creating the new state.
-   */
-  // TODO: Why is this a property and not a method?
-  reduceState: PathBasedReducer<State, State> = (
-    path: $IntentionalAny[],
-    reducer: $IntentionalAny,
-  ) => {
-    const newState = updateDeep(this.getState(), path, reducer)
-    this.setState(newState)
-    return newState
+  reduce(fn: (state: State) => State) {
+    this.set(fn(this.get()))
   }
 
-  /**
-   * Sets the state of the atom at `path`.
-   */
-  setIn(path: $FixMe[], val: $FixMe) {
-    return this.reduceState(path, () => val)
+  reduceByPointer<S>(
+    fn: (p: Pointer<State>) => Pointer<S>,
+    reducer: (s: S) => S,
+  ) {
+    const pointer = fn(this.pointer)
+    const path = getPointerParts(pointer).path
+    const newState = updateDeep(this.get(), path, reducer)
+    this.set(newState)
+  }
+
+  setByPointer<S>(fn: (p: Pointer<State>) => Pointer<S>, val: S) {
+    this.reduceByPointer(fn, () => val)
   }
 
   private _checkUpdates(scope: Scope, oldState: unknown, newState: unknown) {

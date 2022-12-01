@@ -188,7 +188,7 @@ export class Studio {
 
   setCoreBits(coreBits: CoreBits) {
     this._corePrivateApi = coreBits.privateAPI
-    this._coreAtom.setIn(['core'], coreBits.coreExports)
+    this._coreAtom.setByPointer((p) => p.core, coreBits.coreExports)
     this._setProjectsP(coreBits.projectsP)
   }
 

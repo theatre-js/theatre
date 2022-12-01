@@ -256,7 +256,11 @@ export default class SheetObject implements IdentityPrismProvider {
             const updateSequenceValueFromItsPrism = () => {
               const triple = pr.getValue()
 
-              if (!triple) return valsAtom.setIn(pathToProp, undefined)
+              if (!triple)
+                return valsAtom.setByPointer(
+                  (p) => pointerDeep(p, pathToProp),
+                  undefined,
+                )
 
               const leftDeserialized = deserializeAndSanitize(triple.left)
 
@@ -266,7 +270,10 @@ export default class SheetObject implements IdentityPrismProvider {
                   : leftDeserialized
 
               if (triple.right === undefined)
-                return valsAtom.setIn(pathToProp, left)
+                return valsAtom.setByPointer(
+                  (p) => pointerDeep(p, pathToProp),
+                  left,
+                )
 
               const rightDeserialized = deserializeAndSanitize(triple.right)
               const right =
@@ -274,8 +281,8 @@ export default class SheetObject implements IdentityPrismProvider {
                   ? propConfig.default
                   : rightDeserialized
 
-              return valsAtom.setIn(
-                pathToProp,
+              return valsAtom.setByPointer(
+                (p) => pointerDeep(p, pathToProp),
                 interpolate(left, right, triple.progression),
               )
             }

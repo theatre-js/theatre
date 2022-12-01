@@ -240,11 +240,11 @@ export default class Project {
     sheetId: SheetId,
     instanceId: SheetInstanceId = 'default' as SheetInstanceId,
   ): Sheet {
-    let template = this._sheetTemplates.getState()[sheetId]
+    let template = this._sheetTemplates.get()[sheetId]
 
     if (!template) {
       template = new SheetTemplate(this, sheetId)
-      this._sheetTemplates.setIn([sheetId], template)
+      this._sheetTemplates.reduce((s) => ({...s, [sheetId]: template}))
     }
 
     return template.getInstance(instanceId)

@@ -69,7 +69,7 @@ export default class Sheet {
 
     const object = objTemplate.createInstance(this, nativeObject, config)
 
-    this._objects.setIn([objectKey], object)
+    this._objects.setByPointer((p) => p[objectKey], object)
 
     return object
   }
@@ -79,7 +79,7 @@ export default class Sheet {
   }
 
   deleteObject(objectKey: ObjectAddressKey) {
-    this._objects.reduceState([], (state) => {
+    this._objects.reduce((state) => {
       const newState = {...state}
       delete newState[objectKey]
       return newState

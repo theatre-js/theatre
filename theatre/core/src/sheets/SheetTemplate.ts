@@ -43,7 +43,7 @@ export default class SheetTemplate {
 
     if (!inst) {
       inst = new Sheet(this, instanceId)
-      this._instances.setIn([instanceId], inst)
+      this._instances.setByPointer((p) => p[instanceId], inst)
     }
 
     return inst
@@ -65,7 +65,7 @@ export default class SheetTemplate {
         config,
         actions,
       )
-      this._objectTemplates.setIn([objectKey], template)
+      this._objectTemplates.setByPointer((p) => p[objectKey], template)
     }
 
     return template

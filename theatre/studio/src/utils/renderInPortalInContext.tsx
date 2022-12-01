@@ -27,7 +27,7 @@ export const getMounter = () => {
     props: Props,
     portalNode: HTMLElement,
   ) {
-    theAtom.reduceState([], (s) => {
+    theAtom.reduce((s) => {
       return {
         byId: {...s.byId, [id]: {comp, props, portalNode}},
         set: {...s.set, [id]: true},
@@ -36,7 +36,7 @@ export const getMounter = () => {
   }
 
   function unmount() {
-    theAtom.reduceState([], (s) => {
+    theAtom.reduce((s) => {
       const set = {...s.set}
       const byId = {...s.byId}
       delete set[id]

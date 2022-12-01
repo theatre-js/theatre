@@ -25,7 +25,7 @@ describe('prism', () => {
       changes.push(c)
     })
 
-    o.reduceState(['foo'], () => 'foo2')
+    o.reduce(({foo}) => ({foo: 'foo2'}))
     ticker.tick()
     expect(changes).toMatchObject(['foo2boo'])
   })
@@ -43,11 +43,11 @@ describe('prism', () => {
 
   describe('prism.ref()', () => {
     it('should work', () => {
-      const theAtom: Atom<{n: number}> = new Atom({n: 2})
+      const theAtom: Atom<number> = new Atom(2)
 
       const isEvenD = prism((): {isEven: boolean} => {
         const ref = prism.ref<{isEven: boolean} | undefined>('cache', undefined)
-        const currentN = val(theAtom.pointer.n)
+        const currentN = val(theAtom.pointer)
 
         const isEven = currentN % 2 === 0
         if (ref.current && ref.current.isEven === isEven) {
@@ -60,20 +60,20 @@ describe('prism', () => {
 
       const iterator = iterateAndCountTicks(isEvenD)
 
-      theAtom.reduceState(['n'], () => 3)
+      theAtom.reduce(() => 3)
 
       expect(iterator.next().value).toMatchObject({
         value: {isEven: false},
         ticks: 0,
       })
-      theAtom.reduceState(['n'], () => 5)
-      theAtom.reduceState(['n'], () => 7)
+      theAtom.reduce(() => 5)
+      theAtom.reduce(() => 7)
       expect(iterator.next().value).toMatchObject({
         value: {isEven: false},
         ticks: 1,
       })
-      theAtom.reduceState(['n'], () => 2)
-      theAtom.reduceState(['n'], () => 4)
+      theAtom.reduce(() => 2)
+      theAtom.reduce(() => 4)
       expect(iterator.next().value).toMatchObject({
         value: {isEven: true},
         ticks: 1,
@@ -91,10 +91,10 @@ describe('prism', () => {
       const sequence: unknown[] = []
       let deps: unknown[] = []
 
-      const a = new Atom({letter: 'a'})
+      const a = new Atom('a')
 
       const prsm = prism(() => {
-        const n = val(a.pointer.letter)
+        const n = val(a.pointer)
         const iterationAtTimeOfCall = iteration
         sequence.push({prismCall: iterationAtTimeOfCall})
 
@@ -120,14 +120,14 @@ describe('prism', () => {
       sequence.length = 0
 
       iteration++
-      a.setIn(['letter'], 'b')
+      a.set('b')
       ticker.tick()
       expect(sequence).toMatchObject([{prismCall: 1}, {change: 'b'}])
       sequence.length = 0
 
       deps = [1]
       iteration++
-      a.setIn(['letter'], 'c')
+      a.set('c')
       ticker.tick()
       expect(sequence).toMatchObject([
         {prismCall: 2},
@@ -151,10 +151,10 @@ describe('prism', () => {
       const sequence: unknown[] = []
       let deps: unknown[] = []
 
-      const a = new Atom({letter: 'a'})
+      const a = new Atom('a')
 
       const prsm = prism(() => {
-        const n = val(a.pointer.letter)
+        const n = val(a.pointer)
         const iterationAtTimeOfCall = iteration
         sequence.push({prismCall: iterationAtTimeOfCall})
 
@@ -184,7 +184,7 @@ describe('prism', () => {
       sequence.length = 0
 
       iteration++
-      a.setIn(['letter'], 'b')
+      a.set('b')
       ticker.tick()
       expect(sequence).toMatchObject([
         {prismCall: 1},
@@ -195,7 +195,7 @@ describe('prism', () => {
 
       deps = [1]
       iteration++
-      a.setIn(['letter'], 'c')
+      a.set('c')
       ticker.tick()
       expect(sequence).toMatchObject([
         {prismCall: 2},

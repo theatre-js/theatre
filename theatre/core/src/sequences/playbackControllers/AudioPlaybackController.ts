@@ -120,11 +120,11 @@ export default class AudioPlaybackController implements IPlaybackController {
   }
 
   private get _playing() {
-    return this._state.getState().playing
+    return this._state.get().playing
   }
 
   private set _playing(playing: boolean) {
-    this._state.setIn(['playing'], playing)
+    this._state.setByPointer((p) => p.playing, playing)
   }
 
   destroy() {}
@@ -140,11 +140,11 @@ export default class AudioPlaybackController implements IPlaybackController {
   }
 
   private _updatePositionInState(time: number) {
-    this._state.reduceState(['position'], () => time)
+    this._state.reduce((s) => ({...s, position: time}))
   }
 
   getCurrentPosition() {
-    return this._state.getState().position
+    return this._state.get().position
   }
 
   play(

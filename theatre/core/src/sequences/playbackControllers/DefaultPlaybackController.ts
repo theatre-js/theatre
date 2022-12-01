@@ -66,19 +66,19 @@ export default class DefaultPlaybackController implements IPlaybackController {
   }
 
   private _updatePositionInState(time: number) {
-    this._state.reduceState(['position'], () => time)
+    this._state.setByPointer((p) => p.position, time)
   }
 
   getCurrentPosition() {
-    return this._state.getState().position
+    return this._state.get().position
   }
 
   get playing() {
-    return this._state.getState().playing
+    return this._state.get().playing
   }
 
   set playing(playing: boolean) {
-    this._state.setIn(['playing'], playing)
+    this._state.setByPointer((p) => p.playing, playing)
   }
 
   play(
