@@ -44,7 +44,7 @@ export default class Sequence {
   _playableRangeD: undefined | Prism<{start: number; end: number}>
 
   readonly pointer: ISequence['pointer'] = pointer({root: this, path: []})
-  readonly $$isIdentityDerivationProvider = true
+  readonly $$isIdentityPrismProvider = true
   readonly _logger: ILogger
 
   constructor(
@@ -81,7 +81,7 @@ export default class Sequence {
     })
   }
 
-  getIdentityDerivation(path: Array<string | number>): Prism<unknown> {
+  getIdentityPrism(path: Array<string | number>): Prism<unknown> {
     if (path.length === 0) {
       return prism((): ISequence['pointer']['$$__pointer_type'] => ({
         length: val(this.pointer.length),
