@@ -3,7 +3,7 @@ import getStudio from '@theatre/studio/getStudio'
 import {cmdIsDown} from '@theatre/studio/utils/keyboardUtils'
 import {getSelectedSequence} from '@theatre/studio/selectors'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import type {IDerivation} from '@theatre/dataverse'
+import type {Prism} from '@theatre/dataverse'
 import {Box, prism, val} from '@theatre/dataverse'
 import type {IPlaybackRange} from '@theatre/core/sequences/Sequence'
 import type Sequence from '@theatre/core/sequences/Sequence'
@@ -151,7 +151,7 @@ export default function useKeyboardShortcuts() {
 }
 
 type ControlledPlaybackStateBox = Box<
-  undefined | IDerivation<{range: IPlaybackRange; isFollowingARange: boolean}>
+  undefined | Prism<{range: IPlaybackRange; isFollowingARange: boolean}>
 >
 
 const getPlaybackStateBox = memoizeFn(

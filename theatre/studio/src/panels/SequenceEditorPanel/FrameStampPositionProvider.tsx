@@ -1,4 +1,4 @@
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {Atom, prism, val} from '@theatre/dataverse'
 import mousePositionD from '@theatre/studio/utils/mousePositionD'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
@@ -26,7 +26,7 @@ export enum FrameStampPositionType {
 }
 
 const context = createContext<{
-  currentD: IDerivation<[pos: number, posType: FrameStampPositionType]>
+  currentD: Prism<[pos: number, posType: FrameStampPositionType]>
   getLock(): FrameStampPositionLock
 }>(null as $IntentionalAny)
 
@@ -211,7 +211,7 @@ const ATTR_LOCK_FRAMESTAMP = 'data-theatre-lock-framestamp-to'
 
 const pointerPositionInUnitSpace = (
   layoutP: Pointer<SequenceEditorPanelLayout>,
-): IDerivation<[pos: number, posType: FrameStampPositionType]> => {
+): Prism<[pos: number, posType: FrameStampPositionType]> => {
   return prism(() => {
     const rightDims = val(layoutP.rightDims)
     const clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)

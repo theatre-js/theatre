@@ -1,12 +1,12 @@
 import type Ticker from '../Ticker'
 import type {$IntentionalAny, VoidFn} from '../types'
 
-type IDependent = (msgComingFrom: IDerivation<$IntentionalAny>) => void
+type IDependent = (msgComingFrom: Prism<$IntentionalAny>) => void
 
 /**
  * Common interface for derivations.
  */
-export interface IDerivation<V> {
+export interface Prism<V> {
   /**
    * Whether the object is a derivation.
    */
@@ -63,6 +63,6 @@ export interface IDerivation<V> {
 /**
  * Returns whether `d` is a derivation.
  */
-export function isDerivation(d: any): d is IDerivation<unknown> {
+export function isDerivation(d: any): d is Prism<unknown> {
   return d && d.isDerivation && d.isDerivation === true
 }

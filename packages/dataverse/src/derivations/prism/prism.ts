@@ -1,7 +1,7 @@
 import type Ticker from '../../Ticker'
 import type {$IntentionalAny, VoidFn} from '../../types'
 import Stack from '../../utils/Stack'
-import type {IDerivation} from '../IDerivation'
+import type {Prism} from '../IDerivation'
 import {isDerivation} from '../IDerivation'
 import {
   startIgnoringDependencies,
@@ -12,15 +12,14 @@ import {
   reportResolutionEnd,
 } from './discoveryMechanism'
 
-type IDependent = (msgComingFrom: IDerivation<$IntentionalAny>) => void
+type IDependent = (msgComingFrom: Prism<$IntentionalAny>) => void
 
 const voidFn = () => {}
 
 class HotHandle<V> {
   private _didMarkDependentsAsStale: boolean = false
   private _isFresh: boolean = false
-  protected _cacheOfDendencyValues: Map<IDerivation<unknown>, unknown> =
-    new Map()
+  protected _cacheOfDendencyValues: Map<Prism<unknown>, unknown> = new Map()
 
   /**
    * @internal
@@ -30,9 +29,9 @@ class HotHandle<V> {
   /**
    * @internal
    */
-  protected _dependencies: Set<IDerivation<$IntentionalAny>> = new Set()
+  protected _dependencies: Set<Prism<$IntentionalAny>> = new Set()
 
-  protected _possiblyStaleDeps = new Set<IDerivation<unknown>>()
+  protected _possiblyStaleDeps = new Set<Prism<unknown>>()
 
   private _scope: HotScope = new HotScope(
     this as $IntentionalAny as HotHandle<unknown>,
@@ -112,10 +111,10 @@ class HotHandle<V> {
       }
     }
 
-    const newDeps: Set<IDerivation<unknown>> = new Set()
+    const newDeps: Set<Prism<unknown>> = new Set()
     this._cacheOfDendencyValues.clear()
 
-    const collector = (observedDep: IDerivation<unknown>): void => {
+    const collector = (observedDep: Prism<unknown>): void => {
       newDeps.add(observedDep)
       this._addDependency(observedDep)
     }
@@ -161,9 +160,7 @@ class HotHandle<V> {
     this._markAsStale()
   }
 
-  protected _reactToDependencyGoingStale = (
-    which: IDerivation<$IntentionalAny>,
-  ) => {
+  protected _reactToDependencyGoingStale = (which: Prism<$IntentionalAny>) => {
     this._possiblyStaleDeps.add(which)
 
     this._markAsStale()
@@ -183,7 +180,7 @@ class HotHandle<V> {
   /**
    * @internal
    */
-  protected _addDependency(d: IDerivation<$IntentionalAny>) {
+  protected _addDependency(d: Prism<$IntentionalAny>) {
     if (this._dependencies.has(d)) return
     this._dependencies.add(d)
     d._addDependent(this._reactToDependencyGoingStale)
@@ -192,7 +189,7 @@ class HotHandle<V> {
   /**
    * @internal
    */
-  protected _removeDependency(d: IDerivation<$IntentionalAny>) {
+  protected _removeDependency(d: Prism<$IntentionalAny>) {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
     d._removeDependent(this._reactToDependencyGoingStale)
@@ -201,7 +198,7 @@ class HotHandle<V> {
 
 const emptyObject = {}
 
-class PrismDerivation<V> implements IDerivation<V> {
+class PrismDerivation<V> implements Prism<V> {
   /**
    * Whether the object is a derivation.
    */
@@ -703,11 +700,9 @@ function inPrism(): boolean {
   return !!hookScopeStack.peek()
 }
 
-const possibleDerivationToValue = <
-  P extends IDerivation<$IntentionalAny> | unknown,
->(
+const possibleDerivationToValue = <P extends Prism<$IntentionalAny> | unknown>(
   input: P,
-): P extends IDerivation<infer T> ? T : P => {
+): P extends Prism<infer T> ? T : P => {
   if (isDerivation(input)) {
     return input.getValue() as $IntentionalAny
   } else {
@@ -728,7 +723,7 @@ function source<V>(
 }
 
 type IPrismFn = {
-  <T>(fn: () => T): IDerivation<T>
+  <T>(fn: () => T): Prism<T>
   ref: typeof ref
   effect: typeof effect
   memo: typeof memo

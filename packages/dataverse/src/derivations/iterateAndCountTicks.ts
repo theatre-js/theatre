@@ -1,15 +1,15 @@
 import {valueDerivation} from '../Atom'
 import type {Pointer} from '../pointer'
 import {isPointer} from '../pointer'
-import type {IDerivation} from './IDerivation'
+import type {Prism} from './IDerivation'
 import {isDerivation} from './IDerivation'
 
 export default function* iterateAndCountTicks<V>(
-  pointerOrDerivation: IDerivation<V> | Pointer<V>,
+  pointerOrDerivation: Prism<V> | Pointer<V>,
 ): Generator<{value: V; ticks: number}, void, void> {
   let d
   if (isPointer(pointerOrDerivation)) {
-    d = valueDerivation(pointerOrDerivation) as IDerivation<V>
+    d = valueDerivation(pointerOrDerivation) as Prism<V>
   } else if (isDerivation(pointerOrDerivation)) {
     d = pointerOrDerivation
   } else {

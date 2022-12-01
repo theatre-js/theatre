@@ -16,7 +16,7 @@ import type {
 import {valToAtom} from '@theatre/shared/utils/valToAtom'
 import type {
   IdentityDerivationProvider,
-  IDerivation,
+  Prism,
   Pointer,
 } from '@theatre/dataverse'
 
@@ -73,7 +73,7 @@ export default class SheetObject implements IdentityDerivationProvider {
     this.publicApi = new TheatreSheetObject(this)
   }
 
-  getValues(): IDerivation<Pointer<SheetObjectPropsValue>> {
+  getValues(): Prism<Pointer<SheetObjectPropsValue>> {
     // Cache the derivation because only one is needed per SheetObject.
     // Also, if `onValuesChange()` is unsubscribed from, this derivation will go cold
     // and free its resources. So it's no problem to still keep it on the cache.
@@ -215,7 +215,7 @@ export default class SheetObject implements IdentityDerivationProvider {
     ) as SerializableValue as T
   }
 
-  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
+  getIdentityDerivation(path: Array<string | number>): Prism<unknown> {
     /**
      * @remarks
      * TODO perf: Too much indirection here.
@@ -229,7 +229,7 @@ export default class SheetObject implements IdentityDerivationProvider {
   /**
    * Returns values of props that are sequenced.
    */
-  getSequencedValues(): IDerivation<Pointer<SheetObjectPropsValue>> {
+  getSequencedValues(): Prism<Pointer<SheetObjectPropsValue>> {
     return prism(() => {
       const tracksToProcessD = prism.memo(
         'tracksToProcess',
@@ -305,7 +305,7 @@ export default class SheetObject implements IdentityDerivationProvider {
 
   protected _trackIdToDerivation(
     trackId: SequenceTrackId,
-  ): IDerivation<InterpolationTriple | undefined> {
+  ): Prism<InterpolationTriple | undefined> {
     const trackP =
       this.template.project.pointers.historic.sheetsById[this.address.sheetId]
         .sequence.tracksByObject[this.address.objectKey].trackData[trackId]

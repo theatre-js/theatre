@@ -8,7 +8,7 @@ import type {
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import {usePrism, useVal} from '@theatre/react'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism, val, valueDerivation} from '@theatre/dataverse'
 import React, {useMemo, Fragment} from 'react'
 import styled from 'styled-components'
@@ -230,7 +230,7 @@ function useCollectedSelectedPositions(
 function collectedSelectedPositions(
   layoutP: Pointer<SequenceEditorPanelLayout>,
   aggregatedKeyframes: AggregatedKeyframes,
-): IDerivation<_AggSelection> {
+): Prism<_AggSelection> {
   return prism(() => {
     const selectionAtom = val(layoutP.selectionAtom)
     const selection = val(selectionAtom.pointer.current)

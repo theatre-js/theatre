@@ -1,4 +1,4 @@
-import type {IDerivation} from '@theatre/dataverse'
+import type {Prism} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
@@ -57,7 +57,7 @@ function createWhatPropIsHighlightedState() {
     },
     getIsPropHighlightedD(
       address: WithoutSheetInstance<PropAddress>,
-    ): IDerivation<PropHighlighted> {
+    ): Prism<PropHighlighted> {
       const highlightedP = pointerDeep(
         whatIsHighlighted.pointer.deepPath,
         addressToArray(address),

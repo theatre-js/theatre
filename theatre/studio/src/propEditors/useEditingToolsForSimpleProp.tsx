@@ -1,6 +1,6 @@
 import get from 'lodash-es/get'
 import React from 'react'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
@@ -59,7 +59,7 @@ type EditingTools<T> =
   | EditingToolsStatic<T>
   | EditingToolsSequenced<T>
 
-const cache = new WeakMap<{}, IDerivation<EditingTools<$IntentionalAny>>>()
+const cache = new WeakMap<{}, Prism<EditingTools<$IntentionalAny>>>()
 
 /**
  * Note: we're able to get `obj` and `propConfig` from `pointerToProp`,
@@ -69,7 +69,7 @@ function createDerivation<T extends SerializablePrimitive>(
   pointerToProp: Pointer<T>,
   obj: SheetObject,
   propConfig: PropTypeConfig_AllSimples,
-): IDerivation<EditingTools<T>> {
+): Prism<EditingTools<T>> {
   return prism(() => {
     const pathToProp = getPointerParts(pointerToProp).path
 
@@ -329,7 +329,7 @@ function getDerivation<T extends SerializablePrimitive>(
   pointerToProp: Pointer<T>,
   obj: SheetObject,
   propConfig: PropTypeConfig_AllSimples,
-): IDerivation<EditingTools<T>> {
+): Prism<EditingTools<T>> {
   if (cache.has(pointerToProp)) {
     return cache.get(pointerToProp)!
   } else {

@@ -3,7 +3,7 @@ import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SequenceAddress} from '@theatre/shared/utils/addresses'
 import didYouMean from '@theatre/shared/utils/didYouMean'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
-import type {IBox, IDerivation, Pointer} from '@theatre/dataverse'
+import type {IBox, Prism, Pointer} from '@theatre/dataverse'
 import {pointer} from '@theatre/dataverse'
 import {Box, prism, val} from '@theatre/dataverse'
 import {padStart} from 'lodash-es'
@@ -38,10 +38,10 @@ export default class Sequence {
   publicApi: TheatreSequence
 
   private _playbackControllerBox: IBox<IPlaybackController>
-  private _statePointerDerivation: IDerivation<Pointer<IPlaybackState>>
-  private _positionD: IDerivation<number>
-  private _positionFormatterD: IDerivation<ISequencePositionFormatter>
-  _playableRangeD: undefined | IDerivation<{start: number; end: number}>
+  private _statePointerDerivation: Prism<Pointer<IPlaybackState>>
+  private _positionD: Prism<number>
+  private _positionFormatterD: Prism<ISequencePositionFormatter>
+  _playableRangeD: undefined | Prism<{start: number; end: number}>
 
   readonly pointer: ISequence['pointer'] = pointer({root: this, path: []})
   readonly $$isIdentityDerivationProvider = true
@@ -50,8 +50,8 @@ export default class Sequence {
   constructor(
     readonly _project: Project,
     readonly _sheet: Sheet,
-    readonly _lengthD: IDerivation<number>,
-    readonly _subUnitsPerUnitD: IDerivation<number>,
+    readonly _lengthD: Prism<number>,
+    readonly _subUnitsPerUnitD: Prism<number>,
     playbackController?: IPlaybackController,
   ) {
     this._logger = _project._logger
@@ -81,7 +81,7 @@ export default class Sequence {
     })
   }
 
-  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
+  getIdentityDerivation(path: Array<string | number>): Prism<unknown> {
     if (path.length === 0) {
       return prism((): ISequence['pointer']['$$__pointer_type'] => ({
         length: val(this.pointer.length),
@@ -177,7 +177,7 @@ export default class Sequence {
     return val(this._playbackControllerBox.get().statePointer.playing)
   }
 
-  _makeRangeFromSequenceTemplate(): IDerivation<IPlaybackRange> {
+  _makeRangeFromSequenceTemplate(): Prism<IPlaybackRange> {
     return prism(() => {
       return [0, val(this._lengthD)]
     })
@@ -194,7 +194,7 @@ export default class Sequence {
    * @returns  a promise that gets rejected if the playback stopped for whatever reason
    *
    */
-  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
+  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown> {
     return this._playbackControllerBox.get().playDynamicRange(rangeD)
   }
 

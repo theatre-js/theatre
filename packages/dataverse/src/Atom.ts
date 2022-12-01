@@ -1,7 +1,7 @@
 import get from 'lodash-es/get'
 import isPlainObject from 'lodash-es/isPlainObject'
 import last from 'lodash-es/last'
-import type {IDerivation} from './derivations/IDerivation'
+import type {Prism} from './derivations/IDerivation'
 import {isDerivation} from './derivations/IDerivation'
 import type {Pointer, PointerType} from './pointer'
 import {isPointer} from './pointer'
@@ -34,7 +34,7 @@ export interface IdentityDerivationProvider {
    *
    * @param path - The path to create the derivation at.
    */
-  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown>
+  getIdentityDerivation(path: Array<string | number>): Prism<unknown>
 }
 
 const getTypeOfValue = (v: unknown): ValueTypes => {
@@ -246,7 +246,7 @@ export default class Atom<State extends {}>
    *
    * @param path - The path to create the derivation at.
    */
-  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
+  getIdentityDerivation(path: Array<string | number>): Prism<unknown> {
     const subscribe = (listener: (val: unknown) => void) =>
       this._onPathValueChange(path, listener)
 
@@ -258,7 +258,7 @@ export default class Atom<State extends {}>
   }
 }
 
-const identityDerivationWeakMap = new WeakMap<{}, IDerivation<unknown>>()
+const identityDerivationWeakMap = new WeakMap<{}, Prism<unknown>>()
 
 /**
  * Returns a derivation of the value at the provided pointer. Derivations are
@@ -268,7 +268,7 @@ const identityDerivationWeakMap = new WeakMap<{}, IDerivation<unknown>>()
  */
 export const valueDerivation = <P extends PointerType<$IntentionalAny>>(
   pointer: P,
-): IDerivation<P extends PointerType<infer T> ? T : void> => {
+): Prism<P extends PointerType<infer T> ? T : void> => {
   const meta = getPointerMeta(pointer)
 
   let derivation = identityDerivationWeakMap.get(meta)
@@ -309,14 +309,14 @@ function isIdentityDerivationProvider(
 export const val = <
   P extends
     | PointerType<$IntentionalAny>
-    | IDerivation<$IntentionalAny>
+    | Prism<$IntentionalAny>
     | undefined
     | null,
 >(
   input: P,
 ): P extends PointerType<infer T>
   ? T
-  : P extends IDerivation<infer T>
+  : P extends Prism<infer T>
   ? T
   : P extends undefined | null
   ? P

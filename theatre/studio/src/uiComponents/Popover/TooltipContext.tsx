@@ -1,4 +1,4 @@
-import type {IDerivation} from '@theatre/dataverse'
+import type {Prism} from '@theatre/dataverse'
 import {Box} from '@theatre/dataverse'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {
@@ -10,7 +10,7 @@ import React, {
 } from 'react'
 
 const ctx = createContext<{
-  cur: IDerivation<number>
+  cur: Prism<number>
   set: (id: number, delay: number) => void
 }>(null!)
 

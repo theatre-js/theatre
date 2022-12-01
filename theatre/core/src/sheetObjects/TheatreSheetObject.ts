@@ -9,7 +9,7 @@ import type {
   DeepPartialOfSerializableValue,
   VoidFn,
 } from '@theatre/shared/utils/types'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import type SheetObject from './SheetObject'
 import type {
@@ -147,10 +147,10 @@ export default class TheatreSheetObject<
     return {...privateAPI(this).address}
   }
 
-  private _valuesDerivation(): IDerivation<this['value']> {
+  private _valuesDerivation(): Prism<this['value']> {
     return this._cache.get('onValuesChangeDerivation', () => {
       const sheetObject = privateAPI(this)
-      const d: IDerivation<PropsValue<Props>> = prism(() => {
+      const d: Prism<PropsValue<Props>> = prism(() => {
         return val(sheetObject.getValues().getValue()) as $FixMe
       })
       return d

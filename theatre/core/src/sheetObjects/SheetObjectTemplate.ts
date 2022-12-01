@@ -21,7 +21,7 @@ import type {
   SerializableMap,
   SerializableValue,
 } from '@theatre/shared/utils/types'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
 import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
@@ -115,7 +115,7 @@ export default class SheetObjectTemplate {
   /**
    * Returns the default values (all defaults are read from the config)
    */
-  getDefaultValues(): IDerivation<SerializableMap> {
+  getDefaultValues(): Prism<SerializableMap> {
     return this._cache.get('getDefaultValues()', () =>
       prism(() => {
         const config = val(this.configPointer)
@@ -127,7 +127,7 @@ export default class SheetObjectTemplate {
   /**
    * Returns values that are set statically (ie, not sequenced, and not defaults)
    */
-  getStaticValues(): IDerivation<SerializableMap> {
+  getStaticValues(): Prism<SerializableMap> {
     return this._cache.get('getDerivationOfStatics', () =>
       prism(() => {
         const pointerToSheetState =
@@ -155,7 +155,7 @@ export default class SheetObjectTemplate {
    *
    * Returns an array.
    */
-  getArrayOfValidSequenceTracks(): IDerivation<
+  getArrayOfValidSequenceTracks(): Prism<
     Array<{pathToProp: PathToProp; trackId: SequenceTrackId}>
   > {
     return this._cache.get('getArrayOfValidSequenceTracks', () =>
@@ -226,7 +226,7 @@ export default class SheetObjectTemplate {
    *
    * Not available in core.
    */
-  getMapOfValidSequenceTracks_forStudio(): IDerivation<IPropPathToTrackIdTree> {
+  getMapOfValidSequenceTracks_forStudio(): Prism<IPropPathToTrackIdTree> {
     return this._cache.get('getMapOfValidSequenceTracks_forStudio', () =>
       prism(() => {
         const arr = val(this.getArrayOfValidSequenceTracks())

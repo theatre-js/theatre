@@ -5,7 +5,7 @@ import type {
 import {defer} from '@theatre/shared/utils/defer'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import noop from '@theatre/shared/utils/noop'
-import type {IDerivation, Pointer, Ticker} from '@theatre/dataverse'
+import type {Prism, Pointer, Ticker} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import type {
   IPlaybackController,
@@ -34,7 +34,7 @@ export default class AudioPlaybackController implements IPlaybackController {
     this._mainGain.connect(this._nodeDestination)
   }
 
-  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
+  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown> {
     const deferred = defer<boolean>()
     if (this._playing) this.pause()
 

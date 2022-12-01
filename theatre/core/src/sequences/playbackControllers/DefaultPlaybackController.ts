@@ -4,7 +4,7 @@ import type {
 } from '@theatre/core/sequences/Sequence'
 import {defer} from '@theatre/shared/utils/defer'
 import noop from '@theatre/shared/utils/noop'
-import type {IDerivation, Pointer, Ticker} from '@theatre/dataverse'
+import type {Prism, Pointer, Ticker} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 
 export interface IPlaybackState {
@@ -36,7 +36,7 @@ export interface IPlaybackController {
    * @returns  a promise that gets rejected if the playback stopped for whatever reason
    *
    */
-  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown>
+  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown>
 
   pause(): void
 }
@@ -203,7 +203,7 @@ export default class DefaultPlaybackController implements IPlaybackController {
     return deferred.promise
   }
 
-  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
+  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown> {
     if (this.playing) {
       this.pause()
     }

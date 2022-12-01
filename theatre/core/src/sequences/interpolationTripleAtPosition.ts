@@ -3,7 +3,7 @@ import type {
   Keyframe,
   TrackData,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import type {IUtilContext} from '@theatre/shared/logger'
 import type {SerializableValue} from '@theatre/shared/utils/types'
@@ -28,8 +28,8 @@ export type InterpolationTriple = {
 export default function interpolationTripleAtPosition(
   ctx: IUtilContext,
   trackP: Pointer<TrackData | undefined>,
-  timeD: IDerivation<number>,
-): IDerivation<InterpolationTriple | undefined> {
+  timeD: Prism<number>,
+): Prism<InterpolationTriple | undefined> {
   return prism(() => {
     const track = val(trackP)
     const driverD = prism.memo(
@@ -55,7 +55,7 @@ type IStartedState = {
   started: true
   validFrom: number
   validTo: number
-  der: IDerivation<InterpolationTriple | undefined>
+  der: Prism<InterpolationTriple | undefined>
 }
 
 type IState = {started: false} | IStartedState
@@ -63,8 +63,8 @@ type IState = {started: false} | IStartedState
 function _forKeyframedTrack(
   ctx: IUtilContext,
   track: BasicKeyframedTrack,
-  timeD: IDerivation<number>,
-): IDerivation<InterpolationTriple | undefined> {
+  timeD: Prism<number>,
+): Prism<InterpolationTriple | undefined> {
   return prism(() => {
     let stateRef = prism.ref<IState>('state', {started: false})
     let state = stateRef.current
@@ -83,7 +83,7 @@ const undefinedConstD = prism(() => undefined)
 
 function updateState(
   ctx: IUtilContext,
-  progressionD: IDerivation<number>,
+  progressionD: Prism<number>,
   track: BasicKeyframedTrack,
 ): IStartedState {
   const progression = progressionD.getValue()
@@ -173,7 +173,7 @@ const states = {
   between(
     left: Keyframe,
     right: Keyframe,
-    progressionD: IDerivation<number>,
+    progressionD: Prism<number>,
   ): IStartedState {
     if (!left.connectedRight) {
       return {

@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type {IDerivation} from '@theatre/dataverse'
+import type {Prism} from '@theatre/dataverse'
 import {Box} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {findIndex} from 'lodash-es'
@@ -144,7 +144,7 @@ type QueueItem<T = unknown> = {
   /**
    * A reference to the derivation
    */
-  der: IDerivation<T>
+  der: Prism<T>
   /**
    * The last value of this derivation.
    */
@@ -303,7 +303,7 @@ function queueIfNeeded() {
  * On the off-chance that one of them still turns out to be a zombile child, `runQueue` will defer that particular
  * `useDerivation()` to be read inside a normal react render phase.
  */
-export function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
+export function useDerivation<T>(der: Prism<T>, debugLabel?: string): T {
   const _forceUpdate = useForceUpdate(debugLabel)
 
   const ref = useRef<QueueItem<T>>(undefined as $IntentionalAny)
@@ -386,7 +386,7 @@ export function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
 export function usePrismWithoutReRender<T>(
   fn: () => T,
   deps: unknown[],
-): IDerivation<T> {
+): Prism<T> {
   const derivation = useMemo(() => prism(fn), deps)
 
   return useDerivationWithoutReRender(derivation)
@@ -398,9 +398,7 @@ export function usePrismWithoutReRender<T>(
  * return the value of the derivation, and it does not
  * re-render the component if the value of the derivation changes.
  */
-export function useDerivationWithoutReRender<T>(
-  der: IDerivation<T>,
-): IDerivation<T> {
+export function useDerivationWithoutReRender<T>(der: Prism<T>): Prism<T> {
   useEffect(() => {
     const untap = der.keepHot()
 

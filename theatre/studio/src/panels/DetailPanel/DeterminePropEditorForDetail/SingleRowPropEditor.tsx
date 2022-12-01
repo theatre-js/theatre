@@ -1,6 +1,6 @@
 import type * as propTypes from '@theatre/core/propTypes'
 import {getPointerParts} from '@theatre/dataverse'
-import type {Pointer, IDerivation} from '@theatre/dataverse'
+import type {Pointer, Prism} from '@theatre/dataverse'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {last} from 'lodash-es'
@@ -92,7 +92,7 @@ type ISingleRowPropEditorProps<T> = {
   propConfig: propTypes.PropTypeConfig
   pointerToProp: Pointer<T>
   editingTools: ReturnType<typeof useEditingToolsForSimplePropInDetailsPanel>
-  isPropHighlightedD: IDerivation<PropHighlighted>
+  isPropHighlightedD: Prism<PropHighlighted>
 }
 
 export function SingleRowPropEditor<T>({

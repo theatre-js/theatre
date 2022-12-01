@@ -9,7 +9,7 @@ import type {
   StrictRecord,
 } from '@theatre/shared/utils/types'
 import {valToAtom} from '@theatre/shared/utils/valToAtom'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {Atom, prism, val} from '@theatre/dataverse'
 import type {SequenceEditorTree} from './tree'
 import {calculateSequenceEditorTree} from './tree'
@@ -176,7 +176,7 @@ const initialClippedSpaceRange: IRange = {start: 0, end: 10}
 export function sequenceEditorPanelLayout(
   sheet: Sheet,
   panelDimsP: Pointer<PanelDims>,
-): IDerivation<Pointer<SequenceEditorPanelLayout>> {
+): Prism<Pointer<SequenceEditorPanelLayout>> {
   const studio = getStudio()!
 
   const ahistoricStateP =

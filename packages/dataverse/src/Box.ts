@@ -1,4 +1,4 @@
-import type {IDerivation} from './derivations/IDerivation'
+import type {Prism} from './derivations/IDerivation'
 import prism from './derivations/prism/prism'
 import Emitter from './utils/Emitter'
 
@@ -27,7 +27,7 @@ export interface IBox<V> {
   /**
    * Creates a derivation of the Box that you can use to track changes to it.
    */
-  derivation: IDerivation<V>
+  derivation: Prism<V>
 }
 
 /**
@@ -39,7 +39,7 @@ export interface IBox<V> {
  * reference even if the objects are structurally equal.
  */
 export default class Box<V> implements IBox<V> {
-  private _publicDerivation: IDerivation<V>
+  private _publicDerivation: Prism<V>
   private _emitter = new Emitter<V>()
 
   /**

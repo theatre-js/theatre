@@ -1,6 +1,6 @@
 import type {IProject, ISheet, ISheetObject} from '@theatre/core'
 import studioTicker from '@theatre/studio/studioTicker'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
@@ -410,7 +410,7 @@ export default class TheatreStudio implements IStudio {
     })
   }
 
-  private _getSelectionDerivation(): IDerivation<(ISheetObject | ISheet)[]> {
+  private _getSelectionDerivation(): Prism<(ISheetObject | ISheet)[]> {
     return this._cache.get('_getStateDerivation()', () =>
       prism((): (ISheetObject | ISheet)[] => {
         return getOutlineSelection()

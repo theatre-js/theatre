@@ -8,7 +8,7 @@ import globals from '@theatre/shared/globals'
 /**
  * @remarks
  * TODO this could be turned into a simple derivation, like:
- * `editor.isReady: IDerivation<{isReady: true} | {isReady: false, reason: 'conflictBetweenDiskStateAndBrowserState'}>`
+ * `editor.isReady: Prism<{isReady: true} | {isReady: false, reason: 'conflictBetweenDiskStateAndBrowserState'}>`
  */
 export default async function initialiseProjectState(
   studio: Studio,

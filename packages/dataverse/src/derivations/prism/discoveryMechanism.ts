@@ -1,6 +1,6 @@
 import type {$IntentionalAny} from '../../types'
 import Stack from '../../utils/Stack'
-import type {IDerivation} from '../IDerivation'
+import type {Prism} from '../IDerivation'
 
 function createMechanism() {
   const noop = () => {}
@@ -8,7 +8,7 @@ function createMechanism() {
   const stack = new Stack<Collector>()
   const noopCollector: Collector = noop
 
-  type Collector = (d: IDerivation<$IntentionalAny>) => void
+  type Collector = (d: Prism<$IntentionalAny>) => void
 
   const pushCollector = (collector: Collector): void => {
     stack.push(collector)
@@ -36,7 +36,7 @@ function createMechanism() {
     }
   }
 
-  const reportResolutionStart = (d: IDerivation<$IntentionalAny>) => {
+  const reportResolutionStart = (d: Prism<$IntentionalAny>) => {
     const possibleCollector = stack.peek()
     if (possibleCollector) {
       possibleCollector(d)
@@ -45,7 +45,7 @@ function createMechanism() {
     stack.push(noopCollector)
   }
 
-  const reportResolutionEnd = (_d: IDerivation<$IntentionalAny>) => {
+  const reportResolutionEnd = (_d: Prism<$IntentionalAny>) => {
     stack.pop()
   }
 
