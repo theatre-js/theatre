@@ -3,7 +3,6 @@ import type {$IntentionalAny, VoidFn} from '../../types'
 import Stack from '../../utils/Stack'
 import type Tappable from '../../utils/Tappable'
 import DerivationEmitter from '../DerivationEmitter'
-import DerivationValuelessEmitter from '../DerivationValuelessEmitter'
 import type {IDerivation} from '../IDerivation'
 import {isDerivation} from '../IDerivation'
 import {
@@ -235,7 +234,12 @@ class PrismDerivation<V> implements IDerivation<V> {
    * Returns a tappable that fires every time the prism's state goes from `fresh-\>stale.`
    */
   onStale(callback: () => void): VoidFn {
-    return new DerivationValuelessEmitter(this).tappable().tap(callback)
+    const untap = () => {
+      this.removeDependent(fn)
+    }
+    const fn = () => callback()
+    this.addDependent(fn)
+    return untap
   }
 
   /**
