@@ -1,6 +1,6 @@
-import type {$IntentionalAny} from '../../types'
-import Stack from '../../utils/Stack'
-import type {Prism} from '../Interface'
+import type {$IntentionalAny} from '../types'
+import Stack from '../utils/Stack'
+import type {Prism} from './Interface'
 
 function createMechanism() {
   const noop = () => {}

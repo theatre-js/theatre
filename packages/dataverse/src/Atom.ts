@@ -1,15 +1,15 @@
 import get from 'lodash-es/get'
 import isPlainObject from 'lodash-es/isPlainObject'
 import last from 'lodash-es/last'
-import type {Prism} from './prisms/Interface'
-import {isPrism} from './prisms/Interface'
+import type {Prism} from './prism/Interface'
+import {isPrism} from './prism/Interface'
 import type {Pointer, PointerType} from './pointer'
 import {isPointer} from './pointer'
 import pointer, {getPointerMeta} from './pointer'
 import type {$FixMe, $IntentionalAny} from './types'
 import type {PathBasedReducer} from './utils/PathBasedReducer'
 import updateDeep from './utils/updateDeep'
-import prism from './prisms/prism/prism'
+import prism from './prism/prism'
 
 type Listener = (newVal: unknown) => void
 

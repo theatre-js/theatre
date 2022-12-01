@@ -1,10 +1,10 @@
 /*
  * @jest-environment jsdom
  */
-import Atom, {val} from '../../Atom'
-import Ticker from '../../Ticker'
-import type {$FixMe, $IntentionalAny} from '../../types'
-import iterateAndCountTicks from '../iterateAndCountTicks'
+import Atom, {val} from '../Atom'
+import Ticker from '../Ticker'
+import type {$FixMe, $IntentionalAny} from '../types'
+import iterateAndCountTicks from './iterateAndCountTicks'
 import prism from './prism'
 
 describe('prism', () => {

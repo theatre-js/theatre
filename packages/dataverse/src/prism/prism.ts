@@ -1,8 +1,8 @@
-import type Ticker from '../../Ticker'
-import type {$IntentionalAny, VoidFn} from '../../types'
-import Stack from '../../utils/Stack'
-import type {Prism} from '../Interface'
-import {isPrism} from '../Interface'
+import type Ticker from '../Ticker'
+import type {$IntentionalAny, VoidFn} from '../types'
+import Stack from '../utils/Stack'
+import type {Prism} from './Interface'
+import {isPrism} from './Interface'
 import {
   startIgnoringDependencies,
   stopIgnoringDependencies,

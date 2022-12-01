@@ -1,5 +1,5 @@
-import type {Prism} from './prisms/Interface'
-import prism from './prisms/prism/prism'
+import type {Prism} from './prism/Interface'
+import prism from './prism/prism'
 import Emitter from './utils/Emitter'
 
 /**
