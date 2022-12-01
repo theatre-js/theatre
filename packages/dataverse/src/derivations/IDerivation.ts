@@ -38,18 +38,21 @@ export interface IDerivation<V> {
    *
    * @param d - The derivation to be made a dependent of this derivation.
    *
-   * @see removeDependent
+   * @see _removeDependent
+   *
+   * @internal
    */
-  addDependent(d: IDependent): void
+  _addDependent(d: IDependent): void
 
   /**
    * Remove a derivation as a dependent of this derivation.
    *
    * @param d - The derivation to be removed from as a dependent of this derivation.
    *
-   * @see addDependent
+   * @see _addDependent
+   * @internal
    */
-  removeDependent(d: IDependent): void
+  _removeDependent(d: IDependent): void
 
   /**
    * Gets the current value of the derivation. If the value is stale, it causes the derivation to freshen.

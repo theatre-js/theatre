@@ -55,7 +55,7 @@ class HotHandle<V> {
     private readonly _prismInstance: PrismDerivation<V>,
   ) {
     for (const d of this._dependencies) {
-      d.addDependent(this._reactToDependencyGoingStale)
+      d._addDependent(this._reactToDependencyGoingStale)
     }
 
     startIgnoringDependencies()
@@ -75,7 +75,7 @@ class HotHandle<V> {
 
   destroy() {
     for (const d of this._dependencies) {
-      d.removeDependent(this._reactToDependencyGoingStale)
+      d._removeDependent(this._reactToDependencyGoingStale)
     }
     cleanupScopeStack(this._scope)
   }
@@ -186,7 +186,7 @@ class HotHandle<V> {
   protected _addDependency(d: IDerivation<$IntentionalAny>) {
     if (this._dependencies.has(d)) return
     this._dependencies.add(d)
-    d.addDependent(this._reactToDependencyGoingStale)
+    d._addDependent(this._reactToDependencyGoingStale)
   }
 
   /**
@@ -195,7 +195,7 @@ class HotHandle<V> {
   protected _removeDependency(d: IDerivation<$IntentionalAny>) {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
-    d.removeDependent(this._reactToDependencyGoingStale)
+    d._removeDependent(this._reactToDependencyGoingStale)
   }
 }
 
@@ -242,7 +242,7 @@ class PrismDerivation<V> implements IDerivation<V> {
       listener(newValue)
     }
 
-    this.addDependent(dependent)
+    this._addDependent(dependent)
 
     if (immediate) {
       lastValue = this.getValue()
@@ -250,7 +250,7 @@ class PrismDerivation<V> implements IDerivation<V> {
     }
 
     const unsubscribe = () => {
-      this.removeDependent(dependent)
+      this._removeDependent(dependent)
     }
 
     return unsubscribe
@@ -261,10 +261,10 @@ class PrismDerivation<V> implements IDerivation<V> {
    */
   onStale(callback: () => void): VoidFn {
     const untap = () => {
-      this.removeDependent(fn)
+      this._removeDependent(fn)
     }
     const fn = () => callback()
-    this.addDependent(fn)
+    this._addDependent(fn)
     return untap
   }
 
@@ -280,9 +280,9 @@ class PrismDerivation<V> implements IDerivation<V> {
    *
    * @param d - The derivation to be made a dependent of this derivation.
    *
-   * @see removeDependent
+   * @see _removeDependent
    */
-  addDependent(d: IDependent) {
+  _addDependent(d: IDependent) {
     if (!this._state.hot) {
       this._goHot()
     }
@@ -302,9 +302,9 @@ class PrismDerivation<V> implements IDerivation<V> {
    *
    * @param d - The derivation to be removed from as a dependent of this derivation.
    *
-   * @see addDependent
+   * @see _addDependent
    */
-  removeDependent(d: IDependent) {
+  _removeDependent(d: IDependent) {
     const state = this._state
     if (!state.hot) {
       return
