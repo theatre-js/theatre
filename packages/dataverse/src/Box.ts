@@ -55,7 +55,7 @@ export default class Box<V> implements IBox<V> {
       this._emitter.tappable.tap(listener)
     const getValue = () => this._value
     this._publicDerivation = prism(() => {
-      return prism.source('value', subscribe, getValue)
+      return prism.source(subscribe, getValue)
     })
   }
 

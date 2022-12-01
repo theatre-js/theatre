@@ -253,7 +253,7 @@ export default class Atom<State extends {}>
     const getValue = () => this.getIn(path)
 
     return prism(() => {
-      return prism.source('value', subscribe, getValue)
+      return prism.source(subscribe, getValue)
     })
   }
 }

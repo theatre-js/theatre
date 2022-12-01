@@ -21,15 +21,6 @@ type IDependent = (msgComingFrom: IDerivation<$IntentionalAny>) => void
 const voidFn = () => {}
 
 class HotHandle<V> {
-  get hasDependents(): boolean {
-    return this._dependents.size > 0
-  }
-  removeDependent(d: IDependent) {
-    this._dependents.delete(d)
-  }
-  addDependent(d: IDependent) {
-    this._dependents.add(d)
-  }
   private _didMarkDependentsAsStale: boolean = false
   private _isFresh: boolean = false
   protected _cacheOfDendencyValues: Map<IDerivation<unknown>, unknown> =
@@ -46,30 +37,49 @@ class HotHandle<V> {
   protected _dependencies: Set<IDerivation<$IntentionalAny>> = new Set()
 
   protected _possiblyStaleDeps = new Set<IDerivation<unknown>>()
-  private _scope = new HotScope()
+
+  private _scope: HotScope = new HotScope(
+    this as $IntentionalAny as HotHandle<unknown>,
+  )
 
   /**
    * @internal
    */
   protected _lastValue: undefined | V = undefined
 
+  /**
+   * If true, the derivation is stale even though its dependencies aren't
+   * marked as such. This is used by `prism.source()` and `prism.state()`
+   * to mark the prism as stale.
+   */
+  private _forciblySetToStale: boolean = false
+
   constructor(
     private readonly _fn: () => V,
     private readonly _prismInstance: PrismDerivation<V>,
   ) {
     for (const d of this._dependencies) {
-      d.addDependent(this._markAsStale)
+      d.addDependent(this._reactToDependencyGoingStale)
     }
 
-    this._scope = new HotScope()
     startIgnoringDependencies()
     this.getValue()
     stopIgnoringDependencies()
   }
 
+  get hasDependents(): boolean {
+    return this._dependents.size > 0
+  }
+  removeDependent(d: IDependent) {
+    this._dependents.delete(d)
+  }
+  addDependent(d: IDependent) {
+    this._dependents.add(d)
+  }
+
   destroy() {
     for (const d of this._dependencies) {
-      d.removeDependent(this._markAsStale)
+      d.removeDependent(this._reactToDependencyGoingStale)
     }
     cleanupScopeStack(this._scope)
   }
@@ -80,6 +90,7 @@ class HotHandle<V> {
       this._lastValue = newValue
       this._isFresh = true
       this._didMarkDependentsAsStale = false
+      this._forciblySetToStale = false
     }
     return this._lastValue!
   }
@@ -87,19 +98,21 @@ class HotHandle<V> {
   _recalculate() {
     let value: V
 
-    if (this._possiblyStaleDeps.size > 0) {
-      let anActuallyStaleDepWasFound = false
-      startIgnoringDependencies()
-      for (const dep of this._possiblyStaleDeps) {
-        if (this._cacheOfDendencyValues.get(dep) !== dep.getValue()) {
-          anActuallyStaleDepWasFound = true
-          break
+    if (!this._forciblySetToStale) {
+      if (this._possiblyStaleDeps.size > 0) {
+        let anActuallyStaleDepWasFound = false
+        startIgnoringDependencies()
+        for (const dep of this._possiblyStaleDeps) {
+          if (this._cacheOfDendencyValues.get(dep) !== dep.getValue()) {
+            anActuallyStaleDepWasFound = true
+            break
+          }
         }
-      }
-      stopIgnoringDependencies()
-      this._possiblyStaleDeps.clear()
-      if (!anActuallyStaleDepWasFound) {
-        return this._lastValue!
+        stopIgnoringDependencies()
+        this._possiblyStaleDeps.clear()
+        if (!anActuallyStaleDepWasFound) {
+          return this._lastValue!
+        }
       }
     }
 
@@ -147,9 +160,20 @@ class HotHandle<V> {
     return value!
   }
 
-  protected _markAsStale = (which: IDerivation<$IntentionalAny>) => {
-    this._reactToDependencyBecomingStale(which)
+  forceStale() {
+    this._forciblySetToStale = true
+    this._markAsStale()
+  }
 
+  protected _reactToDependencyGoingStale = (
+    which: IDerivation<$IntentionalAny>,
+  ) => {
+    this._possiblyStaleDeps.add(which)
+
+    this._markAsStale()
+  }
+
+  private _markAsStale() {
     if (this._didMarkDependentsAsStale) return
 
     this._didMarkDependentsAsStale = true
@@ -160,17 +184,13 @@ class HotHandle<V> {
     }
   }
 
-  _reactToDependencyBecomingStale(msgComingFrom: IDerivation<unknown>) {
-    this._possiblyStaleDeps.add(msgComingFrom)
-  }
-
   /**
    * @internal
    */
   protected _addDependency(d: IDerivation<$IntentionalAny>) {
     if (this._dependencies.has(d)) return
     this._dependencies.add(d)
-    d.addDependent(this._markAsStale)
+    d.addDependent(this._reactToDependencyGoingStale)
   }
 
   /**
@@ -179,7 +199,7 @@ class HotHandle<V> {
   protected _removeDependency(d: IDerivation<$IntentionalAny>) {
     if (!this._dependencies.has(d)) return
     this._dependencies.delete(d)
-    d.removeDependent(this._markAsStale)
+    d.removeDependent(this._reactToDependencyGoingStale)
   }
 }
 
@@ -382,14 +402,12 @@ interface PrismScope {
   state<T>(key: string, initialValue: T): [T, (val: T) => void]
   ref<T>(key: string, initialValue: T): IRef<T>
   sub(key: string): PrismScope
-  source<V>(
-    key: string,
-    subscribe: (fn: (val: V) => void) => VoidFn,
-    getValue: () => V,
-  ): V
+  source<V>(subscribe: (fn: (val: V) => void) => VoidFn, getValue: () => V): V
 }
 
 class HotScope implements PrismScope {
+  constructor(private readonly _hotHandle: HotHandle<unknown>) {}
+
   protected readonly _refs: Map<string, IRef<unknown>> = new Map()
   ref<T>(key: string, initialValue: T): IRef<T> {
     let ref = this._refs.get(key)
@@ -429,6 +447,17 @@ class HotScope implements PrismScope {
       stopIgnoringDependencies()
       effect.deps = deps
     }
+    /**
+     * TODO: we should cleanup dangling effects too.
+     * Example:
+     * ```ts
+     * let i = 0
+     * prism(() => {
+     *   if (i === 0) prism.effect("this effect will only run once", () => {}, [])
+     *   i++
+     * })
+     * ```
+     */
   }
 
   readonly memos: Map<string, IMemo> = new Map()
@@ -475,7 +504,7 @@ class HotScope implements PrismScope {
 
   sub(key: string): HotScope {
     if (!this.subs[key]) {
-      this.subs[key] = new HotScope()
+      this.subs[key] = new HotScope(this._hotHandle)
     }
     return this.subs[key]
   }
@@ -487,11 +516,20 @@ class HotScope implements PrismScope {
     this.effects.clear()
   }
 
-  source<V>(
-    key: string,
-    subscribe: (fn: (val: V) => void) => VoidFn,
-    getValue: () => V,
-  ): V {}
+  source<V>(subscribe: (fn: (val: V) => void) => VoidFn, getValue: () => V): V {
+    const sourceKey = '$$source/blah'
+    this.effect(
+      sourceKey,
+      () => {
+        const unsub = subscribe(() => {
+          this._hotHandle.forceStale()
+        })
+        return unsub
+      },
+      [subscribe],
+    )
+    return getValue()
+  }
 }
 
 function cleanupScopeStack(scope: HotScope) {
@@ -705,7 +743,6 @@ const possibleDerivationToValue = <
 }
 
 function source<V>(
-  key: string,
   subscribe: (fn: (val: V) => void) => VoidFn,
   getValue: () => V,
 ): V {
@@ -714,7 +751,7 @@ function source<V>(
     throw new Error(`prism.source() is called outside of a prism() call.`)
   }
 
-  return scope.source(key, subscribe, getValue)
+  return scope.source(subscribe, getValue)
 }
 
 type IPrismFn = {
@@ -760,11 +797,7 @@ class ColdScope implements PrismScope {
   sub(key: string): ColdScope {
     return new ColdScope()
   }
-  source<V>(
-    key: string,
-    subscribe: (fn: (val: V) => void) => VoidFn,
-    getValue: () => V,
-  ): V {
+  source<V>(subscribe: (fn: (val: V) => void) => VoidFn, getValue: () => V): V {
     return getValue()
   }
 }
