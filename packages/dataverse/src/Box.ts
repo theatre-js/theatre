@@ -33,12 +33,12 @@ export interface IBox<V> {
  * Wraps a single value.
  *
  * @remarks
- * Derivations created with {@link Box.prism} update based on strict equality (`===`) of the old value and the new one.
+ * Prisms created with {@link Box.prism} update based on strict equality (`===`) of the old value and the new one.
  * This also means that property-changes of objects won't be tracked, and that for objects, updates will trigger on changes of
  * reference even if the objects are structurally equal.
  */
 export default class Box<V> implements IBox<V> {
-  private _publicDerivation: Prism<V>
+  private _publicPrism: Prism<V>
   private _emitter = new Emitter<V>()
 
   /**
@@ -53,7 +53,7 @@ export default class Box<V> implements IBox<V> {
     const subscribe = (listener: (val: V) => void) =>
       this._emitter.tappable.tap(listener)
     const getValue = () => this._value
-    this._publicDerivation = prism(() => {
+    this._publicPrism = prism(() => {
       return prism.source(subscribe, getValue)
     })
   }
@@ -85,6 +85,6 @@ export default class Box<V> implements IBox<V> {
    * Returns a prism of the Box that you can use to track changes to it.
    */
   get prism() {
-    return this._publicDerivation
+    return this._publicPrism
   }
 }
