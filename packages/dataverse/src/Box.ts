@@ -1,4 +1,4 @@
-import type {Prism} from './derivations/IDerivation'
+import type {Prism} from './derivations/Interface'
 import prism from './derivations/prism/prism'
 import Emitter from './utils/Emitter'
 
