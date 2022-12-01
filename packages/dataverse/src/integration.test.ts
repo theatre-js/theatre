@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import Atom, {val} from './Atom'
-import prism from './derivations/prism/prism'
+import prism from './prisms/prism/prism'
 import Ticker from './Ticker'
 
 describe(`v2 atom`, () => {

@@ -5,7 +5,7 @@ import pointer from './pointer'
 import type {IBox} from './Box'
 import Box from './Box'
 import type {$FixMe, $IntentionalAny} from './types'
-import prism from './derivations/prism/prism'
+import prism from './prisms/prism/prism'
 
 /**
  * Allows creating pointer-derivations where the pointer can be switched out.
