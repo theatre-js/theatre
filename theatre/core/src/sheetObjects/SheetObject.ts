@@ -85,7 +85,7 @@ export default class SheetObject implements IdentityPrismProvider {
          * if boo.bar.baz is sequenced and the sequence is playing, this prism will recalculate on every frame.
          * This might sound inefficient, but we have a few tricks to make it fast:
          *
-         * First, on each recalculation, most of the derivations that this prism depends on will not have changed,
+         * First, on each recalculation, most of the prisms that this prism depends on will not have changed,
          * and so reading them is cheap. For example, if foo.bar.baz changed due to being sequenced, but
          * foo.bar2 hasn't because it is static, reading foo.bar2 will be cheap.
          *

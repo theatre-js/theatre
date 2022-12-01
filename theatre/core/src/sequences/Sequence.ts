@@ -38,7 +38,7 @@ export default class Sequence {
   publicApi: TheatreSequence
 
   private _playbackControllerBox: IBox<IPlaybackController>
-  private _statePointerDerivation: Prism<Pointer<IPlaybackState>>
+  private _prismOfStatePointer: Prism<Pointer<IPlaybackState>>
   private _positionD: Prism<number>
   private _positionFormatterD: Prism<ISequencePositionFormatter>
   _playableRangeD: undefined | Prism<{start: number; end: number}>
@@ -66,12 +66,12 @@ export default class Sequence {
       playbackController ?? new DefaultPlaybackController(getCoreTicker()),
     )
 
-    this._statePointerDerivation = prism(
+    this._prismOfStatePointer = prism(
       () => this._playbackControllerBox.prism.getValue().statePointer,
     )
 
     this._positionD = prism(() => {
-      const statePointer = this._statePointerDerivation.getValue()
+      const statePointer = this._prismOfStatePointer.getValue()
       return val(statePointer.position)
     })
 
@@ -99,7 +99,7 @@ export default class Sequence {
       return this._positionD
     } else if (prop === 'playing') {
       return prism(() => {
-        return val(this._statePointerDerivation.getValue().playing)
+        return val(this._prismOfStatePointer.getValue().playing)
       })
     } else {
       return prism(() => undefined)
@@ -110,8 +110,8 @@ export default class Sequence {
     return this._positionFormatterD.getValue()
   }
 
-  get derivationToStatePointer() {
-    return this._statePointerDerivation
+  get prismOfStatePointer() {
+    return this._prismOfStatePointer
   }
 
   get length() {

@@ -41,7 +41,7 @@ function useForceUpdate(debugLabel?: string) {
 /**
  * A React hook that executes the callback function and returns its return value
  * whenever there's a change in the values of the dependency array, or in the
- * derivations that are used within the callback function.
+ * prisms that are used within the callback function.
  *
  * @param fn - The callback function
  * @param deps - The dependency array
@@ -285,7 +285,7 @@ function queueIfNeeded() {
  *
  * ```ts
  * const num = new Box(1)
- * const isPositiveD = prism(() => num.derivation.getValue() >= 0)
+ * const isPositiveD = prism(() => num.prism.getValue() >= 0)
  *
  * const Comp = () => {
  *   return <div>{useDerivation(isPositiveD)}</div>
