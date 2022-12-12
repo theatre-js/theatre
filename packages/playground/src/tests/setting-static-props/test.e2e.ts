@@ -1,5 +1,5 @@
 import {test, expect} from '@playwright/test'
-import percySnapshot from '@percy/playwright'
+// import percySnapshot from '@percy/playwright'
 
 const isMac = process.platform === 'darwin'
 
@@ -61,6 +61,6 @@ test.describe('setting-static-props', () => {
     await expect(secondInput).toHaveAttribute('value', '2')
 
     // Our first visual regression test
-    await percySnapshot(page, test.info().titlePath.join('/') + '/After redo')
+    // await percySnapshot(page, test.info().titlePath.join('/') + '/After redo')
   })
 })

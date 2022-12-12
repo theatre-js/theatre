@@ -4,6 +4,7 @@ import {Canvas} from '@react-three/fiber'
 import studio from '@theatre/studio'
 import {editable as e, SheetProvider} from '@theatre/r3f'
 import extension from '@theatre/r3f/dist/extension'
+import playgroundState from './playgroundState.json'
 
 if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
   studio.extend(extension)
@@ -30,7 +31,11 @@ function App() {
       dpr={[1.5, 2]}
       style={{position: 'absolute', top: 0, left: 0}}
     >
-      <SheetProvider sheet={getProject('Playground - R3F').sheet('R3F-Canvas')}>
+      <SheetProvider
+        sheet={getProject('Playground - R3F', {state: playgroundState}).sheet(
+          'R3F-Canvas',
+        )}
+      >
         {/* @ts-ignore */}
         <e.orthographicCamera makeDefault theatreKey="Camera" />
         <ambientLight intensity={0.4} />
@@ -82,10 +87,6 @@ function App() {
   )
 }
 
-const project = getProject('Project')
-const sheet = project.sheet('Sheet')
-const obj = sheet.object('Obj', {str: 'some string', num: 0})
-
 export default function Home() {
-  return <App obj={obj}>hi</App>
+  return <App></App>
 }

@@ -3,16 +3,18 @@
   "private": true,
   "scripts": {
     "registry:start": "zx ./scripts/start-registry.mjs",
+    "test": "zx ./scripts/test.mjs",
     "test:ci": "zx ./scripts/ci.mjs",
     "clean": "zx ./scripts/clean.mjs"
   },
   "dependencies": {
     "node-cleanup": "^2.1.2",
+    "playwright": "^1.28.1",
     "prettier": "^2.6.2",
     "verdaccio": "^5.10.2",
     "verdaccio-auth-memory": "^10.2.0",
     "verdaccio-memory": "^10.2.0",
-    "zx": "^6.1.0"
+    "zx": "^7.1.1"
   },
   "version": "0.0.1-COMPAT.1"
 }

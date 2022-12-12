@@ -7482,11 +7482,12 @@ __metadata:
   resolution: "@theatre/compatibility-tests@workspace:compatibility-tests"
   dependencies:
     node-cleanup: ^2.1.2
+    playwright: ^1.28.1
     prettier: ^2.6.2
     verdaccio: ^5.10.2
     verdaccio-auth-memory: ^10.2.0
     verdaccio-memory: ^10.2.0
-    zx: ^6.1.0
+    zx: ^7.1.1
   languageName: unknown
   linkType: soft
 
@@ -8075,10 +8076,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^17.0":
-  version: 17.0.35
-  resolution: "@types/node@npm:17.0.35"
-  checksum: 7a24946ae7fd20267ed92466384f594e448bfb151081158d565cc635d406ecb29ea8fb85fcd2a1f71efccf26fb5bd3c6f509bde56077eb8b832b847a6664bc62
+"@types/node@npm:^18.7.20":
+  version: 18.11.13
+  resolution: "@types/node@npm:18.11.13"
+  checksum: b0c1aa3bd2f5df8240e61096a49d6d4be600109b824d23408ec4ba1ec057dc0c60588e09f73b8a60455ad26d367e9c5562fad8403099f885cbc7b4cace83ec4c
   languageName: node
   linkType: hard
 
@@ -8114,6 +8115,13 @@ __metadata:
   version: 15.7.3
   resolution: "@types/prop-types@npm:15.7.3"
   checksum: 41831d53c44c9eeafdaf9762bcb4553c13a3bbf990745ed9065a1cc3581b80633113b53fd49b202bf51731b258da5d0a9aa09c9035d5af7f78b0f6bc273f1325
+  languageName: node
+  linkType: hard
+
+"@types/ps-tree@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@types/ps-tree@npm:1.1.2"
+  checksum: 575c3b2b83ea8935ab296ac9e17f6a2c1a5bb155f9e30663bb7a7c741a8ca4641f0df9748866230f1d6c3f87ed4ffa3fa91f1df444ef9979a3df31114534bf25
   languageName: node
   linkType: hard
 
@@ -16626,7 +16634,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^10.0.1":
+"fs-extra@npm:^10.1.0":
   version: 10.1.0
   resolution: "fs-extra@npm:10.1.0"
   dependencies:
@@ -17121,16 +17129,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"globby@npm:^13.1.1":
-  version: 13.1.1
-  resolution: "globby@npm:13.1.1"
+"globby@npm:^13.1.2":
+  version: 13.1.2
+  resolution: "globby@npm:13.1.2"
   dependencies:
     dir-glob: ^3.0.1
     fast-glob: ^3.2.11
     ignore: ^5.2.0
     merge2: ^1.4.1
     slash: ^4.0.0
-  checksum: e6c43409c6c31b374fbd1c01a8c1811de52336928be9c697e472d2a89a156c9cbf1fb33863755c0447b4db16485858aa57f16628d66a6b7c7131669c9fbe76cd
+  checksum: c148fcda0c981f00fb434bb94ca258f0a9d23cedbde6fb3f37098e1abde5b065019e2c63fe2aa2fad4daf2b54bf360b4d0423d85fb3a63d09ed75a2837d4de0f
   languageName: node
   linkType: hard
 
@@ -22158,14 +22166,14 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^3.2.3":
-  version: 3.2.4
-  resolution: "node-fetch@npm:3.2.4"
+"node-fetch@npm:3.2.10":
+  version: 3.2.10
+  resolution: "node-fetch@npm:3.2.10"
   dependencies:
     data-uri-to-buffer: ^4.0.0
     fetch-blob: ^3.1.4
     formdata-polyfill: ^4.0.10
-  checksum: cfc715441302167bd4a9c6d6f3ff8eecb65e5aeeccd55a690497dcce5f95ec017d65c5682414287cad3998a28b1bab4820dcbe51852902eaa5f15f3975562384
+  checksum: e65322431f4897ded04197aa5923eaec63a8d53e00432de4e70a4f7006625c8dc32629c5c35f4fe8ee719a4825544d07bf53f6e146a7265914262f493e8deac1
   languageName: node
   linkType: hard
 
@@ -23602,6 +23610,26 @@ fsevents@^1.2.7:
   bin:
     playwright: cli.js
   checksum: 1e6a3a7a9aaee1864b22195c7fef52b6980fcafc6d667749737455360a44a182a7035f12bfd76f298f957d1b99550420a8748f6a473ceeacf2cb2db42beb9be0
+  languageName: node
+  linkType: hard
+
+"playwright-core@npm:1.28.1":
+  version: 1.28.1
+  resolution: "playwright-core@npm:1.28.1"
+  bin:
+    playwright: cli.js
+  checksum: 8899e0d65de43ee10fadc171e0d48cd514bb574f3505478700094afa8a6e0dcd888a5c87af22acf31ebad455ada1327028909c42e20b8e25908b6255dc143bf0
+  languageName: node
+  linkType: hard
+
+"playwright@npm:^1.28.1":
+  version: 1.28.1
+  resolution: "playwright@npm:1.28.1"
+  dependencies:
+    playwright-core: 1.28.1
+  bin:
+    playwright: cli.js
+  checksum: 97c6fff2835878da856bf1f587ec4cdcbcc9aa61c0efcf592633f6df37eabbb9e59d7a2ef994ec9283338e43ef80e278d6d52fed5f7c29abd0408fac0f69b3ca
   languageName: node
   linkType: hard
 
@@ -32297,24 +32325,25 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"zx@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "zx@npm:6.1.0"
+"zx@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "zx@npm:7.1.1"
   dependencies:
     "@types/fs-extra": ^9.0.13
     "@types/minimist": ^1.2.2
-    "@types/node": ^17.0
+    "@types/node": ^18.7.20
+    "@types/ps-tree": ^1.1.2
     "@types/which": ^2.0.1
     chalk: ^5.0.1
-    fs-extra: ^10.0.1
-    globby: ^13.1.1
+    fs-extra: ^10.1.0
+    globby: ^13.1.2
     minimist: ^1.2.6
-    node-fetch: ^3.2.3
+    node-fetch: 3.2.10
     ps-tree: ^1.2.0
     which: ^2.0.2
-    yaml: ^2.0.0
+    yaml: ^2.1.1
   bin:
-    zx: zx.mjs
-  checksum: 5aa56ff38cb9183aa1a5f75406cc2838ee55897cc2b3f113a42df885b1ef11daa9186b368fb36b27126d68c9f81b6d7accd0a58d2607073e3d953428439ee3cf
+    zx: build/cli.js
+  checksum: 510c56366a62220108247624a83fc088bfc8f393e3f20168d69a67e3c7aff1a4b790c118ee70e58171dcbc91b53ab079bba3074e1c40829f6179a7f48a38be78
   languageName: node
   linkType: hard

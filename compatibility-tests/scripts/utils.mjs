@@ -2,58 +2,146 @@
  * Utility functions for the compatibility tests
  */
 
+import prettier from 'prettier'
 import path from 'path'
-import {globby, YAML} from 'zx'
+import {globby, YAML, $, fs, cd, os, within} from 'zx'
 import onCleanup from 'node-cleanup'
 import * as verdaccioPackage from 'verdaccio'
+import {chromium, devices} from 'playwright'
 
 // 'verdaccio' is not an es module so we have to do this:
+// @ts-ignore
 const startVerdaccioServer = verdaccioPackage.default.default
 
-export const VERDACCIO_PORT = 4823
-export const VERDACCIO_HOST = `localhost`
-export const VERDACCIO_URL = `http://${VERDACCIO_HOST}:${VERDACCIO_PORT}/`
-export const PATH_TO_COMPAT_TESTS_ROOT = path.join(__dirname, '..')
-export const MONOREPO_ROOT = path.join(__dirname, '../..')
-export const PATH_TO_YARNRC = path.join(MONOREPO_ROOT, '.yarnrc.yml')
+const config = {
+  VERDACCIO_PORT: 4823,
+  VERDACCIO_HOST: `localhost`,
+  get VERDACCIO_URL() {
+    return `http://${config.VERDACCIO_HOST}:${config.VERDACCIO_PORT}/`
+  },
+  PATH_TO_COMPAT_TESTS_ROOT: path.join(__dirname, '..'),
+  MONOREPO_ROOT: path.join(__dirname, '../..'),
+}
 
 /**
- * This script will:
- *  1. Start verdaccio (a local npm registry),
- *  2. Configure npm (and _not_ yarn) to use verdaccio as its registry
- *  3. It will _not_ affect the global yarn installation yet. That is a TODO
- *  4. It does _not_ affect the monorepo yarnrc file.
- *
- * If the script is interrupted, it'll attempt to restore the npm/yarn
- * registry config to its original state, but that's not guaranteed.
+ * Set environment variables so that yarn and npm use verdaccio as the registry.
+ * These are only set for the current process.
+ */
+process.env.YARN_NPM_PUBLISH_REGISTRY = config.VERDACCIO_URL
+process.env.YARN_UNSAFE_HTTP_WHITELIST = config.VERDACCIO_HOST
+process.env.YARN_NPM_AUTH_IDENT = 'test:test'
+process.env.NPM_CONFIG_REGISTRY = config.VERDACCIO_URL
+
+const tempVersion =
+  '0.0.1-COMPAT.' +
+  // a random integer between 1 and 50000
+  (Math.floor(Math.random() * 50000) + 1).toString()
+
+/**
+ * This script starts verdaccio and publishes all the packages in the monorepo to it.
  */
 export async function startRegistry() {
-  const npmOriginalRegistry = (
-    await $`npm config get registry --location=global`
-  ).stdout.trim()
   onCleanup((exitCode, signal) => {
     onCleanup.uninstall()
-    $`npm config set registry ${npmOriginalRegistry} --location=global`.then(
-      () => {
-        process.kill(process.pid, signal)
-      },
-    )
+    restoreTestPackageJsons()
+    process.kill(process.pid, signal)
     return false
   })
 
-  await $`echo "Setting npm registry url to verdaccio's"`
-  await $`npm config set registry ${VERDACCIO_URL} --location=global`
+  const restoreTestPackageJsons = await patchTestPackageJsons()
 
-  await $`echo Running verdaccio on ${VERDACCIO_URL}`
-  const verdaccioServer = await startVerdaccio(VERDACCIO_PORT)
+  console.log(`Running verdaccio on ${config.VERDACCIO_URL}`)
+  const verdaccioServer = await startVerdaccio(config.VERDACCIO_PORT)
 
   await releaseToVerdaccio()
+  await runNpmInstallOnTestPackages()
+  console.log('Closing Verdaccio')
+  await verdaccioServer.close()
+  restoreTestPackageJsons()
+}
+
+async function runNpmInstallOnTestPackages() {
+  const packagePaths = getCompatibilityTestSetups()
+
+  for (const pathToPackageDir of packagePaths) {
+    cd(pathToPackageDir)
+    try {
+      console.log('Running npm install on ' + pathToPackageDir + '...')
+      await $`npm install --registry ${config.VERDACCIO_URL} --loglevel error --fund false`
+    } catch (error) {
+      console.error(`Failed to install dependencies for ${pathToPackageDir}
+Try running \`npm install\` in that directory manually via:
+cd ${pathToPackageDir}
+npm install --registry ${config.VERDACCIO_URL}
+Original error: ${error}`)
+    }
+  }
+}
+
+/**
+ * Takes an absolute path to a package.json file and replaces all of its
+ * dependencies on `@theatre/*` packatges to `version`.
+ *
+ * @param {string} pathToPackageJson absolute path to the package.json file
+ * @param {string} version The version to set all `@theatre/*` dependencies to
+ */
+async function patchTheatreDependencies(pathToPackageJson, version) {
+  const originalFileContent = fs.readFileSync(pathToPackageJson, {
+    encoding: 'utf-8',
+  })
+  // get the package.json file's content
+  const packageJson = JSON.parse(originalFileContent)
+
+  // find all dependencies on '@theatre/*' packages and replace them with the local version
+  for (const dependencyType of [
+    'dependencies',
+    'devDependencies',
+    'peerDependencies',
+  ]) {
+    const dependencies = packageJson[dependencyType]
+    if (dependencies) {
+      for (const dependencyName of Object.keys(dependencies)) {
+        if (dependencyName.startsWith('@theatre/')) {
+          dependencies[dependencyName] = version
+        }
+      }
+    }
+  }
+  // run the json through prettier
+  const jsonStringPrettified = prettier.format(
+    JSON.stringify(packageJson, null, 2),
+    {
+      parser: 'json',
+      filepath: pathToPackageJson,
+    },
+  )
+
+  // write the modified package.json file
+  fs.writeFileSync(pathToPackageJson, jsonStringPrettified, {encoding: 'utf-8'})
+}
+
+async function patchTestPackageJsons() {
+  const packagePaths = getCompatibilityTestSetups().map((pathToPackageDir) =>
+    path.join(pathToPackageDir, 'package.json'),
+  )
+
+  // replace all dependencies on @theatre/* packages with the local version
+  for (const pathToPackageJson of packagePaths) {
+    patchTheatreDependencies(pathToPackageJson, tempVersion)
+  }
+
+  return () => {
+    // replace all dependencies on @theatre/* packages with the 0.0.1-COMPAT.1
+    for (const pathToPackageJson of packagePaths) {
+      patchTheatreDependencies(pathToPackageJson, '0.0.1-COMPAT.1')
+    }
+  }
 }
 
 /**
  * Starts the verdaccio server and returns a promise that resolves when the serve is up and ready
  *
- * Credid: https://github.com/storybookjs/storybook/blob/92b23c080d03433765cbc7a60553d036a612a501/scripts/run-registry.ts
+ * Credit: https://github.com/storybookjs/storybook/blob/92b23c080d03433765cbc7a60553d036a612a501/scripts/run-registry.ts
  */
 const startVerdaccio = (port) => {
   let resolved = false
@@ -103,13 +191,13 @@ const packagesToPublish = [
 
 /**
  * Assigns a new version to each of @theatre/* packages. If there a package depends on another package in this monorepo,
- * this function makes sure the dependency version is fixed at "hash"
+ * this function makes sure the dependency version is fixed at "version"
  *
  * @param {{name: string, location: string}[]} workspacesListObjects - An Array of objects containing information about the workspaces
- * @param {string} hash - Hash of the latest commit (or any other string)
+ * @param {string} version - Version of the latest commit (or any other string)
  * @returns {Promise<() => void>} - An async function that restores the package.json files to their original version
  */
-async function writeVersionsToPackageJSONs(workspacesListObjects, hash) {
+async function writeVersionsToPackageJSONs(workspacesListObjects, version) {
   /**
    * An array of functions each of which restores a certain package.json to its original state
    * @type {Array<() => void>}
@@ -117,7 +205,7 @@ async function writeVersionsToPackageJSONs(workspacesListObjects, hash) {
   const restores = []
   for (const workspaceData of workspacesListObjects) {
     const pathToPackage = path.resolve(
-      MONOREPO_ROOT,
+      config.MONOREPO_ROOT,
       workspaceData.location,
       './package.json',
     )
@@ -132,7 +220,6 @@ async function writeVersionsToPackageJSONs(workspacesListObjects, hash) {
     })
 
     let {dependencies, peerDependencies, devDependencies} = originalJson
-    const version = hash
 
     // Normally we don't have to override the package versions in dependencies because yarn would already convert
     // all the "workspace:*" versions to a fixed version before publishing. However, packages like @theatre/studio
@@ -142,7 +229,7 @@ async function writeVersionsToPackageJSONs(workspacesListObjects, hash) {
       if (!deps) continue
       for (const wpObject of workspacesListObjects) {
         if (deps[wpObject.name]) {
-          deps[wpObject.name] = hash
+          deps[wpObject.name] = version
         }
       }
     }
@@ -168,8 +255,7 @@ async function writeVersionsToPackageJSONs(workspacesListObjects, hash) {
  * them all to the verdaccio registry
  */
 async function releaseToVerdaccio() {
-  const version = '0.0.1-COMPAT.1'
-  cd(MONOREPO_ROOT)
+  cd(config.MONOREPO_ROOT)
 
   // @ts-ignore ignore
   process.env.THEATRE_IS_PUBLISHING = true
@@ -183,52 +269,26 @@ async function releaseToVerdaccio() {
 
   const restorePackages = await writeVersionsToPackageJSONs(
     workspacesListObjects,
-    version,
+    tempVersion,
   )
 
+  // Restore the package.json files to their original state when the process is killed
   process.on('SIGINT', async function cleanup(a) {
     restorePackages()
-    process.exit(0)
   })
 
-  // set verdaccio as the publish registry, and add it to the whitelist
-  const restoreYarnRc = patchYarnRcToUseVerdaccio()
+  try {
+    await $`yarn clean`
+    await $`yarn build`
 
-  await $`yarn clean`
-  await $`yarn build`
-
-  await Promise.all(
-    packagesToPublish.map(async (workspaceName) => {
-      const npmTag = 'compat'
-      await $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
-    }),
-  )
-
-  restorePackages()
-  restoreYarnRc()
-}
-
-/**
- * Temporarily patches the yarnrc file to sue verdaccio as its publish registry.
- *
- * Restores yarnrc to the old version when restoreYarnRc() is called.
- */
-function patchYarnRcToUseVerdaccio() {
-  const originalYarnrcContent = fs.readFileSync(PATH_TO_YARNRC, {
-    encoding: 'utf-8',
-  })
-
-  const newYarnRcContent = YAML.stringify({
-    ...YAML.parse(originalYarnrcContent),
-    unsafeHttpWhitelist: [VERDACCIO_HOST],
-    npmPublishRegistry: VERDACCIO_URL,
-    npmAuthIdent: 'test:test',
-  })
-
-  fs.writeFileSync(PATH_TO_YARNRC, newYarnRcContent, {encoding: 'utf-8'})
-
-  return function restoreYarnRc() {
-    fs.writeFileSync(PATH_TO_YARNRC, originalYarnrcContent, {encoding: 'utf-8'})
+    await Promise.all(
+      packagesToPublish.map(async (workspaceName) => {
+        const npmTag = 'compat'
+        await $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
+      }),
+    )
+  } finally {
+    restorePackages()
   }
 }
 
@@ -238,14 +298,17 @@ function patchYarnRcToUseVerdaccio() {
  * @returns {Array<string>} An array containing the absolute paths to the compatibility test setups
  */
 export function getCompatibilityTestSetups() {
-  const buildTestsDir = path.join(MONOREPO_ROOT, 'compatibility-tests')
+  const compatibilityTestsDir = path.join(
+    config.MONOREPO_ROOT,
+    'compatibility-tests',
+  )
   let buildTestsDirEntries
 
   try {
-    buildTestsDirEntries = fs.readdirSync(buildTestsDir)
+    buildTestsDirEntries = fs.readdirSync(compatibilityTestsDir)
   } catch {
     throw new Error(
-      `Could not list directory: "${buildTestsDir}" Is it an existing directory?`,
+      `Could not list directory: "${compatibilityTestsDir}" Is it an existing directory?`,
     )
   }
   const setupsAbsPaths = []
@@ -254,7 +317,7 @@ export function getCompatibilityTestSetups() {
   // a test package
   for (const entry of buildTestsDirEntries) {
     if (!entry.startsWith('test-')) continue
-    const entryAbsPath = path.join(buildTestsDir, entry)
+    const entryAbsPath = path.join(compatibilityTestsDir, entry)
     if (fs.lstatSync(entryAbsPath).isDirectory()) {
       setupsAbsPaths.push(entryAbsPath)
     }
@@ -270,7 +333,7 @@ export async function clean() {
   const toDelete = await globby(
     './test-*/(node_modules|yarn.lock|package-lock.json)',
     {
-      cwd: PATH_TO_COMPAT_TESTS_ROOT,
+      cwd: config.PATH_TO_COMPAT_TESTS_ROOT,
       // node_modules et al are gitignored, but we still want to clean them
       gitignore: false,
       // include directories too
@@ -279,6 +342,40 @@ export async function clean() {
   )
   toDelete.forEach((fileOrDir) => {
     console.log('deleting', fileOrDir)
-    fs.removeSync(path.join(PATH_TO_COMPAT_TESTS_ROOT, fileOrDir))
+    fs.removeSync(path.join(config.PATH_TO_COMPAT_TESTS_ROOT, fileOrDir))
+  })
+}
+
+export async function test() {
+  const setups = getCompatibilityTestSetups()
+  const setup = setups.find((s) => s.match(/vite/))
+  await testSetup(setup)
+  // for (const setup of setups) {
+  //   await testSetup(setup)
+  // }
+}
+
+async function testSetup(setupAbsPath) {
+  const setupPackageJson = require(path.join(setupAbsPath, 'package.json'))
+  await within(async () => {
+    cd(setupAbsPath)
+    const p = $`npm run dev --expose`
+    const browser = await chromium.launch({headless: true})
+    const context = await browser.newContext(devices['Desktop Chrome'])
+    onCleanup(() => {
+      p.kill()
+      context.close()
+      browser.close()
+    })
+    const page = await context.newPage()
+    page.on('console', (msg) => {
+      console.log(msg.type())
+      // console.log(msg.text())
+    })
+    await page.goto(`http://localhost:3000`)
+    page.screenshot({path: 'example.png'})
+
+    console.log('done')
+    await p
   })
 }
