@@ -33,9 +33,9 @@ interface EditingToolsCommon<T> {
   permanentlySetValue(v: T): void
 
   getAssetUrl: (assetId: string) => string
-  createAsset(asset: Blob): string
-  deleteAsset(assetId: string): void
-  updateAsset(assetId: string, asset: Blob): void
+  createAsset(asset: Blob): Promise<string>
+  deleteAsset(assetId: string): Promise<void>
+  updateAsset(assetId: string, asset: Blob): Promise<void>
   getAssetIDs: (type?: string) => string[]
 }
 

@@ -74,7 +74,7 @@ export default class Project {
   }>({})
   sheetTemplatesP = this._sheetTemplates.pointer
   private _studio: Studio | undefined
-  assetStorage: IAssetStorage | undefined
+  assetStorage: IAssetStorage
 
   type: 'Theatre_Project' = 'Theatre_Project'
   readonly _logger: ILogger
@@ -111,6 +111,34 @@ export default class Project {
     if (config.assetStorage) {
       this.assetStorage = config.assetStorage
       this._assetStorageReadyDeferred.resolve(undefined)
+    } else {
+      this.assetStorage = {
+        getAssetUrl: (assetId: string) => {
+          throw new Error(
+            `Asset storage not yet available because the project is still loading. Please await Project.ready to use assets.`,
+          )
+        },
+        createAsset: (asset: Blob) => {
+          throw new Error(
+            `Asset storage not yet available because the project is still loading. Please await Project.ready to use assets.`,
+          )
+        },
+        updateAsset: (assetId: string, asset: Blob) => {
+          throw new Error(
+            `Asset storage not yet available because the project is still loading. Please await Project.ready to use assets.`,
+          )
+        },
+        deleteAsset: (assetId: string) => {
+          throw new Error(
+            `Asset storage not yet available because the project is still loading. Please await Project.ready to use assets.`,
+          )
+        },
+        getAssetIDs: () => {
+          throw new Error(
+            `Asset storage not yet available because the project is still loading. Please await Project.ready to use assets.`,
+          )
+        },
+      }
     }
 
     this.getAssetUrl = (assetId: string) => {
