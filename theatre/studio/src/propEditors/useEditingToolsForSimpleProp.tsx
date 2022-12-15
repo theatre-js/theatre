@@ -31,6 +31,12 @@ interface EditingToolsCommon<T> {
   temporarilySetValue(v: T): void
   discardTemporaryValue(): void
   permanentlySetValue(v: T): void
+
+  getAssetUrl: (assetId: string) => string
+  createAsset(asset: Blob): string
+  deleteAsset(assetId: string): void
+  updateAsset(assetId: string, asset: Blob): void
+  getAssetIDs: (type?: string) => string[]
 }
 
 interface EditingToolsDefault<T> extends EditingToolsCommon<T> {
@@ -109,6 +115,8 @@ function createDerivation<T extends SerializablePrimitive>(
       [],
     )
 
+    const editAssets = obj.sheet.project._assetManager
+
     const beingScrubbed =
       val(
         get(
@@ -125,6 +133,7 @@ function createDerivation<T extends SerializablePrimitive>(
 
     const common: EditingToolsCommon<T> = {
       ...editPropValue,
+      ...editAssets,
       value: final,
       beingScrubbed,
       contextMenuItems,

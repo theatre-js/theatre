@@ -139,6 +139,45 @@ export const compound = <Props extends UnknownShorthandCompoundProps>(
 }
 
 /**
+ * An image prop type
+ *
+ * @example
+ * Usage:
+ * ```ts
+ *
+ * // with a label:
+ * const obj = sheet.object('key', {
+ *   url: t.image({
+ *     label: 'texture'
+ *   })
+ * })
+ * ```
+ *
+ * @param opts - Options (See usage examples)
+ */
+export const image = (
+  opts: {
+    label?: string
+    interpolate?: Interpolator<string>
+  } = {},
+): PropTypeConfig_Image => {
+  if (process.env.NODE_ENV !== 'production') {
+    validateCommonOpts('t.image(defaultValue, opts)', opts)
+  }
+
+  return {
+    type: 'image',
+    // FIXME
+    default: undefined as $FixMe,
+    valueType: null as $IntentionalAny,
+    [propTypeSymbol]: 'TheatrePropType',
+    label: opts.label,
+    interpolate: opts.interpolate ?? leftInterpolate,
+    deserializeAndSanitize: _ensureString,
+  }
+}
+
+/**
  * A number prop type.
  *
  * @example
@@ -690,6 +729,9 @@ export interface PropTypeConfig_StringLiteral<T extends string>
 
 export interface PropTypeConfig_Rgba extends ISimplePropType<'rgba', Rgba> {}
 
+export interface PropTypeConfig_Image
+  extends ISimplePropType<'image', string> {}
+
 type DeepPartialCompound<Props extends UnknownValidCompoundProps> = {
   [K in keyof Props]?: DeepPartial<Props[K]>
 }
@@ -722,6 +764,7 @@ export type PropTypeConfig_AllSimples =
   | PropTypeConfig_String
   | PropTypeConfig_StringLiteral<$IntentionalAny>
   | PropTypeConfig_Rgba
+  | PropTypeConfig_Image
 
 export type PropTypeConfig =
   | PropTypeConfig_AllSimples

@@ -24,9 +24,86 @@ import type {
   ITheatreLoggingConfig,
 } from '@theatre/shared/logger'
 import {_coreLogger} from '@theatre/core/_coreLogger'
+import * as idb from 'idb-keyval'
+import * as uuid from 'uuid'
+
+type IAssetStorage = {
+  /** Returns a URL for the provided asset ID */
+  getAssetUrl: (assetId: string) => string
+  /** Creates an asset from the provided blob and returns a promise to its ID */
+  createAsset: (asset: Blob) => Promise<string>
+  /** Updates the provided asset */
+  updateAsset: (assetId: string, asset: Blob) => Promise<void>
+  /** Deletes the provided asset */
+  deleteAsset: (assetId: string) => Promise<void>
+  /** Returns all asset IDs */
+  getAssetIDs: (type?: string) => string[]
+}
+
+class AssetManager implements IAssetStorage {
+  private _assetStorage: IAssetStorage | undefined
+
+  constructor(private _studio: Studio, private _project: Project) {}
+
+  setAssetStorage = (assetStorage: IAssetStorage) => {
+    this._assetStorage = assetStorage
+  }
+
+  getAssetUrl = (assetId: string) => {
+    if (!this._assetStorage) {
+      throw new Error(
+        'Asset storage is not set. You need to call studio.setAssetStorage() before using the asset manager.',
+      )
+    }
+    return this._assetStorage.getAssetUrl(assetId)
+  }
+
+  createAsset = async (asset: Blob) => {
+    if (!this._assetStorage) {
+      throw new Error(
+        'Asset storage is not set. You need to call studio.setAssetStorage() before using the asset manager.',
+      )
+    }
+
+    const assetId = await this._assetStorage.createAsset(asset)
+
+    return assetId
+  }
+
+  updateAsset = async (assetId: string, asset: Blob) => {
+    if (!this._assetStorage) {
+      throw new Error(
+        'Asset storage is not set. You need to call studio.setAssetStorage() before using the asset manager.',
+      )
+    }
+
+    await this._assetStorage.updateAsset(assetId, asset)
+  }
+
+  deleteAsset = async (assetId: string) => {
+    if (!this._assetStorage) {
+      throw new Error(
+        'Asset storage is not set. You need to call studio.setAssetStorage() before using the asset manager.',
+      )
+    }
+
+    await this._assetStorage.deleteAsset(assetId)
+  }
+
+  getAssetIDs = (type?: string) => {
+    if (!this._assetStorage) {
+      throw new Error(
+        'Asset storage is not set. You need to call studio.setAssetStorage() before using the asset manager.',
+      )
+    }
+
+    return this._assetStorage.getAssetIDs(type)
+  }
+}
 
 export type Conf = Partial<{
   state: OnDiskState
+  assetStorage: IAssetStorage
   experiments: ExperimentsConf
 }>
 
@@ -50,16 +127,20 @@ export default class Project {
 
   readonly address: ProjectAddress
 
-  private readonly _readyDeferred: Deferred<undefined>
+  private readonly _studioReadyDeferred: Deferred<undefined>
+  private readonly _assetStorageReadyDeferred: Deferred<undefined>
 
   private _sheetTemplates = new Atom<{
     [sheetId: string]: SheetTemplate | undefined
   }>({})
   sheetTemplatesP = this._sheetTemplates.pointer
   private _studio: Studio | undefined
+  private _assetStorage: IAssetStorage | undefined
+  _assetManager: AssetManager | undefined
 
   type: 'Theatre_Project' = 'Theatre_Project'
   readonly _logger: ILogger
+  readonly getAssetUrl: (assetId: string) => string
 
   constructor(
     id: ProjectId,
@@ -87,6 +168,23 @@ export default class Project {
       },
     })
 
+    this._assetStorageReadyDeferred = defer()
+
+    if (config.assetStorage) {
+      this._assetStorage = config.assetStorage
+      this._assetStorageReadyDeferred.resolve(undefined)
+    }
+
+    this.getAssetUrl = (assetId: string) => {
+      if (this._assetStorage) {
+        return this._assetStorage.getAssetUrl(assetId)
+      } else {
+        throw new Error(
+          `Theatre.getProject("${id}", config) was called without config.assetStorage and the default assetStorage didn't finish intializing yet.`,
+        )
+      }
+    }
+
     this._pointerProxies = {
       historic: new PointerProxy(onDiskStateAtom.pointer.historic),
       ahistoric: new PointerProxy(onDiskStateAtom.pointer.ahistoric),
@@ -101,14 +199,15 @@ export default class Project {
 
     projectsSingleton.add(id, this)
 
-    this._readyDeferred = defer()
+    this._studioReadyDeferred = defer()
 
     if (config.state) {
       setTimeout(() => {
         // The user has provided config.state but in case @theatre/studio is loaded,
         // let's give it one tick to attach itself
         if (!this._studio) {
-          this._readyDeferred.resolve(undefined)
+          this._studioReadyDeferred.resolve(undefined)
+          this._assetStorageReadyDeferred.resolve(undefined)
           this._logger._trace('ready deferred resolved with no state')
         }
       }, 0)
@@ -150,6 +249,18 @@ export default class Project {
     }
     this._studio = studio
 
+    this._assetManager = new AssetManager(studio, this)
+
+    if (!this.config.assetStorage) {
+      createDefaultAssetStorage().then((assetStorage) => {
+        this._assetStorage = assetStorage
+        this._assetManager!.setAssetStorage(assetStorage)
+        this._assetStorageReadyDeferred.resolve(undefined)
+      })
+    } else {
+      this._assetManager.setAssetStorage(this.config.assetStorage)
+    }
+
     studio.initialized.then(async () => {
       await initialiseProjectState(studio, this, this.config.state)
 
@@ -163,7 +274,7 @@ export default class Project {
         studio.atomP.ephemeral.coreByProject[this.address.projectId],
       )
 
-      this._readyDeferred.resolve(undefined)
+      this._studioReadyDeferred.resolve(undefined)
     })
   }
 
@@ -172,11 +283,18 @@ export default class Project {
   }
 
   get ready() {
-    return this._readyDeferred.promise
+    return Promise.all([
+      this._studioReadyDeferred.promise,
+      this._assetStorageReadyDeferred.promise,
+      // hide the array from the user, i.e. make it Promise<void> instead of Promise<[undefined, undefined]>
+    ]).then(() => {})
   }
 
   isReady() {
-    return this._readyDeferred.status === 'resolved'
+    return (
+      this._studioReadyDeferred.status === 'resolved' &&
+      this._assetStorageReadyDeferred.status === 'resolved'
+    )
   }
 
   getOrCreateSheet(
@@ -191,5 +309,108 @@ export default class Project {
     }
 
     return template.getInstance(instanceId)
+  }
+}
+
+async function createDefaultAssetStorage(): Promise<IAssetStorage> {
+  // Check for support.
+  if (!('indexedDB' in window)) {
+    console.log("This browser doesn't support IndexedDB.")
+
+    return {
+      getAssetUrl: (assetId: string) => {
+        throw new Error(
+          `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
+        )
+      },
+      createAsset: (asset: Blob) => {
+        throw new Error(
+          `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
+        )
+      },
+      updateAsset: (assetId: string, asset: Blob) => {
+        throw new Error(
+          `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
+        )
+      },
+      deleteAsset: (assetId: string) => {
+        throw new Error(
+          `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
+        )
+      },
+      getAssetIDs: () => {
+        throw new Error(
+          `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
+        )
+      },
+    }
+  }
+
+  const assetsMap = new Map(await idb.entries()) as Map<string, Blob>
+  const urlCache = new Map<Blob, string>()
+
+  const invalidateUrl = (asset: Blob) => {
+    const url = urlCache.get(asset)
+    if (url) {
+      URL.revokeObjectURL(url)
+      urlCache.delete(asset)
+    }
+  }
+
+  const getUrlForAsset = (asset: Blob) => {
+    if (urlCache.has(asset)) {
+      return urlCache.get(asset)!
+    } else {
+      const url = URL.createObjectURL(asset)
+      urlCache.set(asset, url)
+      return url
+    }
+  }
+
+  const getUrlForId = (assetId: string) => {
+    const asset = assetsMap.get(assetId)
+    if (!asset) {
+      throw new Error(`Asset with id ${assetId} not found`)
+    }
+    return getUrlForAsset(asset)
+  }
+
+  return {
+    getAssetUrl: (assetId: string) => {
+      return getUrlForId(assetId)
+    },
+    createAsset: async (asset: Blob) => {
+      const assetId = uuid.v4()
+      assetsMap.set(assetId, asset)
+      await idb.set(assetId, asset)
+      return assetId
+    },
+    updateAsset: async (assetId: string, asset: Blob) => {
+      if (!assetsMap.has(assetId)) {
+        throw new Error(`Asset with id ${assetId} not found`)
+      }
+      const oldAsset = assetsMap.get(assetId)!
+      invalidateUrl(oldAsset)
+      assetsMap.set(assetId, asset)
+      await idb.set(assetId, asset)
+    },
+    deleteAsset: async (assetId: string) => {
+      if (!assetsMap.has(assetId)) {
+        return
+      }
+      const asset = assetsMap.get(assetId)!
+      invalidateUrl(asset)
+      assetsMap.delete(assetId)
+      await idb.del(assetId)
+    },
+    getAssetIDs: (type?: string) => {
+      const ids: string[] = []
+      for (const [id, asset] of assetsMap.entries()) {
+        if (!type || asset.type.startsWith(type)) {
+          ids.push(id)
+        }
+      }
+      return ids
+    },
   }
 }

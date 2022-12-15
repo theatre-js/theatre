@@ -20,7 +20,18 @@ export type IProjectConfig = {
    * The state of the project, as [exported](https://docs.theatrejs.com/in-depth/#exporting) by the studio.
    */
   state?: $IntentionalAny
-  // experiments?: IProjectConfigExperiments
+  assetManager?: {
+    /** Returns a URL for the provided asset ID */
+    getAssetUrl: (assetId: string) => string
+    /** Creates an asset from the provided blob and returns its ID */
+    createAsset?: (asset: Blob) => string
+    /** Updates the provided asset */
+    updateAsset?: (assetId: string, asset: Blob) => void
+    /** Deletes the provided asset */
+    deleteAsset?: (assetId: string) => void
+    /** Gets all asset ids */
+    getAssetIDs?: (type?: string) => string[]
+  }
 }
 
 // export type IProjectConfigExperiments = {
@@ -70,6 +81,8 @@ export interface IProject {
    * **Docs: https://docs.theatrejs.com/in-depth/#sheets**
    */
   sheet(sheetId: string, instanceId?: string): ISheet
+
+  getAssetUrl(assetId: string): string
 }
 
 export default class TheatreProject implements IProject {
@@ -93,6 +106,10 @@ export default class TheatreProject implements IProject {
 
   get address(): ProjectAddress {
     return {...privateAPI(this).address}
+  }
+
+  getAssetUrl(assetId: string): string {
+    return privateAPI(this).getAssetUrl(assetId)
   }
 
   sheet(sheetId: string, instanceId: string = 'default'): ISheet {

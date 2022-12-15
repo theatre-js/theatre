@@ -6,6 +6,7 @@ import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
 import StateConflictRow from './ProjectDetails/StateConflictRow'
+import JSZip from 'jszip'
 
 const Container = styled.div``
 
@@ -21,6 +22,22 @@ const ExportTooltip = styled(BasicPopover)`
   padding: 1em;
 `
 
+function saveFile(content: string | Blob, fileName: string) {
+  const file = new File([content], fileName)
+  const objUrl = URL.createObjectURL(file)
+  const a = Object.assign(document.createElement('a'), {
+    href: objUrl,
+    target: '_blank',
+    rel: 'noopener',
+  })
+  a.setAttribute('download', fileName)
+  a.click()
+
+  setTimeout(() => {
+    URL.revokeObjectURL(objUrl)
+  }, 40000)
+}
+
 const ProjectDetails: React.FC<{
   projects: Project[]
 }> = ({projects}) => {
@@ -34,32 +51,34 @@ const ProjectDetails: React.FC<{
 
   const [downloaded, setDownloaded] = useState(false)
 
-  const exportProject = useCallback(() => {
+  const exportProject = useCallback(async () => {
+    const zip = new JSZip()
+    if (project._assetManager) {
+      await Promise.all(
+        project._assetManager?.getAssetIDs().map(async (assetID) => {
+          const assetUrl = project.getAssetUrl(assetID)
+          if (!assetUrl) return
+
+          const blob = await fetch(assetUrl).then((r) => r.blob())
+          zip.file(assetID, blob)
+        }),
+      )
+      const assetsFile = await zip.generateAsync({type: 'blob'})
+      saveFile(assetsFile, `${slugifiedProjectId}.assets.zip`)
+    }
+
     const str = JSON.stringify(
       getStudio().createContentOfSaveFile(project.address.projectId),
       null,
       2,
     )
-    const file = new File([str], suggestedFileName, {
-      type: 'application/json',
-    })
-    const objUrl = URL.createObjectURL(file)
-    const a = Object.assign(document.createElement('a'), {
-      href: objUrl,
-      target: '_blank',
-      rel: 'noopener',
-    })
-    a.setAttribute('download', suggestedFileName)
-    a.click()
+
+    saveFile(str, suggestedFileName)
 
     setDownloaded(true)
     setTimeout(() => {
       setDownloaded(false)
     }, 2000)
-
-    setTimeout(() => {
-      URL.revokeObjectURL(objUrl)
-    }, 40000)
   }, [project, suggestedFileName])
 
   const exportTooltip = usePopover(
