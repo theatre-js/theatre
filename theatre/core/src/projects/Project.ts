@@ -40,67 +40,6 @@ type IAssetStorage = {
   getAssetIDs: (type?: string) => string[]
 }
 
-class AssetManager implements IAssetStorage {
-  private _assetStorage: IAssetStorage | undefined
-
-  constructor(private _studio: Studio, private _project: Project) {}
-
-  setAssetStorage = (assetStorage: IAssetStorage) => {
-    this._assetStorage = assetStorage
-  }
-
-  getAssetUrl = (assetId: string) => {
-    if (!this._assetStorage) {
-      throw new Error(
-        'Asset storage is not set. You need to call studio.setAssetStorage() before using the asset manager.',
-      )
-    }
-    return this._assetStorage.getAssetUrl(assetId)
-  }
-
-  createAsset = async (asset: Blob) => {
-    if (!this._assetStorage) {
-      throw new Error(
-        'Asset storage is not set. You need to call studio.setAssetStorage() before using the asset manager.',
-      )
-    }
-
-    const assetId = await this._assetStorage.createAsset(asset)
-
-    return assetId
-  }
-
-  updateAsset = async (assetId: string, asset: Blob) => {
-    if (!this._assetStorage) {
-      throw new Error(
-        'Asset storage is not set. You need to call studio.setAssetStorage() before using the asset manager.',
-      )
-    }
-
-    await this._assetStorage.updateAsset(assetId, asset)
-  }
-
-  deleteAsset = async (assetId: string) => {
-    if (!this._assetStorage) {
-      throw new Error(
-        'Asset storage is not set. You need to call studio.setAssetStorage() before using the asset manager.',
-      )
-    }
-
-    await this._assetStorage.deleteAsset(assetId)
-  }
-
-  getAssetIDs = (type?: string) => {
-    if (!this._assetStorage) {
-      throw new Error(
-        'Asset storage is not set. You need to call studio.setAssetStorage() before using the asset manager.',
-      )
-    }
-
-    return this._assetStorage.getAssetIDs(type)
-  }
-}
-
 export type Conf = Partial<{
   state: OnDiskState
   assetStorage: IAssetStorage
@@ -135,8 +74,7 @@ export default class Project {
   }>({})
   sheetTemplatesP = this._sheetTemplates.pointer
   private _studio: Studio | undefined
-  private _assetStorage: IAssetStorage | undefined
-  _assetManager: AssetManager | undefined
+  assetStorage: IAssetStorage | undefined
 
   type: 'Theatre_Project' = 'Theatre_Project'
   readonly _logger: ILogger
@@ -171,13 +109,13 @@ export default class Project {
     this._assetStorageReadyDeferred = defer()
 
     if (config.assetStorage) {
-      this._assetStorage = config.assetStorage
+      this.assetStorage = config.assetStorage
       this._assetStorageReadyDeferred.resolve(undefined)
     }
 
     this.getAssetUrl = (assetId: string) => {
-      if (this._assetStorage) {
-        return this._assetStorage.getAssetUrl(assetId)
+      if (this.assetStorage) {
+        return this.assetStorage.getAssetUrl(assetId)
       } else {
         throw new Error(
           `Theatre.getProject("${id}", config) was called without config.assetStorage and the default assetStorage didn't finish intializing yet.`,
@@ -249,16 +187,11 @@ export default class Project {
     }
     this._studio = studio
 
-    this._assetManager = new AssetManager(studio, this)
-
     if (!this.config.assetStorage) {
       createDefaultAssetStorage().then((assetStorage) => {
-        this._assetStorage = assetStorage
-        this._assetManager!.setAssetStorage(assetStorage)
+        this.assetStorage = assetStorage
         this._assetStorageReadyDeferred.resolve(undefined)
       })
-    } else {
-      this._assetManager.setAssetStorage(this.config.assetStorage)
     }
 
     studio.initialized.then(async () => {

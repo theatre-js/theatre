@@ -115,7 +115,7 @@ function createDerivation<T extends SerializablePrimitive>(
       [],
     )
 
-    const editAssets = obj.sheet.project._assetManager
+    const editAssets = obj.sheet.project.assetStorage
 
     const beingScrubbed =
       val(

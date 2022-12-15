@@ -53,9 +53,9 @@ const ProjectDetails: React.FC<{
 
   const exportProject = useCallback(async () => {
     const zip = new JSZip()
-    if (project._assetManager) {
+    if (project.assetStorage) {
       await Promise.all(
-        project._assetManager?.getAssetIDs().map(async (assetID) => {
+        project.assetStorage?.getAssetIDs().map(async (assetID) => {
           const assetUrl = project.getAssetUrl(assetID)
           if (!assetUrl) return
 
