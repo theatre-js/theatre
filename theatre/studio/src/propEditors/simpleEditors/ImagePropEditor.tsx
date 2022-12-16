@@ -230,6 +230,8 @@ function ImagePropEditor({
       const file = event.target.files[0]
 
       const imageId = await editingTools.createAsset(file)
+
+      event.target.value = null
       setImages(getImages())
     },
     [editingTools],
