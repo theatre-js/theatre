@@ -7,18 +7,13 @@ import studio from '@theatre/studio'
 import React, {useEffect, useState} from 'react'
 import {render} from 'react-dom'
 import styled from 'styled-components'
+import state from './state.json'
 
 studio.initialize()
 const project = getProject('Image type playground', {
-  assetManager: {
-    getAssetUrl: (assetId) =>
-      assetId === 'yolo'
-        ? 'https://www.mejorinfluencer.com/wp-content/uploads/2021/01/Yolo-Wiki-Youtuber-Espa%C3%B1a.png'
-        : 'https://static.wikia.nocookie.net/disney/images/3/31/Profile_-_Boo.png/revision/latest?cb=20190313094050',
-    createAsset: (asset) => {
-      console.log('createAsset', asset)
-      return 'yolo'
-    },
+  state,
+  assets: {
+    baseUrl: 'http://localhost:3000',
   },
 })
 const sheet = project.sheet('Image type')
@@ -32,7 +27,7 @@ const Wrapper = styled.div`
 `
 
 const ImageTypeExample: React.FC<{}> = (props) => {
-  const [imageUrl, setImageUrl] = useState()
+  const [imageUrl, setImageUrl] = useState<string>()
 
   useEffect(() => {
     const object = sheet.object('image', {
@@ -53,7 +48,12 @@ const ImageTypeExample: React.FC<{}> = (props) => {
   }, [])
 
   return (
-    <Wrapper>
+    <Wrapper
+      onClick={() => {
+        sheet.sequence.position = 0
+        sheet.sequence.play()
+      }}
+    >
       <img src={imageUrl} />
     </Wrapper>
   )

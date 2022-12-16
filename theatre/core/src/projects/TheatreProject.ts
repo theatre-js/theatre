@@ -20,17 +20,8 @@ export type IProjectConfig = {
    * The state of the project, as [exported](https://docs.theatrejs.com/in-depth/#exporting) by the studio.
    */
   state?: $IntentionalAny
-  assetManager?: {
-    /** Returns a URL for the provided asset ID */
-    getAssetUrl: (assetId: string) => string
-    /** Creates an asset from the provided blob and returns its ID */
-    createAsset?: (asset: Blob) => string
-    /** Updates the provided asset */
-    updateAsset?: (assetId: string, asset: Blob) => void
-    /** Deletes the provided asset */
-    deleteAsset?: (assetId: string) => void
-    /** Gets all asset ids */
-    getAssetIDs?: (type?: string) => string[]
+  assets?: {
+    baseUrl?: string
   }
 }
 

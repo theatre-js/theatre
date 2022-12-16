@@ -40,9 +40,13 @@ type IAssetStorage = {
   getAssetIDs: (type?: string) => string[]
 }
 
+type IAssetConf = {
+  baseUrl?: string
+}
+
 export type Conf = Partial<{
   state: OnDiskState
-  assetStorage: IAssetStorage
+  assets: IAssetConf
   experiments: ExperimentsConf
 }>
 
@@ -108,48 +112,25 @@ export default class Project {
 
     this._assetStorageReadyDeferred = defer()
 
-    if (config.assetStorage) {
-      this.assetStorage = config.assetStorage
-      this._assetStorageReadyDeferred.resolve(undefined)
-    } else {
-      this.assetStorage = {
-        getAssetUrl: (assetId: string) => {
-          throw new Error(
-            `Asset storage not yet available because the project is still loading. Please await Project.ready to use assets.`,
-          )
-        },
-        createAsset: (asset: Blob) => {
-          throw new Error(
-            `Asset storage not yet available because the project is still loading. Please await Project.ready to use assets.`,
-          )
-        },
-        updateAsset: (assetId: string, asset: Blob) => {
-          throw new Error(
-            `Asset storage not yet available because the project is still loading. Please await Project.ready to use assets.`,
-          )
-        },
-        deleteAsset: (assetId: string) => {
-          throw new Error(
-            `Asset storage not yet available because the project is still loading. Please await Project.ready to use assets.`,
-          )
-        },
-        getAssetIDs: () => {
-          throw new Error(
-            `Asset storage not yet available because the project is still loading. Please await Project.ready to use assets.`,
-          )
-        },
-      }
+    this.assetStorage = {
+      getAssetUrl: (assetId: string) =>
+        `${config.assets?.baseUrl ?? ''}/${assetId}`,
+      createAsset: (asset: Blob) => {
+        throw new Error(`Please wait for Project.ready to use assets.`)
+      },
+      updateAsset: (assetId: string, asset: Blob) => {
+        throw new Error(`Please wait for Project.ready to use assets.`)
+      },
+      deleteAsset: (assetId: string) => {
+        throw new Error(`Please wait for Project.ready to use assets.`)
+      },
+      getAssetIDs: () => {
+        throw new Error(`Please wait for Project.ready to use assets.`)
+      },
     }
 
-    this.getAssetUrl = (assetId: string) => {
-      if (this.assetStorage) {
-        return this.assetStorage.getAssetUrl(assetId)
-      } else {
-        throw new Error(
-          `Theatre.getProject("${id}", config) was called without config.assetStorage and the default assetStorage didn't finish intializing yet.`,
-        )
-      }
-    }
+    this.getAssetUrl = (assetId: string) =>
+      this.assetStorage.getAssetUrl(assetId)
 
     this._pointerProxies = {
       historic: new PointerProxy(onDiskStateAtom.pointer.historic),
@@ -215,12 +196,10 @@ export default class Project {
     }
     this._studio = studio
 
-    if (!this.config.assetStorage) {
-      createDefaultAssetStorage().then((assetStorage) => {
-        this.assetStorage = assetStorage
-        this._assetStorageReadyDeferred.resolve(undefined)
-      })
-    }
+    createDefaultAssetStorage().then((assetStorage) => {
+      this.assetStorage = assetStorage
+      this._assetStorageReadyDeferred.resolve(undefined)
+    })
 
     studio.initialized.then(async () => {
       await initialiseProjectState(studio, this, this.config.state)
