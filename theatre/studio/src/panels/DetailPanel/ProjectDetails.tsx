@@ -18,6 +18,9 @@ const TheExportRow = styled.div`
 `
 
 const ExportTooltip = styled(BasicPopover)`
+  display flex;
+  flex-direction: column;
+  gap: 1em;
   width: 280px;
   padding: 1em;
 `
@@ -52,10 +55,13 @@ const ProjectDetails: React.FC<{
   const [downloaded, setDownloaded] = useState(false)
 
   const exportProject = useCallback(async () => {
-    const zip = new JSZip()
-    if (project.assetStorage) {
+    const assetIDs = project.assetStorage.getAssetIDs()
+
+    if (assetIDs.length > 0) {
+      const zip = new JSZip()
+
       await Promise.all(
-        project.assetStorage?.getAssetIDs().map(async (assetID) => {
+        assetIDs.map(async (assetID) => {
           const assetUrl = project.getAssetUrl(assetID)
           if (!assetUrl) return
 
@@ -63,6 +69,7 @@ const ProjectDetails: React.FC<{
           zip.file(assetID, blob)
         }),
       )
+
       const assetsFile = await zip.generateAsync({type: 'blob'})
       saveFile(assetsFile, `${slugifiedProjectId}.assets.zip`)
     }
@@ -85,9 +92,15 @@ const ProjectDetails: React.FC<{
     {debugName: 'ProjectDetails', pointerDistanceThreshold: 50},
     () => (
       <ExportTooltip>
-        This will create a JSON file with the state of your project. You can
-        commit this file to your git repo and include it in your production
-        bundle.
+        <p>
+          This will create a JSON file with the state of your project. You can
+          commit this file to your git repo and include it in your production
+          bundle.
+        </p>
+        <p>
+          If your project uses assets, this will also create a zip file with all
+          the assets that you can unpack in your public folder.
+        </p>
         <a
           href="https://docs.theatrejs.com/in-depth/#exporting"
           target="_blank"
