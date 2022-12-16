@@ -48,7 +48,7 @@ const tempVersion =
  * This script starts verdaccio and publishes all the packages in the monorepo to it, then
  * it runs `npm install` on all the test packages, and finally it closes verdaccio.
  */
-export async function installTests() {
+export async function installFixtures() {
   onCleanup((exitCode, signal) => {
     onCleanup.uninstall()
     restoreTestPackageJsons()
@@ -76,7 +76,7 @@ export async function installTests() {
 }
 
 async function runNpmInstallOnTestPackages() {
-  const packagePaths = getCompatibilityTestSetups()
+  const packagePaths = await getCompatibilityTestSetups()
 
   for (const pathToPackageDir of packagePaths) {
     cd(pathToPackageDir)
@@ -136,8 +136,8 @@ async function patchTheatreDependencies(pathToPackageJson, version) {
 }
 
 async function patchTestPackageJsons() {
-  const packagePaths = getCompatibilityTestSetups().map((pathToPackageDir) =>
-    path.join(pathToPackageDir, 'package.json'),
+  const packagePaths = (await getCompatibilityTestSetups()).map(
+    (pathToPackageDir) => path.join(pathToPackageDir, 'package.json'),
   )
 
   // replace all dependencies on @theatre/* packages with the local version
@@ -310,35 +310,21 @@ async function releaseToVerdaccio() {
 /**
  * Get all the setups from `./compatibility-tests/`
  *
- * @returns {Array<string>} An array containing the absolute paths to the compatibility test setups
+ * @returns {Promise<Array<string>>} An array containing the absolute paths to the compatibility test setups
  */
-export function getCompatibilityTestSetups() {
-  const compatibilityTestsDir = path.join(
-    config.MONOREPO_ROOT,
-    'compatibility-tests',
+export async function getCompatibilityTestSetups() {
+  const fixturePackageJsonFiles = await globby(
+    './fixtures/*/package/package.json',
+    {
+      cwd: config.PATH_TO_COMPAT_TESTS_ROOT,
+      gitignore: false,
+      onlyFiles: true,
+    },
   )
-  let buildTestsDirEntries
 
-  try {
-    buildTestsDirEntries = fs.readdirSync(compatibilityTestsDir)
-  } catch {
-    throw new Error(
-      `Could not list directory: "${compatibilityTestsDir}" Is it an existing directory?`,
-    )
-  }
-  const setupsAbsPaths = []
-
-  // NOTE: We assume that every directory matching `compatibility-tests/test-*` is
-  // a test package
-  for (const entry of buildTestsDirEntries) {
-    if (!entry.startsWith('test-')) continue
-    const entryAbsPath = path.join(compatibilityTestsDir, entry)
-    if (fs.lstatSync(entryAbsPath).isDirectory()) {
-      setupsAbsPaths.push(entryAbsPath)
-    }
-  }
-
-  return setupsAbsPaths
+  return fixturePackageJsonFiles.map((entry) => {
+    return path.join(config.PATH_TO_COMPAT_TESTS_ROOT, entry, '../')
+  })
 }
 
 /**
@@ -346,7 +332,7 @@ export function getCompatibilityTestSetups() {
  */
 export async function clean() {
   const toDelete = await globby(
-    './test-*/(node_modules|yarn.lock|package-lock.json)',
+    './fixtures/*/package/(node_modules|yarn.lock|package-lock.json)',
     {
       cwd: config.PATH_TO_COMPAT_TESTS_ROOT,
       // node_modules et al are gitignored, but we still want to clean them
@@ -355,14 +341,17 @@ export async function clean() {
       onlyFiles: false,
     },
   )
-  toDelete.forEach((fileOrDir) => {
-    console.log('deleting', fileOrDir)
-    fs.removeSync(path.join(config.PATH_TO_COMPAT_TESTS_ROOT, fileOrDir))
-  })
+
+  return await Promise.all(
+    toDelete.map((fileOrDir) => {
+      console.log('deleting', fileOrDir)
+      return fs.remove(path.join(config.PATH_TO_COMPAT_TESTS_ROOT, fileOrDir))
+    }),
+  )
 }
 
 export async function test() {
-  const setups = getCompatibilityTestSetups()
+  const setups = await getCompatibilityTestSetups()
   const setup = setups.find((s) => s.match(/vite/))
   await testSetup(setup)
   // for (const setup of setups) {

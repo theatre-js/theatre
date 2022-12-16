@@ -2,7 +2,7 @@
   "name": "@theatre/compatibility-tests",
   "private": true,
   "scripts": {
-    "install-tests": "zx ./scripts/install-tests.mjs",
+    "install-fixtures": "zx ./scripts/install-fixtures.mjs",
     "test": "zx ./scripts/test.mjs",
     "test:ci": "zx ./scripts/ci.mjs",
     "clean": "zx ./scripts/clean.mjs"
