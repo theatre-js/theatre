@@ -4,10 +4,17 @@
 
 import prettier from 'prettier'
 import path from 'path'
-import {globby, YAML, $, fs, cd, os, within} from 'zx'
+import {globby, argv, YAML, $, fs, cd, os, within} from 'zx'
 import onCleanup from 'node-cleanup'
 import * as verdaccioPackage from 'verdaccio'
 import {chromium, devices} from 'playwright'
+
+if (!argv['verbose']) {
+  $.verbose = false
+  console.log(
+    'Running in quiet mode. Add --verbose to see the output of all commands.',
+  )
+}
 
 // 'verdaccio' is not an es module so we have to do this:
 // @ts-ignore
@@ -38,9 +45,10 @@ const tempVersion =
   (Math.floor(Math.random() * 50000) + 1).toString()
 
 /**
- * This script starts verdaccio and publishes all the packages in the monorepo to it.
+ * This script starts verdaccio and publishes all the packages in the monorepo to it, then
+ * it runs `npm install` on all the test packages, and finally it closes verdaccio.
  */
-export async function startRegistry() {
+export async function installTests() {
   onCleanup((exitCode, signal) => {
     onCleanup.uninstall()
     restoreTestPackageJsons()
@@ -48,16 +56,23 @@ export async function startRegistry() {
     return false
   })
 
+  console.log('Using temporary version: ' + tempVersion)
+  console.log('Patching package.json files in ./test-*')
   const restoreTestPackageJsons = await patchTestPackageJsons()
 
-  console.log(`Running verdaccio on ${config.VERDACCIO_URL}`)
+  console.log('Starting verdaccio')
   const verdaccioServer = await startVerdaccio(config.VERDACCIO_PORT)
+  console.log(`Verdaccio is running on ${config.VERDACCIO_URL}`)
 
+  console.log('Releasing @theatre/* packages to verdaccio')
   await releaseToVerdaccio()
+
+  console.log('Running `$ npm install` on test packages')
   await runNpmInstallOnTestPackages()
-  console.log('Closing Verdaccio')
+  console.log('All tests installed successfully')
   await verdaccioServer.close()
   restoreTestPackageJsons()
+  console.log('Done')
 }
 
 async function runNpmInstallOnTestPackages() {

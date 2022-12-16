@@ -1,3 +1,3 @@
-import {test} from './utils.mjs'
+import {test} from './scripts.mjs'
 
 test()
