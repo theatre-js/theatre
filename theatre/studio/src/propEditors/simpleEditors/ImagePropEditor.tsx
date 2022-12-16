@@ -1,6 +1,4 @@
-import type {
-  PropTypeConfig_Image,
-} from '@theatre/core/propTypes'
+import type {PropTypeConfig_Image} from '@theatre/core/propTypes'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import React, {
   useCallback,
@@ -13,6 +11,11 @@ import styled from 'styled-components'
 import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
 import {popoverBackgroundColor} from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import type {$FixMe} from '@theatre/shared/utils/types'
+import {
+  Trash,
+  ArrowClockwise,
+  AddImage,
+} from '@theatre/studio/uiComponents/icons'
 
 const Wrapper = styled.div`
   position: relative;
@@ -32,6 +35,11 @@ const Input = styled.input.attrs({type: 'file', accept: 'image/*'})`
 `
 
 const FileInputLabel = styled.label`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
   width: 200px;
   height: 200px;
   background-color: #333;
@@ -60,15 +68,15 @@ const ImagePickerPopover = styled.div`
   border-radius: 3px;
   z-index: 10000;
   backdrop-filter: blur(8px);
+  max-height: 420px;
+  overflow-y: auto;
 
-  padding: 4px;
+  padding: 8px;
   pointer-events: all;
 
   border: none;
   box-shadow: none;
 `
-
-// a pleasant blue color for selection that looks good on gray
 
 const ImageContainer = styled.div<{selected?: boolean}>`
   overflow: hidden;
@@ -80,16 +88,11 @@ const ImageContainer = styled.div<{selected?: boolean}>`
     position: absolute;
     display: ${({selected}) => (selected ? 'block' : 'none')};
     inset: 0;
-    border: 3px solid #1e88e5;
+    border-bottom: 4px solid #40aaa4;
   }
 
   > img {
     display: block;
-  }
-
-  &:hover::after {
-    display: block;
-    border: 3px solid ${({selected}) => (selected ? '#1e88e5' : 'gray')};
   }
 `
 
@@ -99,14 +102,53 @@ const OptionContainer = styled.div`
 
 const EditingRow = styled.div`
   position: absolute;
+  display: none;
+  gap: 4px;
   z-index: 1;
-  top: 0;
-  right: 0;
+  top: 4px;
+  right: 4px;
+
+  ${OptionContainer}:hover & {
+    display: flex;
+  }
 `
 
-const EditButton = styled.button``
+const EditButton = styled.button<{danger?: boolean}>`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  width: 32px;
+  height: 32px;
+  outline: none;
+  box-sizing: border-box;
 
-const UpdateButton = styled(EditButton)
+  color: #a8a8a9;
+
+  background: rgba(40, 43, 47, 0.8);
+  backdrop-filter: blur(14px);
+  border: none;
+  border-radius: 2px;
+
+  svg {
+    display: block;
+  }
+
+  &:hover {
+    background: ${({danger}) => (danger ? '#d00' : 'rgba(59, 63, 69, 0.8)')};
+    color: white;
+  }
+
+  &:active {
+    background: rgba(82, 88, 96, 0.8);
+  }
+
+  @supports not (backdrop-filter: blur()) {
+    background: rgba(40, 43, 47, 0.95);
+  }
+`
 
 function ImagePropEditor({
   propConfig,
@@ -145,6 +187,11 @@ function ImagePropEditor({
     },
     () => (
       <ImagePickerPopover>
+        <FileInputLabel>
+          <Input type="file" onChange={onChange} accept="image/*" />
+          <AddImage width={50} height={50} />
+          Add image asset
+        </FileInputLabel>
         {Object.entries(images).map(([id, url]) => (
           <OptionContainer>
             <ImageContainer
@@ -156,23 +203,20 @@ function ImagePropEditor({
             <EditingRow>
               <EditButton as="label">
                 <Input onChange={updateOnChange(id)} />
-                Update
+                <ArrowClockwise />
               </EditButton>
               <EditButton
+                danger={true}
                 onClick={() => {
                   editingTools.deleteAsset(id)
                   setImages(getImages())
                 }}
               >
-                Delete
+                <Trash />
               </EditButton>
             </EditingRow>
           </OptionContainer>
         ))}
-        <FileInputLabel>
-          <Input type="file" onChange={onChange} accept="image/*" />
-          Add image asset
-        </FileInputLabel>
       </ImagePickerPopover>
     ),
   )
