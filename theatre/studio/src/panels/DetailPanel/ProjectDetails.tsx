@@ -62,7 +62,7 @@ const ProjectDetails: React.FC<{
 
       await Promise.all(
         assetIDs.map(async (assetID) => {
-          const assetUrl = project.getAssetUrl(assetID)
+          const assetUrl = project.assetStorage.getAssetUrl(assetID)
           if (!assetUrl) return
 
           const blob = await fetch(assetUrl).then((r) => r.blob())
