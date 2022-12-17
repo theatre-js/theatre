@@ -40,10 +40,6 @@ interface IStudioAssetStorage extends ICoreAssetStorage {
   deleteAsset: (assetId: string) => Promise<void>
   /** Returns all asset IDs */
   getAssetIDs: (type?: string) => string[]
-  createExport: () => Promise<{
-    blob: Blob
-    extension: string
-  } | null>
 }
 
 export type IAssetStorageConfig = {

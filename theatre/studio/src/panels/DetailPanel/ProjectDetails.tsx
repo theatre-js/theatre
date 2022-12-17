@@ -6,6 +6,7 @@ import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
 import StateConflictRow from './ProjectDetails/StateConflictRow'
+import JSZip from 'jszip'
 
 const Container = styled.div``
 
@@ -54,13 +55,23 @@ const ProjectDetails: React.FC<{
   const [downloaded, setDownloaded] = useState(false)
 
   const exportProject = useCallback(async () => {
-    const assetsExport = await project.assetStorage.createExport()
+    const assetIDs = project.assetStorage.getAssetIDs()
 
-    if (assetsExport) {
-      saveFile(
-        assetsExport.blob,
-        `${slugifiedProjectId}.${assetsExport.extension.replace(/^\./, '')}`,
+    if (assetIDs.length > 0) {
+      const zip = new JSZip()
+
+      await Promise.all(
+        assetIDs.map(async (assetID) => {
+          const assetUrl = project.assetStorage.getAssetUrl(assetID)
+          if (!assetUrl) return
+
+          const blob = await fetch(assetUrl).then((r) => r.blob())
+          zip.file(assetID, blob)
+        }),
       )
+
+      const assetsFile = await zip.generateAsync({type: 'blob'})
+      saveFile(assetsFile, `${slugifiedProjectId}.assets.zip`)
     }
 
     const str = JSON.stringify(
