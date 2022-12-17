@@ -100,7 +100,7 @@ export default class TheatreProject implements IProject {
   }
 
   getAssetUrl(assetId: string): string {
-    return privateAPI(this).getAssetUrl(assetId)
+    return privateAPI(this).assetStorage.getAssetUrl(assetId)
   }
 
   sheet(sheetId: string, instanceId: string = 'default'): ISheet {

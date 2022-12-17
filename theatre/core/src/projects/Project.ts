@@ -24,12 +24,14 @@ import type {
   ITheatreLoggingConfig,
 } from '@theatre/shared/logger'
 import {_coreLogger} from '@theatre/core/_coreLogger'
-import * as idb from 'idb-keyval'
-import * as uuid from 'uuid'
+import {createDefaultAssetStorage as createDefaultAssetStorageConfig} from './DefaultAssetStorage'
 
-type IAssetStorage = {
+type ICoreAssetStorage = {
   /** Returns a URL for the provided asset ID */
   getAssetUrl: (assetId: string) => string
+}
+
+interface IStudioAssetStorage extends ICoreAssetStorage {
   /** Creates an asset from the provided blob and returns a promise to its ID */
   createAsset: (asset: Blob) => Promise<string>
   /** Updates the provided asset */
@@ -38,6 +40,11 @@ type IAssetStorage = {
   deleteAsset: (assetId: string) => Promise<void>
   /** Returns all asset IDs */
   getAssetIDs: (type?: string) => string[]
+}
+
+export type IAssetStorageConfig = {
+  coreAssetStorage: ICoreAssetStorage
+  createStudioAssetStorage: () => Promise<IStudioAssetStorage>
 }
 
 type IAssetConf = {
@@ -78,11 +85,11 @@ export default class Project {
   }>({})
   sheetTemplatesP = this._sheetTemplates.pointer
   private _studio: Studio | undefined
-  assetStorage: IAssetStorage
+  private _defaultAssetStorageConfig: IAssetStorageConfig
+  assetStorage: IStudioAssetStorage
 
   type: 'Theatre_Project' = 'Theatre_Project'
   readonly _logger: ILogger
-  readonly getAssetUrl: (assetId: string) => string
 
   constructor(
     id: ProjectId,
@@ -110,27 +117,25 @@ export default class Project {
       },
     })
 
+    this._defaultAssetStorageConfig = createDefaultAssetStorageConfig({
+      baseUrl: config.assets?.baseUrl,
+    })
     this._assetStorageReadyDeferred = defer()
-
     this.assetStorage = {
-      getAssetUrl: (assetId: string) =>
-        `${config.assets?.baseUrl ?? ''}/${assetId}`,
-      createAsset: (asset: Blob) => {
+      ...this._defaultAssetStorageConfig.coreAssetStorage,
+      createAsset: () => {
         throw new Error(`Please wait for Project.ready to use assets.`)
       },
-      updateAsset: (assetId: string, asset: Blob) => {
+      updateAsset: () => {
         throw new Error(`Please wait for Project.ready to use assets.`)
       },
-      deleteAsset: (assetId: string) => {
+      deleteAsset: () => {
         throw new Error(`Please wait for Project.ready to use assets.`)
       },
       getAssetIDs: () => {
         throw new Error(`Please wait for Project.ready to use assets.`)
       },
     }
-
-    this.getAssetUrl = (assetId: string) =>
-      this.assetStorage.getAssetUrl(assetId)
 
     this._pointerProxies = {
       historic: new PointerProxy(onDiskStateAtom.pointer.historic),
@@ -196,10 +201,12 @@ export default class Project {
     }
     this._studio = studio
 
-    createDefaultAssetStorage().then((assetStorage) => {
-      this.assetStorage = assetStorage
-      this._assetStorageReadyDeferred.resolve(undefined)
-    })
+    this._defaultAssetStorageConfig
+      .createStudioAssetStorage()
+      .then((assetStorage) => {
+        this.assetStorage = assetStorage
+        this._assetStorageReadyDeferred.resolve(undefined)
+      })
 
     studio.initialized.then(async () => {
       await initialiseProjectState(studio, this, this.config.state)
@@ -249,108 +256,5 @@ export default class Project {
     }
 
     return template.getInstance(instanceId)
-  }
-}
-
-async function createDefaultAssetStorage(): Promise<IAssetStorage> {
-  // Check for support.
-  if (!('indexedDB' in window)) {
-    console.log("This browser doesn't support IndexedDB.")
-
-    return {
-      getAssetUrl: (assetId: string) => {
-        throw new Error(
-          `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
-        )
-      },
-      createAsset: (asset: Blob) => {
-        throw new Error(
-          `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
-        )
-      },
-      updateAsset: (assetId: string, asset: Blob) => {
-        throw new Error(
-          `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
-        )
-      },
-      deleteAsset: (assetId: string) => {
-        throw new Error(
-          `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
-        )
-      },
-      getAssetIDs: () => {
-        throw new Error(
-          `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
-        )
-      },
-    }
-  }
-
-  const assetsMap = new Map(await idb.entries()) as Map<string, Blob>
-  const urlCache = new Map<Blob, string>()
-
-  const invalidateUrl = (asset: Blob) => {
-    const url = urlCache.get(asset)
-    if (url) {
-      URL.revokeObjectURL(url)
-      urlCache.delete(asset)
-    }
-  }
-
-  const getUrlForAsset = (asset: Blob) => {
-    if (urlCache.has(asset)) {
-      return urlCache.get(asset)!
-    } else {
-      const url = URL.createObjectURL(asset)
-      urlCache.set(asset, url)
-      return url
-    }
-  }
-
-  const getUrlForId = (assetId: string) => {
-    const asset = assetsMap.get(assetId)
-    if (!asset) {
-      throw new Error(`Asset with id ${assetId} not found`)
-    }
-    return getUrlForAsset(asset)
-  }
-
-  return {
-    getAssetUrl: (assetId: string) => {
-      return getUrlForId(assetId)
-    },
-    createAsset: async (asset: Blob) => {
-      const assetId = uuid.v4()
-      assetsMap.set(assetId, asset)
-      await idb.set(assetId, asset)
-      return assetId
-    },
-    updateAsset: async (assetId: string, asset: Blob) => {
-      if (!assetsMap.has(assetId)) {
-        throw new Error(`Asset with id ${assetId} not found`)
-      }
-      const oldAsset = assetsMap.get(assetId)!
-      invalidateUrl(oldAsset)
-      assetsMap.set(assetId, asset)
-      await idb.set(assetId, asset)
-    },
-    deleteAsset: async (assetId: string) => {
-      if (!assetsMap.has(assetId)) {
-        return
-      }
-      const asset = assetsMap.get(assetId)!
-      invalidateUrl(asset)
-      assetsMap.delete(assetId)
-      await idb.del(assetId)
-    },
-    getAssetIDs: (type?: string) => {
-      const ids: string[] = []
-      for (const [id, asset] of assetsMap.entries()) {
-        if (!type || asset.type.startsWith(type)) {
-          ids.push(id)
-        }
-      }
-      return ids
-    },
   }
 }
