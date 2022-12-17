@@ -193,7 +193,7 @@ function ImagePropEditor({
           Add image asset
         </FileInputLabel>
         {Object.entries(images).map(([id, url]) => (
-          <OptionContainer>
+          <OptionContainer key={id}>
             <ImageContainer
               selected={value === id}
               onClick={() => editingTools.permanentlySetValue(id)}
