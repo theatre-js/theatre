@@ -40,6 +40,7 @@ export const createDefaultAssetStorage = ({
               `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
             )
           },
+          exportable: true,
         }
       }
 
@@ -109,6 +110,7 @@ export const createDefaultAssetStorage = ({
           }
           return ids
         },
+        exportable: true,
       }
     },
   }

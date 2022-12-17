@@ -40,6 +40,8 @@ interface IStudioAssetStorage extends ICoreAssetStorage {
   deleteAsset: (assetId: string) => Promise<void>
   /** Returns all asset IDs */
   getAssetIDs: (type?: string) => string[]
+  /** Whether the project export button should also export assets */
+  exportable: boolean
 }
 
 export type IAssetStorageConfig = {
@@ -135,6 +137,7 @@ export default class Project {
       getAssetIDs: () => {
         throw new Error(`Please wait for Project.ready to use assets.`)
       },
+      exportable: false,
     }
 
     this._pointerProxies = {
