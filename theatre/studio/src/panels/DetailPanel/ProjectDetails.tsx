@@ -57,7 +57,7 @@ const ProjectDetails: React.FC<{
   const exportProject = useCallback(async () => {
     const assetIDs = project.assetStorage.getAssetIDs()
 
-    if (assetIDs.length > 0) {
+    if (assetIDs.length > 0 && project.assetStorage.exportable) {
       const zip = new JSZip()
 
       await Promise.all(
@@ -69,6 +69,7 @@ const ProjectDetails: React.FC<{
           zip.file(assetID, blob)
         }),
       )
+      zip.file('manifest.json', JSON.stringify(assetIDs))
 
       const assetsFile = await zip.generateAsync({type: 'blob'})
       saveFile(assetsFile, `${slugifiedProjectId}.assets.zip`)
