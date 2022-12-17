@@ -1,6 +1,7 @@
 import type {IAssetStorageConfig} from './Project'
 import * as uuid from 'uuid'
 import * as idb from 'idb-keyval'
+import JSZip from 'jszip'
 
 export const createDefaultAssetStorage = ({
   baseUrl = '',
@@ -40,8 +41,15 @@ export const createDefaultAssetStorage = ({
               `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
             )
           },
+          createExport: () => {
+            throw new Error(
+              `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
+            )
+          },
         }
       }
+
+      const assetsFromBaseUrl = new Map<string, Blob>()
 
       const assetsMap = new Map(await idb.entries()) as Map<string, Blob>
       const urlCache = new Map<Blob, string>()
@@ -108,6 +116,31 @@ export const createDefaultAssetStorage = ({
             }
           }
           return ids
+        },
+        createExport: async () => {
+          const assetIDs = Array.from(assetsMap.keys())
+
+          if (assetIDs.length > 0) {
+            const zip = new JSZip()
+
+            await Promise.all(
+              assetIDs.map(async (assetID) => {
+                const assetUrl = getUrlForId(assetID)
+                if (!assetUrl) return
+
+                const blob = await fetch(assetUrl).then((r) => r.blob())
+                zip.file(assetID, blob)
+              }),
+            )
+
+            const assetsFile = await zip.generateAsync({type: 'blob'})
+            return {
+              blob: assetsFile,
+              extension: '.assets.zip',
+            }
+          } else {
+            return null
+          }
         },
       }
     },
