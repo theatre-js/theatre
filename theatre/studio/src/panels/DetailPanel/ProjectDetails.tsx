@@ -69,7 +69,14 @@ const ProjectDetails: React.FC<{
           zip.file(assetID, blob)
         }),
       )
-      zip.file('manifest.json', JSON.stringify(assetIDs))
+      console.log(project.assetStorage)
+      if (project.assetStorage.getManifest) {
+        console.log('manifest', await project.assetStorage.getManifest())
+        zip.file(
+          'manifest.json',
+          JSON.stringify(await project.assetStorage.getManifest(), null, 2),
+        )
+      }
 
       const assetsFile = await zip.generateAsync({type: 'blob'})
       saveFile(assetsFile, `${slugifiedProjectId}.assets.zip`)

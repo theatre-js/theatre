@@ -36,7 +36,6 @@ const ImageTypeExample: React.FC<{}> = (props) => {
       }),
     })
     object.onValuesChange(({image}) => {
-      console.log('hello', image)
       try {
         setImageUrl(project.getAssetUrl(image))
       } catch (e) {}

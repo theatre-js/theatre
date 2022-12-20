@@ -24,14 +24,18 @@ import type {
   ITheatreLoggingConfig,
 } from '@theatre/shared/logger'
 import {_coreLogger} from '@theatre/core/_coreLogger'
-import {createDefaultAssetStorage as createDefaultAssetStorageConfig} from './DefaultAssetStorage'
+import type {
+  DefaultAssetStorageConfig} from './DefaultAssetStorage';
+import {
+  createDefaultAssetStorage as createDefaultAssetStorageConfig
+} from './DefaultAssetStorage'
 
 type ICoreAssetStorage = {
   /** Returns a URL for the provided asset ID */
   getAssetUrl: (assetId: string) => string
 }
 
-interface IStudioAssetStorage extends ICoreAssetStorage {
+interface IStudioAssetStorage<Manifest> extends ICoreAssetStorage {
   /** Creates an asset from the provided blob and returns a promise to its ID */
   createAsset: (asset: Blob) => Promise<string>
   /** Updates the provided asset */
@@ -40,13 +44,19 @@ interface IStudioAssetStorage extends ICoreAssetStorage {
   deleteAsset: (assetId: string) => Promise<void>
   /** Returns all asset IDs */
   getAssetIDs: (type?: string) => string[]
+  /** Returns whether the asset has updates */
+  hasConflicts: (assetId: string) => Promise<boolean>
+  /** If there's a conflict, accept changes from the remote */
+  acceptRemote: (assetId: string) => Promise<void>
+  /** Returns a manifest of assets (of arbitrary shape), if any */
+  getManifest?: () => Promise<Manifest>
   /** Whether the project export button should also export assets */
   exportable: boolean
 }
 
-export type IAssetStorageConfig = {
+export type IAssetStorageConfig<Manifest> = {
   coreAssetStorage: ICoreAssetStorage
-  createStudioAssetStorage: () => Promise<IStudioAssetStorage>
+  createStudioAssetStorage: () => Promise<IStudioAssetStorage<Manifest>>
 }
 
 type IAssetConf = {
@@ -87,8 +97,10 @@ export default class Project {
   }>({})
   sheetTemplatesP = this._sheetTemplates.pointer
   private _studio: Studio | undefined
-  private _defaultAssetStorageConfig: IAssetStorageConfig
-  assetStorage: IStudioAssetStorage
+  private _defaultAssetStorageConfig: DefaultAssetStorageConfig
+  assetStorage: Awaited<
+    ReturnType<DefaultAssetStorageConfig['createStudioAssetStorage']>
+  >
 
   type: 'Theatre_Project' = 'Theatre_Project'
   readonly _logger: ILogger
@@ -135,6 +147,12 @@ export default class Project {
         throw new Error(`Please wait for Project.ready to use assets.`)
       },
       getAssetIDs: () => {
+        throw new Error(`Please wait for Project.ready to use assets.`)
+      },
+      hasConflicts: () => {
+        throw new Error(`Please wait for Project.ready to use assets.`)
+      },
+      acceptRemote: () => {
         throw new Error(`Please wait for Project.ready to use assets.`)
       },
       exportable: false,
