@@ -918,7 +918,6 @@ namespace stateEditors {
             toggledKeyframes.forEach((kf: Keyframe) => {
               const isHold = kf.type === undefined || kf.type === 0
               kf.type = isHold ? 1 : 0
-              console.log(kf.id, kf.type)
             })
           }
 
