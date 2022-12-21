@@ -144,14 +144,13 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
         isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
         {...presence.attrs}
       />
-      {showDiamond && (
+      {showDiamond ? (
         <Diamond
           isSelected={!!props.selection}
           isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
           flag={presence.flag}
         />
-      )}
-      {!showDiamond && (
+      ) : (
         <Square
           isSelected={!!props.selection}
           isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
