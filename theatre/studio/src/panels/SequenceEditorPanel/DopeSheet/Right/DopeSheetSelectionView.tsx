@@ -422,6 +422,26 @@ namespace utils {
           }
         })
       },
+      toggle() {
+        getStudio().transaction(({stateEditors}) => {
+          const toggleKeyframes =
+            stateEditors.coreByProject.historic.sheetsById.sequence
+              .toggleKeyframeType
+
+          for (const objectKey of Object.keys(selectionByObjectKey)) {
+            const {byTrackId} = selectionByObjectKey[objectKey]!
+            for (const trackId of Object.keys(byTrackId)) {
+              const {byKeyframeId} = byTrackId[trackId]!
+              toggleKeyframes({
+                ...sheet.address,
+                objectKey,
+                trackId,
+                keyframeIds: Object.keys(byKeyframeId),
+              })
+            }
+          }
+        })
+      },
     }
   }
 }

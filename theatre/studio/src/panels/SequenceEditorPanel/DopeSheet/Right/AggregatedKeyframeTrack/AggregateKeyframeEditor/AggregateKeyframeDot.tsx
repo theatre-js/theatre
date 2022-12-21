@@ -248,8 +248,7 @@ function useAggregateKeyframeContextMenu(
           label: 'Toggle Hold Keyframe',
           callback: () => {
             if (selection) {
-              // TODO - Add toggle functionality to Selection type
-              // selection.toggle()
+              selection.toggle()
             } else {
               getStudio().transaction(({stateEditors}) => {
                 for (const kfWithTrack of props.utils.cur.keyframes) {

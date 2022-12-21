@@ -284,8 +284,7 @@ function useConnectorContextMenu(
           label: 'Toggle Hold Keyframe',
           callback: () => {
             if (props.editorProps.selection) {
-              // TODO - Add toggle functionality to Selection type
-              // props.editorProps.selection.toggle()
+              props.editorProps.selection.toggle()
             } else {
               getStudio().transaction(({stateEditors}) => {
                 for (const con of props.utils.allConnections) {
