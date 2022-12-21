@@ -15,6 +15,8 @@ const SVGPath = styled.path`
 
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
+const noCurve = `M 0 0 L 1 0 L 1 1`
+
 const Curve: React.VFC<IProps> = (props) => {
   const {index, trackData} = props
   const cur = trackData.keyframes[index]
@@ -56,7 +58,7 @@ const Curve: React.VFC<IProps> = (props) => {
     <>
       <SVGPath
         ref={nodeRef}
-        d={pathD}
+        d={cur.type === 1 ? noCurve : pathD}
         style={{
           transform,
         }}
