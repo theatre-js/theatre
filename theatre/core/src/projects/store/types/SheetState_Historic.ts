@@ -80,6 +80,7 @@ export type Keyframe = {
   position: number
   handles: [leftX: number, leftY: number, rightX: number, rightY: number]
   connectedRight: boolean
+  type: number // bezier = 0, hold = 1
 }
 
 type TrackDataCommon<TypeName extends string> = {

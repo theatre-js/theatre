@@ -201,8 +201,11 @@ const states = {
       const progression = globalProgressionToLocalProgression(
         progressionD.getValue(),
       )
-
-      const valueProgression = solver.solveSimple(progression)
+      // TODO - Default to bezier - currently `type` doesn't get designated at init (thus being undefined), so use this for now
+      const valueProgression =
+        left.type === 1
+          ? Math.floor(progression)
+          : solver.solveSimple(progression)
       return {
         left: left.value,
         right: right.value,

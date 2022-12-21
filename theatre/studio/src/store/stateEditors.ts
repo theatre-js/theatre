@@ -902,6 +902,26 @@ namespace stateEditors {
             )
           }
 
+          export function toggleKeyframeType(
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+              keyframeIds: KeyframeId[]
+            },
+          ) {
+            const track = _getTrack(p)
+            if (!track) return
+
+            const toggledKeyframes = track.keyframes.filter(
+              (kf) => p.keyframeIds.indexOf(kf.id) > -1,
+            )
+
+            toggledKeyframes.forEach((kf: Keyframe) => {
+              const isHold = kf.type === undefined || kf.type === 0
+              kf.type = isHold ? 1 : 0
+              console.log(kf.id, kf.type)
+            })
+          }
+
           // Future: consider whether a list of "partial" keyframes requiring `id` is possible to accept
           //  * Consider how common this pattern is, as this sort of concept would best be encountered
           //    a few times to start to see an opportunity for improved ergonomics / crdt.

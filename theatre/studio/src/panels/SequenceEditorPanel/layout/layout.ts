@@ -63,6 +63,7 @@ export type DopeSheetSelection = {
     },
   ): Omit<Parameters<typeof useDrag>[1], 'onClick'>
   delete(): void
+  toggle(): void
 }
 
 /**

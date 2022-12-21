@@ -193,6 +193,25 @@ function useSingleKeyframeContextMenu(
             }
           },
         },
+        {
+          label: 'Toggle Hold Keyframe',
+          callback: () => {
+            if (props.selection) {
+              // TODO - Add toggle functionality to Selection type
+              // props.selection.toggle()
+            } else {
+              getStudio()!.transaction(({stateEditors}) => {
+                stateEditors.coreByProject.historic.sheetsById.sequence.toggleKeyframeType(
+                  {
+                    ...props.leaf.sheetObject.address,
+                    keyframeIds: [props.keyframe.id],
+                    trackId: props.leaf.trackId,
+                  },
+                )
+              })
+            }
+          },
+        },
       ]
     },
     onOpen() {
