@@ -274,6 +274,7 @@ describe(`SheetObject`, () => {
                       position: 10,
                       connectedRight: true,
                       handles: [0.5, 0.5, 0.5, 0.5],
+                      type: 0,
                       value: 3,
                     },
                     {
@@ -281,6 +282,7 @@ describe(`SheetObject`, () => {
                       position: 20,
                       connectedRight: false,
                       handles: [0.5, 0.5, 0.5, 0.5],
+                      type: 0,
                       value: 6,
                     },
                   ],

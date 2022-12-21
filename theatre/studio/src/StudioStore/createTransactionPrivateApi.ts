@@ -144,6 +144,7 @@ export default function createTransactionPrivateApi(
                 position: seq.position,
                 value: value as $FixMe,
                 snappingFunction: seq.closestGridPosition,
+                type: 0,
               },
             )
           } else {

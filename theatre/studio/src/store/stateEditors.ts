@@ -707,6 +707,7 @@ namespace stateEditors {
               handles?: [number, number, number, number]
               value: T
               snappingFunction: SnappingFunction
+              type: number
             },
           ) {
             const position = p.snappingFunction(p.position)
@@ -734,6 +735,7 @@ namespace stateEditors {
                 position,
                 connectedRight: true,
                 handles: p.handles || [0.5, 1, 0.5, 0],
+                type: p.type || 0,
                 value: p.value,
               })
               return
@@ -744,6 +746,7 @@ namespace stateEditors {
               position,
               connectedRight: leftKeyframe.connectedRight,
               handles: p.handles || [0.5, 1, 0.5, 0],
+              type: p.type || 0,
               value: p.value,
             })
           }
