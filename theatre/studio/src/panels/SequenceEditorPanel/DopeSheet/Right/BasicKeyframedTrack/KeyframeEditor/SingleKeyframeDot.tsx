@@ -135,7 +135,7 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   })
 
   const showDiamond =
-    props.keyframe.type === undefined || props.keyframe.type === 0
+    props.keyframe.type === undefined || props.keyframe.type === 'bezier'
 
   return (
     <>

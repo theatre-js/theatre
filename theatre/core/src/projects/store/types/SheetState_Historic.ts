@@ -71,6 +71,8 @@ export type HistoricPositionalSequence = {
  */
 export type TrackData = BasicKeyframedTrack
 
+export type KeyframeType = 'bezier' | 'hold'
+
 export type Keyframe = {
   id: KeyframeId
   /** The `value` is the raw value type such as `Rgba` or `number`. See {@link SerializableValue} */
@@ -80,7 +82,7 @@ export type Keyframe = {
   position: number
   handles: [leftX: number, leftY: number, rightX: number, rightY: number]
   connectedRight: boolean
-  type: number // bezier = 0, hold = 1
+  type: KeyframeType
 }
 
 type TrackDataCommon<TypeName extends string> = {

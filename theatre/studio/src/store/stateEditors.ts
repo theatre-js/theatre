@@ -2,6 +2,7 @@ import type {
   BasicKeyframedTrack,
   HistoricPositionalSequence,
   Keyframe,
+  KeyframeType,
   SheetState_Historic,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {Drafts} from '@theatre/studio/StudioStore/StudioStore'
@@ -707,7 +708,7 @@ namespace stateEditors {
               handles?: [number, number, number, number]
               value: T
               snappingFunction: SnappingFunction
-              type: number
+              type: KeyframeType
             },
           ) {
             const position = p.snappingFunction(p.position)
@@ -735,7 +736,7 @@ namespace stateEditors {
                 position,
                 connectedRight: true,
                 handles: p.handles || [0.5, 1, 0.5, 0],
-                type: p.type || 0,
+                type: p.type || 'bezier',
                 value: p.value,
               })
               return
@@ -746,7 +747,7 @@ namespace stateEditors {
               position,
               connectedRight: leftKeyframe.connectedRight,
               handles: p.handles || [0.5, 1, 0.5, 0],
-              type: p.type || 0,
+              type: p.type || 'bezier',
               value: p.value,
             })
           }
@@ -919,8 +920,8 @@ namespace stateEditors {
             )
 
             toggledKeyframes.forEach((kf: Keyframe) => {
-              const isHold = kf.type === undefined || kf.type === 0
-              kf.type = isHold ? 1 : 0
+              const isHold = kf.type === undefined || kf.type === 'bezier'
+              kf.type = isHold ? 'hold' : 'bezier'
             })
           }
 

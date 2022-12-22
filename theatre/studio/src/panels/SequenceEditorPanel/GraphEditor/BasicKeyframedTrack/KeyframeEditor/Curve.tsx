@@ -58,7 +58,7 @@ const Curve: React.VFC<IProps> = (props) => {
     <>
       <SVGPath
         ref={nodeRef}
-        d={cur.type === 1 ? noCurve : pathD}
+        d={cur.type === 'bezier' ? pathD : noCurve}
         style={{
           transform,
         }}
