@@ -24,7 +24,6 @@ import type {
   ITheatreLoggingConfig,
 } from '@theatre/shared/logger'
 import {_coreLogger} from '@theatre/core/_coreLogger'
-import type {DefaultAssetStorageConfig} from './DefaultAssetStorage'
 import {createDefaultAssetStorageConfig} from './DefaultAssetStorage'
 
 type ICoreAssetStorage = {
@@ -34,7 +33,7 @@ type ICoreAssetStorage = {
 
 interface IStudioAssetStorage extends ICoreAssetStorage {
   /** Creates an asset from the provided blob and returns a promise to its ID */
-  createAsset: (asset: Blob) => Promise<string>
+  createAsset: (asset: File) => Promise<string | null>
 }
 
 export type IAssetStorageConfig = {
@@ -80,9 +79,9 @@ export default class Project {
   }>({})
   sheetTemplatesP = this._sheetTemplates.pointer
   private _studio: Studio | undefined
-  private _defaultAssetStorageConfig: DefaultAssetStorageConfig
+  private _defaultAssetStorageConfig: IAssetStorageConfig
   assetStorage: Awaited<
-    ReturnType<DefaultAssetStorageConfig['createStudioAssetStorage']>
+    ReturnType<IAssetStorageConfig['createStudioAssetStorage']>
   >
 
   type: 'Theatre_Project' = 'Theatre_Project'

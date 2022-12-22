@@ -48,6 +48,7 @@
     "babel-loader": "^8.2.2",
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
+    "blob-compare": "1.1.0",
     "circular-dependency-plugin": "^5.2.2",
     "cross-env": "^7.0.3",
     "esbuild": "^0.12.15",

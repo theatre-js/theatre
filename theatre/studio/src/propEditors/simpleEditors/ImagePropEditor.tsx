@@ -49,8 +49,13 @@ function ImagePropEditor({
   const onChange = useCallback(
     async (event) => {
       const file = event.target.files[0]
+      editingTools.permanentlySetValue('')
       const imageId = await editingTools.createAsset(file)
-      editingTools.permanentlySetValue(imageId)
+      if (!imageId) {
+        editingTools.permanentlySetValue(value)
+      } else {
+        editingTools.permanentlySetValue(imageId)
+      }
       event.target.value = null
     },
     [editingTools],

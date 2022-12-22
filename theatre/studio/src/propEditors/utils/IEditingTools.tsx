@@ -4,5 +4,5 @@ export interface IEditingTools<T> {
   permanentlySetValue(v: T): void
 
   getAssetUrl(assetId: string): string
-  createAsset(asset: Blob): Promise<string>
+  createAsset(asset: Blob): Promise<string | null>
 }

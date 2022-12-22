@@ -10896,6 +10896,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"blob-compare@npm:1.1.0":
+  version: 1.1.0
+  resolution: "blob-compare@npm:1.1.0"
+  dependencies:
+    webworker-promise: ^0.4.2
+  checksum: 28cb1f5c6dc53195e67bb2765ec5a1aa7f1123460d9ccf64116aebf3ed36a3f4df5f065ac5ec4caf5da4fbbb5e944bca5c7296b960f693bea70dc4118953539d
+  languageName: node
+  linkType: hard
+
 "blob-polyfill@npm:^5.0.20210201":
   version: 5.0.20210201
   resolution: "blob-polyfill@npm:5.0.20210201"
@@ -29739,6 +29748,7 @@ fsevents@^1.2.7:
     babel-loader: ^8.2.2
     babel-polyfill: ^6.26.0
     babel-register: ^6.26.0
+    blob-compare: 1.1.0
     circular-dependency-plugin: ^5.2.2
     cross-env: ^7.0.3
     esbuild: ^0.12.15
@@ -31467,6 +31477,13 @@ fsevents@^1.2.7:
   version: 0.1.4
   resolution: "websocket-extensions@npm:0.1.4"
   checksum: 5976835e68a86afcd64c7a9762ed85f2f27d48c488c707e67ba85e717b90fa066b98ab33c744d64255c9622d349eedecf728e65a5f921da71b58d0e9591b9038
+  languageName: node
+  linkType: hard
+
+"webworker-promise@npm:^0.4.2":
+  version: 0.4.4
+  resolution: "webworker-promise@npm:0.4.4"
+  checksum: 6edb84c235ff49e437c3cfd8c10b75a202911c78e92050dbfad79d051d4df3ea7abbd2e16e0056e46ce0eaf53441105902647bd2b7cca4bc7c0c4f8dfd6b6da7
   languageName: node
   linkType: hard
 

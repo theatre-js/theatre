@@ -7,11 +7,9 @@ import studio from '@theatre/studio'
 import React, {useEffect, useState} from 'react'
 import {render} from 'react-dom'
 import styled from 'styled-components'
-import state from './state.json'
 
 studio.initialize()
 const project = getProject('Image type playground', {
-  state,
   assets: {
     baseUrl: 'http://localhost:3000',
   },
@@ -34,6 +32,10 @@ const ImageTypeExample: React.FC<{}> = (props) => {
       image: types.image({
         label: 'texture',
       }),
+      image2: types.image({
+        label: 'another texture',
+      }),
+      something: 'asdf',
     })
     object.onValuesChange(({image}) => {
       try {
