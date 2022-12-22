@@ -5,7 +5,4 @@ export interface IEditingTools<T> {
 
   getAssetUrl(assetId: string): string
   createAsset(asset: Blob): Promise<string>
-  deleteAsset(assetId: string): Promise<void>
-  updateAsset(assetId: string, asset: Blob): Promise<void>
-  getAssetIDs: (type?: string) => string[]
 }

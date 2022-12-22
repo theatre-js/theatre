@@ -24,39 +24,22 @@ import type {
   ITheatreLoggingConfig,
 } from '@theatre/shared/logger'
 import {_coreLogger} from '@theatre/core/_coreLogger'
-import type {
-  DefaultAssetStorageConfig} from './DefaultAssetStorage';
-import {
-  createDefaultAssetStorage as createDefaultAssetStorageConfig
-} from './DefaultAssetStorage'
+import type {DefaultAssetStorageConfig} from './DefaultAssetStorage'
+import {createDefaultAssetStorageConfig} from './DefaultAssetStorage'
 
 type ICoreAssetStorage = {
   /** Returns a URL for the provided asset ID */
   getAssetUrl: (assetId: string) => string
 }
 
-interface IStudioAssetStorage<Manifest> extends ICoreAssetStorage {
+interface IStudioAssetStorage extends ICoreAssetStorage {
   /** Creates an asset from the provided blob and returns a promise to its ID */
   createAsset: (asset: Blob) => Promise<string>
-  /** Updates the provided asset */
-  updateAsset: (assetId: string, asset: Blob) => Promise<void>
-  /** Deletes the provided asset */
-  deleteAsset: (assetId: string) => Promise<void>
-  /** Returns all asset IDs */
-  getAssetIDs: (type?: string) => string[]
-  /** Returns whether the asset has updates */
-  hasConflicts: (assetId: string) => Promise<boolean>
-  /** If there's a conflict, accept changes from the remote */
-  acceptRemote: (assetId: string) => Promise<void>
-  /** Returns a manifest of assets (of arbitrary shape), if any */
-  getManifest?: () => Promise<Manifest>
-  /** Whether the project export button should also export assets */
-  exportable: boolean
 }
 
-export type IAssetStorageConfig<Manifest> = {
+export type IAssetStorageConfig = {
   coreAssetStorage: ICoreAssetStorage
-  createStudioAssetStorage: () => Promise<IStudioAssetStorage<Manifest>>
+  createStudioAssetStorage: () => Promise<IStudioAssetStorage>
 }
 
 type IAssetConf = {
@@ -90,7 +73,7 @@ export default class Project {
   readonly address: ProjectAddress
 
   private readonly _studioReadyDeferred: Deferred<undefined>
-  private readonly _assetStorageReadyDeferred: Deferred<undefined>
+  private readonly _defaultAssetStorageReadyDeferred: Deferred<undefined>
 
   private _sheetTemplates = new Atom<{
     [sheetId: string]: SheetTemplate | undefined
@@ -132,30 +115,15 @@ export default class Project {
     })
 
     this._defaultAssetStorageConfig = createDefaultAssetStorageConfig({
+      project: this,
       baseUrl: config.assets?.baseUrl,
     })
-    this._assetStorageReadyDeferred = defer()
+    this._defaultAssetStorageReadyDeferred = defer()
     this.assetStorage = {
       ...this._defaultAssetStorageConfig.coreAssetStorage,
       createAsset: () => {
         throw new Error(`Please wait for Project.ready to use assets.`)
       },
-      updateAsset: () => {
-        throw new Error(`Please wait for Project.ready to use assets.`)
-      },
-      deleteAsset: () => {
-        throw new Error(`Please wait for Project.ready to use assets.`)
-      },
-      getAssetIDs: () => {
-        throw new Error(`Please wait for Project.ready to use assets.`)
-      },
-      hasConflicts: () => {
-        throw new Error(`Please wait for Project.ready to use assets.`)
-      },
-      acceptRemote: () => {
-        throw new Error(`Please wait for Project.ready to use assets.`)
-      },
-      exportable: false,
     }
 
     this._pointerProxies = {
@@ -180,7 +148,7 @@ export default class Project {
         // let's give it one tick to attach itself
         if (!this._studio) {
           this._studioReadyDeferred.resolve(undefined)
-          this._assetStorageReadyDeferred.resolve(undefined)
+          this._defaultAssetStorageReadyDeferred.resolve(undefined)
           this._logger._trace('ready deferred resolved with no state')
         }
       }, 0)
@@ -222,13 +190,6 @@ export default class Project {
     }
     this._studio = studio
 
-    this._defaultAssetStorageConfig
-      .createStudioAssetStorage()
-      .then((assetStorage) => {
-        this.assetStorage = assetStorage
-        this._assetStorageReadyDeferred.resolve(undefined)
-      })
-
     studio.initialized.then(async () => {
       await initialiseProjectState(studio, this, this.config.state)
 
@@ -242,6 +203,14 @@ export default class Project {
         studio.atomP.ephemeral.coreByProject[this.address.projectId],
       )
 
+      // asset storage has to be initialized after the pointers are set
+      this._defaultAssetStorageConfig
+        .createStudioAssetStorage()
+        .then((assetStorage) => {
+          this.assetStorage = assetStorage
+          this._defaultAssetStorageReadyDeferred.resolve(undefined)
+        })
+
       this._studioReadyDeferred.resolve(undefined)
     })
   }
@@ -253,7 +222,7 @@ export default class Project {
   get ready() {
     return Promise.all([
       this._studioReadyDeferred.promise,
-      this._assetStorageReadyDeferred.promise,
+      this._defaultAssetStorageReadyDeferred.promise,
       // hide the array from the user, i.e. make it Promise<void> instead of Promise<[undefined, undefined]>
     ]).then(() => {})
   }
@@ -261,7 +230,7 @@ export default class Project {
   isReady() {
     return (
       this._studioReadyDeferred.status === 'resolved' &&
-      this._assetStorageReadyDeferred.status === 'resolved'
+      this._defaultAssetStorageReadyDeferred.status === 'resolved'
     )
   }
 

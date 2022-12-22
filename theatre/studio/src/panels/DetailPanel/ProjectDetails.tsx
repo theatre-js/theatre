@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
 import StateConflictRow from './ProjectDetails/StateConflictRow'
 import JSZip from 'jszip'
+import {val} from '@theatre/dataverse'
 
 const Container = styled.div``
 
@@ -55,27 +56,42 @@ const ProjectDetails: React.FC<{
   const [downloaded, setDownloaded] = useState(false)
 
   const exportProject = useCallback(async () => {
-    const assetIDs = project.assetStorage.getAssetIDs()
+    // get all possible asset ids referenced by either static props or keyframes
+    const sheets = Object.values(val(project.pointers.historic.sheetsById))
+    const staticValues = sheets
+      .flatMap((sheet) => Object.values(sheet?.staticOverrides.byObject ?? {}))
+      .flatMap((overrides) => Object.values(overrides ?? {}))
+    const keyframeValues = sheets
+      .flatMap((sheet) => Object.values(sheet?.sequence?.tracksByObject ?? {}))
+      .flatMap((tracks) => Object.values(tracks?.trackData ?? {}))
+      .flatMap((track) => track?.keyframes)
+      .map((keyframe) => keyframe?.value)
 
-    if (assetIDs.length > 0 && project.assetStorage.exportable) {
+    const allValues = [...staticValues, ...keyframeValues].filter(
+      // value is string, and is unique
+      (value, index, self) =>
+        typeof value === 'string' && self.indexOf(value) === index,
+    ) as string[]
+
+    const blobs = new Map<string, Blob>()
+
+    // only export assets that are referenced by the project
+    await Promise.all(
+      allValues.map(async (value) => {
+        const assetUrl = project.assetStorage.getAssetUrl(value)
+        const response = await fetch(assetUrl)
+
+        if (response.ok) {
+          blobs.set(value, await response.blob())
+        }
+      }),
+    )
+
+    if (blobs.size > 0) {
       const zip = new JSZip()
 
-      await Promise.all(
-        assetIDs.map(async (assetID) => {
-          const assetUrl = project.assetStorage.getAssetUrl(assetID)
-          if (!assetUrl) return
-
-          const blob = await fetch(assetUrl).then((r) => r.blob())
-          zip.file(assetID, blob)
-        }),
-      )
-      console.log(project.assetStorage)
-      if (project.assetStorage.getManifest) {
-        console.log('manifest', await project.assetStorage.getManifest())
-        zip.file(
-          'manifest.json',
-          JSON.stringify(await project.assetStorage.getManifest(), null, 2),
-        )
+      for (const [assetID, blob] of blobs) {
+        zip.file(assetID, blob)
       }
 
       const assetsFile = await zip.generateAsync({type: 'blob'})
