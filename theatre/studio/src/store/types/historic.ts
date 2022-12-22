@@ -78,6 +78,7 @@ export type PaneInstanceDescriptor = {
  */
 export type StudioHistoricStateSequenceEditorMarker = {
   id: SequenceMarkerId
+  name: string
   /**
    * The position this marker takes in the sequence.
    *

@@ -338,6 +338,16 @@ namespace stateEditors {
                   pointableSetUtil.remove(currentMarkerSet, options.markerId),
                 )
               }
+
+              export function updateMarker(options: {
+                sheetAddress: SheetAddress
+                markerId: SequenceMarkerId
+                name: string
+              }) {
+                const currentMarkerSet = _ensureMarkers(options.sheetAddress)
+                const marker = currentMarkerSet.byId[options.markerId]
+                if (marker !== undefined) marker.name = options.name
+              }
             }
           }
         }

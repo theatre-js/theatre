@@ -8,7 +8,7 @@ import {
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import React, {useMemo, useRef} from 'react'
+import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
@@ -64,6 +64,21 @@ const MarkerVisualDot = React.memo(() => (
     }
   />
 ))
+
+const MarkerForm = styled.form`
+  transform: translate(-6px, -100%);
+  z-index: 0;
+`
+
+const InputText = styled.input`
+  background: #40aaa4;
+  border: none;
+  color: #fff;
+  display: inline;
+  outline: none;
+  padding: 2px;
+  pointer-events: visible;
+`
 
 const HitZone = styled.div`
   z-index: 1;
@@ -164,6 +179,23 @@ const MarkerDotVisible: React.VFC<IMarkerDotVisibleProps> = ({
     marker,
   })
 
+  const [markerText, setMarkerText] = useState(marker.name)
+
+  const updateMarkerText = (evt: any) => {
+    const markerName = evt.target.value
+    setMarkerText(markerName)
+    // Save
+    getStudio().transaction(({stateEditors}) => {
+      stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.updateMarker(
+        {
+          sheetAddress: sheetAddress,
+          markerId: marker.id,
+          name: markerName,
+        },
+      )
+    })
+  }
+
   return (
     <>
       {contextMenu}
@@ -174,6 +206,15 @@ const MarkerDotVisible: React.VFC<IMarkerDotVisibleProps> = ({
           position: marker.position,
         })}
       />
+      <MarkerForm>
+        <InputText
+          type="text"
+          size={Math.min(30, Math.max(markerText.length, 2))}
+          maxLength={30}
+          value={markerText}
+          onChange={updateMarkerText}
+        />
+      </MarkerForm>
       <MarkerVisualDot />
     </>
   )
