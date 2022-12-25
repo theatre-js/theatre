@@ -1,29 +1,10 @@
-import * as idb from 'idb-keyval'
+import {createStore} from './IDBStorage'
 import type Project from './Project'
-import {val} from '@theatre/dataverse'
 import type {IAssetStorageConfig} from './Project'
 // @ts-ignore
 import blobCompare from 'blob-compare'
-
-function getAllPossibleAssetIDs(project: Project) {
-  const sheets = Object.values(val(project.pointers.historic.sheetsById))
-  const staticValues = sheets
-    .flatMap((sheet) => Object.values(sheet?.staticOverrides.byObject ?? {}))
-    .flatMap((overrides) => Object.values(overrides ?? {}))
-  const keyframeValues = sheets
-    .flatMap((sheet) => Object.values(sheet?.sequence?.tracksByObject ?? {}))
-    .flatMap((tracks) => Object.values(tracks?.trackData ?? {}))
-    .flatMap((track) => track?.keyframes)
-    .map((keyframe) => keyframe?.value)
-
-  const allValues = [...staticValues, ...keyframeValues].filter(
-    // value is string, and is unique
-    (value, index, self) =>
-      typeof value === 'string' && self.indexOf(value) === index,
-  ) as string[]
-
-  return allValues
-}
+import {notify} from '@theatre/core/coreExports'
+import getAllPossibleAssetIDs from '@theatre/shared/getAllPossibleAssetIDs'
 
 export const createDefaultAssetStorageConfig = ({
   project,
@@ -37,6 +18,14 @@ export const createDefaultAssetStorageConfig = ({
       getAssetUrl: (assetId: string) => `${baseUrl}/${assetId}`,
     },
     createStudioAssetStorage: async () => {
+      // in SSR we bail out and return a dummy asset manager
+      if (typeof window === 'undefined') {
+        return {
+          getAssetUrl: () => '',
+          createAsset: () => Promise.resolve(null),
+        }
+      }
+
       // Check for support.
       if (!('indexedDB' in window)) {
         console.log("This browser doesn't support IndexedDB.")
@@ -54,6 +43,8 @@ export const createDefaultAssetStorageConfig = ({
           },
         }
       }
+
+      const idb = createStore(`${project.address.projectId}-assets`)
 
       // get all possible asset ids referenced by either static props or keyframes
       const possibleAssetIDs = getAllPossibleAssetIDs(project)
@@ -74,9 +65,18 @@ export const createDefaultAssetStorageConfig = ({
         idbKeys.map(async (key) => {
           const assetUrl = `${baseUrl}/${key}`
 
-          const response = await fetch(assetUrl, {method: 'HEAD'})
-          if (response.ok) {
-            await idb.del(key)
+          try {
+            const response = await fetch(assetUrl, {method: 'HEAD'})
+            if (response.ok) {
+              await idb.del(key)
+            }
+          } catch (e) {
+            notify.error(
+              'Failed to access assets',
+              `Failed to access assets at ${
+                project.config.assets?.baseUrl ?? '/'
+              }. This is likely due to a CORS issue.`,
+            )
           }
         }),
       )
@@ -116,11 +116,23 @@ export const createDefaultAssetStorageConfig = ({
           let sameSame = false
 
           if (existingIDs.includes(asset.name)) {
-            const existingAsset =
-              assetsMap.get(asset.name) ??
-              (await fetch(`${baseUrl}/${asset.name}`).then((r) =>
-                r.ok ? r.blob() : undefined,
-              ))
+            let existingAsset: Blob | undefined
+            try {
+              existingAsset =
+                assetsMap.get(asset.name) ??
+                (await fetch(`${baseUrl}/${asset.name}`).then((r) =>
+                  r.ok ? r.blob() : undefined,
+                ))
+            } catch (e) {
+              notify.error(
+                'Failed to access assets',
+                `Failed to access assets at ${
+                  project.config.assets?.baseUrl ?? '/'
+                }. This is likely due to a CORS issue.`,
+              )
+
+              return Promise.resolve(null)
+            }
 
             if (existingAsset) {
               // @ts-ignore
@@ -131,21 +143,22 @@ export const createDefaultAssetStorageConfig = ({
                 console.log('same same', sameSame)
                 return asset.name
               } else {
-                const renameAsset = (): boolean => {
-                  // if different, we ask the user to pls rename
-                  const newAssetName = prompt(
-                    'Please rename the asset',
-                    asset.name,
-                  )
+                // if different, we ask the user to pls rename
+                const renameAsset = (text: string): boolean => {
+                  const newAssetName = prompt(text, asset.name)
 
                   if (newAssetName === null) {
                     // asset creation canceled
                     return false
-                  } else if (
-                    existingIDs.includes(newAssetName) ||
-                    newAssetName === ''
-                  ) {
-                    return renameAsset()
+                  } else if (newAssetName === '') {
+                    return renameAsset(
+                      'Asset name cannot be empty. Please choose a different file name for this asset.',
+                    )
+                  } else if (existingIDs.includes(newAssetName)) {
+                    console.log(existingIDs)
+                    return renameAsset(
+                      'An asset with this name already exists. Please choose a different file name for this asset.',
+                    )
                   }
 
                   // rename asset
@@ -153,7 +166,9 @@ export const createDefaultAssetStorageConfig = ({
                   return true
                 }
 
-                const success = renameAsset()
+                const success = renameAsset(
+                  'An asset with this name already exists. Please choose a different file name for this asset.',
+                )
 
                 if (!success) {
                   return null

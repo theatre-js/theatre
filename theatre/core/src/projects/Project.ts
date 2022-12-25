@@ -73,6 +73,7 @@ export default class Project {
 
   private readonly _studioReadyDeferred: Deferred<undefined>
   private readonly _defaultAssetStorageReadyDeferred: Deferred<undefined>
+  private readonly _readyPromise: Promise<void>
 
   private _sheetTemplates = new Atom<{
     [sheetId: string]: SheetTemplate | undefined
@@ -140,6 +141,12 @@ export default class Project {
     projectsSingleton.add(id, this)
 
     this._studioReadyDeferred = defer()
+
+    this._readyPromise = Promise.all([
+      this._studioReadyDeferred.promise,
+      this._defaultAssetStorageReadyDeferred.promise,
+      // hide the array from the user, i.e. make it Promise<void> instead of Promise<[undefined, undefined]>
+    ]).then(() => {})
 
     if (config.state) {
       setTimeout(() => {
@@ -219,11 +226,7 @@ export default class Project {
   }
 
   get ready() {
-    return Promise.all([
-      this._studioReadyDeferred.promise,
-      this._defaultAssetStorageReadyDeferred.promise,
-      // hide the array from the user, i.e. make it Promise<void> instead of Promise<[undefined, undefined]>
-    ]).then(() => {})
+    return this._readyPromise
   }
 
   isReady() {

@@ -29,10 +29,10 @@ const ImageTypeExample: React.FC<{}> = (props) => {
 
   useEffect(() => {
     const object = sheet.object('image', {
-      image: types.image({
+      image: types.image('', {
         label: 'texture',
       }),
-      image2: types.image({
+      image2: types.image('', {
         label: 'another texture',
       }),
       something: 'asdf',

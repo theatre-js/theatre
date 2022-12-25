@@ -156,6 +156,7 @@ export const compound = <Props extends UnknownShorthandCompoundProps>(
  * @param opts - Options (See usage examples)
  */
 export const image = (
+  defaultValue: string,
   opts: {
     label?: string
     interpolate?: Interpolator<string>
@@ -167,8 +168,7 @@ export const image = (
 
   return {
     type: 'image',
-    // FIXME
-    default: undefined as $FixMe,
+    default: defaultValue,
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts.label,

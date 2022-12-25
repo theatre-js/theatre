@@ -1,9 +1,31 @@
 import type {PropTypeConfig_Image} from '@theatre/core/propTypes'
+import {Trash} from '@theatre/studio/uiComponents/icons'
 import React, {useCallback, useEffect} from 'react'
 import styled from 'styled-components'
 import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
 
-const Wrapper = styled.label`
+const Container = styled.div`
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+`
+
+const Group = styled.div<{empty: boolean}>`
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  ${({empty}) =>
+    empty
+      ? `border: 1px dashed rgba(255, 255, 255, 0.2)`
+      : `border: 1px solid rgba(255, 255, 255, 0.05)`}
+`
+
+const InputLabel = styled.label`
   position: relative;
   width: 100%;
   height: 100%;
@@ -11,8 +33,8 @@ const Wrapper = styled.label`
   display: flex;
   align-items: center;
   justify-content: center;
-  ${({empty}) => empty && `border: 1px dashed currentColor;`}
   box-sizing: border-box;
+  color: #919191;
 `
 
 // file input
@@ -28,7 +50,23 @@ const Preview = styled.img`
   object-fit: cover;
 `
 
-const Placeholder = styled.span``
+const DeleteButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+
+  color: #a8a8a9;
+  background: rgba(255, 255, 255, 0.1);
+
+  border: none;
+  height: 100%;
+  aspect-ratio: 1/1;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+`
 
 function ImagePropEditor({
   propConfig,
@@ -62,19 +100,28 @@ function ImagePropEditor({
   )
 
   return (
-    <Wrapper empty={!previewUrl}>
-      <Input
-        type="file"
-        onChange={onChange}
-        accept="image/*"
-        autoFocus={autoFocus}
-      />
-      {previewUrl ? (
-        <Preview src={previewUrl} />
-      ) : (
-        <Placeholder>No image</Placeholder>
-      )}
-    </Wrapper>
+    <Container>
+      <Group empty={!value}>
+        <InputLabel>
+          <Input
+            type="file"
+            onChange={onChange}
+            accept="image/*"
+            autoFocus={autoFocus}
+          />
+          {previewUrl ? <Preview src={previewUrl} /> : <span>Add image</span>}
+        </InputLabel>
+        {value && (
+          <DeleteButton
+            onClick={() => {
+              editingTools.permanentlySetValue('')
+            }}
+          >
+            <Trash />
+          </DeleteButton>
+        )}
+      </Group>
+    </Container>
   )
 }
 

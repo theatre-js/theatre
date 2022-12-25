@@ -7,7 +7,8 @@ import styled from 'styled-components'
 import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
 import StateConflictRow from './ProjectDetails/StateConflictRow'
 import JSZip from 'jszip'
-import {val} from '@theatre/dataverse'
+import {notify} from '@theatre/studio/notify'
+import getAllPossibleAssetIDs from '@theatre/shared/getAllPossibleAssetIDs'
 
 const Container = styled.div``
 
@@ -57,35 +58,33 @@ const ProjectDetails: React.FC<{
 
   const exportProject = useCallback(async () => {
     // get all possible asset ids referenced by either static props or keyframes
-    const sheets = Object.values(val(project.pointers.historic.sheetsById))
-    const staticValues = sheets
-      .flatMap((sheet) => Object.values(sheet?.staticOverrides.byObject ?? {}))
-      .flatMap((overrides) => Object.values(overrides ?? {}))
-    const keyframeValues = sheets
-      .flatMap((sheet) => Object.values(sheet?.sequence?.tracksByObject ?? {}))
-      .flatMap((tracks) => Object.values(tracks?.trackData ?? {}))
-      .flatMap((track) => track?.keyframes)
-      .map((keyframe) => keyframe?.value)
 
-    const allValues = [...staticValues, ...keyframeValues].filter(
-      // value is string, and is unique
-      (value, index, self) =>
-        typeof value === 'string' && self.indexOf(value) === index,
-    ) as string[]
+    const allValues = getAllPossibleAssetIDs(project)
 
     const blobs = new Map<string, Blob>()
 
-    // only export assets that are referenced by the project
-    await Promise.all(
-      allValues.map(async (value) => {
-        const assetUrl = project.assetStorage.getAssetUrl(value)
-        const response = await fetch(assetUrl)
+    try {
+      // only export assets that are referenced by the project
+      await Promise.all(
+        allValues.map(async (value) => {
+          const assetUrl = project.assetStorage.getAssetUrl(value)
 
-        if (response.ok) {
-          blobs.set(value, await response.blob())
-        }
-      }),
-    )
+          const response = await fetch(assetUrl)
+          if (response.ok) {
+            blobs.set(value, await response.blob())
+          }
+        }),
+      )
+    } catch (e) {
+      notify.error(
+        `Failed to access assets`,
+        `Export aborted. Failed to access assets at ${
+          project.config.assets?.baseUrl ?? '/'
+        }. This is likely due to a CORS issue.`,
+      )
+
+      return
+    }
 
     if (blobs.size > 0) {
       const zip = new JSZip()
