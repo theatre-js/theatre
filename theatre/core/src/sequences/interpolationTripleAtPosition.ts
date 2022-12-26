@@ -184,12 +184,6 @@ const states = {
       }
     }
 
-    const solver = new UnitBezier(
-      left.handles[2],
-      left.handles[3],
-      right.handles[0],
-      right.handles[1],
-    )
     const globalProgressionToLocalProgression = (
       globalProgression: number,
     ): number => {
@@ -197,14 +191,43 @@ const states = {
         (globalProgression - left.position) / (right.position - left.position)
       )
     }
-    const der = prism(() => {
+
+    if (left.type === 'bezier') {
+      const solver = new UnitBezier(
+        left.handles[2],
+        left.handles[3],
+        right.handles[0],
+        right.handles[1],
+      )
+
+      const bezierDer = prism(() => {
+        const progression = globalProgressionToLocalProgression(
+          progressionD.getValue(),
+        )
+        const valueProgression =
+          left.type === 'bezier'
+            ? solver.solveSimple(progression)
+            : Math.floor(progression)
+        return {
+          left: left.value,
+          right: right.value,
+          progression: valueProgression,
+        }
+      })
+
+      return {
+        started: true,
+        validFrom: left.position,
+        validTo: right.position,
+        der: bezierDer,
+      }
+    }
+
+    const holdDer = prism(() => {
       const progression = globalProgressionToLocalProgression(
         progressionD.getValue(),
       )
-      const valueProgression =
-        left.type === 'bezier'
-          ? solver.solveSimple(progression)
-          : Math.floor(progression)
+      const valueProgression = Math.floor(progression)
       return {
         left: left.value,
         right: right.value,
@@ -216,7 +239,7 @@ const states = {
       started: true,
       validFrom: left.position,
       validTo: right.position,
-      der,
+      der: holdDer,
     }
   },
   error: {
