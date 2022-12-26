@@ -111,6 +111,8 @@ const CurveSegmentEditor: React.VFC<ICurveSegmentEditorProps> = (props) => {
       1 - connection.right.handles[1],
     )} 1 ${toExtremumSpace(0)}`
 
+  const holdPointsAttrValue = `0,100 100,100 100,0`
+
   return (
     <svg
       height="100%"
@@ -178,88 +180,131 @@ const CurveSegmentEditor: React.VFC<ICurveSegmentEditorProps> = (props) => {
         fill="url(#dot-background-pattern-2)"
       />
 
-      {/* Line from right end of curve to right handle */}
-      <line
-        x1={0}
-        y1={toExtremumSpace(1)}
-        x2={left.handles[2]}
-        y2={toExtremumSpace(1 - left.handles[3])}
-        stroke={CONTROL_COLOR}
-        strokeWidth="0.01"
-      />
-      {/* Line from left end of curve to left handle */}
-      <line
-        x1={1}
-        y1={toExtremumSpace(0)}
-        x2={right.handles[0]}
-        y2={toExtremumSpace(1 - right.handles[1])}
-        stroke={CONTROL_COLOR}
-        strokeWidth="0.01"
-      />
+      {left.type === 'bezier' ? (
+        <>
+          {/* Line from right end of curve to right handle */}
+          <line
+            x1={0}
+            y1={toExtremumSpace(1)}
+            x2={left.handles[2]}
+            y2={toExtremumSpace(1 - left.handles[3])}
+            stroke={CONTROL_COLOR}
+            strokeWidth="0.01"
+          />
+          {/* Line from left end of curve to left handle */}
+          <line
+            x1={1}
+            y1={toExtremumSpace(0)}
+            x2={right.handles[0]}
+            y2={toExtremumSpace(1 - right.handles[1])}
+            stroke={CONTROL_COLOR}
+            strokeWidth="0.01"
+          />
+          {/* Curve "shadow": the low-opacity filled area between the curve and the diagonal */}
+          <path
+            d={curvePathDAttrValue(props.curveConnection)}
+            stroke="none"
+            fill="url('#myGradient')"
+            opacity="0.1"
+          />
+          {/* The background curves (e.g. multiple different values) */}
+          {backgroundConnections.map((connection, i) => (
+            <path
+              key={connection.objectKey + '/' + connection.left.id}
+              d={curvePathDAttrValue(connection)}
+              stroke={
+                BACKGROUND_CURVE_COLORS[i % BACKGROUND_CURVE_COLORS.length]
+              }
+              opacity={0.6}
+              strokeWidth="0.01"
+            />
+          ))}
+          {/* The curve */}
+          <path
+            d={curvePathDAttrValue(props.curveConnection)}
+            stroke="url('#myGradient')"
+            strokeWidth="0.02"
+          />
+          {/* Right end of curve */}
+          <circle
+            cx={0}
+            cy={toExtremumSpace(1)}
+            r="0.025"
+            stroke={CURVE_START_COLOR}
+            strokeWidth="0.02"
+            fill={COLOR_BASE}
+          />
+          {/* Left end of curve */}
+          <circle
+            cx={1}
+            cy={toExtremumSpace(0)}
+            r="0.025"
+            stroke={CURVE_END_COLOR}
+            strokeWidth="0.02"
+            fill={COLOR_BASE}
+          />
 
-      {/* Curve "shadow": the low-opacity filled area between the curve and the diagonal */}
-      <path
-        d={curvePathDAttrValue(props.curveConnection)}
-        stroke="none"
-        fill="url('#myGradient')"
-        opacity="0.1"
-      />
-      {/* The background curves (e.g. multiple different values) */}
-      {backgroundConnections.map((connection, i) => (
-        <path
-          key={connection.objectKey + '/' + connection.left.id}
-          d={curvePathDAttrValue(connection)}
-          stroke={BACKGROUND_CURVE_COLORS[i % BACKGROUND_CURVE_COLORS.length]}
-          opacity={0.6}
-          strokeWidth="0.01"
-        />
-      ))}
-      {/* The curve */}
-      <path
-        d={curvePathDAttrValue(props.curveConnection)}
-        stroke="url('#myGradient')"
-        strokeWidth="0.02"
-      />
-      {/* Right end of curve */}
-      <circle
-        cx={0}
-        cy={toExtremumSpace(1)}
-        r="0.025"
-        stroke={CURVE_START_COLOR}
-        strokeWidth="0.02"
-        fill={COLOR_BASE}
-      />
-      {/* Left end of curve */}
-      <circle
-        cx={1}
-        cy={toExtremumSpace(0)}
-        r="0.025"
-        stroke={CURVE_END_COLOR}
-        strokeWidth="0.02"
-        fill={COLOR_BASE}
-      />
-
-      {/* Right handle and hit zone */}
-      <HitZone
-        ref={refLeft}
-        cx={left.handles[2]}
-        cy={toExtremumSpace(1 - left.handles[3])}
-        fill={CURVE_START_COLOR}
-        opacity={0.2}
-      />
-      <Circle cx={left.handles[2]} cy={toExtremumSpace(1 - left.handles[3])} />
-      {/* Left handle and hit zone */}
-      <HitZone
-        ref={refRight}
-        cx={right.handles[0]}
-        cy={toExtremumSpace(1 - right.handles[1])}
-        fill={CURVE_END_COLOR}
-        opacity={0.2}
-      />
-      <Circle
-        cx={right.handles[0]}
-        cy={toExtremumSpace(1 - right.handles[1])}
-      />
+          {/* Right handle and hit zone */}
+          <HitZone
+            ref={refLeft}
+            cx={left.handles[2]}
+            cy={toExtremumSpace(1 - left.handles[3])}
+            fill={CURVE_START_COLOR}
+            opacity={0.2}
+          />
+          <Circle
+            cx={left.handles[2]}
+            cy={toExtremumSpace(1 - left.handles[3])}
+          />
+          {/* Left handle and hit zone */}
+          <HitZone
+            ref={refRight}
+            cx={right.handles[0]}
+            cy={toExtremumSpace(1 - right.handles[1])}
+            fill={CURVE_END_COLOR}
+            opacity={0.2}
+          />
+          <Circle
+            cx={right.handles[0]}
+            cy={toExtremumSpace(1 - right.handles[1])}
+          />
+        </>
+      ) : (
+        <>
+          <line
+            x1={0}
+            y1={toExtremumSpace(1)}
+            x2={1}
+            y2={toExtremumSpace(1)}
+            stroke={CONTROL_COLOR}
+            strokeWidth="0.01"
+          />
+          <line
+            x1={1}
+            y1={toExtremumSpace(1)}
+            x2={1}
+            y2={0}
+            stroke={CONTROL_COLOR}
+            strokeWidth="0.01"
+          />
+          <circle
+            cx={0}
+            cy={1}
+            r="0.025"
+            stroke={CURVE_END_COLOR}
+            strokeWidth="0.02"
+            fill={COLOR_BASE}
+          />
+          <circle
+            cx={1}
+            cy={0}
+            r="0.025"
+            stroke={CURVE_END_COLOR}
+            strokeWidth="0.02"
+            fill={COLOR_BASE}
+          />
+        </>
+      )}
     </svg>
   )
 }

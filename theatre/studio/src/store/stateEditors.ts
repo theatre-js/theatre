@@ -910,6 +910,7 @@ namespace stateEditors {
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: SequenceTrackId
               keyframeIds: KeyframeId[]
+              keyframeType?: KeyframeType
             },
           ) {
             const track = _getTrack(p)
@@ -920,8 +921,12 @@ namespace stateEditors {
             )
 
             toggledKeyframes.forEach((kf: Keyframe) => {
-              const isHold = kf.type === undefined || kf.type === 'bezier'
-              kf.type = isHold ? 'hold' : 'bezier'
+              if (p.keyframeType !== undefined) {
+                kf.type = p.keyframeType
+              } else {
+                const isHold = kf.type === undefined || kf.type === 'bezier'
+                kf.type = isHold ? 'hold' : 'bezier'
+              }
             })
           }
 

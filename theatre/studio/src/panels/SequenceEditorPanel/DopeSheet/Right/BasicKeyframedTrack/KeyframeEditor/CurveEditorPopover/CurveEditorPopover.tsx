@@ -416,12 +416,14 @@ function setTempValue(
   tempTransaction.current = null
 
   const handles = handlesFromCssCubicBezierArgs(newCurveCssCubicBezier)
-  if (handles === null) return
-
-  tempTransaction.current = transactionSetCubicBezier(
-    keyframeConnections,
-    handles,
-  )
+  if (handles === null) {
+    tempTransaction.current = transactionSetHold(keyframeConnections)
+  } else {
+    tempTransaction.current = transactionSetCubicBezier(
+      keyframeConnections,
+      handles,
+    )
+  }
 }
 
 function discardTempValue(
@@ -436,7 +438,7 @@ function transactionSetCubicBezier(
   handles: CubicBezierHandles,
 ): CommitOrDiscard {
   return getStudio().tempTransaction(({stateEditors}) => {
-    const {setHandlesForKeyframe} =
+    const {setHandlesForKeyframe, toggleKeyframeType} =
       stateEditors.coreByProject.historic.sheetsById.sequence
 
     for (const {
@@ -462,6 +464,40 @@ function transactionSetCubicBezier(
         trackId,
         keyframeId: right.id,
         end: [handles[2], handles[3]],
+      })
+      toggleKeyframeType({
+        projectId,
+        sheetId,
+        objectKey,
+        trackId,
+        keyframeIds: [left.id],
+        keyframeType: 'bezier',
+      })
+    }
+  })
+}
+
+function transactionSetHold(
+  keyframeConnections: Array<KeyframeConnectionWithAddress>,
+): CommitOrDiscard {
+  return getStudio().tempTransaction(({stateEditors}) => {
+    const {toggleKeyframeType} =
+      stateEditors.coreByProject.historic.sheetsById.sequence
+
+    for (const {
+      projectId,
+      sheetId,
+      objectKey,
+      trackId,
+      left,
+    } of keyframeConnections) {
+      toggleKeyframeType({
+        projectId,
+        sheetId,
+        objectKey,
+        trackId,
+        keyframeIds: [left.id],
+        keyframeType: 'hold',
       })
     }
   })
