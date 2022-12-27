@@ -2,7 +2,8 @@ import type Project from '@theatre/core/projects/Project'
 import {val} from '@theatre/dataverse'
 
 export default function getAllPossibleAssetIDs(project: Project) {
-  const sheets = Object.values(val(project.pointers.historic.sheetsById))
+  // Apparently the value returned by val() can be undefined. Should fix TS.
+  const sheets = Object.values(val(project.pointers.historic.sheetsById) ?? {})
   const staticValues = sheets
     .flatMap((sheet) => Object.values(sheet?.staticOverrides.byObject ?? {}))
     .flatMap((overrides) => Object.values(overrides ?? {}))
