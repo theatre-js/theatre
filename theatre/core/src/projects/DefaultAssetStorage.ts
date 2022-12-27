@@ -140,7 +140,6 @@ export const createDefaultAssetStorageConfig = ({
 
               // if same same, we do nothing
               if (sameSame) {
-                console.log('same same', sameSame)
                 return asset.name
               } else {
                 // if different, we ask the user to pls rename
