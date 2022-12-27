@@ -48,6 +48,7 @@ export type SerializablePrimitive =
   | number
   | boolean
   | {r: number; g: number; b: number; a: number}
+  | {type: string; id: string | null}
 
 /**
  * This type represents all values that can be safely serialized.

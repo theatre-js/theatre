@@ -8,7 +8,7 @@ import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
 import StateConflictRow from './ProjectDetails/StateConflictRow'
 import JSZip from 'jszip'
 import {notify} from '@theatre/studio/notify'
-import getAllPossibleAssetIDs from '@theatre/shared/getAllPossibleAssetIDs'
+import {getAllPossibleAssetIDs} from '@theatre/shared/utils/assets'
 
 const Container = styled.div``
 

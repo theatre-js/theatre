@@ -3,6 +3,7 @@ import Project from '@theatre/core/projects/Project'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 
 import type {ProjectAddress} from '@theatre/shared/utils/addresses'
+import type {Asset} from '@theatre/shared/utils/assets'
 import type {
   ProjectId,
   SheetId,
@@ -73,7 +74,7 @@ export interface IProject {
    */
   sheet(sheetId: string, instanceId?: string): ISheet
 
-  getAssetUrl(assetId: string): string
+  getAssetUrl(asset: Asset): string | undefined
 }
 
 export default class TheatreProject implements IProject {
@@ -99,8 +100,10 @@ export default class TheatreProject implements IProject {
     return {...privateAPI(this).address}
   }
 
-  getAssetUrl(assetId: string): string {
-    return privateAPI(this).assetStorage.getAssetUrl(assetId)
+  getAssetUrl(asset: Asset): string | undefined {
+    return asset.id
+      ? privateAPI(this).assetStorage.getAssetUrl(asset.id)
+      : undefined
   }
 
   sheet(sheetId: string, instanceId: string = 'default'): ISheet {

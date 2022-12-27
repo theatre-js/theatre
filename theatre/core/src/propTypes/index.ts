@@ -17,6 +17,7 @@ import type {
 import {propTypeSymbol, sanitizeCompoundProps} from './internals'
 // eslint-disable-next-line unused-imports/no-unused-imports
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import type {Asset} from '@theatre/shared/utils/assets'
 
 // Notes on naming:
 // As of now, prop types are either `simple` or `composite`.
@@ -156,25 +157,53 @@ export const compound = <Props extends UnknownShorthandCompoundProps>(
  * @param opts - Options (See usage examples)
  */
 export const image = (
-  defaultValue: string,
+  defaultValue: string | null,
   opts: {
     label?: string
-    interpolate?: Interpolator<string>
+    interpolate?: Interpolator<string | null>
   } = {},
 ): PropTypeConfig_Image => {
   if (process.env.NODE_ENV !== 'production') {
     validateCommonOpts('t.image(defaultValue, opts)', opts)
   }
 
+  const interpolate: Interpolator<Asset> = (left, right, progression) => {
+    const stringInterpolate = opts.interpolate ?? leftInterpolate
+
+    return {
+      type: 'image',
+      id: stringInterpolate(left.id, right.id, progression),
+    }
+  }
+
   return {
     type: 'image',
-    default: defaultValue,
+    default: {type: 'image', id: defaultValue},
     valueType: null as $IntentionalAny,
     [propTypeSymbol]: 'TheatrePropType',
     label: opts.label,
-    interpolate: opts.interpolate ?? leftInterpolate,
-    deserializeAndSanitize: _ensureString,
+    interpolate,
+    deserializeAndSanitize: _ensureImage,
   }
+}
+
+const _ensureImage = (val: unknown): Asset | undefined => {
+  if (!val) return undefined
+
+  let valid = true
+
+  if (
+    typeof (val as $IntentionalAny).id !== 'string' &&
+    ![null, undefined].includes((val as $IntentionalAny).id)
+  ) {
+    valid = false
+  }
+
+  if ((val as $IntentionalAny).type !== 'image') valid = false
+
+  if (!valid) return undefined
+
+  return val as Asset
 }
 
 /**
@@ -729,8 +758,7 @@ export interface PropTypeConfig_StringLiteral<T extends string>
 
 export interface PropTypeConfig_Rgba extends ISimplePropType<'rgba', Rgba> {}
 
-export interface PropTypeConfig_Image
-  extends ISimplePropType<'image', string> {}
+export interface PropTypeConfig_Image extends ISimplePropType<'image', Asset> {}
 
 type DeepPartialCompound<Props extends UnknownValidCompoundProps> = {
   [K in keyof Props]?: DeepPartial<Props[K]>

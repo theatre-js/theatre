@@ -4,7 +4,7 @@ import type {IAssetStorageConfig} from './Project'
 // @ts-ignore
 import blobCompare from 'blob-compare'
 import {notify} from '@theatre/core/coreExports'
-import getAllPossibleAssetIDs from '@theatre/shared/getAllPossibleAssetIDs'
+import {getAllPossibleAssetIDs} from '@theatre/shared/utils/assets'
 
 export const createDefaultAssetStorageConfig = ({
   project,
