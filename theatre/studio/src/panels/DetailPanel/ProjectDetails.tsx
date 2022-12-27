@@ -27,6 +27,12 @@ const ExportTooltip = styled(BasicPopover)`
   padding: 1em;
 `
 
+/**
+ * Initiates a file download for the provided data with the provided file name
+ *
+ * @param content The content to save
+ * @param fileName The name of the file to save
+ */
 function saveFile(content: string | Blob, fileName: string) {
   const file = new File([content], fileName)
   const objUrl = URL.createObjectURL(file)
@@ -58,7 +64,6 @@ const ProjectDetails: React.FC<{
 
   const exportProject = useCallback(async () => {
     // get all possible asset ids referenced by either static props or keyframes
-
     const allValues = getAllPossibleAssetIDs(project)
 
     const blobs = new Map<string, Blob>()
@@ -83,6 +88,7 @@ const ProjectDetails: React.FC<{
         }. This is likely due to a CORS issue.`,
       )
 
+      // abort the export
       return
     }
 

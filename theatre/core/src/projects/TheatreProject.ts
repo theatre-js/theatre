@@ -74,6 +74,12 @@ export interface IProject {
    */
   sheet(sheetId: string, instanceId?: string): ISheet
 
+  /**
+   * Returns the URL for an asset.
+   *
+   * @param asset The asset to get the URL for
+   * @returns The URL for the asset, or `undefined` if the asset is not found
+   */
   getAssetUrl(asset: Asset): string | undefined
 }
 

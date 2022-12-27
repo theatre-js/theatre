@@ -148,7 +148,7 @@ export const compound = <Props extends UnknownShorthandCompoundProps>(
  *
  * // with a label:
  * const obj = sheet.object('key', {
- *   url: t.image({
+ *   url: t.image('My image.png', {
  *     label: 'texture'
  *   })
  * })
@@ -157,6 +157,7 @@ export const compound = <Props extends UnknownShorthandCompoundProps>(
  * @param opts - Options (See usage examples)
  */
 export const image = (
+  // The defaultValue parameter is a string for convenience, but it will be converted to an Asset object
   defaultValue: string | null,
   opts: {
     label?: string

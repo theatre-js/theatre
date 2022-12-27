@@ -37,11 +37,16 @@ interface IStudioAssetStorage extends ICoreAssetStorage {
 }
 
 export type IAssetStorageConfig = {
+  /**
+   * An object containing the core asset storage methods.
+   */
   coreAssetStorage: ICoreAssetStorage
+  /** A function that returns a promise to an object containing asset storage methods to be used by studio. */
   createStudioAssetStorage: () => Promise<IStudioAssetStorage>
 }
 
 type IAssetConf = {
+  /** The base URL for assets. */
   baseUrl?: string
 }
 
@@ -121,6 +126,8 @@ export default class Project {
     this._defaultAssetStorageReadyDeferred = defer()
     this.assetStorage = {
       ...this._defaultAssetStorageConfig.coreAssetStorage,
+
+      // Until the asset storage is ready, we'll throw an error when the user tries to use it
       createAsset: () => {
         throw new Error(`Please wait for Project.ready to use assets.`)
       },

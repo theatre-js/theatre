@@ -81,7 +81,10 @@ export const createDefaultAssetStorageConfig = ({
         }),
       )
 
+      // A map for caching the assets outside of the db. We also need this to be able to retrieve idb asset urls synchronously.
       const assetsMap = new Map(await idb.entries<string, Blob>())
+
+      // A map for caching the object urls created from idb assets.
       const urlCache = new Map<Blob, string>()
 
       /** Gets idb aset url from asset blob */
@@ -141,8 +144,9 @@ export const createDefaultAssetStorageConfig = ({
               // if same same, we do nothing
               if (sameSame) {
                 return asset.name
-              } else {
                 // if different, we ask the user to pls rename
+              } else {
+                /** Initiates rename using a dialog. Returns a boolean indicating if the rename was succesful. */
                 const renameAsset = (text: string): boolean => {
                   const newAssetName = prompt(text, asset.name)
 
@@ -165,6 +169,7 @@ export const createDefaultAssetStorageConfig = ({
                   return true
                 }
 
+                // rename asset returns false if the user cancels the rename
                 const success = renameAsset(
                   'An asset with this name already exists. Please choose a different file name for this asset.',
                 )
