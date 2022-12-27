@@ -38,9 +38,7 @@ const ImageTypeExample: React.FC<{}> = (props) => {
       something: 'asdf',
     })
     object.onValuesChange(({image}) => {
-      try {
-        setImageUrl(project.getAssetUrl(image))
-      } catch (e) {}
+      setImageUrl(project.getAssetUrl(image))
     })
 
     return () => {
@@ -51,8 +49,12 @@ const ImageTypeExample: React.FC<{}> = (props) => {
   return (
     <Wrapper
       onClick={() => {
-        sheet.sequence.position = 0
-        sheet.sequence.play()
+        if (sheet.sequence.position === 0) {
+          sheet.sequence.position = 0
+          sheet.sequence.play()
+        } else {
+          sheet.sequence.position = 0
+        }
       }}
     >
       <img src={imageUrl} />
