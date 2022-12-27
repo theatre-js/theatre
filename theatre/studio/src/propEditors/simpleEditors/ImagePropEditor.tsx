@@ -74,13 +74,13 @@ function ImagePropEditor({
   value,
   autoFocus,
 }: ISimplePropEditorReactProps<PropTypeConfig_Image>) {
-  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = React.useState<string>()
 
   useEffect(() => {
     if (value) {
       setPreviewUrl(editingTools.getAssetUrl(value))
     } else {
-      setPreviewUrl(null)
+      setPreviewUrl(undefined)
     }
   }, [value])
 
