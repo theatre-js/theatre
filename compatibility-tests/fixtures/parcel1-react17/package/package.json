@@ -1,5 +1,5 @@
 {
-  "name": "@compat/parcel1-react18",
+  "name": "@compat/parcel1-react17",
   "scripts": {
     "dev": "parcel serve ./index.html"
   },

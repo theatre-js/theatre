@@ -349,37 +349,3 @@ export async function clean() {
     }),
   )
 }
-
-export async function test() {
-  const setups = await getCompatibilityTestSetups()
-  const setup = setups.find((s) => s.match(/vite/))
-  await testSetup(setup)
-  // for (const setup of setups) {
-  //   await testSetup(setup)
-  // }
-}
-
-async function testSetup(setupAbsPath) {
-  const setupPackageJson = require(path.join(setupAbsPath, 'package.json'))
-  await within(async () => {
-    cd(setupAbsPath)
-    const p = $`npm run dev --expose`
-    const browser = await chromium.launch({headless: true})
-    const context = await browser.newContext(devices['Desktop Chrome'])
-    onCleanup(() => {
-      p.kill()
-      context.close()
-      browser.close()
-    })
-    const page = await context.newPage()
-    page.on('console', (msg) => {
-      console.log(msg.type())
-      // console.log(msg.text())
-    })
-    await page.goto(`http://localhost:3000`)
-    page.screenshot({path: 'example.png'})
-
-    console.log('done')
-    await p
-  })
-}

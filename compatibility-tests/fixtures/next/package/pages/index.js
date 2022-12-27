@@ -11,6 +11,10 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
   studio.initialize({usePersistentStorage: false})
 }
 
+const sheet = getProject('Playground - R3F', {state: playgroundState}).sheet(
+  'R3F-Canvas',
+)
+
 // credit: https://codesandbox.io/s/camera-pan-nsb7f
 
 function Plane({color, theatreKey, ...props}) {
@@ -31,11 +35,7 @@ function App() {
       dpr={[1.5, 2]}
       style={{position: 'absolute', top: 0, left: 0}}
     >
-      <SheetProvider
-        sheet={getProject('Playground - R3F', {state: playgroundState}).sheet(
-          'R3F-Canvas',
-        )}
-      >
+      <SheetProvider sheet={sheet}>
         {/* @ts-ignore */}
         <e.orthographicCamera makeDefault theatreKey="Camera" />
         <ambientLight intensity={0.4} />
