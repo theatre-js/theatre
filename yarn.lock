@@ -10896,6 +10896,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"blob-compare@npm:1.1.0":
+  version: 1.1.0
+  resolution: "blob-compare@npm:1.1.0"
+  dependencies:
+    webworker-promise: ^0.4.2
+  checksum: 28cb1f5c6dc53195e67bb2765ec5a1aa7f1123460d9ccf64116aebf3ed36a3f4df5f065ac5ec4caf5da4fbbb5e944bca5c7296b960f693bea70dc4118953539d
+  languageName: node
+  linkType: hard
+
 "blob-polyfill@npm:^5.0.20210201":
   version: 5.0.20210201
   resolution: "blob-polyfill@npm:5.0.20210201"
@@ -18042,6 +18051,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"idb-keyval@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "idb-keyval@npm:6.2.0"
+  dependencies:
+    safari-14-idb-fix: ^3.0.0
+  checksum: ddd58f95829ff734e3e83b29608709cdfba38e5795b1f6261ff1afc582ce48f475d0c827d7cf32aacbc5ea6b13d00c2d4a2f7240afccd5252565abeafbd7b990
+  languageName: node
+  linkType: hard
+
 "idb@npm:^6.1.4":
   version: 6.1.5
   resolution: "idb@npm:6.1.5"
@@ -18101,6 +18119,13 @@ fsevents@^1.2.7:
   bin:
     image-size: bin/image-size.js
   checksum: ffa74672dc7a1b6529c66255adbfe4e7865408004db88ed100855816f03175494ec21ef9dad199b8685b5b194996ebe83ab27803af152adb66a301172fdd622d
+  languageName: node
+  linkType: hard
+
+"immediate@npm:~3.0.5":
+  version: 3.0.6
+  resolution: "immediate@npm:3.0.6"
+  checksum: f9b3486477555997657f70318cc8d3416159f208bec4cca3ff3442fd266bc23f50f0c9bd8547e1371a6b5e82b821ec9a7044a4f7b944798b25aa3cc6d5e63e62
   languageName: node
   linkType: hard
 
@@ -20589,6 +20614,18 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"jszip@npm:3.10.1":
+  version: 3.10.1
+  resolution: "jszip@npm:3.10.1"
+  dependencies:
+    lie: ~3.3.0
+    pako: ~1.0.2
+    readable-stream: ~2.3.6
+    setimmediate: ^1.0.5
+  checksum: abc77bfbe33e691d4d1ac9c74c8851b5761fba6a6986630864f98d876f3fcc2d36817dfc183779f32c00157b5d53a016796677298272a714ae096dfe6b1c8b60
+  languageName: node
+  linkType: hard
+
 "just-curry-it@npm:^3.1.0":
   version: 3.1.0
   resolution: "just-curry-it@npm:3.1.0"
@@ -20759,6 +20796,15 @@ fsevents@^1.2.7:
     prelude-ls: ~1.1.2
     type-check: ~0.3.2
   checksum: 0d084a524231a8246bb10fec48cdbb35282099f6954838604f3c7fc66f2e16fa66fd9cc2f3f20a541a113c4dafdf181e822c887c8a319c9195444e6c64ac395e
+  languageName: node
+  linkType: hard
+
+"lie@npm:~3.3.0":
+  version: 3.3.0
+  resolution: "lie@npm:3.3.0"
+  dependencies:
+    immediate: ~3.0.5
+  checksum: 33102302cf19766f97919a6a98d481e01393288b17a6aa1f030a3542031df42736edde8dab29ffdbf90bebeffc48c761eb1d064dc77592ca3ba3556f9fe6d2a8
   languageName: node
   linkType: hard
 
@@ -23102,7 +23148,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"pako@npm:~1.0.5":
+"pako@npm:~1.0.2, pako@npm:~1.0.5":
   version: 1.0.11
   resolution: "pako@npm:1.0.11"
   checksum: 1be2bfa1f807608c7538afa15d6f25baa523c30ec870a3228a89579e474a4d992f4293859524e46d5d87fd30fa17c5edf34dbef0671251d9749820b488660b16
@@ -27504,6 +27550,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"safari-14-idb-fix@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "safari-14-idb-fix@npm:3.0.0"
+  checksum: 30d5baf3d9a17b52842b2c3fd3f0001fde7095a36191b6140ac78c19e8e1ff4b2607b9beb3b066c6bec107ccb5399c96e29748a6f5fcd592425f806f5e36f759
+  languageName: node
+  linkType: hard
+
 "safe-buffer@npm:5.1.2, safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1":
   version: 5.1.2
   resolution: "safe-buffer@npm:5.1.2"
@@ -27983,7 +28036,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"setimmediate@npm:^1.0.4":
+"setimmediate@npm:^1.0.4, setimmediate@npm:^1.0.5":
   version: 1.0.5
   resolution: "setimmediate@npm:1.0.5"
   checksum: c9a6f2c5b51a2dabdc0247db9c46460152ffc62ee139f3157440bd48e7c59425093f42719ac1d7931f054f153e2d26cf37dfeb8da17a794a58198a2705e527fd
@@ -29695,6 +29748,7 @@ fsevents@^1.2.7:
     babel-loader: ^8.2.2
     babel-polyfill: ^6.26.0
     babel-register: ^6.26.0
+    blob-compare: 1.1.0
     circular-dependency-plugin: ^5.2.2
     cross-env: ^7.0.3
     esbuild: ^0.12.15
@@ -29706,10 +29760,12 @@ fsevents@^1.2.7:
     fs-extra: ^10.0.0
     fuzzy: ^0.1.3
     html-loader: ^2.1.2
+    idb-keyval: ^6.2.0
     identity-obj-proxy: ^3.0.0
     immer: ^9.0.6
     jiff: ^0.7.3
     json-touch-patch: ^0.11.2
+    jszip: 3.10.1
     lodash: ^4.17.21
     lodash-es: ^4.17.21
     marked: ^4.1.1
@@ -31421,6 +31477,13 @@ fsevents@^1.2.7:
   version: 0.1.4
   resolution: "websocket-extensions@npm:0.1.4"
   checksum: 5976835e68a86afcd64c7a9762ed85f2f27d48c488c707e67ba85e717b90fa066b98ab33c744d64255c9622d349eedecf728e65a5f921da71b58d0e9591b9038
+  languageName: node
+  linkType: hard
+
+"webworker-promise@npm:^0.4.2":
+  version: 0.4.4
+  resolution: "webworker-promise@npm:0.4.4"
+  checksum: 6edb84c235ff49e437c3cfd8c10b75a202911c78e92050dbfad79d051d4df3ea7abbd2e16e0056e46ce0eaf53441105902647bd2b7cca4bc7c0c4f8dfd6b6da7
   languageName: node
   linkType: hard
 

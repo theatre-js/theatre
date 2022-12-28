@@ -20,6 +20,7 @@ import type {NearbyKeyframes} from './getNearbyKeyframesOfTrack'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
+import type {Asset} from '@theatre/shared/utils/assets'
 
 interface EditingToolsCommon<T> {
   value: T
@@ -31,6 +32,9 @@ interface EditingToolsCommon<T> {
   temporarilySetValue(v: T): void
   discardTemporaryValue(): void
   permanentlySetValue(v: T): void
+
+  getAssetUrl: (asset: Asset) => string | undefined
+  createAsset(asset: Blob): Promise<string | null>
 }
 
 interface EditingToolsDefault<T> extends EditingToolsCommon<T> {
@@ -109,6 +113,14 @@ function createDerivation<T extends SerializablePrimitive>(
       [],
     )
 
+    const editAssets = {
+      createAsset: obj.sheet.project.assetStorage.createAsset,
+      getAssetUrl: (asset: Asset) =>
+        asset.id
+          ? obj.sheet.project.assetStorage.getAssetUrl(asset.id)
+          : undefined,
+    }
+
     const beingScrubbed =
       val(
         get(
@@ -125,6 +137,7 @@ function createDerivation<T extends SerializablePrimitive>(
 
     const common: EditingToolsCommon<T> = {
       ...editPropValue,
+      ...editAssets,
       value: final,
       beingScrubbed,
       contextMenuItems,

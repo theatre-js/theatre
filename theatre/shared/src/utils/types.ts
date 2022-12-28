@@ -1,3 +1,5 @@
+import type {Asset} from './assets'
+
 export type GenericAction = {type: string; payload: unknown}
 
 export type ReduxReducer<State extends {}> = (
@@ -48,6 +50,7 @@ export type SerializablePrimitive =
   | number
   | boolean
   | {r: number; g: number; b: number; a: number}
+  | Asset
 
 /**
  * This type represents all values that can be safely serialized.

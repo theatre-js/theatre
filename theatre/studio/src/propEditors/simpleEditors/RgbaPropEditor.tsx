@@ -89,7 +89,6 @@ function RgbaPropEditor({
           editingTools.temporarilySetValue(rgba)
         }}
         permanentlySetValue={(color) => {
-          // console.log('perm')
           const rgba = decorateRgba(color)
           editingTools.permanentlySetValue(rgba)
         }}
