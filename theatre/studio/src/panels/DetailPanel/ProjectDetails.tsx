@@ -30,8 +30,8 @@ const ExportTooltip = styled(BasicPopover)`
 /**
  * Initiates a file download for the provided data with the provided file name
  *
- * @param content The content to save
- * @param fileName The name of the file to save
+ * @param content - The content to save
+ * @param fileName - The name of the file to save
  */
 function saveFile(content: string | Blob, fileName: string) {
   const file = new File([content], fileName)
