@@ -15,6 +15,7 @@ import {valueInProp} from '@theatre/shared/propTypes/utils'
 const SingleKeyframePropEditorContainer = styled.div`
   display: flex;
   align-items: stretch;
+  min-width: 200px;
 
   select {
     min-width: 100px;
@@ -153,5 +154,5 @@ function useEditingToolsForKeyframeEditorPopover(
       keyframes: [newKeyframe],
       snappingFunction: obj.sheet.getSequence().closestGridPosition,
     })
-  })
+  }, obj)
 }

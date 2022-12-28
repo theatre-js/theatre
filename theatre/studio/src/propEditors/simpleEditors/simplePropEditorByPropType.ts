@@ -7,6 +7,7 @@ import StringPropEditor from './StringPropEditor'
 import RgbaPropEditor from './RgbaPropEditor'
 import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
 import type {PropConfigForType} from '@theatre/studio/propEditors/utils/PropConfigForType'
+import ImagePropEditor from './ImagePropEditor'
 
 export const simplePropEditorByPropType: ISimplePropEditorByPropType = {
   number: NumberPropEditor,
@@ -14,6 +15,7 @@ export const simplePropEditorByPropType: ISimplePropEditorByPropType = {
   boolean: BooleanPropEditor,
   stringLiteral: StringLiteralPropEditor,
   rgba: RgbaPropEditor,
+  image: ImagePropEditor,
 }
 
 type ISimplePropEditorByPropType = {
