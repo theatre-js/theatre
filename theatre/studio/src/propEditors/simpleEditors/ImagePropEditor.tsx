@@ -87,7 +87,7 @@ function ImagePropEditor({
   const onChange = useCallback(
     async (event) => {
       const file = event.target.files[0]
-      editingTools.permanentlySetValue({type: 'image', id: null})
+      editingTools.permanentlySetValue({type: 'image', id: undefined})
       const imageId = await editingTools.createAsset(file)
 
       if (!imageId) {
@@ -118,7 +118,7 @@ function ImagePropEditor({
         {value && (
           <DeleteButton
             onClick={() => {
-              editingTools.permanentlySetValue({type: 'image', id: null})
+              editingTools.permanentlySetValue({type: 'image', id: undefined})
             }}
           >
             <Trash />

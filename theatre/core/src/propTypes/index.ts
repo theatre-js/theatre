@@ -158,10 +158,10 @@ export const compound = <Props extends UnknownShorthandCompoundProps>(
  */
 export const image = (
   // The defaultValue parameter is a string for convenience, but it will be converted to an Asset object
-  defaultValue: string | null,
+  defaultValue: Asset['id'],
   opts: {
     label?: string
-    interpolate?: Interpolator<string | null>
+    interpolate?: Interpolator<Asset['id']>
   } = {},
 ): PropTypeConfig_Image => {
   if (process.env.NODE_ENV !== 'production') {
