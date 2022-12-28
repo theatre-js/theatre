@@ -86,9 +86,7 @@ export default class Project {
   sheetTemplatesP = this._sheetTemplates.pointer
   private _studio: Studio | undefined
   private _defaultAssetStorageConfig: IAssetStorageConfig
-  assetStorage: Awaited<
-    ReturnType<IAssetStorageConfig['createStudioAssetStorage']>
-  >
+  assetStorage: IStudioAssetStorage
 
   type: 'Theatre_Project' = 'Theatre_Project'
   readonly _logger: ILogger
