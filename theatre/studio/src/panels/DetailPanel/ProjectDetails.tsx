@@ -131,7 +131,7 @@ const ProjectDetails: React.FC<{
           the assets that you can unpack in your public folder.
         </p>
         <a
-          href="https://docs.theatrejs.com/in-depth/#exporting"
+          href="https://www.theatrejs.com/docs/latest/manual/projects#state"
           target="_blank"
         >
           Here is a quick guide on how to export to production.

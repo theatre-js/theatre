@@ -13,8 +13,6 @@ import type {$IntentionalAny} from './utils/types'
  * The functions in this module are supposed to be a replacement for that.
  */
 
-// --
-
 export const isProject = typeAsserter<Project>('Theatre_Project')
 
 export const isSheet = typeAsserter<Sheet>('Theatre_Sheet')

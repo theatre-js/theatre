@@ -131,7 +131,7 @@ export interface ISequence {
    *
    * @returns A promise that resolves once the audio source is loaded and decoded
    *
-   * Learn more [here](https://docs.theatrejs.com/in-depth/#sequence-attachaudio).
+   * Learn more [here](https://www.theatrejs.com/docs/latest/manual/audio).
    *
    * @example
    * Usage:

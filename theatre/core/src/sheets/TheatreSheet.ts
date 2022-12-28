@@ -42,7 +42,7 @@ export interface ISheet {
   /**
    * Creates a child object for the sheet
    *
-   * **Docs: https://docs.theatrejs.com/in-depth/#objects**
+   * **Docs: https://www.theatrejs.com/docs/latest/manual/objects**
    *
    * @param key - Each object is identified by a key, which is a non-empty string
    * @param props - The props of the object. See examples

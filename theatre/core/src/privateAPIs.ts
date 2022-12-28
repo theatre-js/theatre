@@ -11,6 +11,9 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
 
 const publicAPIToPrivateAPIMap = new WeakMap()
 
+/**
+ * Given a public API object, returns the corresponding private API object.
+ */
 export function privateAPI<P extends {type: string}>(
   pub: P,
 ): P extends IProject
@@ -25,6 +28,10 @@ export function privateAPI<P extends {type: string}>(
   return publicAPIToPrivateAPIMap.get(pub)
 }
 
+/**
+ * Notes the relationship between a public API object and its corresponding private API object,
+ * so that `privateAPI` can find it.
+ */
 export function setPrivateAPI(pub: IProject, priv: Project): void
 export function setPrivateAPI(pub: ISheet, priv: Sheet): void
 export function setPrivateAPI(pub: ISequence, priv: Sequence): void

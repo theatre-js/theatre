@@ -74,9 +74,12 @@ function registerStudioBundle() {
 export {default as ToolbarDropdownSelect} from './uiComponents/toolbar/ToolbarDropdownSelect'
 
 import {notify} from '@theatre/studio/notify'
-// @ts-ignore
-window[globalVariableNames.notifications] = {
-  notify,
+
+if (typeof window !== 'undefined') {
+  // @ts-ignore
+  window[globalVariableNames.notifications] = {
+    notify,
+  }
 }
 
 export type {IScrub} from '@theatre/studio/Scrub'

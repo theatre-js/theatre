@@ -30,7 +30,7 @@ You can use Theatre.js to:
 
 ## Documentation and Tutorials
 
-You can find the documentation and video tutorials [here](https://docs.theatrejs.com).
+You can find the documentation and video tutorials [here](https://theatrejs.com/docs/latest).
 
 ## Community
 
