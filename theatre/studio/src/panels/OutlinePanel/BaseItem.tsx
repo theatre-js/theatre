@@ -1,6 +1,7 @@
 import type {VoidFn} from '@theatre/shared/utils/types'
 import React, {useState} from 'react'
 import styled, {css} from 'styled-components'
+import noop from '@theatre/shared/utils/noop'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {ChevronDown, Package} from '@theatre/studio/uiComponents/icons'
 
@@ -96,20 +97,24 @@ const Head_IconContainer = styled.div`
   opacity: 0.99;
 `
 
-const Head_Icon_WithDescendants = styled.span<{isOpen: boolean}>`
+const Head_Icon_WithDescendants = styled.span`
   font-size: 9px;
   position: relative;
   display: block;
 
-  transform: rotate(${(props) => (props.isOpen ? '0deg' : '-90deg')});
+  ${Container}.collapsed & {
+    transform: rotate(-90deg);
+  }
 `
 
-const ChildrenContainer = styled.ul<{show: boolean}>`
+const ChildrenContainer = styled.ul`
   margin: 0;
   padding: 0;
   list-style: none;
 
-  display: ${(props) => (props.show ? 'block' : 'none')};
+  ${Container}.collapsed & {
+    display: none;
+  }
 `
 
 type SelectionStatus =
@@ -126,7 +131,9 @@ const BaseItem: React.FC<{
   labelDecoration?: React.ReactNode
 }> = ({label, children, depth, select, selectionStatus, labelDecoration}) => {
   const canContainChildren = children !== undefined
-  const [isOpen, setIsOpen] = useState(true)
+
+  //TODO: store this in the studio data
+  const [collapsed, setIsCollapsed] = useState(false)
 
   return (
     <Container
@@ -134,15 +141,15 @@ const BaseItem: React.FC<{
         /* @ts-ignore */
         {'--depth': depth}
       }
+      className={collapsed && 'collapsed'}
     >
-      <Header className={selectionStatus} onClick={select}>
+      <Header className={selectionStatus} onClick={select ?? noop} data-header>
         <Head_IconContainer>
           {canContainChildren ? (
             <Head_Icon_WithDescendants
-              isOpen={isOpen}
               onClick={(evt) => {
                 evt.stopPropagation()
-                setIsOpen(!isOpen)
+                setIsCollapsed((v) => !v)
                 select?.()
               }}
             >
@@ -158,9 +165,7 @@ const BaseItem: React.FC<{
         </Head_Label>
         {labelDecoration}
       </Header>
-      {canContainChildren && (
-        <ChildrenContainer show={isOpen}>{children}</ChildrenContainer>
-      )}
+      {canContainChildren && <ChildrenContainer>{children}</ChildrenContainer>}
     </Container>
   )
 }
