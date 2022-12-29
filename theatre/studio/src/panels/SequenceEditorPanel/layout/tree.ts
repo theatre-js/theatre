@@ -1,4 +1,3 @@
-import type {} from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {
   PropTypeConfig,
   PropTypeConfig_AllSimples,
@@ -18,6 +17,7 @@ import {prism, val, valueDerivation} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import {titleBarHeight} from '@theatre/studio/panels/BasePanel/common'
 import type {Studio} from '@theatre/studio/Studio'
+import type {UnknownValidCompoundProps} from '@theatre/core/propTypes/internals'
 
 /**
  * Base "view model" for each row with common
@@ -57,6 +57,7 @@ export type SequenceEditorTree = SequenceEditorTree_Sheet
 
 export type SequenceEditorTree_Sheet = SequenceEditorTree_Row<'sheet'> & {
   sheet: Sheet
+  isCollapsed: boolean
   children: SequenceEditorTree_SheetObject[]
 }
 
@@ -73,6 +74,7 @@ export type SequenceEditorTree_PropWithChildren =
   SequenceEditorTree_Row<'propWithChildren'> & {
     isCollapsed: boolean
     sheetObject: SheetObject
+    propConf: PropTypeConfig_Compound<UnknownValidCompoundProps>
     pathToProp: PathToProp
     children: Array<
       SequenceEditorTree_PropWithChildren | SequenceEditorTree_PrimitiveProp
@@ -104,34 +106,44 @@ export const calculateSequenceEditorTree = (
   studio: Studio,
 ): SequenceEditorTree => {
   prism.ensurePrism()
-  let topSoFar = titleBarHeight
-  let nSoFar = 0
   const rootShouldRender = true
+  let topSoFar = titleBarHeight + (rootShouldRender ? HEIGHT_OF_ANY_TITLE : 0)
+  let nSoFar = 0
+
+  const collapsableItemSetP =
+    studio.atomP.ahistoric.projects.stateByProjectId[sheet.address.projectId]
+      .stateBySheetId[sheet.address.sheetId].sequence.collapsableItems
+
+  const isCollapsedP =
+    collapsableItemSetP.byId[createStudioSheetItemKey.forSheet()].isCollapsed
+  const isCollapsed = valueDerivation(isCollapsedP).getValue() ?? false
 
   const tree: SequenceEditorTree = {
     type: 'sheet',
+    isCollapsed,
     sheet,
     children: [],
     sheetItemKey: createStudioSheetItemKey.forSheet(),
     shouldRender: rootShouldRender,
-    top: topSoFar,
-    depth: -1,
+    top: titleBarHeight,
+    depth: 0,
     n: nSoFar,
-    nodeHeight: 0, // always 0
-    heightIncludingChildren: -1, // will define this later
+    nodeHeight: rootShouldRender ? HEIGHT_OF_ANY_TITLE : 0,
+    heightIncludingChildren: -1, // calculated below
   }
 
   if (rootShouldRender) {
     nSoFar += 1
   }
 
-  const collapsableItemSetP =
-    studio.atomP.ahistoric.projects.stateByProjectId[sheet.address.projectId]
-      .stateBySheetId[sheet.address.sheetId].sequence.collapsableItems
-
   for (const sheetObject of Object.values(val(sheet.objectsP))) {
     if (sheetObject) {
-      addObject(sheetObject, tree.children, tree.depth + 1, rootShouldRender)
+      addObject(
+        sheetObject,
+        tree.children,
+        tree.depth + 1,
+        rootShouldRender && !isCollapsed,
+      )
     }
   }
   tree.heightIncludingChildren = topSoFar - tree.top
@@ -145,6 +157,7 @@ export const calculateSequenceEditorTree = (
     const trackSetups = val(
       sheetObject.template.getMapOfValidSequenceTracks_forStudio(),
     )
+    const objectConfig = val(sheetObject.template.configPointer)
 
     if (Object.keys(trackSetups).length === 0) return
 
@@ -165,9 +178,7 @@ export const calculateSequenceEditorTree = (
       n: nSoFar,
       sheetObject: sheetObject,
       nodeHeight: shouldRender ? HEIGHT_OF_ANY_TITLE : 0,
-      // Question: Why -1? Is this relevant for "shouldRender"?
-      // Perhaps this is to indicate this does not have a valid value.
-      heightIncludingChildren: -1,
+      heightIncludingChildren: -1, // calculated below
     }
     arrayOfChildren.push(row)
 
@@ -182,7 +193,7 @@ export const calculateSequenceEditorTree = (
       sheetObject,
       trackSetups,
       [],
-      sheetObject.template.config,
+      objectConfig,
       row.children,
       level + 1,
       shouldRender && !isCollapsed,
@@ -233,6 +244,7 @@ export const calculateSequenceEditorTree = (
       addProp_compound(
         sheetObject,
         trackMapping,
+        conf,
         pathToProp,
         conf,
         arrayOfChildren,
@@ -259,6 +271,7 @@ export const calculateSequenceEditorTree = (
   function addProp_compound(
     sheetObject: SheetObject,
     trackMapping: IPropPathToTrackIdTree,
+    propConf: PropTypeConfig_Compound<UnknownValidCompoundProps>,
     pathToProp: PathToProp,
     conf: PropTypeConfig_Compound<$FixMe>,
     arrayOfChildren: Array<
@@ -276,6 +289,7 @@ export const calculateSequenceEditorTree = (
     const row: SequenceEditorTree_PropWithChildren = {
       type: 'propWithChildren',
       isCollapsed,
+      propConf,
       pathToProp,
       sheetItemKey: createStudioSheetItemKey.forSheetObjectProp(
         sheetObject,

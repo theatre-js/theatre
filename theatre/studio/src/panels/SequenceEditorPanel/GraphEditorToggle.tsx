@@ -52,7 +52,6 @@ const GraphEditorToggle: React.FC<{
 }> = ({layoutP}) => {
   const isOpen = useVal(layoutP.graphEditorDims.isOpen)
   const toggle = useCallback(() => {
-    const sheet = val(layoutP.sheet)
     const isOpen = val(layoutP.graphEditorDims.isOpen)
     getStudio()!.transaction(({stateEditors}) => {
       stateEditors.studio.historic.panels.sequenceEditor.graphEditor.setIsOpen({

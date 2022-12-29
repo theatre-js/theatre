@@ -1,5 +1,13 @@
 import propose from 'propose'
 
+/**
+ * Proposes a suggestion to fix a typo in `str`, using the options provided in `dictionary`.
+ *
+ * Example:
+ * ```ts
+ * didYouMean('helo', ['hello', 'world']) // 'Did you mean "hello"?'
+ * ```
+ */
 export default function didYouMean(
   str: string,
   dictionary: string[],

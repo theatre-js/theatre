@@ -18,6 +18,7 @@ import {
   valueInProp,
 } from '@theatre/shared/propTypes/utils'
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
+import {useVal} from '@theatre/react'
 
 export type ExtremumSpace = {
   fromValueSpace: (v: number) => number
@@ -36,7 +37,7 @@ const BasicKeyframedTrack: React.VFC<{
 }> = React.memo(
   ({layoutP, trackData, sheetObject, trackId, color, pathToProp}) => {
     const propConfig = getPropConfigByPath(
-      sheetObject.template.config,
+      useVal(sheetObject.template.configPointer),
       pathToProp,
     )! as PropTypeConfig_AllSimples
 

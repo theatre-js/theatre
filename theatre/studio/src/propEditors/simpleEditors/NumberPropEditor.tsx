@@ -7,6 +7,7 @@ function NumberPropEditor({
   propConfig,
   editingTools,
   value,
+  autoFocus,
 }: ISimplePropEditorReactProps<PropTypeConfig_Number>) {
   const nudge = useCallback(
     (params: {deltaX: number; deltaFraction: number; magnitude: number}) => {
@@ -23,6 +24,7 @@ function NumberPropEditor({
       permanentlySetValue={editingTools.permanentlySetValue}
       range={propConfig.range}
       nudge={nudge}
+      autoFocus={autoFocus}
     />
   )
 }

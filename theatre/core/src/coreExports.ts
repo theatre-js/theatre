@@ -1,12 +1,9 @@
-import projectsSingleton from '@theatre/core/projects/projectsSingleton'
-import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
-import type {
-  IProject,
-  IProjectConfig,
-} from '@theatre/core/projects/TheatreProject'
-import TheatreProject from '@theatre/core/projects/TheatreProject'
+import projectsSingleton from './projects/projectsSingleton'
+import type {OnDiskState} from './projects/store/storeTypes'
+import type {IProject, IProjectConfig} from './projects/TheatreProject'
+import TheatreProject from './projects/TheatreProject'
 import globals from '@theatre/shared/globals'
-import * as types from '@theatre/core/propTypes'
+import * as types from './propTypes'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
@@ -18,6 +15,7 @@ import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import coreTicker from './coreTicker'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import {_coreLogger} from './_coreLogger'
+export {notify} from '@theatre/shared/notify'
 export {types}
 
 /**
@@ -26,7 +24,7 @@ export {types}
  * @remarks
  * If \@theatre/studio is also loaded, then the state of the project will be managed by the studio.
  *
- * [Learn more about exporting](https://docs.theatrejs.com/in-depth/#exporting)
+ * [Learn more about exporting](https://www.theatrejs.com/docs/latest/manual/projects#state)
  *
  * @example
  * Usage:
@@ -98,7 +96,7 @@ const shallowValidateOnDiskState = (projectId: ProjectId, s: OnDiskState) => {
     throw new InvalidArgumentError(
       `Error validating conf.state in Theatre.getProject(${JSON.stringify(
         projectId,
-      )}, conf). The state seems to be formatted in a way that is unreadable to Theatre.js. Read more at https://docs.theatrejs.com`,
+      )}, conf). The state seems to be formatted in a way that is unreadable to Theatre.js. Read more at https://www.theatrejs.com/docs/latest/manual/projects#state`,
     )
   }
 }

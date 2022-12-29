@@ -8,6 +8,7 @@ function StringLiteralPropEditor<TLiteralOptions extends string>({
   propConfig,
   editingTools,
   value,
+  autoFocus,
 }: ISimplePropEditorReactProps<PropTypeConfig_StringLiteral<TLiteralOptions>>) {
   const onChange = useCallback(
     (val: TLiteralOptions) => {
@@ -21,12 +22,14 @@ function StringLiteralPropEditor<TLiteralOptions extends string>({
       value={value}
       onChange={onChange}
       options={propConfig.valuesAndLabels}
+      autoFocus={autoFocus}
     />
   ) : (
     <BasicSwitch
       value={value}
       onChange={onChange}
       options={propConfig.valuesAndLabels}
+      autoFocus={autoFocus}
     />
   )
 }

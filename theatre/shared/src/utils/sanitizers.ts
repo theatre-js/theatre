@@ -3,7 +3,7 @@ import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 
 const _validateSym = (
   val: string,
-  thingy: string,
+  thingy: string, // there are two unsolved problems in computer science: cache invalidation and naming things.
   range: [min: number, max: number],
 ): void | string => {
   if (typeof val !== 'string') {
@@ -15,6 +15,12 @@ const _validateSym = (
   }
 }
 
+/**
+ * Validates a name, so that:
+ * - It's a string
+ * - It doesn't have leading or trailing spaces
+ * - It's between 3 and 32 characters long
+ */
 export const validateName = (
   name: string,
   thingy: string,
@@ -28,6 +34,12 @@ export const validateName = (
   }
 }
 
+/**
+ * Validates an instanceId, so that:
+ * - It's a string
+ * - It doesn't have leading or trailing spaces
+ * - It's between 1 and 32 characters long
+ */
 export const validateInstanceId = (
   name: string,
   thingy: string,

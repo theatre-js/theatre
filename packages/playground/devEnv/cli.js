@@ -1,8 +1,16 @@
+// @ts-check
 const {timer} = require('./timer')
 
 const dev = process.argv.find((arg) => ['--dev', '-d'].includes(arg)) != null
+const serve =
+  process.argv.find((arg) => ['--serve'].includes(arg)) != null || undefined
+
 const isCI = Boolean(process.env.CI)
+
+/** Currently running server that can be stopped before restarting */
 let current
+
+console.log('cli.js', {dev, serve, isCI})
 
 function onUpdatedBuildScript(rebuild) {
   delete require.cache[require.resolve('./build.compiled')]
@@ -12,11 +20,14 @@ function onUpdatedBuildScript(rebuild) {
   try {
     module
       .start({
-        dev,
-        findAvailablePort: !isCI,
-        // If not in CI, try to spawn a browser
-        openBrowser: !isCI && !rebuild,
-        waitBeforeStartingServer: current?.stop(),
+        dev: !isCI && dev,
+        isVisualRegressionTesting: isCI,
+        serve: serve && {
+          findAvailablePort: !isCI,
+          // If not in CI, try to spawn a browser
+          openBrowser: !isCI && !rebuild,
+          waitBeforeStartingServer: current?.stop(),
+        },
       })
       .then((running) => {
         current = running

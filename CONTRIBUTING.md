@@ -64,7 +64,7 @@ Read more at
 ### Hacking with `examples/`
 
 Other than `playground`, the [`examples/`](./examples) folder contains a few
-small projects that use Theatre with [parcel](https://parceljs.org),
+small projects that use Theatre.js with [parcel](https://parceljs.org),
 [Create react app](create-react-app.dev), and other build tools. This means that
 unlike `playground`, you have to build all the packages before running the
 examples.
@@ -152,20 +152,6 @@ $ yarn release x.y.z-dev.w # npm publish version x.y.z-dev.w and tag it as "dev"
 $ yarn release x.y.z-rc.w # npm publish version x.y.z-rc.w and tag it as "rc"
 ```
 
-### Generating API docs
-
-We use [API extractor](https://api-extractor.com/pages/setup/generating_docs/)
-to generate API docs in markdown. We put the markdown files in the
-[theatre-docs](https://github.com/theatre-js/theatre-docs) repo, which also
-contains the tutorials and guides.
-
-To generate the API docs, run the `build:api-docs` from the root of the repo:
-
-```sh
-$ yarn build:api-docs /path/to/theatre-docs/docs/api/ # this will empty the /api folder and regenerate the markdown files
-```
-
-Learn more about api documentation [here](./contributing/api-docs.md).
 
 ## Project structure
 
@@ -177,7 +163,7 @@ The [monorepo](https://en.wikipedia.org/wiki/Monorepo) consists of:
   [`./theatre/studio`](./theatre/studio).
 - `@theatre/dataverse` – The reactive dataflow library at
   [`./packages/dataverse`](./packages/dataverse).
-- `@theatre/react` – Utilities for using Theatre with React at
+- `@theatre/react` – Utilities for using Theatre.js with React at
   [`./packages/react`](./packages/react).
 - `@theatre/r3f` – The react-three-fiber extension at
   [`./packages/r3f`](./packages/r3f).
@@ -218,8 +204,6 @@ $ yarn lint:all --fix
 # Build all the packages
 $ yarn build
 
-# Build the api documentation
-$ yarn build:api-docs /path/to/theatre-docs/docs/api/
 ```
 
 > Yarn passes all extra parameters to the internal scripts. So, for example, if
@@ -232,9 +216,8 @@ can explore the API if your editor is configured to display TSDoc comments.
 
 Other references
 
-- [Documentation: https://docs.theatrejs.com](https://docs.theatrejs.com/getting-started/)
-- [API docs: https://docs.theatrejs.com/api/](https://docs.theatrejs.com/api/)
-- [Video: Theatre.js Crash Course](https://www.youtube.com/watch?v=icR9EIS1q34)
+- [Documentation: https://www.theatrejs.com/docs](https://www.theatrejs.com/docs)
+- [API docs: https://www.theatrejs.com/docs/latest/api](https://www.theatrejs.com/docs/latest/api)
 
 ## What to contribute
 
@@ -243,7 +226,7 @@ You can contribute with:
 - Bug fixes
 - Feature suggestions
 - Features implementations
-- [Documentation](https://github.com/theatre-js/theatre-docs/) (or write/record
+- [Documentation](https://github.com/theatre-js/website/) (or write/record
   tutorials of your own which we'll showcase)
 - Create examples projects for your own particular dev stack (eg. using
   Pixie/Vue/THREE.js/Babylon/etc)

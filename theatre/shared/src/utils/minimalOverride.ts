@@ -22,8 +22,43 @@ function typeOfValue(v: unknown): ValueType {
 }
 
 /**
+ * Returns an object that deep-equals `override`, but uses as much of the references from `base` as possible.
+ *
+ * It's better to explain this with a few examples:
+ * ```ts
+ * const base =     {a: {a1: 1}, b: 1}
+ * const override = {a: {a1: 1}, b: 2} // notice how the value of b is different, but a deep-equals the value of a in base
+ * const result = minimalOverride(base, override)
+ * console.log(result === base) // false
+ * console.log(result === override) // false
+ * console.log(result.a === base.a) // true (base.a was re-used, because it deep-equals override.a)
+ *
+ * // Another example:
+ * const base =     {a: {a1: 1}, b: 1}
+ * const override = {a: {a1: 2}, b: 1} // notice how the value of a does not deep-equal the value of a in base
+ * const result = minimalOverride(base, override)
+ * console.log(result === base) // false
+ * console.log(result === override) // false
+ * console.log(result.a === base.a) // false
+ * console.log(result.a === override.a) // true (override.a is used here, because it does not deep-equal base.a)
+ * ```
+ *
  * @remarks
- * TODO explain what this does.
+ * We don't use this function anymore, but we're keeping it around as it's likely to be used again in the future.
+ *
+ * The way it used to be used, was in `transactionApi.set()`. Consider the following example:
+ * ```ts
+ * studio.transaction(({set}) => {
+ *   set(light.props, {position: {x: 1, y: 2}, intensity: 1})
+ * })
+ *
+ *  studio.transaction(({set}) => {
+ *   // Notice that props.position is the same as before. We just want to change the intensity in this transaction.
+ *   // So what will actually happen is that props.position will be re-used and untouched (and won't end up in the transaction record),
+ *   // and this transaction will only touch the value for props.intensity.
+ *   set(light.props, {position: {x: 1, y: 2}, intensity: 2})
+ * })
+ * ```
  */
 export default function minimalOverride<T>(base: T, override: T): T {
   const typeofOverride = typeOfValue(override)

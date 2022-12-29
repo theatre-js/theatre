@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://github.com/theatre-js/theatre#gh-dark-mode-only"><img src="https://docs.theatrejs.com/public/theatrejs-logo-white.svg" alt="Theatre.js" width="200"></a><a href="https://github.com/theatre-js/theatre#gh-light-mode-only"><img src="https://docs.theatrejs.com/public/theatrejs-logo-black.svg" alt="Theatre.js" width="200"></a>
+  <a href="https://github.com/theatre-js/theatre#gh-dark-mode-only"><img src="https://raw.githubusercontent.com/theatre-js/theatre-docs/main/docs/.vuepress/public/public/theatrejs-logo-white.svg" alt="Theatre.js" width="200"></a><a href="https://github.com/theatre-js/theatre#gh-light-mode-only"><img src="https://raw.githubusercontent.com/theatre-js/theatre-docs/main/docs/.vuepress/public/public/theatrejs-logo-black.svg" alt="Theatre.js" width="200"></a>
 </h1>
 <p align="center">Motion Design, for the web</p>
 <p align="center">
@@ -20,7 +20,7 @@ Theatre.js is an animation library for high-fidelity motion graphics. It is
 designed to help you express detailed animation, enabling you to create
 intricate movement, and convey nuance.
 
-Theatre can be used both programmatically _and_ visually.
+Theatre.js can be used both programmatically _and_ visually.
 
 ---
 
@@ -51,27 +51,20 @@ You can use Theatre.js to:
 
 ## Documentation and Tutorials
 
-The docs are at [docs.theatrejs.com](https://docs.theatrejs.com):
+The docs are at [theatrejs.com/docs](https://www.theatrejs.com/docs):
 
-- [Getting started guide](https://docs.theatrejs.com/getting-started/)
-  - [Install Theatre.js](https://docs.theatrejs.com/getting-started/install/)
-  - [Quickly try Theatre.js out](https://docs.theatrejs.com/getting-started/try-it-out/)
-  - [Learn the basics](https://docs.theatrejs.com/getting-started/basics/)
-- [In depth guide](https://docs.theatrejs.com/in-depth/)
-- [API docs](https://docs.theatrejs.com/api/)
-- [Extensions](https://docs.theatrejs.com/extensions/)
 - [Video tutorials](https://www.youtube.com/channel/UCsp9XOCs8v2twyq5kMLzS2Q)
   - [Crash course](https://www.youtube.com/watch?v=icR9EIS1q34)
   - [Animating with music](https://www.youtube.com/watch?v=QoS4gMxwq_4)
   - [Yuri Artiukh](https://twitter.com/akella)'s
     [stream](https://youtu.be/qmRqgFbNprM?t=3462) with a section on using
-    Theatre with THREE.js
+    Theatre.js with THREE.js
   - \<Add your own tutorials here\>
 
 ## Community and support
 
 Join our friendly community on [Discord](https://discord.gg/bm9f8F9Y9N), follow
-the updates on [twitter](https://twitter.com/AriaMinaei) or write us an
+the updates on [twitter](https://twitter.com/theatre_js) or write us an
 [email](mailto:hello@theatrejs.com).
 
 ## Development and contributing

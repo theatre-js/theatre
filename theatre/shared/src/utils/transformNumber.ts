@@ -1,3 +1,6 @@
+/**
+ * Transforms `initialPos` by scaling and translating it around `origin`.
+ */
 export function transformNumber(
   initialPos: number,
   {

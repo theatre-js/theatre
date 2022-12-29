@@ -19,6 +19,7 @@ import {
   TheatreLoggerLevel,
 } from '@theatre/shared/logger'
 import {ProvideLogger} from '@theatre/studio/uiComponents/useLogger'
+import {Notifier} from '@theatre/studio/notify'
 
 const MakeRootHostContainStatic =
   typeof window !== 'undefined'
@@ -32,10 +33,7 @@ const MakeRootHostContainStatic =
 const Container = styled(PointerEventsHandler)`
   z-index: 50;
   position: fixed;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
+  inset: 0;
 
   &.invisible {
     pointer-events: none !important;
@@ -60,7 +58,7 @@ export default function UIRoot() {
     dev: INTERNAL_LOGGING,
     internal: INTERNAL_LOGGING,
   })
-  const logger = uiRootLogger.getLogger().named('Theatre UIRoot')
+  const logger = uiRootLogger.getLogger().named('Theatre.js UIRoot')
 
   useKeyboardShortcuts()
 
@@ -68,7 +66,7 @@ export default function UIRoot() {
   useEffect(() => {
     if (visiblityState === 'everythingIsHidden') {
       console.warn(
-        `Theatre Studio is hidden. Use the keyboard shortcut 'alt + \\' to restore the studio, or call studio.ui.restore().`,
+        `Theatre.js Studio is hidden. Use the keyboard shortcut 'alt + \\' to restore the studio, or call studio.ui.restore().`,
       )
     }
     return () => {}
@@ -102,6 +100,7 @@ export default function UIRoot() {
                     <PortalLayer ref={portalLayerRef} />
                     <GlobalToolbar />
                     <PanelsRoot />
+                    <Notifier />
                   </Container>
                 </>
               </ProvideStyles>

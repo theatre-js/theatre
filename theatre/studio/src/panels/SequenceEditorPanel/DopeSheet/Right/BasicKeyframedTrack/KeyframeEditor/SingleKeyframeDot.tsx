@@ -23,7 +23,7 @@ import {
   snapToNone,
   snapToSome,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
-import {useSingleKeyframeInlineEditorPopover} from './useSingleKeyframeInlineEditorPopover'
+import {useKeyframeInlineEditorPopover} from './useSingleKeyframeInlineEditorPopover'
 import usePresence, {
   PresenceFlag,
 } from '@theatre/studio/uiComponents/usePresence'
@@ -101,18 +101,23 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
   const [ref, node] = useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useSingleKeyframeContextMenu(node, logger, props)
-  const [inlineEditorPopover, openEditor, _, isInlineEditorPopoverOpen] =
-    useSingleKeyframeInlineEditorPopover({
+  const {
+    node: inlineEditorPopover,
+    toggle: toggleEditor,
+    isOpen: isInlineEditorPopoverOpen,
+  } = useKeyframeInlineEditorPopover([
+    {
+      type: 'primitiveProp',
       keyframe: props.keyframe,
       pathToProp: props.leaf.pathToProp,
-      propConf: props.leaf.propConf,
+      propConfig: props.leaf.propConf,
       sheetObject: props.leaf.sheetObject,
       trackId: props.leaf.trackId,
-    })
-
+    },
+  ])
   const [isDragging] = useDragForSingleKeyframeDot(node, props, {
     onClickFromDrag(dragStartEvent) {
-      openEditor(dragStartEvent, ref.current!)
+      toggleEditor(dragStartEvent, ref.current!)
     },
   })
 
@@ -211,6 +216,8 @@ function useDragForSingleKeyframeDot(
   const propsRef = useRef(props)
   propsRef.current = props
 
+  const {onClickFromDrag} = options
+
   const useDragOpts = useMemo<UseDragOpts>(() => {
     return {
       debugName: 'KeyframeDot/useDragKeyframe',
@@ -266,7 +273,7 @@ function useDragForSingleKeyframeDot(
           return (
             handlers && {
               ...handlers,
-              onClick: options.onClickFromDrag,
+              onClick: onClickFromDrag,
               onDragEnd: (...args) => {
                 handlers.onDragEnd?.(...args)
                 snapToNone()
@@ -322,12 +329,12 @@ function useDragForSingleKeyframeDot(
             snapToNone()
           },
           onClick(ev) {
-            options.onClickFromDrag(ev)
+            onClickFromDrag(ev)
           },
         }
       },
     }
-  }, [])
+  }, [onClickFromDrag])
 
   const [isDragging] = useDrag(node, useDragOpts)
 

@@ -250,6 +250,16 @@ export default function useDrag(
       stateRef.current = {domDragStarted: false}
       if (opts.shouldPointerLock && !isSafari) document.exitPointerLock()
       callbacksRef.current.onDragEnd(dragHappened)
+
+      // ensure that the window is focused after a successful drag
+      // this fixes an issue where after dragging something like the playhead
+      // through an iframe, you can immediately hit [space] and the animation
+      // will play, even if you hadn't been focusing in the iframe at the start
+      // of the drag.
+      //
+      // Fixes https://linear.app/theatre/issue/P-177/beginners-scrubbing-the-playhead-from-within-an-iframe-then-[space]
+      window.focus()
+
       if (!dragHappened) {
         callbacksRef.current.onClick(e)
       }

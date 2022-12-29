@@ -1,6 +1,6 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
-import UI from '@theatre/studio/UI'
+import type UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
 import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
 import type {
@@ -22,8 +22,12 @@ import type {Deferred} from '@theatre/shared/utils/defer'
 import {defer} from '@theatre/shared/utils/defer'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import checkForUpdates from './checkForUpdates'
+import shallowEqual from 'shallowequal'
 
 export type CoreExports = typeof _coreExports
+
+const UIConstructorModule =
+  typeof window !== 'undefined' ? require('./UI') : null
 
 const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
 \`\`\`
@@ -96,7 +100,7 @@ export class Studio {
     this.publicApi = new TheatreStudio(this)
 
     if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
-      this.ui = new UI(this)
+      this.ui = new UIConstructorModule.default(this)
     }
 
     this._attachToIncomingProjects()
@@ -112,8 +116,8 @@ export class Studio {
 
   async initialize(opts?: Parameters<IStudio['initialize']>[0]) {
     if (this._initializeFnCalled) {
-      console.warn(
-        `\`studio.initialize()\` is already called. You only need to call \`studio.initialize()\` once.`,
+      console.log(
+        `\`studio.initialize()\` is already called. Ignoring subsequent calls.`,
       )
       return this._initializedDeferred.promise
     }
@@ -132,7 +136,7 @@ export class Studio {
       storeOpts.persistenceKey = opts.persistenceKey
     }
 
-    if (opts?.usePersistentStorage === false) {
+    if (opts?.usePersistentStorage === false || typeof window === 'undefined') {
       storeOpts.usePersistentStorage = false
     }
 
@@ -145,7 +149,7 @@ export class Studio {
 
     this._initializedDeferred.resolve()
 
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'test' && this.ui) {
       this.ui.render()
       checkForUpdates()
     }
@@ -220,6 +224,15 @@ export class Studio {
 
     this.transaction(({drafts}) => {
       if (drafts.ephemeral.extensions.byId[extension.id]) {
+        const prevExtension = drafts.ephemeral.extensions.byId[extension.id]
+        if (
+          extension === prevExtension ||
+          shallowEqual(extension, prevExtension)
+        ) {
+          // probably running studio.extend() several times because of hot reload.
+          // as long as it's the same extension, we can safely ignore.
+          return
+        }
         throw new Error(`Extension id "${extension.id}" is already defined`)
       }
 

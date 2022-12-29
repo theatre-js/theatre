@@ -22,7 +22,7 @@ export function useSelected(): undefined | string {
       if (!item) {
         set(undefined)
       } else {
-        set(makeStoreKey(item.sheet, item.address.objectKey))
+        set(makeStoreKey(item.address))
       }
     }
     setFromStudio(studio.selection)
@@ -41,6 +41,6 @@ export function getSelected(): undefined | string {
   if (!item) {
     return undefined
   } else {
-    return makeStoreKey(item.sheet, item.address.objectKey)
+    return makeStoreKey(item.address)
   }
 }

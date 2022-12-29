@@ -5,10 +5,11 @@ import type {IPlaybackDirection, IPlaybackRange} from './Sequence'
 import AudioPlaybackController from './playbackControllers/AudioPlaybackController'
 import coreTicker from '@theatre/core/coreTicker'
 import type {Pointer} from '@theatre/dataverse'
+import {notify} from '@theatre/shared/notify'
 
 interface IAttachAudioArgs {
   /**
-   * Either a URL to the audio file (eg "https://localhost/audio.mp3") or an instance of AudioBuffer
+   * Either a URL to the audio file (eg "http://localhost:3000/audio.mp3") or an instance of AudioBuffer
    */
   source: string | AudioBuffer
   /**
@@ -130,13 +131,13 @@ export interface ISequence {
    *
    * @returns A promise that resolves once the audio source is loaded and decoded
    *
-   * Learn more [here](https://docs.theatrejs.com/in-depth/#sequence-attachaudio).
+   * Learn more [here](https://www.theatrejs.com/docs/latest/manual/audio).
    *
    * @example
    * Usage:
    * ```ts
    * // Loads and decodes audio from the URL and then attaches it to the sequence
-   * await sheet.sequence.attachAudio({source: "https://localhost/audio.ogg"})
+   * await sheet.sequence.attachAudio({source: "http://localhost:3000/audio.mp3"})
    * sheet.sequence.play()
    *
    * // Providing your own AudioAPI Context, destination, etc
@@ -147,9 +148,9 @@ export interface ISequence {
    * await sheet.sequence.attachAudio({source: audioBuffer, audioContext, destinationNode})
    * ```
    *
-   * Note: It's better to provide the `audioContext` rather than allow Theatre to create it.
+   * Note: It's better to provide the `audioContext` rather than allow Theatre.js to create it.
    * That's because some browsers [suspend the audioContext](https://developer.chrome.com/blog/autoplay/#webaudio)
-   * unless it's initiated by a user gesture, like a click. If that happens, Theatre will
+   * unless it's initiated by a user gesture, like a click. If that happens, Theatre.js will
    * wait for a user gesture to resume the audioContext. But that's probably not an
    * optimal user experience. It is better to provide a button or some other UI element
    * to communicate to the user that they have to initiate the animation.
@@ -190,7 +191,7 @@ export interface ISequence {
     destinationNode: AudioNode
 
     /**
-     * This is an intermediate GainNode that Theatre feeds its audio to. It is by default
+     * This is an intermediate GainNode that Theatre.js feeds its audio to. It is by default
      * connected to destinationNode, but you can disconnect the gainNode and feed it to your own graph.
      *
      * @example
@@ -239,16 +240,25 @@ export default class TheatreSequence implements ISequence {
       return priv.play(conf)
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        console.warn(
-          `You seem to have called sequence.play() before the project has finished loading.\n` +
-            `This would **not** a problem in production when using '@theatre/core', since Theatre loads instantly in core mode. ` +
-            `However, when using '@theatre/studio', it takes a few milliseconds for it to load your project's state, ` +
+        notify.warning(
+          "Sequence can't be played",
+          'You seem to have called `sequence.play()` before the project has finished loading.\n\n' +
+            'This would **not** a problem in production when using `@theatre/core`, since Theatre.js loads instantly in core mode. ' +
+            "However, when using `@theatre/studio`, it takes a few milliseconds for it to load your project's state, " +
             `before which your sequences cannot start playing.\n` +
             `\n` +
-            `To fix this, simply defer calling sequence.play() until after the project is loaded, like this:\n` +
+            'To fix this, simply defer calling `sequence.play()` until after the project is loaded, like this:\n\n' +
+            '```\n' +
             `project.ready.then(() => {\n` +
             `  sequence.play()\n` +
-            `})`,
+            `})\n` +
+            '```',
+          [
+            {
+              url: 'https://www.theatrejs.com/docs/0.5/api/core#project.ready',
+              title: 'Project.ready',
+            },
+          ],
         )
       }
       const d = defer<boolean>()

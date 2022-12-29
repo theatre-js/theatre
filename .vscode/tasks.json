@@ -15,6 +15,13 @@
       "type": "shell",
       "command": "yarn tsc --build --watch ./devEnv/typecheck-all-projects/tsconfig.all.json",
       "problemMatcher": ["$tsc-watch"]
+    },
+    {
+      "type": "npm",
+      "script": "playground",
+      "problemMatcher": [],
+      "label": "Playground",
+      "detail": "yarn workspace playground run serve"
     }
   ]
 }

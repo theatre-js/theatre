@@ -43,21 +43,21 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
   useLayoutEffect(() => {
     const originalVisibility = object.visible
 
-    if (editable.visibleOnlyInEditor) {
+    if (editable?.visibleOnlyInEditor) {
       object.visible = true
     }
 
     return () => {
       object.visible = originalVisibility
     }
-  }, [editable.visibleOnlyInEditor, object.visible])
+  }, [editable?.visibleOnlyInEditor, object.visible])
 
   const [hovered, setHovered] = useState(false)
 
   // Helpers
   const scene = useThree((state) => state.scene)
   const helper = useMemo<Helper | undefined>(
-    () => editable.objectConfig.createHelper?.(object),
+    () => editable?.objectConfig.createHelper?.(object),
     [object],
   )
   useEffect(() => {
@@ -92,6 +92,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
 
   // subscribe to external changes
   useEffect(() => {
+    if (!editable) return
     const sheetObject = editable.sheetObject
     const objectConfig = editable.objectConfig
 
@@ -114,6 +115,8 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
     }
   }, [editable])
 
+  if (!editable) return null
+
   return (
     <>
       <group
@@ -125,7 +128,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
               useExtensionStore.getState().editables[storeKey].sheetObject
 
             if (!theatreObject) {
-              console.log('no theatre object for', storeKey)
+              console.log('no Theatre.js object for', storeKey)
             } else {
               studio.setSelection([theatreObject])
             }
@@ -172,7 +175,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
                     useExtensionStore.getState().editables[storeKey].sheetObject
 
                   if (!theatreObject) {
-                    console.log('no theatre object for', storeKey)
+                    console.log('no Theatre.js object for', storeKey)
                   } else {
                     studio.setSelection([theatreObject])
                   }

@@ -5,7 +5,7 @@ import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Histo
 import {usePrism, useVal} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
-import React, {Fragment} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import SingleKeyframeEditor from './KeyframeEditor/SingleKeyframeEditor'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -73,34 +73,30 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
 
     const snapToAllKeyframes = snapPositionsState.mode === 'snapToAll'
 
+    const track = useMemo(
+      () => ({
+        data: trackData,
+        id: leaf.trackId,
+        sheetObject: props.leaf.sheetObject,
+      }),
+      [trackData, leaf.trackId],
+    )
+
     const keyframeEditors = trackData.keyframes.map((kf, index) => (
-      <Fragment key={'keyframe-' + kf.id}>
-        {snapToAllKeyframes && (
-          <KeyframeSnapTarget
-            layoutP={layoutP}
-            leaf={leaf}
-            position={kf.position}
-          />
+      <SingleKeyframeEditor
+        key={'keyframe-' + kf.id}
+        itemKey={createStudioSheetItemKey.forTrackKeyframe(
+          leaf.sheetObject,
+          leaf.trackId,
+          kf.id,
         )}
-        <SingleKeyframeEditor
-          itemKey={createStudioSheetItemKey.forTrackKeyframe(
-            leaf.sheetObject,
-            leaf.trackId,
-            kf.id,
-          )}
-          keyframe={kf}
-          index={index}
-          track={{
-            data: trackData,
-            id: leaf.trackId,
-          }}
-          layoutP={layoutP}
-          leaf={leaf}
-          selection={
-            selectedKeyframeIds[kf.id] === true ? selection : undefined
-          }
-        />
-      </Fragment>
+        keyframe={kf}
+        index={index}
+        track={track}
+        layoutP={layoutP}
+        leaf={leaf}
+        selection={selectedKeyframeIds[kf.id] === true ? selection : undefined}
+      />
     ))
 
     const snapTargets = snapPositions.map((position) => (
@@ -112,6 +108,17 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
       />
     ))
 
+    const additionalSnapTargets = !snapToAllKeyframes
+      ? null
+      : trackData.keyframes.map((kf) => (
+          <KeyframeSnapTarget
+            key={`additionalSnapTarget-${kf.id}`}
+            layoutP={layoutP}
+            leaf={leaf}
+            position={kf.position}
+          />
+        ))
+
     return (
       <Container
         ref={containerRef}
@@ -121,11 +128,14 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
       >
         {keyframeEditors}
         {snapTargets}
+        <>{additionalSnapTargets}</>
         {contextMenu}
       </Container>
     )
   },
 )
+
+BasicKeyframedTrack.displayName = `BasicKeyframedTrack`
 
 export default BasicKeyframedTrack
 

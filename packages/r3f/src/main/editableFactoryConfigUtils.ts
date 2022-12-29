@@ -1,4 +1,5 @@
 import type {UnknownShorthandCompoundProps} from '@theatre/core'
+import {notify} from '@theatre/core'
 import {types} from '@theatre/core'
 import type {Object3D} from 'three'
 import type {IconID} from '../extension/icons'
@@ -77,11 +78,17 @@ export const createVectorPropConfig = (
           z: propValue.z,
         }
       : // show a warning and return defaultValue
-        (console.warn(
-          `Couldn't parse prop %c${key}={${JSON.stringify(
+        (notify.warning(
+          `Invalid value for vector prop "${key}"`,
+          `Couldn't make sense of \`${key}={${JSON.stringify(
             propValue,
-          )}}%c, falling back to default value.`,
-          'background: black; color: white',
+          )}}\`, falling back to \`${key}={${JSON.stringify([
+            defaultValue.x,
+            defaultValue.y,
+            defaultValue.z,
+          ])}}\`.
+
+To fix this, make sure the prop is set to either a number, an array of numbers, or a three.js Vector3 object.`,
         ),
         defaultValue)
     ;(['x', 'y', 'z'] as const).forEach((axis) => {

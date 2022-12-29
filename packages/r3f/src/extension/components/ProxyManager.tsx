@@ -58,22 +58,23 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
 
     sceneProxy.traverse((object) => {
       if (object.userData.__editable) {
-        // there are duplicate uniqueNames in the scene, only display one instance in the editor
-        if (editableProxies[object.userData.__storeKey]) {
+        const theatreKey = object.userData.__storeKey
+
+        if (
+          // there are duplicate theatreKeys in the scene, only display one instance in the editor
+          editableProxies[theatreKey] ||
+          // this object has been unmounted
+          !editables[theatreKey]
+        ) {
           object.parent!.remove(object)
         } else {
-          const uniqueName = object.userData.__storeKey
-
-          editableProxies[uniqueName] = {
+          editableProxies[theatreKey] = {
             portal: createPortal(
-              <EditableProxy
-                storeKey={object.userData.__storeKey}
-                object={object}
-              />,
+              <EditableProxy storeKey={theatreKey} object={object} />,
               object.parent!,
             ),
             object: object,
-            editable: editables[uniqueName]!,
+            editable: editables[theatreKey]!,
           }
         }
       }
@@ -201,25 +202,31 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
               const sheetObject = editableProxyOfSelected.editable.sheetObject
               const obj = editableProxyOfSelected.object
 
+              // interestingly, for some reason, only updating a transform when it actually changes breaks it
               scrub.current.capture(({set}) => {
-                set(sheetObject.props, {
-                  ...sheetObject.value,
-                  position: {
+                if (transformControlsMode === 'translate') {
+                  set(sheetObject.props.position, {
+                    ...sheetObject.value.position,
                     x: obj.position.x,
                     y: obj.position.y,
                     z: obj.position.z,
-                  },
-                  rotation: {
+                  })
+                }
+                if (transformControlsMode === 'rotate') {
+                  set(sheetObject.props.rotation, {
+                    ...sheetObject.value.rotation,
                     x: obj.rotation.x,
                     y: obj.rotation.y,
                     z: obj.rotation.z,
-                  },
-                  scale: {
+                  })
+                }
+                if (transformControlsMode === 'scale') {
+                  set(sheetObject.props.scale, {
                     x: obj.scale.x,
                     y: obj.scale.y,
                     z: obj.scale.z,
-                  },
-                })
+                  })
+                }
               })
             }}
             onDraggingChange={(event) => {

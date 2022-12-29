@@ -3,6 +3,8 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import {getPointerParts} from '@theatre/dataverse'
 
 /**
+ * @deprecated because it uses obj.template.staticConfig
+ *
  * Returns the PropTypeConfig by path. Assumes `path` is a valid prop path and that
  * it exists in obj.
  *
@@ -20,7 +22,7 @@ export function getPropTypeByPointer(
   pointerToProp: SheetObject['propsP'],
   obj: SheetObject,
 ): PropTypeConfig {
-  const rootConf = obj.template.config
+  const rootConf = obj.template.staticConfig
 
   const p = getPointerParts(pointerToProp).path
   let conf = rootConf as PropTypeConfig

@@ -43,7 +43,7 @@ const EmptyState: FC = () => {
       {/* Links like this should probably be managed centrally so that we can
       have a process for updating them when the docs change. */}
       <LinkToDoc
-        href="https://docs.theatrejs.com/in-depth/#objects"
+        href="https://www.theatrejs.com/docs/latest/manual/objects"
         target="_blank"
       >
         Learn more about Objects

@@ -89,7 +89,7 @@ export default function createTransactionPrivateApi(
           .getMapOfValidSequenceTracks_forStudio()
           .getValue()
 
-        const propConfig = getPropConfigByPath(root.template.config, path)
+        const propConfig = getPropConfigByPath(root.template.staticConfig, path)
 
         if (!propConfig) {
           throw new Error(
@@ -205,7 +205,7 @@ export default function createTransactionPrivateApi(
         )
 
         const propConfig = getPropConfigByPath(
-          root.template.config,
+          root.template.staticConfig,
           path,
         ) as PropTypeConfig
 

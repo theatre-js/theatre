@@ -16,9 +16,6 @@ function createRafTicker() {
   } else {
     ticker.tick(0)
     setTimeout(() => ticker.tick(1), 0)
-    console.log(
-      `@theatre/dataverse is running in a server rather than in a browser. We haven't gotten around to testing server-side rendering, so if something is working in the browser but not on the server, please file a bug: https://github.com/theatre-js/theatre/issues/new`,
-    )
   }
 
   return ticker
@@ -31,6 +28,7 @@ let rafTicker: undefined | Ticker
  * external scheduling strategy, e.g. a raf.
  */
 export default class Ticker {
+  /** Get a shared `requestAnimationFrame` ticker. */
   static get raf(): Ticker {
     if (!rafTicker) {
       rafTicker = createRafTicker()
@@ -41,6 +39,14 @@ export default class Ticker {
   private _scheduledForNextTick: Set<ICallback>
   private _timeAtCurrentTick: number
   private _ticking: boolean = false
+  /**
+   * Counts up for every tick executed.
+   * Internally, this is used to measure ticks per second.
+   *
+   * This is "public" to TypeScript, because it's a tool for performance measurements.
+   * Consider this as experimental, and do not rely on it always being here in future releases.
+   */
+  public __ticks = 0
 
   constructor() {
     this._scheduledForThisOrNextTick = new Set()
@@ -119,6 +125,16 @@ export default class Ticker {
    * @see onNextTick
    */
   tick(t: number = performance.now()) {
+    if (process.env.NODE_ENV === 'development') {
+      if (!(this instanceof Ticker)) {
+        throw new Error(
+          'ticker.tick must be called while bound to the ticker. As in, "ticker.tick(time)" or "requestAnimationFrame((t) => ticker.tick(t))" for performance.',
+        )
+      }
+    }
+
+    this.__ticks++
+
     this._ticking = true
     this._timeAtCurrentTick = t
     for (const v of this._scheduledForNextTick) {

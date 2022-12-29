@@ -32,7 +32,7 @@ export default function App() {
   return (
     <Canvas>
       <SheetProvider
-        getSheet={() => getProject('Playground - R3F').sheet('R3F-Canvas')}
+        sheet={getProject('Playground - R3F').sheet('R3F-Canvas')}
       >
           <ambientLight intensity={0.5} />
           {/* Mark objects as editable. */}
@@ -41,10 +41,10 @@ export default function App() {
             position={[10, 10, 10]}
             angle={0.15}
             penumbra={1}
-            uniqueName="Spotlight"
+            theatreKey="Spotlight"
           />
-          <e.pointLight uniqueName="PointLight" />
-          <e.mesh uniqueName="Box">
+          <e.pointLight theatreKey="PointLight" />
+          <e.mesh theatreKey="Box">
             <boxBufferGeometry />
             <meshStandardMaterial color="orange" />
           </e.mesh>
@@ -71,7 +71,7 @@ Use it to make objects editable. The properties on `editable` mirror the intrins
 `editable` is also a function, which allows you to make your custom components editable. Your component does have to be compatible with the interface of the editable object type it is meant to represent. You need to pass it the component you want to wrap, and the object type it represents (see object types).
 
 ```ts
-import { editable } from 'react-three-editable';
+import { editable } from '@theatre/r3f';
 import { PerspectiveCamera } from '@react-three/drei';
 
 const EditableCamera = editable(PerspectiveCamera, 'perspectiveCamera');
@@ -79,15 +79,15 @@ const EditableCamera = editable(PerspectiveCamera, 'perspectiveCamera');
 
 #### Props
 
-`uniqueName: string`: a unique name used to identify the object in the editor.
+`theatreKey: string`: a unique name used to identify the object in the editor.
 
-### `<SheetProvider getSheet />`
+### `<SheetProvider sheet={...} />`
 
 Provider component you need to wrap any scene with that you use editable components in.
 
 #### Props
 
-`getSheet: () => TheatreSheetObject`: A function that returns the Theatre.js sheet associated with the scene.
+`sheet: TheatreSheetObject`: A function that returns the Theatre.js sheet associated with the scene.
 
 ## Object types
 

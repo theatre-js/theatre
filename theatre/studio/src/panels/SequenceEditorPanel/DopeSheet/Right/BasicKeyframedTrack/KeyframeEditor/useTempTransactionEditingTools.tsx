@@ -6,6 +6,8 @@ import type {
 } from '@theatre/studio/StudioStore/StudioStore'
 import type {IEditingTools} from '@theatre/studio/propEditors/utils/IEditingTools'
 import {useMemo} from 'react'
+import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import type {Asset} from '@theatre/shared/utils/assets'
 
 /**
  * This function takes a function `writeTx` that sets a value in the private Studio API and
@@ -21,12 +23,14 @@ import {useMemo} from 'react'
  */
 export function useTempTransactionEditingTools<T extends SerializableValue>(
   writeTx: (api: ITransactionPrivateApi, value: T) => void,
+  obj: SheetObject,
 ): IEditingTools<T> {
-  return useMemo(() => createTempTransactionEditingTools<T>(writeTx), [])
+  return useMemo(() => createTempTransactionEditingTools<T>(writeTx, obj), [])
 }
 
 function createTempTransactionEditingTools<T>(
   writeTx: (api: ITransactionPrivateApi, value: T) => void,
+  obj: SheetObject,
 ) {
   let currentTransaction: CommitOrDiscard | null = null
   const createTempTx = (value: T) =>
@@ -35,6 +39,14 @@ function createTempTransactionEditingTools<T>(
   function discardTemporaryValue() {
     currentTransaction?.discard()
     currentTransaction = null
+  }
+
+  const editAssets = {
+    createAsset: obj.sheet.project.assetStorage.createAsset,
+    getAssetUrl: (asset: Asset) =>
+      asset.id
+        ? obj.sheet.project.assetStorage.getAssetUrl(asset.id)
+        : undefined,
   }
 
   return {
@@ -47,5 +59,6 @@ function createTempTransactionEditingTools<T>(
       discardTemporaryValue()
       createTempTx(value).commit()
     },
+    ...editAssets,
   }
 }

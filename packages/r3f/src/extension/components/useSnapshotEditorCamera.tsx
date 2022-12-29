@@ -1,5 +1,6 @@
-import {OrbitControls, PerspectiveCamera} from '@react-three/drei'
-import type {OrbitControls as OrbitControlsImpl} from 'three-stdlib'
+import {PerspectiveCamera} from '@react-three/drei'
+import {OrbitControls} from './OrbitControls'
+import type {OrbitControlsImpl} from './OrbitControls'
 import type {MutableRefObject} from 'react'
 import {useLayoutEffect, useRef} from 'react'
 import React from 'react'
@@ -11,6 +12,7 @@ import type {ISheet} from '@theatre/core'
 import {types} from '@theatre/core'
 import type {ISheetObject} from '@theatre/core'
 import {useThree} from '@react-three/fiber'
+import type {$IntentionalAny} from '../../types'
 
 const camConf = {
   transform: {
@@ -81,6 +83,20 @@ export default function useSnapshotEditorCamera(
   return [node, orbitControlsRef]
 }
 
+/**
+ * This debounce does delay the placement of a keyframe, so you
+ * need to be wary of it being too long and causing an issue like
+ * the following:
+ *
+ * 1. user moves playhead t 0
+ * 2. user changes orbit
+ * 3. user moves playead to 10
+ * 4. user changes orbit again
+ *
+ * User expects a keyframe on t0 and t10
+ */
+const COMMIT_DEBOUNCE_MS = 200
+
 function usePassValuesFromOrbitControlsToTheatre(
   cam: PerspectiveCameraImpl | undefined,
   orbitControls: OrbitControlsImpl | null,
@@ -89,23 +105,52 @@ function usePassValuesFromOrbitControlsToTheatre(
   useLayoutEffect(() => {
     if (!cam || orbitControls == null) return
 
-    let currentScrub: undefined | IScrub
+    let currentScrub:
+      | undefined
+      | {
+          /** "debounce" like timer for making commits to the orbit's changes */
+          scheduledCommit?: {
+            timer: $IntentionalAny
+            // Future, might be possible to remember the position we need to apply this scrub to (when the last 'end' event was received)
+            // position: number
+          }
+          scrub: IScrub
+        }
 
-    let started = false
+    const scheduleCommit = () => {
+      if (currentScrub) {
+        clearTimeout(currentScrub.scheduledCommit?.timer)
+        const reference = currentScrub // capture current scrub to make sure currentScrub isn't out of date
+        currentScrub.scheduledCommit = {
+          timer: setTimeout(() => {
+            if (reference === currentScrub) {
+              currentScrub.scrub.commit()
+              currentScrub = undefined
+            }
+          }, COMMIT_DEBOUNCE_MS),
+        }
+      }
+    }
 
     const onStart = () => {
-      started = true
-      currentScrub = studio.scrub()
-    }
-    const onEnd = () => {
       if (currentScrub) {
-        currentScrub.commit()
+        // prevent existing scheduled commit from executing during the start of a rotation or pan.
+        // This currentScrub will continue being used and will be scheduled again onEnd
+        clearTimeout(currentScrub.scheduledCommit?.timer)
+      } else {
+        // start new scrub
+        currentScrub = {
+          scrub: studio.scrub(),
+        }
       }
-      started = false
+    }
+
+    const onEnd = () => {
+      scheduleCommit()
     }
 
     const onChange = () => {
-      if (!started) return
+      if (!currentScrub) return
 
       const p = cam!.position
       const position = {x: p.x, y: p.y, z: p.z}
@@ -118,7 +163,7 @@ function usePassValuesFromOrbitControlsToTheatre(
         target,
       }
 
-      currentScrub!.capture(({set}) => {
+      currentScrub.scrub.capture(({set}) => {
         set(objRef.current!.props.transform, transform)
       })
     }
@@ -131,6 +176,11 @@ function usePassValuesFromOrbitControlsToTheatre(
       orbitControls.removeEventListener('start', onStart)
       orbitControls.removeEventListener('end', onEnd)
       orbitControls.removeEventListener('change', onChange)
+      if (currentScrub) {
+        // defensively discard in progress changes
+        currentScrub.scrub.discard()
+        currentScrub = undefined
+      }
     }
   }, [cam, orbitControls])
 }

@@ -20,7 +20,10 @@ interface PinButtonProps extends ComponentPropsWithRef<'button'> {
 }
 
 const PinButton = forwardRef<HTMLButtonElement, PinButtonProps>(
-  ({hint, pinned, icon, pinHintIcon, unpinHintIcon, ...props}, ref) => {
+  (
+    {children, hint, pinned, icon, pinHintIcon, unpinHintIcon, ...props},
+    ref,
+  ) => {
     const [hovered, setHovered] = useState(false)
 
     const showHint = hovered || hint
@@ -48,6 +51,7 @@ const PinButton = forwardRef<HTMLButtonElement, PinButtonProps>(
             ? unpinHintIcon
             : icon}
         </div>
+        {children}
       </Container>
     )
   },

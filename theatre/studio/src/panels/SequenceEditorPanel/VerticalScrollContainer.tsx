@@ -1,4 +1,4 @@
-import {voidFn} from '@theatre/shared/utils'
+import noop from '@theatre/shared/utils/noop'
 import React, {createContext, useCallback, useContext, useRef} from 'react'
 import styled from 'styled-components'
 import {zIndexes} from './SequenceEditorPanel'
@@ -22,7 +22,7 @@ const Container = styled.div`
 
 type ReceiveVerticalWheelEventFn = (ev: Pick<WheelEvent, 'deltaY'>) => void
 
-const ctx = createContext<ReceiveVerticalWheelEventFn>(voidFn)
+const ctx = createContext<ReceiveVerticalWheelEventFn>(noop)
 
 /**
  * See {@link VerticalScrollContainer} and references for how to use this.

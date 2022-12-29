@@ -39,41 +39,39 @@ function NamespaceTree(props: {
   return (
     <>
       {[...props.namespace.entries()].map(([label, {object, nested}]) => {
-        const children = (
+        const nestedChildrenElt = nested && (
+          <NamespaceTree
+            namespace={nested}
+            // Question: will there be key conflict if two components have the same labels?
+            key={'namespaceTree(' + label + ')'}
+            visualIndentation={props.visualIndentation + 1}
+          />
+        )
+        const sameNameElt = object && (
+          <ObjectItem
+            depth={props.visualIndentation}
+            // key is useful for navigating react dev component tree
+            key={'objectPath(' + object.address.objectKey + ')'}
+            // object entries should not allow this to be undefined
+            sheetObject={object}
+            overrideLabel={label}
+          />
+        )
+
+        return (
           <React.Fragment key={`${label} - ${props.visualIndentation}`}>
-            {object && (
-              <ObjectItem
+            {sameNameElt}
+            {nestedChildrenElt && (
+              <BaseItem
+                selectionStatus="not-selectable"
+                label={label}
+                // key necessary for no duplicate keys (next to other React.Fragments)
+                key={`baseItem(${label})`}
                 depth={props.visualIndentation}
-                // key is useful for navigating react dev component tree
-                key={'objectPath(' + object.address.objectKey + ')'}
-                // object entries should not allow this to be undefined
-                sheetObject={object}
-                overrideLabel={label}
-              />
-            )}
-            {nested && (
-              <NamespaceTree
-                namespace={nested}
-                // Question: will there be key conflict if two components have the same labels?
-                key={'namespaceTree(' + label + ')'}
-                visualIndentation={props.visualIndentation + 1}
+                children={nestedChildrenElt}
               />
             )}
           </React.Fragment>
-        )
-
-        return nested ? (
-          <BaseItem
-            selectionStatus="not-selectable"
-            label={label}
-            // key necessary for no duplicate keys (next to other React.Fragments)
-            key={`baseItem(${label})`}
-            depth={props.visualIndentation}
-            children={children}
-          />
-        ) : (
-          // if we don't have any nested items, just render the children with no wrapper, here.
-          children
         )
       })}
     </>

@@ -1,7 +1,6 @@
 import type {VoidFn} from '@theatre/shared/utils/types'
 import React, {useState} from 'react'
 import styled, {css} from 'styled-components'
-import noop from '@theatre/shared/utils/noop'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {ChevronDown, Package} from '@theatre/studio/uiComponents/icons'
 
@@ -136,7 +135,7 @@ const BaseItem: React.FC<{
         {'--depth': depth}
       }
     >
-      <Header className={selectionStatus} onClick={select ?? noop} data-header>
+      <Header className={selectionStatus} onClick={select}>
         <Head_IconContainer>
           {canContainChildren ? (
             <Head_Icon_WithDescendants

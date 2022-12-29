@@ -1,10 +1,14 @@
 import {editable as e, SheetProvider} from '@theatre/r3f'
 import {Stars, TorusKnot} from '@react-three/drei'
-import {getProject} from '@theatre/core'
+import {getProject, onChange} from '@theatre/core'
 import React from 'react'
 import {Canvas} from '@react-three/fiber'
 
 function App() {
+  const sheet = getProject('Space').sheet('Scene')
+  onChange(sheet.sequence.pointer, (a) => {
+    console.log('gasp!!', a)
+  })
   return (
     <div
       onClick={() => {
@@ -20,9 +24,9 @@ function App() {
         gl={{preserveDrawingBuffer: true}}
         frameloop="demand"
       >
-        <SheetProvider sheet={getProject('Space').sheet('Scene')}>
+        <SheetProvider sheet={sheet}>
           <ambientLight intensity={0.75} />
-          <e.group uniqueName="trefoil">
+          <e.group theatreKey="trefoil">
             <TorusKnot scale={[1, 1, 1]} args={[1, 0.3, 128, 64]}>
               <meshNormalMaterial />
             </TorusKnot>

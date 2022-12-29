@@ -23,13 +23,12 @@ export function useAggregateKeyframeEditorUtils(
   >,
 ) {
   const {index, aggregateKeyframes, selection} = props
-  const sheetObjectAddress = props.viewModel.sheetObject.address
 
   return usePrism(getAggregateKeyframeEditorUtilsPrismFn(props), [
     index,
     aggregateKeyframes,
     selection,
-    sheetObjectAddress,
+    props.viewModel,
   ])
 }
 
@@ -42,7 +41,11 @@ export function getAggregateKeyframeEditorUtilsPrismFn(
   >,
 ) {
   const {index, aggregateKeyframes, selection} = props
-  const sheetObjectAddress = props.viewModel.sheetObject.address
+
+  const {projectId, sheetId} =
+    props.viewModel.type === 'sheet'
+      ? props.viewModel.sheet.address
+      : props.viewModel.sheetObject.address
 
   return () => {
     const cur = aggregateKeyframes[index]
@@ -65,24 +68,17 @@ export function getAggregateKeyframeEditorUtilsPrismFn(
     const aggregatedConnections: AggregatedKeyframeConnection[] = !connected
       ? []
       : cur.keyframes.map(({kf, track}, i) => ({
-          ...sheetObjectAddress,
+          ...track.sheetObject.address,
           trackId: track.id,
           left: kf,
           right: next.keyframes[i].kf,
         }))
 
     const allConnections = iif(() => {
-      const {projectId, sheetId} = sheetObjectAddress
-
       const selectedConnections = prism
         .memo(
           'selectedConnections',
-          () =>
-            selectedKeyframeConnections(
-              sheetObjectAddress.projectId,
-              sheetObjectAddress.sheetId,
-              selection,
-            ),
+          () => selectedKeyframeConnections(projectId, sheetId, selection),
           [projectId, sheetId, selection],
         )
         .getValue()
@@ -97,7 +93,12 @@ export function getAggregateKeyframeEditorUtilsPrismFn(
     const itemKey = prism.memo(
       'itemKey',
       () => {
-        if (props.viewModel.type === 'sheetObject') {
+        if (props.viewModel.type === 'sheet') {
+          return createStudioSheetItemKey.forSheetAggregateKeyframe(
+            props.viewModel.sheet,
+            cur.position,
+          )
+        } else if (props.viewModel.type === 'sheetObject') {
           return createStudioSheetItemKey.forSheetObjectAggregateKeyframe(
             props.viewModel.sheetObject,
             cur.position,
@@ -110,7 +111,7 @@ export function getAggregateKeyframeEditorUtilsPrismFn(
           )
         }
       },
-      [props.viewModel.sheetObject, cur.position],
+      [props.viewModel, cur.position],
     )
 
     return {

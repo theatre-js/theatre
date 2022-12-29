@@ -1,7 +1,7 @@
 import {editorStore} from './store'
-import type {ISheet} from '@theatre/core'
+import type {ISheetObject} from '@theatre/core'
 
 export const refreshSnapshot = editorStore.getState().createSnapshot
 
-export const makeStoreKey = (sheet: ISheet, name: string) =>
-  `${sheet.address.sheetId}:${sheet.address.sheetInstanceId}:${name}`
+export const makeStoreKey = (sheetObjectAddress: ISheetObject['address']) =>
+  `${sheetObjectAddress.sheetId}:${sheetObjectAddress.sheetInstanceId}:${sheetObjectAddress.objectKey}`

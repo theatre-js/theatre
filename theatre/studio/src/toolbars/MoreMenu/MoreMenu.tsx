@@ -22,6 +22,13 @@ const Container = styled.div`
   @supports not (backdrop-filter: blur()) {
     background-color: rgba(42, 45, 50, 0.98);
   }
+
+  color: rgba(255, 255, 255, 0.9);
+
+  & a {
+    // Fix colors of links to not be default
+    color: inherit;
+  }
 `
 
 const Item = styled.div`
@@ -117,7 +124,7 @@ const MoreMenu = React.forwardRef((props: {}, ref) => {
     <Container ref={ref as $IntentionalAny}>
       <Link
         as="a"
-        href="https://docs.theatrejs.com"
+        href="https://www.theatrejs.com/docs/latest"
         className=""
         target="_blank"
       >
@@ -126,7 +133,7 @@ const MoreMenu = React.forwardRef((props: {}, ref) => {
 
       <Link
         as="a"
-        href={`https://docs.theatrejs.com/changelog`}
+        href={`https://www.theatrejs.com/docs/latest/releases`}
         className=""
         target="_blank"
       >
@@ -177,7 +184,7 @@ const MoreMenu = React.forwardRef((props: {}, ref) => {
           <Divider />
           <Link
             as="a"
-            href={`https://docs.theatrejs.com/update#${encodeURIComponent(
+            href={`https://www.theatrejs.com/docs/latest/releases${encodeURIComponent(
               untaggedVersion,
             )}`}
             className=""
@@ -188,7 +195,7 @@ const MoreMenu = React.forwardRef((props: {}, ref) => {
           </Link>
           <Link
             as="a"
-            href={`https://docs.theatrejs.com/changelog#${encodeURIComponent(
+            href={`https://www.theatrejs.com/docs/latest/releases#${encodeURIComponent(
               untaggedVersion,
             )}`}
             className=""

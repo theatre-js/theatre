@@ -55,7 +55,11 @@ export const AggregateKeyframeConnector: React.VFC<IAggregateKeyframeConnectorPr
     const [contextMenu] = useConnectorContextMenu(props, node)
     const [isDragging] = useDragKeyframe(node, props.editorProps)
 
-    const [popoverNode, openPopover, closePopover] = usePopover(
+    const {
+      node: popoverNode,
+      toggle: togglePopover,
+      close: closePopover,
+    } = usePopover(
       () => {
         const rightDims = val(editorProps.layoutP.rightDims)
 
@@ -89,7 +93,7 @@ export const AggregateKeyframeConnector: React.VFC<IAggregateKeyframeConnectorPr
           isSelected={connected ? connected.selected : false}
           isPopoverOpen={isAggregateEditingInCurvePopover}
           openPopover={(e) => {
-            if (node) openPopover(e, node)
+            if (node) togglePopover(e, node)
           }}
         />
         {popoverNode}
@@ -120,16 +124,20 @@ function useDragKeyframe(
 
         const keyframes = props.aggregateKeyframes[props.index].keyframes
 
+        const {selection, viewModel} = props
+        const address =
+          viewModel.type === 'sheet'
+            ? viewModel.sheet.address
+            : viewModel.sheetObject.address
+
         if (
-          props.selection &&
+          selection &&
           props.aggregateKeyframes[props.index].selected ===
             AggregateKeyframePositionIsSelected.AllSelected
         ) {
-          const {selection, viewModel} = props
-          const {sheetObject} = viewModel
           return selection
             .getDragHandlers({
-              ...sheetObject.address,
+              ...address,
               domNode: node!,
               positionAtStartOfDrag:
                 props.aggregateKeyframes[props.index].position,
@@ -155,7 +163,7 @@ function useDragKeyframe(
               for (const keyframe of keyframes) {
                 stateEditors.coreByProject.historic.sheetsById.sequence.transformKeyframes(
                   {
-                    ...propsAtStartOfDrag.viewModel.sheetObject.address,
+                    ...keyframe.track.sheetObject.address,
                     trackId: keyframe.track.id,
                     keyframeIds: [
                       keyframe.kf.id,
@@ -205,8 +213,7 @@ function useConnectorContextMenu(
         (acc, con) =>
           acc.concat(
             keyframesWithPaths({
-              ...props.editorProps.viewModel.sheetObject.address,
-              trackId: con.trackId,
+              ...con,
               keyframeIds: [con.left.id, con.right.id],
             }) ?? [],
           ),
@@ -222,14 +229,20 @@ function useConnectorContextMenu(
         pathToProp: pathToProp.slice(commonPath.length),
       }))
 
+      const viewModel = props.editorProps.viewModel
+      const address =
+        viewModel.type === 'sheet'
+          ? viewModel.sheet.address
+          : viewModel.sheetObject.address
+
       return [
         {
           label: 'Copy',
           callback: () => {
             if (props.editorProps.selection) {
               const copyableKeyframes = copyableKeyframesFromSelection(
-                props.editorProps.viewModel.sheetObject.address.projectId,
-                props.editorProps.viewModel.sheetObject.address.sheetId,
+                address.projectId,
+                address.sheetId,
                 props.editorProps.selection,
               )
               getStudio().transaction((api) => {
@@ -256,7 +269,8 @@ function useConnectorContextMenu(
                 for (const con of props.utils.allConnections) {
                   stateEditors.coreByProject.historic.sheetsById.sequence.deleteKeyframes(
                     {
-                      ...props.editorProps.viewModel.sheetObject.address,
+                      ...address,
+                      objectKey: con.objectKey,
                       keyframeIds: [con.left.id, con.right.id],
                       trackId: con.trackId,
                     },

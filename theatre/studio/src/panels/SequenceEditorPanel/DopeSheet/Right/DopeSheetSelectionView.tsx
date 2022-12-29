@@ -18,6 +18,7 @@ import type {
 import type {
   SequenceEditorTree_AllRowTypes,
   SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_Sheet,
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
@@ -157,28 +158,25 @@ namespace utils {
   const collectForAggregatedChildren = (
     logger: IUtilLogger,
     layout: SequenceEditorPanelLayout,
-    leaf: SequenceEditorTree_SheetObject | SequenceEditorTree_PropWithChildren,
+    leaf:
+      | SequenceEditorTree_SheetObject
+      | SequenceEditorTree_PropWithChildren
+      | SequenceEditorTree_Sheet,
     bounds: SelectionBounds,
     selectionByObjectKey: DopeSheetSelection['byObjectKey'],
   ) => {
-    const sheetObject = leaf.sheetObject
-    const aggregatedKeyframes = collectAggregateKeyframesInPrism(logger, leaf)
+    const aggregatedKeyframes = collectAggregateKeyframesInPrism(leaf)
 
     if (
       leaf.top + leaf.nodeHeight / 2 + HITBOX_SIZE_PX > bounds.v[0] &&
       leaf.top + leaf.nodeHeight / 2 - HITBOX_SIZE_PX < bounds.v[1]
     ) {
       for (const [position, keyframes] of aggregatedKeyframes.byPosition) {
-        if (
-          position + layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX) <=
-          bounds.h[0]
-        )
-          continue
-        if (
-          position - layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX) >=
-          bounds.h[1]
-        )
-          break
+        const hitboxWidth = layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX)
+        const isHitboxOutsideSelection =
+          position + hitboxWidth <= bounds.h[0] ||
+          position - hitboxWidth >= bounds.h[1]
+        if (isHitboxOutsideSelection) continue
 
         for (const keyframeWithTrack of keyframes) {
           mutableSetDeep(
@@ -186,9 +184,11 @@ namespace utils {
             (selectionByObjectKeyP) =>
               // convenience for accessing a deep path which might not actually exist
               // through the use of pointer proxy (so we don't have to deal with undeifned )
-              selectionByObjectKeyP[sheetObject.address.objectKey].byTrackId[
-                keyframeWithTrack.track.id
-              ].byKeyframeId[keyframeWithTrack.kf.id],
+              selectionByObjectKeyP[
+                keyframeWithTrack.track.sheetObject.address.objectKey
+              ].byTrackId[keyframeWithTrack.track.id].byKeyframeId[
+                keyframeWithTrack.kf.id
+              ],
             true,
           )
         }
@@ -207,6 +207,15 @@ namespace utils {
       selectionByObjectKey: DopeSheetSelection['byObjectKey'],
     ) => void
   } = {
+    sheet(logger, layout, leaf, bounds, selectionByObjectKey) {
+      collectForAggregatedChildren(
+        logger,
+        layout,
+        leaf,
+        bounds,
+        selectionByObjectKey,
+      )
+    },
     propWithChildren(logger, layout, leaf, bounds, selectionByObjectKey) {
       collectForAggregatedChildren(
         logger,

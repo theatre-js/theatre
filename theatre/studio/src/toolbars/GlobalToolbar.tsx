@@ -1,6 +1,6 @@
 import {usePrism, useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
-import React, {useRef} from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import type {$IntentionalAny} from '@theatre/dataverse/dist/types'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
@@ -9,12 +9,21 @@ import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
 import {val} from '@theatre/dataverse'
 import ExtensionToolbar from './ExtensionToolbar/ExtensionToolbar'
 import PinButton from './PinButton'
-import {Details, Ellipsis, Outline} from '@theatre/studio/uiComponents/icons'
+import {
+  Details,
+  Ellipsis,
+  Outline,
+  Bell,
+} from '@theatre/studio/uiComponents/icons'
 import DoubleChevronLeft from '@theatre/studio/uiComponents/icons/DoubleChevronLeft'
 import DoubleChevronRight from '@theatre/studio/uiComponents/icons/DoubleChevronRight'
 import ToolbarIconButton from '@theatre/studio/uiComponents/toolbar/ToolbarIconButton'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import MoreMenu from './MoreMenu/MoreMenu'
+import {
+  useNotifications,
+  useEmptyNotificationsTooltip,
+} from '@theatre/studio/notify'
 
 const Container = styled.div`
   height: 36px;
@@ -47,9 +56,9 @@ const SubContainer = styled.div`
   gap: 8px;
 `
 
-const HasUpdatesBadge = styled.div`
+const HasUpdatesBadge = styled.div<{type: 'info' | 'warning'}>`
   position: absolute;
-  background: #40aaa4;
+  background: ${({type}) => (type === 'info' ? '#40aaa4' : '#f59e0b')};
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -58,12 +67,14 @@ const HasUpdatesBadge = styled.div`
 `
 
 const GroupDivider = styled.div`
-  position: abolute;
+  position: absolute;
   height: 32px;
   width: 1px;
   background: #373b40;
   opacity: 0.4;
 `
+
+let showedVisualTestingWarning = false
 
 const GlobalToolbar: React.FC = () => {
   const conflicts = usePrism(() => {
@@ -96,7 +107,7 @@ const GlobalToolbar: React.FC = () => {
   const hasUpdates =
     useVal(getStudio().atomP.ahistoric.updateChecker.result.hasUpdates) === true
 
-  const [moreMenu, openMoreMenu] = usePopover(
+  const moreMenu = usePopover(
     () => {
       const triggerBounds = moreMenuTriggerRef.current!.getBoundingClientRect()
       return {
@@ -105,6 +116,14 @@ const GlobalToolbar: React.FC = () => {
         constraints: {
           maxX: triggerBounds.right,
           maxY: 8,
+          // MVP: Don't render the more menu all the way to the left
+          // when it doesn't fit on the screen height
+          // See https://linear.app/theatre/issue/P-178/bug-broken-updater-ui-in-simple-html-page
+          // 1/10 There's a better way to solve this.
+          // 1/10 Perhaps consider separate constraint like "rightSideMinX" & for future: "bottomSideMinY"
+          // 2/10 Or, consider constraints being a function of the dimensions of the box => constraints.
+          minX: triggerBounds.left - 140,
+          minY: 8,
         },
         verticalGap: 2,
       }
@@ -114,6 +133,25 @@ const GlobalToolbar: React.FC = () => {
     },
   )
   const moreMenuTriggerRef = useRef<HTMLButtonElement>(null)
+
+  const showUpdatesBadge = useMemo(() => {
+    if (hasUpdates || window.__IS_VISUAL_REGRESSION_TESTING) {
+      if (!showedVisualTestingWarning) {
+        showedVisualTestingWarning = true
+        console.warn(
+          "Visual regression testing enabled, so we're showing the updates badge unconditionally",
+        )
+      }
+      return true
+    }
+
+    return hasUpdates
+  }, [hasUpdates])
+
+  const {hasNotifications} = useNotifications()
+
+  const [notificationsTooltip, notificationsTriggerRef] =
+    useEmptyNotificationsTooltip()
 
   return (
     <Container>
@@ -134,24 +172,40 @@ const GlobalToolbar: React.FC = () => {
           unpinHintIcon={<DoubleChevronLeft />}
           pinned={outlinePinned}
         />
-        <GroupDivider />
         {conflicts.length > 0 ? (
           <NumberOfConflictsIndicator>
             {conflicts.length}
           </NumberOfConflictsIndicator>
         ) : null}
-        <ExtensionToolbar toolbarId="global" />
+        <ExtensionToolbar showLeftDivider toolbarId="global" />
       </SubContainer>
       <SubContainer>
-        {moreMenu}
+        {notificationsTooltip}
+        <PinButton
+          ref={notificationsTriggerRef as $IntentionalAny}
+          onClick={() => {
+            getStudio().transaction(({stateEditors, drafts}) => {
+              stateEditors.studio.ahistoric.setPinNotifications(
+                !(drafts.ahistoric.pinNotifications ?? false),
+              )
+            })
+          }}
+          icon={<Bell />}
+          pinHintIcon={<Bell />}
+          unpinHintIcon={<Bell />}
+          pinned={useVal(getStudio().atomP.ahistoric.pinNotifications) ?? false}
+        >
+          {hasNotifications && <HasUpdatesBadge type="warning" />}
+        </PinButton>
+        {moreMenu.node}
         <ToolbarIconButton
           ref={moreMenuTriggerRef}
           onClick={(e) => {
-            openMoreMenu(e, moreMenuTriggerRef.current!)
+            moreMenu.toggle(e, moreMenuTriggerRef.current!)
           }}
         >
           <Ellipsis />
-          {hasUpdates && <HasUpdatesBadge />}
+          {showUpdatesBadge && <HasUpdatesBadge type="info" />}
         </ToolbarIconButton>
         <PinButton
           ref={triggerButtonRef as $IntentionalAny}

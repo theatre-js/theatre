@@ -1,3 +1,5 @@
+import type {Asset} from './assets'
+
 export type GenericAction = {type: string; payload: unknown}
 
 export type ReduxReducer<State extends {}> = (
@@ -7,6 +9,9 @@ export type ReduxReducer<State extends {}> = (
 
 export type VoidFn = () => void
 
+/**
+ * A `SerializableMap` is a plain JS object that can be safely serialized to JSON.
+ */
 export type SerializableMap<
   Primitives extends SerializablePrimitive = SerializablePrimitive,
 > = {[Key in string]?: SerializableValue<Primitives>}
@@ -45,6 +50,7 @@ export type SerializablePrimitive =
   | number
   | boolean
   | {r: number; g: number; b: number; a: number}
+  | Asset
 
 /**
  * This type represents all values that can be safely serialized.

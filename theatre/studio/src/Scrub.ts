@@ -21,7 +21,7 @@ type State =
 let lastScrubIdAsNumber = 0
 
 /**
- * The scrub API is a simple construct for changing values in Theatre in a history-compatible way.
+ * The scrub API is a simple construct for changing values in Theatre.js in a history-compatible way.
  * Primarily, it can be used to create a series of value changes using a temp transaction without
  * creating multiple transactions.
  *

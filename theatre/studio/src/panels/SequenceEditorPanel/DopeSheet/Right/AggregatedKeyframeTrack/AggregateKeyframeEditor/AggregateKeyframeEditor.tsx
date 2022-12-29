@@ -5,6 +5,7 @@ import type {
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {
   SequenceEditorTree_PropWithChildren,
+  SequenceEditorTree_Sheet,
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {Pointer} from '@theatre/dataverse'
@@ -44,6 +45,7 @@ export type IAggregateKeyframeEditorProps = {
   viewModel:
     | SequenceEditorTree_PropWithChildren
     | SequenceEditorTree_SheetObject
+    | SequenceEditorTree_Sheet
   selection: undefined | DopeSheetSelection
 }
 
@@ -60,26 +62,24 @@ export type IAggregateKeyframeEditorProps = {
  * is open. This would require having some kind of stable identity for each aggregate row.
  * Let's defer that work until other interactive keyframe editing PRs are merged in.
  */
-const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> = (
-  props,
-) => {
-  const utils = useAggregateKeyframeEditorUtils(props)
-
-  return (
-    <AggregateKeyframeEditorContainer
-      style={{
-        top: `${props.viewModel.nodeHeight / 2}px`,
-        left: `calc(${val(
-          props.layoutP.scaledSpace.leftPadding,
-        )}px + calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
-          utils.cur.position
-        }px))`,
-      }}
-    >
-      <AggregateKeyframeDot editorProps={props} utils={utils} />
-      <AggregateKeyframeConnector editorProps={props} utils={utils} />
-    </AggregateKeyframeEditorContainer>
-  )
-}
+const AggregateKeyframeEditor: React.VFC<IAggregateKeyframeEditorProps> =
+  React.memo((props) => {
+    const utils = useAggregateKeyframeEditorUtils(props)
+    return (
+      <AggregateKeyframeEditorContainer
+        style={{
+          top: `${props.viewModel.nodeHeight / 2}px`,
+          left: `calc(${val(
+            props.layoutP.scaledSpace.leftPadding,
+          )}px + calc(var(--unitSpaceToScaledSpaceMultiplier) * ${
+            utils.cur.position
+          }px))`,
+        }}
+      >
+        <AggregateKeyframeDot editorProps={props} utils={utils} />
+        <AggregateKeyframeConnector editorProps={props} utils={utils} />
+      </AggregateKeyframeEditorContainer>
+    )
+  })
 
 export default AggregateKeyframeEditor

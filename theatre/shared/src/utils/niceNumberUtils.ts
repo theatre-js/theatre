@@ -1,29 +1,40 @@
 import padEnd from 'lodash-es/padEnd'
-import type {IUtilContext} from '@theatre/shared/logger'
+import logger from '@theatre/shared/logger'
 
-export function roundestNumberBetween(
-  ctx: IUtilContext,
-  _a: number,
-  _b: number,
-): number {
+/**
+ * Returns the _most aesthetically pleasing_ (aka "nicest") number `c`, such that `a <= c <= b`.
+ * This is useful when a numeric value is being "nudged" by the user (e.g. dragged via mouse pointer),
+ * and we want to avoid setting it to weird value like `101.1239293814314`, when we know that the user
+ * probably just meant `100`.
+ *
+ * Examples
+ * ```ts
+ * nicestNumberBetween(0.1111111123, 0.2943439448) // 0.25
+ * nicestNumberBetween(0.19, 0.23) // 0.2
+ * nicestNumberBetween(1921, 1998) // 1950
+ * nicestNumberBetween(10, 110) // 100
+ * // There are more examples at `./niceNumberUtils.test.ts`
+ * ```
+ */
+export function nicestNumberBetween(_a: number, _b: number): number {
   if (_b < _a) {
-    return roundestNumberBetween(ctx, _b, _a)
+    return nicestNumberBetween(_b, _a)
   }
 
   if (_a < 0 && _b < 0) {
-    return noMinusZero(roundestNumberBetween(ctx, -_b, -_a) * -1)
+    return noMinusZero(nicestNumberBetween(-_b, -_a) * -1)
   }
 
   if (_a <= 0 && _b >= 0) return 0
 
   const aCeiling = Math.ceil(_a)
   if (aCeiling <= _b) {
-    return roundestIntegerBetween(ctx, aCeiling, Math.floor(_b))
+    return nicestIntegerBetween(aCeiling, Math.floor(_b))
   } else {
     const [a, b] = [_a, _b]
     const integer = Math.floor(a)
 
-    return integer + roundestFloat(ctx, a - integer, b - integer)
+    return integer + nicestFloatBetween(a - integer, b - integer)
   }
 }
 
@@ -31,8 +42,7 @@ export function roundestNumberBetween(
 const halvesAndQuartiles = [5, 2.5, 7.5]
 const multipliersWithoutQuartiles = [5, 2, 4, 6, 8, 1, 3, 7, 9]
 
-export function roundestIntegerBetween(
-  ctx: IUtilContext,
+export function nicestIntegerBetween(
   _a: number,
   _b: number,
   decimalsAllowed: boolean = true,
@@ -82,9 +92,7 @@ export function roundestIntegerBetween(
     base = highestTotalFound
 
     if (currentExponentiationOfTen === 1) {
-      ctx.logger.error(
-        `Coudn't find a human-readable number between ${a} and ${b}`,
-      )
+      logger.error(`Coudn't find a human-readable number between ${a} and ${b}`)
       return _a
     } else {
       currentExponentiationOfTen /= 10
@@ -131,13 +139,11 @@ export const stringifyNumber = (n: number): string => {
 }
 
 /**
+ * The float-specific version of {@link nicestNumberBetween}.
+ *
  * it is expected that both args are 0 \< arg \< 1
  */
-export const roundestFloat = (
-  ctx: IUtilContext,
-  a: number,
-  b: number,
-): number => {
+export const nicestFloatBetween = (a: number, b: number): number => {
   const inString = {
     a: stringifyNumber(a),
     b: stringifyNumber(b),
@@ -170,15 +176,15 @@ export const roundestFloat = (
     b: padEnd(withoutInteger.b, maxNumberOfDecimals, '0'),
   }
 
-  const roundestInt = roundestIntegerBetween(
-    ctx,
+  const mostAestheticInt = nicestIntegerBetween(
     parseInt(withPaddedDecimals.a, 10) * Math.pow(10, maxNumberOfLeadingZeros),
     parseInt(withPaddedDecimals.b, 10) * Math.pow(10, maxNumberOfLeadingZeros),
     true,
   )
 
   return toPrecision(
-    roundestInt / Math.pow(10, maxNumberOfLeadingZeros + maxNumberOfDecimals),
+    mostAestheticInt /
+      Math.pow(10, maxNumberOfLeadingZeros + maxNumberOfDecimals),
   )
 }
 

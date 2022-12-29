@@ -3,6 +3,7 @@ import Project from '@theatre/core/projects/Project'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 
 import type {ProjectAddress} from '@theatre/shared/utils/addresses'
+import type {Asset} from '@theatre/shared/utils/assets'
 import type {
   ProjectId,
   SheetId,
@@ -17,10 +18,12 @@ import type {$IntentionalAny} from '@theatre/shared/utils/types'
  */
 export type IProjectConfig = {
   /**
-   * The state of the project, as [exported](https://docs.theatrejs.com/in-depth/#exporting) by the studio.
+   * The state of the project, as [exported](https://www.theatrejs.com/docs/latest/manual/projects#state) by the studio.
    */
   state?: $IntentionalAny
-  // experiments?: IProjectConfigExperiments
+  assets?: {
+    baseUrl?: string
+  }
 }
 
 // export type IProjectConfigExperiments = {
@@ -39,7 +42,7 @@ export type IProjectConfig = {
 // }
 
 /**
- * A Theatre project
+ * A Theatre.js project
  */
 export interface IProject {
   readonly type: 'Theatre_Project_PublicAPI'
@@ -67,9 +70,17 @@ export interface IProject {
    * @param instanceId - Optionally provide an `instanceId` if you want to create multiple instances of the same Sheet
    * @returns The newly created Sheet
    *
-   * **Docs: https://docs.theatrejs.com/in-depth/#sheets**
+   * **Docs: https://www.theatrejs.com/docs/latest/manual/sheets**
    */
   sheet(sheetId: string, instanceId?: string): ISheet
+
+  /**
+   * Returns the URL for an asset.
+   *
+   * @param asset - The asset to get the URL for
+   * @returns The URL for the asset, or `undefined` if the asset is not found
+   */
+  getAssetUrl(asset: Asset): string | undefined
 }
 
 export default class TheatreProject implements IProject {
@@ -93,6 +104,12 @@ export default class TheatreProject implements IProject {
 
   get address(): ProjectAddress {
     return {...privateAPI(this).address}
+  }
+
+  getAssetUrl(asset: Asset): string | undefined {
+    return asset.id
+      ? privateAPI(this).assetStorage.getAssetUrl(asset.id)
+      : undefined
   }
 
   sheet(sheetId: string, instanceId: string = 'default'): ISheet {

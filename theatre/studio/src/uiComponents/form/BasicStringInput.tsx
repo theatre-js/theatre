@@ -1,5 +1,6 @@
 import styled from 'styled-components'
-import type {MutableRefObject} from 'react'
+import type {MutableRefObject} from 'react';
+import { useEffect} from 'react'
 import React, {useMemo, useRef} from 'react'
 import mergeRefs from 'react-merge-refs'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -64,6 +65,7 @@ const BasicStringInput: React.FC<{
    * before this, so use this for UI purposes such as closing a popover.
    */
   onBlur?: () => void
+  autoFocus?: boolean
 }> = (props) => {
   const [stateRef] = useRefAndState<IState>({mode: 'noFocus'})
   const isValid = props.isValid ?? alwaysValid
@@ -168,6 +170,13 @@ const BasicStringInput: React.FC<{
     }
   }, [])
 
+  // Call onBlur on unmount. Because technically it _is_ a blur, but also, otherwise edits wouldn't be committed.
+  useEffect(() => {
+    return () => {
+      callbacks.onBlur()
+    }
+  }, [])
+
   let value =
     stateRef.current.mode !== 'editingViaKeyboard'
       ? format(props.value)
@@ -195,6 +204,7 @@ const BasicStringInput: React.FC<{
         e.preventDefault()
         e.stopPropagation()
       }}
+      autoFocus={props.autoFocus}
     />
   )
 

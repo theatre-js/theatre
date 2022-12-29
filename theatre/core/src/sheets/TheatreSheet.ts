@@ -18,6 +18,7 @@ import type {
 } from '@theatre/core/propTypes/internals'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {ObjectAddressKey} from '@theatre/shared/utils/ids'
+import {notify} from '@theatre/shared/notify'
 
 export type SheetObjectPropTypeConfig =
   PropTypeConfig_Compound<UnknownValidCompoundProps>
@@ -41,10 +42,11 @@ export interface ISheet {
   /**
    * Creates a child object for the sheet
    *
-   * **Docs: https://docs.theatrejs.com/in-depth/#objects**
+   * **Docs: https://www.theatrejs.com/docs/latest/manual/objects**
    *
    * @param key - Each object is identified by a key, which is a non-empty string
    * @param props - The props of the object. See examples
+   * @param options - (Optional) Provide `{reconfigure: true}` to reconfigure an existing object. Reac the example below for details.
    *
    * @returns An Object
    *
@@ -63,12 +65,35 @@ export interface ISheet {
    * // Create an object with nested props
    * const obj = sheet.object("obj", {position: {x: 0, y: 0}})
    * obj.value.position // {x: 0, y: 0}
+   *
+   * // you can also reconfigure an existing object:
+   * const obj = sheet.object("obj", {foo: 0})
+   * console.log(object.value.foo) // prints 0
+   *
+   * const obj2 = sheet.object("obj", {bar: 0}, {reconfigure: true})
+   * console.log(object.value.foo) // prints undefined, since we've removed this prop via reconfiguring the object
+   * console.log(object.value.bar) // prints 0, since we've introduced this prop by reconfiguring the object
+   *
+   * assert(obj === obj2) // passes, because reconfiguring the object returns the same object
    * ```
    */
   object<Props extends UnknownShorthandCompoundProps>(
     key: string,
     props: Props,
+    options?: {
+      reconfigure?: boolean
+    },
   ): ISheetObject<Props>
+
+  /**
+   * Detaches a previously created child object from the sheet.
+   *
+   * If you call `sheet.object(key)` again with the same `key`, the object's values of the object's
+   * props WILL NOT be reset to their initial values.
+   *
+   * @param key - The `key` of the object previously given to `sheet.object(key, ...)`.
+   */
+  detachObject(key: string): void
 
   /**
    * The Sequence of this Sheet
@@ -95,11 +120,12 @@ export default class TheatreSheet implements ISheet {
   object<Props extends UnknownShorthandCompoundProps>(
     key: string,
     config: Props,
+    opts?: {reconfigure?: boolean},
   ): ISheetObject<Props> {
     const internal = privateAPI(this)
     const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
       key,
-      `sheet.object("${key}", ...)`,
+      `sheet.object`,
     )
 
     const existingObject = internal.getObject(sanitizedPath as ObjectAddressKey)
@@ -118,11 +144,19 @@ export default class TheatreSheet implements ISheet {
         const prevConfig = weakMapOfUnsanitizedProps.get(existingObject)
         if (prevConfig) {
           if (!deepEqual(config, prevConfig)) {
-            throw new Error(
-              `You seem to have called sheet.object("${key}", config) twice, with different values for \`config\`. ` +
-                `This is disallowed because changing the config of an object on the fly would make it difficult to reason about.\n\n` +
-                `You can fix this by either re-using the existing object, or calling sheet.object("${key}", config) with the same config.`,
-            )
+            if (opts?.reconfigure === true) {
+              const sanitizedConfig = compound(config)
+              existingObject.template.reconfigure(sanitizedConfig)
+              weakMapOfUnsanitizedProps.set(existingObject, config)
+              return existingObject.publicApi as $IntentionalAny
+            } else {
+              throw new Error(
+                `You seem to have called sheet.object("${key}", config) twice, with different values for \`config\`. ` +
+                  `This is disallowed because changing the config of an object on the fly would make it difficult to reason about.\n\n` +
+                  `You can fix this by either re-using the existing object, or calling sheet.object("${key}", config) with the same config.\n\n` +
+                  `If you mean to reconfigure the object's config, set \`{reconfigure: true}\` in sheet.object("${key}", config, {reconfigure: true})`,
+              )
+            }
           }
         }
       }
@@ -152,6 +186,28 @@ export default class TheatreSheet implements ISheet {
 
   get address(): SheetAddress {
     return {...privateAPI(this).address}
+  }
+
+  detachObject(key: string) {
+    const internal = privateAPI(this)
+    const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
+      key,
+      `sheet.deleteObject("${key}")`,
+    ) as ObjectAddressKey
+
+    const obj = internal.getObject(sanitizedPath)
+    if (!obj) {
+      notify.warning(
+        `Couldn\'t delete object "${sanitizedPath}"`,
+        `There is no object with key "${sanitizedPath}".
+
+To fix this, make sure you are calling \`sheet.deleteObject("${sanitizedPath}")\` with the correct key.`,
+      )
+      console.warn(`Object key "${sanitizedPath}" does not exist.`)
+      return
+    }
+
+    internal.deleteObject(sanitizedPath as ObjectAddressKey)
   }
 }
 

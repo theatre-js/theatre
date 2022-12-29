@@ -61,8 +61,12 @@ export default class SheetObjectTemplate {
   readonly _cache = new SimpleCache()
   readonly project: Project
 
-  get config() {
+  get staticConfig() {
     return this._config.getState()
+  }
+
+  get configPointer() {
+    return this._config.pointer
   }
 
   constructor(
@@ -85,7 +89,7 @@ export default class SheetObjectTemplate {
     return new SheetObject(sheet, this, nativeObject)
   }
 
-  overrideConfig(config: SheetObjectPropTypeConfig) {
+  reconfigure(config: SheetObjectPropTypeConfig) {
     this._config.setState(config)
   }
 
@@ -95,7 +99,7 @@ export default class SheetObjectTemplate {
   getDefaultValues(): IDerivation<SerializableMap> {
     return this._cache.get('getDefaultValues()', () =>
       prism(() => {
-        const config = val(this._config.pointer)
+        const config = val(this.configPointer)
         return getPropDefaultsOfSheetObject(config)
       }),
     )
@@ -119,7 +123,7 @@ export default class SheetObjectTemplate {
             ],
           ) ?? {}
 
-        const config = val(this._config.pointer)
+        const config = val(this.configPointer)
         const deserialized = config.deserializeAndSanitize(json) || {}
         return deserialized
       }),
@@ -154,12 +158,14 @@ export default class SheetObjectTemplate {
 
         if (!trackIdByPropPath) return emptyArray as $IntentionalAny
 
+        const objectConfig = val(this.configPointer)
+
         const _entries = Object.entries(trackIdByPropPath)
         for (const [pathToPropInString, trackId] of _entries) {
           const pathToProp = parsePathToProp(pathToPropInString)
           if (!pathToProp) continue
 
-          const propConfig = getPropConfigByPath(this.config, pathToProp)
+          const propConfig = getPropConfigByPath(objectConfig, pathToProp)
 
           const isSequencable = propConfig && isPropConfSequencable(propConfig)
 
@@ -168,7 +174,7 @@ export default class SheetObjectTemplate {
           arrayOfIds.push({pathToProp, trackId: trackId!})
         }
 
-        const mapping = getOrderingOfPropTypeConfig(this.config)
+        const mapping = getOrderingOfPropTypeConfig(objectConfig)
 
         arrayOfIds.sort((a, b) => {
           const pathToPropA = a.pathToProp

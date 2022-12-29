@@ -16,6 +16,8 @@ import type {
   UnknownShorthandCompoundProps,
   PropsValue,
 } from '@theatre/core/propTypes/internals'
+import {debounce} from 'lodash-es'
+import type {DebouncedFunc} from 'lodash-es'
 
 export interface ISheetObject<
   Props extends UnknownShorthandCompoundProps = UnknownShorthandCompoundProps,
@@ -107,6 +109,10 @@ export interface ISheetObject<
   set initialValue(value: DeepPartialOfSerializableValue<this['value']>)
 }
 
+// Enabled for https://linear.app/theatre/issue/P-217/if-objvalue-is-read-make-sure-its-derivation-remains-hot-for-a-while
+// Disable to test old behavior
+const KEEP_HOT_FOR_MS: undefined | number = 5 * 1000
+
 export default class TheatreSheetObject<
   Props extends UnknownShorthandCompoundProps = UnknownShorthandCompoundProps,
 > implements ISheetObject<Props>
@@ -115,6 +121,8 @@ export default class TheatreSheetObject<
     return 'Theatre_SheetObject_PublicAPI'
   }
   private readonly _cache = new SimpleCache()
+  /** @internal See https://linear.app/theatre/issue/P-217/if-objvalue-is-read-make-sure-its-derivation-remains-hot-for-a-while */
+  private _keepHotUntapDebounce: undefined | DebouncedFunc<VoidFn> = undefined
 
   /**
    * @internal
@@ -153,8 +161,40 @@ export default class TheatreSheetObject<
     return this._valuesDerivation().tapImmediate(coreTicker, fn)
   }
 
+  // internal: Make the deviration keepHot if directly read
   get value(): PropsValue<Props> {
-    return this._valuesDerivation().getValue()
+    const der = this._valuesDerivation()
+    if (KEEP_HOT_FOR_MS != null) {
+      if (!der.isHot) {
+        // derivation not hot, so keep it hot and set up `_keepHotUntapDebounce`
+        if (this._keepHotUntapDebounce != null) {
+          // defensive checks
+          if (process.env.NODE_ENV === 'development') {
+            privateAPI(this)._logger.errorDev(
+              '`sheet.value` keepHot debouncer is set, even though the derivation is not actually hot.',
+            )
+          }
+          // "flush" calls the `untap()` for previous `.keepHot()`.
+          // This is defensive, as this code path is also already an invariant.
+          // We have to flush though to avoid calling keepHot a second time and introducing two or more debounce fns.
+          this._keepHotUntapDebounce.flush()
+        }
+
+        const untap = der.keepHot()
+        // add a debounced function, so we keep this hot for some period of time that this .value is being read
+        this._keepHotUntapDebounce = debounce(() => {
+          untap()
+          this._keepHotUntapDebounce = undefined
+        }, KEEP_HOT_FOR_MS)
+      }
+
+      if (this._keepHotUntapDebounce) {
+        // we enabled this "keep hot" and need to keep refreshing the timer on the debounce
+        // See https://linear.app/theatre/issue/P-217/if-objvalue-is-read-make-sure-its-derivation-remains-hot-for-a-while
+        this._keepHotUntapDebounce()
+      }
+    }
+    return der.getValue()
   }
 
   set initialValue(val: DeepPartialOfSerializableValue<this['value']>) {
