@@ -438,7 +438,7 @@ function transactionSetCubicBezier(
   handles: CubicBezierHandles,
 ): CommitOrDiscard {
   return getStudio().tempTransaction(({stateEditors}) => {
-    const {setHandlesForKeyframe, toggleKeyframeType} =
+    const {setHandlesForKeyframe, setKeyframeType: setKeyframeType} =
       stateEditors.coreByProject.historic.sheetsById.sequence
 
     for (const {
@@ -465,12 +465,12 @@ function transactionSetCubicBezier(
         keyframeId: right.id,
         end: [handles[2], handles[3]],
       })
-      toggleKeyframeType({
+      setKeyframeType({
         projectId,
         sheetId,
         objectKey,
         trackId,
-        keyframeIds: [left.id],
+        keyframeId: left.id,
         keyframeType: 'bezier',
       })
     }
@@ -481,7 +481,7 @@ function transactionSetHold(
   keyframeConnections: Array<KeyframeConnectionWithAddress>,
 ): CommitOrDiscard {
   return getStudio().tempTransaction(({stateEditors}) => {
-    const {toggleKeyframeType} =
+    const {setKeyframeType: setKeyframeType} =
       stateEditors.coreByProject.historic.sheetsById.sequence
 
     for (const {
@@ -491,12 +491,12 @@ function transactionSetHold(
       trackId,
       left,
     } of keyframeConnections) {
-      toggleKeyframeType({
+      setKeyframeType({
         projectId,
         sheetId,
         objectKey,
         trackId,
-        keyframeIds: [left.id],
+        keyframeId: left.id,
         keyframeType: 'hold',
       })
     }

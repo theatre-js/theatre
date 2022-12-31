@@ -697,6 +697,17 @@ namespace stateEditors {
             return _ensureTracksOfObject(p).trackData[p.trackId]
           }
 
+          function _getKeyframeById(
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+              keyframeId: KeyframeId
+            },
+          ): Keyframe | undefined {
+            const track = _getTrack(p)
+            if (!track) return
+            return track.keyframes.find((kf) => kf.id === p.keyframeId)
+          }
+
           /**
            * Sets a keyframe at the exact specified position.
            * Any position snapping should be done by the caller.
@@ -872,24 +883,15 @@ namespace stateEditors {
               end?: [number, number]
             },
           ) {
-            const track = _getTrack(p)
-            if (!track) return
-            track.keyframes = track.keyframes.map((kf) => {
-              if (kf.id === p.keyframeId) {
-                // Use given value or fallback to original value,
-                // allowing the caller to customize exactly which side
-                // of the curve they are editing.
-                return {
-                  ...kf,
-                  handles: [
-                    p.end?.[0] ?? kf.handles[0],
-                    p.end?.[1] ?? kf.handles[1],
-                    p.start?.[0] ?? kf.handles[2],
-                    p.start?.[1] ?? kf.handles[3],
-                  ],
-                }
-              } else return kf
-            })
+            const keyframe = _getKeyframeById(p)
+            if (keyframe) {
+              keyframe.handles = [
+                p.end?.[0] ?? keyframe.handles[0],
+                p.end?.[1] ?? keyframe.handles[1],
+                p.start?.[0] ?? keyframe.handles[2],
+                p.start?.[1] ?? keyframe.handles[3],
+              ]
+            }
           }
 
           export function deleteKeyframes(
@@ -906,29 +908,17 @@ namespace stateEditors {
             )
           }
 
-          // TODO - deprecate
-          export function toggleKeyframeType(
+          export function setKeyframeType(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: SequenceTrackId
-              keyframeIds: KeyframeId[]
-              keyframeType?: KeyframeType
+              keyframeId: KeyframeId
+              keyframeType: KeyframeType
             },
           ) {
-            const track = _getTrack(p)
-            if (!track) return
-
-            const toggledKeyframes = track.keyframes.filter(
-              (kf) => p.keyframeIds.indexOf(kf.id) > -1,
-            )
-
-            toggledKeyframes.forEach((kf: Keyframe) => {
-              if (p.keyframeType !== undefined) {
-                kf.type = p.keyframeType
-              } else {
-                const isHold = kf.type === undefined || kf.type === 'bezier'
-                kf.type = isHold ? 'hold' : 'bezier'
-              }
-            })
+            const kf = _getKeyframeById(p)
+            if (kf) {
+              kf.type = p.keyframeType
+            }
           }
 
           // Future: consider whether a list of "partial" keyframes requiring `id` is possible to accept

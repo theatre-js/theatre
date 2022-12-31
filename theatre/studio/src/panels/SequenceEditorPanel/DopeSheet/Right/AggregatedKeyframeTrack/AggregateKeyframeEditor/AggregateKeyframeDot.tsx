@@ -244,26 +244,6 @@ function useAggregateKeyframeContextMenu(
             }
           },
         },
-        {
-          label: 'Toggle Hold Keyframe',
-          callback: () => {
-            if (selection) {
-              selection.toggle()
-            } else {
-              getStudio().transaction(({stateEditors}) => {
-                for (const kfWithTrack of props.utils.cur.keyframes) {
-                  stateEditors.coreByProject.historic.sheetsById.sequence.toggleKeyframeType(
-                    {
-                      ...kfWithTrack.track.sheetObject.address,
-                      keyframeIds: [kfWithTrack.kf.id],
-                      trackId: kfWithTrack.track.id,
-                    },
-                  )
-                }
-              })
-            }
-          },
-        },
       ]
     },
   })
