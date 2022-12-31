@@ -15,7 +15,8 @@ const SVGPath = styled.path`
 
 type IProps = Parameters<typeof KeyframeEditor>[0]
 
-const noCurve = `M 0 0 L 1 0 L 1 1`
+// for keyframe.type === 'hold'
+const pathForHoldType = `M 0 0 L 1 0 L 1 1`
 
 const Curve: React.VFC<IProps> = (props) => {
   const {index, trackData} = props
@@ -58,7 +59,7 @@ const Curve: React.VFC<IProps> = (props) => {
     <>
       <SVGPath
         ref={nodeRef}
-        d={!cur.type || cur.type === 'bezier' ? pathD : noCurve}
+        d={!cur.type || cur.type === 'bezier' ? pathD : pathForHoldType}
         style={{
           transform,
         }}
