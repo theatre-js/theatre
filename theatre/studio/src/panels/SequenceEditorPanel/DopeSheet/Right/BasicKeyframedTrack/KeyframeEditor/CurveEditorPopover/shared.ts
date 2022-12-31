@@ -85,6 +85,7 @@ export const EASING_PRESETS = [
 
   {label: 'linear', value: '0.5, 0.5, 0.5, 0.5'},
   {label: 'In Out', value: '0.42,0,0.58,1'},
+  {label: 'Hold', value: '0, 0, Infinity, Infinity'},
 
   /* These easings are not being included initially in order to
      simplify the choices */

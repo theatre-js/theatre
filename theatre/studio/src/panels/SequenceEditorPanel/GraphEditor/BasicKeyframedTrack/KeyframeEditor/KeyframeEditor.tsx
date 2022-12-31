@@ -55,8 +55,13 @@ const KeyframeEditor: React.VFC<IKeyframeEditorProps> = (props) => {
       {shouldShowCurve ? (
         <>
           <Curve {...props} />
-          <CurveHandle {...props} which="left" />
-          <CurveHandle {...props} which="right" />
+          {!cur.type ||
+            (cur.type === 'bezier' && (
+              <>
+                <CurveHandle {...props} which="left" />
+                <CurveHandle {...props} which="right" />
+              </>
+            ))}
         </>
       ) : (
         noConnector
