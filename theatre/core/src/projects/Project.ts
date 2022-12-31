@@ -24,9 +24,35 @@ import type {
   ITheatreLoggingConfig,
 } from '@theatre/shared/logger'
 import {_coreLogger} from '@theatre/core/_coreLogger'
+import {createDefaultAssetStorageConfig} from './DefaultAssetStorage'
+
+type ICoreAssetStorage = {
+  /** Returns a URL for the provided asset ID */
+  getAssetUrl: (assetId: string) => string
+}
+
+interface IStudioAssetStorage extends ICoreAssetStorage {
+  /** Creates an asset from the provided blob and returns a promise to its ID */
+  createAsset: (asset: File) => Promise<string | null>
+}
+
+export type IAssetStorageConfig = {
+  /**
+   * An object containing the core asset storage methods.
+   */
+  coreAssetStorage: ICoreAssetStorage
+  /** A function that returns a promise to an object containing asset storage methods to be used by studio. */
+  createStudioAssetStorage: () => Promise<IStudioAssetStorage>
+}
+
+type IAssetConf = {
+  /** The base URL for assets. */
+  baseUrl?: string
+}
 
 export type Conf = Partial<{
   state: OnDiskState
+  assets: IAssetConf
   experiments: ExperimentsConf
 }>
 
@@ -50,13 +76,17 @@ export default class Project {
 
   readonly address: ProjectAddress
 
-  private readonly _readyDeferred: Deferred<undefined>
+  private readonly _studioReadyDeferred: Deferred<undefined>
+  private readonly _defaultAssetStorageReadyDeferred: Deferred<undefined>
+  private readonly _readyPromise: Promise<void>
 
   private _sheetTemplates = new Atom<{
     [sheetId: string]: SheetTemplate | undefined
   }>({})
   sheetTemplatesP = this._sheetTemplates.pointer
   private _studio: Studio | undefined
+  private _defaultAssetStorageConfig: IAssetStorageConfig
+  assetStorage: IStudioAssetStorage
 
   type: 'Theatre_Project' = 'Theatre_Project'
   readonly _logger: ILogger
@@ -87,6 +117,20 @@ export default class Project {
       },
     })
 
+    this._defaultAssetStorageConfig = createDefaultAssetStorageConfig({
+      project: this,
+      baseUrl: config.assets?.baseUrl,
+    })
+    this._defaultAssetStorageReadyDeferred = defer()
+    this.assetStorage = {
+      ...this._defaultAssetStorageConfig.coreAssetStorage,
+
+      // Until the asset storage is ready, we'll throw an error when the user tries to use it
+      createAsset: () => {
+        throw new Error(`Please wait for Project.ready to use assets.`)
+      },
+    }
+
     this._pointerProxies = {
       historic: new PointerProxy(onDiskStateAtom.pointer.historic),
       ahistoric: new PointerProxy(onDiskStateAtom.pointer.ahistoric),
@@ -101,27 +145,37 @@ export default class Project {
 
     projectsSingleton.add(id, this)
 
-    this._readyDeferred = defer()
+    this._studioReadyDeferred = defer()
+
+    this._readyPromise = Promise.all([
+      this._studioReadyDeferred.promise,
+      this._defaultAssetStorageReadyDeferred.promise,
+      // hide the array from the user, i.e. make it Promise<void> instead of Promise<[undefined, undefined]>
+    ]).then(() => {})
 
     if (config.state) {
       setTimeout(() => {
         // The user has provided config.state but in case @theatre/studio is loaded,
         // let's give it one tick to attach itself
         if (!this._studio) {
-          this._readyDeferred.resolve(undefined)
+          this._studioReadyDeferred.resolve(undefined)
+          this._defaultAssetStorageReadyDeferred.resolve(undefined)
           this._logger._trace('ready deferred resolved with no state')
         }
       }, 0)
     } else {
-      setTimeout(() => {
-        if (!this._studio) {
-          if (typeof window === 'undefined') {
-            console.warn(
-              `Argument config.state in Theatre.getProject("${id}", config) is empty. ` +
-                `This is fine on SSR mode in development, but if you're creating a production bundle, make sure to set config.state, ` +
-                `otherwise your project's state will be empty and nothing will animate. Learn more at https://www.theatrejs.com/docs/latest/manual/projects#state`,
-            )
-          } else {
+      if (typeof window === 'undefined') {
+        if (process.env.NODE_ENV === 'production') {
+          console.error(
+            `Argument config.state in Theatre.getProject("${id}", config) is empty. ` +
+              `You can safely ignore this message if you're developing a Next.js/Remix project in development mode. But if you are shipping to your end-users, ` +
+              `then you need to set config.state, ` +
+              `otherwise your project's state will be empty and nothing will animate. Learn more at https://www.theatrejs.com/docs/latest/manual/projects#state`,
+          )
+        }
+      } else {
+        setTimeout(() => {
+          if (!this._studio) {
             throw new Error(
               `Argument config.state in Theatre.getProject("${id}", config) is empty. This is fine ` +
                 `while you are using @theatre/core along with @theatre/studio. But since @theatre/studio ` +
@@ -130,8 +184,8 @@ export default class Project {
                 `the project's state. Learn how to do that at https://www.theatrejs.com/docs/latest/manual/projects#state\n`,
             )
           }
-        }
-      }, 1000)
+        }, 1000)
+      }
     }
   }
 
@@ -163,7 +217,15 @@ export default class Project {
         studio.atomP.ephemeral.coreByProject[this.address.projectId],
       )
 
-      this._readyDeferred.resolve(undefined)
+      // asset storage has to be initialized after the pointers are set
+      this._defaultAssetStorageConfig
+        .createStudioAssetStorage()
+        .then((assetStorage) => {
+          this.assetStorage = assetStorage
+          this._defaultAssetStorageReadyDeferred.resolve(undefined)
+        })
+
+      this._studioReadyDeferred.resolve(undefined)
     })
   }
 
@@ -172,11 +234,14 @@ export default class Project {
   }
 
   get ready() {
-    return this._readyDeferred.promise
+    return this._readyPromise
   }
 
   isReady() {
-    return this._readyDeferred.status === 'resolved'
+    return (
+      this._studioReadyDeferred.status === 'resolved' &&
+      this._defaultAssetStorageReadyDeferred.status === 'resolved'
+    )
   }
 
   getOrCreateSheet(
