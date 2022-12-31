@@ -21,20 +21,85 @@ type IProps = {
 
 const SVGCurveSegment: React.FC<IProps> = (props) => {
   const {easing, isSelected} = props
-
-  if (!easing) return <></>
-
   const curveColor = isSelected ? SELECTED_CURVE_COLOR : CURVE_COLOR
-
-  const leftControlPoint = [easing[0], toVerticalSVGSpace(easing[1])]
-  const rightControlPoint = [easing[2], toVerticalSVGSpace(easing[3])]
-
   // With a padding of 0, this results in a "unit viewbox" i.e. `0 0 1 1`.
   // With padding e.g. VIEWBOX_PADDING=0.1, this results in a viewbox of `-0.1 -0,1 1.2 1.2`,
   // i.e. a viewbox with a top left coordinate of -0.1,-0.1 and a width and height of 1.2,
   // resulting in bottom right coordinate of 1.1,1.1
   const SVG_VIEWBOX_ATTR = `${-VIEWBOX_PADDING} ${-VIEWBOX_PADDING} ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`
 
+  // Bezier SVG
+  if (easing) {
+    const leftControlPoint = [easing[0], toVerticalSVGSpace(easing[1])]
+    const rightControlPoint = [easing[2], toVerticalSVGSpace(easing[3])]
+    return (
+      <svg
+        height="100%"
+        width="100%"
+        viewBox={SVG_VIEWBOX_ATTR}
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Control lines */}
+        <line
+          x1="0"
+          y1="1"
+          x2={leftControlPoint[0]}
+          y2={leftControlPoint[1]}
+          stroke={CONTROL_COLOR}
+          strokeWidth="0.1"
+        />
+        <line
+          x1="1"
+          y1="0"
+          x2={rightControlPoint[0]}
+          y2={rightControlPoint[1]}
+          stroke={CONTROL_COLOR}
+          strokeWidth="0.1"
+        />
+
+        {/* Control point hitzonecircles */}
+        <circle
+          cx={leftControlPoint[0]}
+          cy={leftControlPoint[1]}
+          r={0.1}
+          fill={CONTROL_HITZONE_COLOR}
+        />
+        <circle
+          cx={rightControlPoint[0]}
+          cy={rightControlPoint[1]}
+          r={0.1}
+          fill={CONTROL_HITZONE_COLOR}
+        />
+
+        {/* Control point circles */}
+        <circle
+          cx={leftControlPoint[0]}
+          cy={leftControlPoint[1]}
+          r={SVG_CIRCLE_RADIUS}
+          fill={CONTROL_COLOR}
+        />
+        <circle
+          cx={rightControlPoint[0]}
+          cy={rightControlPoint[1]}
+          r={SVG_CIRCLE_RADIUS}
+          fill={CONTROL_COLOR}
+        />
+
+        {/* Bezier curve */}
+        <path
+          d={`M0 1 C${leftControlPoint[0]} ${leftControlPoint[1]} ${rightControlPoint[0]} 
+        ${rightControlPoint[1]} 1 0`}
+          stroke={curveColor}
+          strokeWidth="0.08"
+        />
+        <circle cx={0} cy={1} r={SVG_CIRCLE_RADIUS} fill={curveColor} />
+        <circle cx={1} cy={0} r={SVG_CIRCLE_RADIUS} fill={curveColor} />
+      </svg>
+    )
+  }
+
+  // "Hold" SVG
   return (
     <svg
       height="100%"
@@ -43,56 +108,19 @@ const SVGCurveSegment: React.FC<IProps> = (props) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Control lines */}
       <line
         x1="0"
         y1="1"
-        x2={leftControlPoint[0]}
-        y2={leftControlPoint[1]}
-        stroke={CONTROL_COLOR}
-        strokeWidth="0.1"
+        x2={1}
+        y2={1}
+        stroke={curveColor}
+        strokeWidth="0.08"
       />
       <line
         x1="1"
         y1="0"
-        x2={rightControlPoint[0]}
-        y2={rightControlPoint[1]}
-        stroke={CONTROL_COLOR}
-        strokeWidth="0.1"
-      />
-
-      {/* Control point hitzonecircles */}
-      <circle
-        cx={leftControlPoint[0]}
-        cy={leftControlPoint[1]}
-        r={0.1}
-        fill={CONTROL_HITZONE_COLOR}
-      />
-      <circle
-        cx={rightControlPoint[0]}
-        cy={rightControlPoint[1]}
-        r={0.1}
-        fill={CONTROL_HITZONE_COLOR}
-      />
-
-      {/* Control point circles */}
-      <circle
-        cx={leftControlPoint[0]}
-        cy={leftControlPoint[1]}
-        r={SVG_CIRCLE_RADIUS}
-        fill={CONTROL_COLOR}
-      />
-      <circle
-        cx={rightControlPoint[0]}
-        cy={rightControlPoint[1]}
-        r={SVG_CIRCLE_RADIUS}
-        fill={CONTROL_COLOR}
-      />
-
-      {/* Bezier curve */}
-      <path
-        d={`M0 1 C${leftControlPoint[0]} ${leftControlPoint[1]} ${rightControlPoint[0]} 
-      ${rightControlPoint[1]} 1 0`}
+        x2={1}
+        y2={1}
         stroke={curveColor}
         strokeWidth="0.08"
       />

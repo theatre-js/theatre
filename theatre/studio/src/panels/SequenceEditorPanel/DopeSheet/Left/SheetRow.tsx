@@ -4,6 +4,7 @@ import React from 'react'
 import LeftSheetObjectRow from './SheetObjectRow'
 import AnyCompositeRow from './AnyCompositeRow'
 import {setCollapsedSheetItem} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/setCollapsedSheetObjectOrCompoundProp'
+import uniqueKeyForAnyObject from '@theatre/shared/utils/uniqueKeyForAnyObject'
 
 const SheetRow: React.VFC<{
   leaf: SequenceEditorTree_Sheet
@@ -23,7 +24,12 @@ const SheetRow: React.VFC<{
       >
         {leaf.children.map((sheetObjectLeaf) => (
           <LeftSheetObjectRow
-            key={'sheetObject-' + sheetObjectLeaf.sheetObject.address.objectKey}
+            key={
+              'sheetObject-' +
+              // we don't use the object's address as the key because if a user calls `sheet.detachObject(key)` and later
+              // calls `sheet.object(key)` with the same key, we want to re-render this row.
+              uniqueKeyForAnyObject(sheetObjectLeaf.sheetObject)
+            }
             leaf={sheetObjectLeaf}
           />
         ))}

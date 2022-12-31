@@ -40,6 +40,9 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
       )
     }
 
+    // TODO: detect if `editable()` is being called in the body of a react component, which is a common
+    // mistake. If it is, throw an error.
+
     return forwardRef(
       (
         {
