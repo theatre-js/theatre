@@ -192,7 +192,7 @@ const states = {
       )
     }
 
-    if (left.type === 'bezier') {
+    if (!left.type || left.type === 'bezier') {
       const solver = new UnitBezier(
         left.handles[2],
         left.handles[3],
@@ -204,10 +204,8 @@ const states = {
         const progression = globalProgressionToLocalProgression(
           progressionD.getValue(),
         )
-        const valueProgression =
-          left.type === 'bezier'
-            ? solver.solveSimple(progression)
-            : Math.floor(progression)
+        const valueProgression = solver.solveSimple(progression)
+
         return {
           left: left.value,
           right: right.value,

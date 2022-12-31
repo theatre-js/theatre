@@ -82,7 +82,8 @@ export type Keyframe = {
   position: number
   handles: [leftX: number, leftY: number, rightX: number, rightY: number]
   connectedRight: boolean
-  type: KeyframeType
+  // defaults to 'bezier' to support project states made with theatre0.5.1 or earlier
+  type?: KeyframeType
 }
 
 type TrackDataCommon<TypeName extends string> = {

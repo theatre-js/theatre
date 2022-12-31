@@ -180,7 +180,7 @@ const CurveSegmentEditor: React.VFC<ICurveSegmentEditorProps> = (props) => {
         fill="url(#dot-background-pattern-2)"
       />
 
-      {left.type === 'bezier' ? (
+      {!left.type || left.type === 'bezier' ? (
         <>
           {/* Line from right end of curve to right handle */}
           <line

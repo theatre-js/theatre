@@ -708,7 +708,7 @@ namespace stateEditors {
               handles?: [number, number, number, number]
               value: T
               snappingFunction: SnappingFunction
-              type: KeyframeType
+              type?: KeyframeType
             },
           ) {
             const position = p.snappingFunction(p.position)
@@ -906,6 +906,7 @@ namespace stateEditors {
             )
           }
 
+          // TODO - deprecate
           export function toggleKeyframeType(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: SequenceTrackId
