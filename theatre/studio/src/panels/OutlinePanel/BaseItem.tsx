@@ -141,7 +141,7 @@ const BaseItem: React.FC<{
         /* @ts-ignore */
         {'--depth': depth}
       }
-      className={collapsed && 'collapsed'}
+      className={collapsed ? 'collapsed' : ''}
     >
       <Header className={selectionStatus} onClick={select ?? noop} data-header>
         <Head_IconContainer>
