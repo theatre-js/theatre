@@ -99,6 +99,7 @@ export class Studio {
     this.address = {studioId: nanoid(10)}
     this.publicApi = new TheatreStudio(this)
 
+    // initialize UI if we're in the browser
     if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
       this.ui = new UIConstructorModule.default(this)
     }
@@ -106,12 +107,15 @@ export class Studio {
     this._attachToIncomingProjects()
     this.paneManager = new PaneManager(this)
 
-    setTimeout(() => {
-      if (!this._initializeFnCalled) {
-        console.error(STUDIO_NOT_INITIALIZED_MESSAGE)
-        this._didWarnAboutNotInitializing = true
-      }
-    }, 100)
+    // check whether studio.initialize() is called, but only if we're in the browser
+    if (typeof window !== 'undefined') {
+      setTimeout(() => {
+        if (!this._initializeFnCalled) {
+          console.error(STUDIO_NOT_INITIALIZED_MESSAGE)
+          this._didWarnAboutNotInitializing = true
+        }
+      }, 100)
+    }
   }
 
   async initialize(opts?: Parameters<IStudio['initialize']>[0]) {

@@ -135,13 +135,15 @@ const GlobalToolbar: React.FC = () => {
   const moreMenuTriggerRef = useRef<HTMLButtonElement>(null)
 
   const showUpdatesBadge = useMemo(() => {
-    if (hasUpdates || window.__IS_VISUAL_REGRESSION_TESTING) {
+    if (window.__IS_VISUAL_REGRESSION_TESTING) {
       if (!showedVisualTestingWarning) {
         showedVisualTestingWarning = true
         console.warn(
           "Visual regression testing enabled, so we're showing the updates badge unconditionally",
         )
       }
+    }
+    if (hasUpdates || window.__IS_VISUAL_REGRESSION_TESTING) {
       return true
     }
 

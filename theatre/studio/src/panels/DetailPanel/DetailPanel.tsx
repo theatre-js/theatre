@@ -118,6 +118,7 @@ const DetailPanel: React.FC<{}> = (props) => {
     const selection = getOutlineSelection()
 
     const obj = selection.find(isSheetObject)
+
     if (obj) {
       return (
         <Container

@@ -514,6 +514,7 @@ function pasteKeyframesToMultipleTracks(
             handles: keyframe.handles,
             value: keyframe.value,
             snappingFunction: sequence.closestGridPosition,
+            type: keyframe.type,
           },
         )
       }
@@ -548,6 +549,7 @@ function pasteKeyframesToSpecificTracks(
           handles: keyframe.handles,
           value: keyframe.value,
           snappingFunction: sequence.closestGridPosition,
+          type: keyframe.type,
         },
       )
     }
