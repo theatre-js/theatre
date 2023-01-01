@@ -179,7 +179,7 @@ const MarkerDotVisible: React.VFC<IMarkerDotVisibleProps> = ({
     marker,
   })
 
-  const [markerText, setMarkerText] = useState(marker.name)
+  const [markerText, setMarkerText] = useState(marker.name ?? '')
 
   const updateMarkerText = (evt: any) => {
     const markerName = evt.target.value
