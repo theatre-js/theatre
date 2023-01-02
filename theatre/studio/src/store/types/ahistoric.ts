@@ -45,6 +45,7 @@ export type StudioAhistoricState = {
     stateByProjectId: StrictRecord<
       ProjectId,
       {
+        collapsedItemsInOutline?: StrictRecord<string, boolean>
         stateBySheetId: StrictRecord<
           SheetId,
           {
