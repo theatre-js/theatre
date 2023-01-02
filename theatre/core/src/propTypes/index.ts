@@ -254,6 +254,7 @@ export const number = (
     nudgeFn?: PropTypeConfig_Number['nudgeFn']
     range?: PropTypeConfig_Number['range']
     nudgeMultiplier?: number
+    step?: number
     label?: string
   } = {},
 ): PropTypeConfig_Number => {
@@ -314,6 +315,15 @@ export const number = (
           )
         }
       }
+      if (Object.prototype.hasOwnProperty.call(opts, 'step')) {
+        if (typeof opts.step !== 'number' || !isFinite(opts.step)) {
+          throw new Error(
+            `opts.step in t.number(defaultValue, opts) must be a finite number. ${userReadableTypeOfValue(
+              opts.step,
+            )} given.`,
+          )
+        }
+      }
     }
   }
 
@@ -327,7 +337,10 @@ export const number = (
     nudgeFn: opts.nudgeFn ?? defaultNumberNudgeFn,
     nudgeMultiplier:
       typeof opts.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
-    interpolate: _interpolateNumber,
+    interpolate: (left: number, right: number, progression: number): number => {
+      const result = _interpolateNumber(left, right, progression)
+      return stepBy(result, opts.step)
+    },
     deserializeAndSanitize: numberDeserializer(opts.range),
   }
 }
@@ -704,6 +717,7 @@ export interface PropTypeConfig_Number
   range?: [min: number, max: number]
   nudgeFn: NumberNudgeFn
   nudgeMultiplier: number
+  step?: number
 }
 
 export type NumberNudgeFn = (p: {
@@ -713,20 +727,28 @@ export type NumberNudgeFn = (p: {
   config: PropTypeConfig_Number
 }) => number
 
+const stepBy = (value: number, step?: number): number => {
+  if (step !== undefined && value % step !== 0) {
+    return Math.round(value / step) * step
+  }
+  return value
+}
+
 const defaultNumberNudgeFn: NumberNudgeFn = ({
   config,
   deltaX,
   deltaFraction,
   magnitude,
 }) => {
-  const {range} = config
+  const {range, step} = config
   if (range && !range.includes(Infinity) && !range.includes(-Infinity)) {
-    return (
+    const result =
       deltaFraction * (range[1] - range[0]) * magnitude * config.nudgeMultiplier
-    )
+    return stepBy(result, step)
   }
 
-  return deltaX * magnitude * config.nudgeMultiplier
+  const result = deltaX * magnitude * config.nudgeMultiplier
+  return stepBy(result, step)
 }
 
 export interface PropTypeConfig_Boolean
