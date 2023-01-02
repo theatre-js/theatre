@@ -7,6 +7,7 @@ import {usePrism} from '@theatre/react'
 import {getOutlineSelection} from '@theatre/studio/selectors'
 import {val} from '@theatre/dataverse'
 import styled from 'styled-components'
+import {useCollapseStateInOutlinePanel} from '@theatre/studio/panels/OutlinePanel/outlinePanelUtils'
 
 const ConflictNotice = styled.div`
   color: #ff6363;
@@ -38,10 +39,14 @@ const ProjectListItem: React.FC<{
     })
   }, [project])
 
+  const {collapsed, setCollapsed} = useCollapseStateInOutlinePanel(project)
+
   return (
     <BaseItem
       depth={depth}
       label={project.address.projectId}
+      setIsCollapsed={setCollapsed}
+      collapsed={collapsed}
       labelDecoration={
         hasConflict ? <ConflictNotice>Has Conflicts</ConflictNotice> : null
       }

@@ -1,5 +1,5 @@
 import type {VoidFn} from '@theatre/shared/utils/types'
-import React, {useState} from 'react'
+import React from 'react'
 import styled, {css} from 'styled-components'
 import noop from '@theatre/shared/utils/noop'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
@@ -129,11 +129,19 @@ const BaseItem: React.FC<{
   depth: number
   selectionStatus: SelectionStatus
   labelDecoration?: React.ReactNode
-}> = ({label, children, depth, select, selectionStatus, labelDecoration}) => {
+  collapsed?: boolean
+  setIsCollapsed?: (v: boolean) => void
+}> = ({
+  label,
+  children,
+  depth,
+  select,
+  selectionStatus,
+  labelDecoration,
+  collapsed = false,
+  setIsCollapsed,
+}) => {
   const canContainChildren = children !== undefined
-
-  //TODO: store this in the studio data
-  const [collapsed, setIsCollapsed] = useState(false)
 
   return (
     <Container
@@ -149,7 +157,7 @@ const BaseItem: React.FC<{
             <Head_Icon_WithDescendants
               onClick={(evt) => {
                 evt.stopPropagation()
-                setIsCollapsed((v) => !v)
+                setIsCollapsed?.(!collapsed)
                 select?.()
               }}
             >
