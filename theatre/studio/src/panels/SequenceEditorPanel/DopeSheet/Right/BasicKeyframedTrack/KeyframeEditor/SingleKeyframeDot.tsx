@@ -38,7 +38,7 @@ const dotTheme = {
   selectedAndInlineEditorOpenColor: '#CBEBEA',
 }
 
-const selectBacgroundForDiamond = ({
+const selectBackgroundForDiamond = ({
   isSelected,
   isInlineEditorPopoverOpen,
 }: IDiamond) => {
@@ -64,7 +64,7 @@ const Diamond = styled.div<IDiamond>`
   position: absolute;
   ${absoluteDims(DOT_SIZE_PX)}
 
-  background: ${(props) => selectBacgroundForDiamond(props)};
+  background: ${(props) => selectBackgroundForDiamond(props)};
   transform: rotateZ(45deg);
 
   ${(props) =>
@@ -78,7 +78,7 @@ const Square = styled.div<IDiamond>`
   position: absolute;
   ${absoluteDims(DOT_SIZE_PX * 1.5)}
 
-  background: ${(props) => selectBacgroundForDiamond(props)};
+  background: ${(props) => selectBackgroundForDiamond(props)};
 
   ${(props) =>
     props.flag === PresenceFlag.Primary ? 'outline: 2px solid white;' : ''};
