@@ -326,7 +326,9 @@ export const number = (
     label: opts.label,
     nudgeFn: opts.nudgeFn ?? defaultNumberNudgeFn,
     nudgeMultiplier:
-      typeof opts.nudgeMultiplier === 'number' ? opts.nudgeMultiplier : 1,
+      typeof opts.nudgeMultiplier === 'number'
+        ? opts.nudgeMultiplier
+        : undefined,
     interpolate: _interpolateNumber,
     deserializeAndSanitize: numberDeserializer(opts.range),
   }
@@ -703,7 +705,10 @@ export interface PropTypeConfig_Number
   extends ISimplePropType<'number', number> {
   range?: [min: number, max: number]
   nudgeFn: NumberNudgeFn
-  nudgeMultiplier: number
+  /**
+   * See {@link defaultNumberNudgeFn} to see how `nudgeMultiplier` is treated.
+   */
+  nudgeMultiplier: number | undefined
 }
 
 export type NumberNudgeFn = (p: {
@@ -713,6 +718,16 @@ export type NumberNudgeFn = (p: {
   config: PropTypeConfig_Number
 }) => number
 
+/**
+ * This is the default nudging behavior. It'll be used if `config.nudgeFn` is empty in {@link number} `types.number(defaultValue, config)`.
+ *
+ * Its behavior is as follows:
+ * - If `config.nudgeMultiplier` is set, then it'll be used as the unit of incrementing/decrementing the prop's value.
+ *   For example, if `types.number(0, {nudgeMultiplier: 0.5})`, then nudging the number will make its value go up/down by 0.5, so: 0, 0.5, 1.0, -0.5, ...
+ *   Note that if the prop's value is, say, 0.1, then nudging it will still make its value go up/down by 0.5, so: 0.6, 1.1, -0.6, ...
+ * - Otherwise, the amount of nudge will be determined based on whether the number has a range.
+ *
+ */
 const defaultNumberNudgeFn: NumberNudgeFn = ({
   config,
   deltaX,
@@ -720,13 +735,18 @@ const defaultNumberNudgeFn: NumberNudgeFn = ({
   magnitude,
 }) => {
   const {range} = config
-  if (range && !range.includes(Infinity) && !range.includes(-Infinity)) {
-    return (
-      deltaFraction * (range[1] - range[0]) * magnitude * config.nudgeMultiplier
-    )
+  console.log(deltaX, deltaFraction, config)
+
+  if (
+    !config.nudgeMultiplier &&
+    range &&
+    !range.includes(Infinity) &&
+    !range.includes(-Infinity)
+  ) {
+    return deltaFraction * (range[1] - range[0]) * magnitude
   }
 
-  return deltaX * magnitude * config.nudgeMultiplier
+  return deltaX * magnitude * (config.nudgeMultiplier ?? 1)
 }
 
 export interface PropTypeConfig_Boolean
