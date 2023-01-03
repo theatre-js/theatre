@@ -26,6 +26,7 @@ import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground
 import NumberPropEditor from '@theatre/studio/propEditors/simpleEditors/NumberPropEditor'
 import type {IDetailSimplePropEditorProps} from './DetailSimplePropEditor'
 import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
+import {EllipsisFill} from '@theatre/studio/uiComponents/icons'
 
 const Container = styled.div`
   --step: 15px;
@@ -56,6 +57,7 @@ const PropName = deriver(styled.div<{isHighlighted: PropHighlighted}>`
   height: 100%;
   display: flex;
   align-items: center;
+  gap: 4px;
   user-select: none;
   &:hover {
     color: white;
@@ -186,7 +188,16 @@ function DetailCompoundPropEditor<
               setIsCollapsed((c) => !c)
             }}
           >
-            {propName || 'Props'}
+            <span>{propName || 'Props'}</span>
+            {!isVectorProp(propConfig) && isCollapsed && (
+              <EllipsisFill
+                width={24}
+                height={24}
+                style={{
+                  transform: 'translateY(2px)',
+                }}
+              />
+            )}
           </PropName>
         </Padding>
         {isVectorProp(propConfig) && isCollapsed && (
