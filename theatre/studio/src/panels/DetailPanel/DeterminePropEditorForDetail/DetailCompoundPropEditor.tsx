@@ -4,11 +4,11 @@ import type {
 } from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type {$FixMe} from '@theatre/shared/utils/types'
-import {getPointerParts} from '@theatre/dataverse'
+import {Box, getPointerParts} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
-import React, {useMemo, useState} from 'react'
+import React, {useLayoutEffect, useMemo} from 'react'
 import styled from 'styled-components'
 import {rowIndentationFormulaCSS} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/rowIndentationFormulaCSS'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
@@ -27,6 +27,8 @@ import NumberPropEditor from '@theatre/studio/propEditors/simpleEditors/NumberPr
 import type {IDetailSimplePropEditorProps} from './DetailSimplePropEditor'
 import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
 import {EllipsisFill} from '@theatre/studio/uiComponents/icons'
+import {usePrism} from '@theatre/react'
+import {val} from '@theatre/dataverse'
 
 const Container = styled.div`
   --step: 15px;
@@ -169,7 +171,23 @@ function DetailCompoundPropEditor<
     [pointerToProp],
   )
 
-  const [isCollapsed, setIsCollapsed] = useState(isVectorProp(propConfig))
+  const globalPointerPath = `${obj.address.projectId},${obj.address.sheetId},${
+    obj.address.sheetInstanceId
+  },${obj.address.objectKey},${getPointerParts(pointerToProp).path.join()}`
+
+  useLayoutEffect(() => {
+    if (!collapsedMap.has(globalPointerPath)) {
+      collapsedMap.set(globalPointerPath, new Box(isVectorProp(propConfig)))
+    }
+  }, [])
+
+  const box = collapsedMap.get(globalPointerPath)
+
+  const isCollapsed = usePrism(() => {
+    const box = collapsedMap.get(globalPointerPath)
+
+    return box ? val(box.derivation) : isVectorProp(propConfig)
+  }, [box])
 
   return (
     <Container>
@@ -185,7 +203,7 @@ function DetailCompoundPropEditor<
             isHighlighted={isPropHighlightedD}
             ref={propNameContainerRef}
             onClick={() => {
-              setIsCollapsed((c) => !c)
+              box?.set(!box.get())
             }}
           >
             <span>{propName || 'Props'}</span>
@@ -244,3 +262,5 @@ function DetailCompoundPropEditor<
 }
 
 export default React.memo(DetailCompoundPropEditor)
+
+const collapsedMap = new Map<string, Box<boolean>>()
