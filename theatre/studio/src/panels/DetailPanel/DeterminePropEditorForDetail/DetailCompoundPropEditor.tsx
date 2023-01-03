@@ -1,11 +1,14 @@
-import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
+import type {
+  PropTypeConfig_Compound,
+  PropTypeConfig_Number,
+} from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import {getPointerParts} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
-import React, {useMemo} from 'react'
+import React, {useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {rowIndentationFormulaCSS} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/rowIndentationFormulaCSS'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
@@ -20,11 +23,15 @@ import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/w
 import {whatPropIsHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
 import {deriver} from '@theatre/studio/utils/derive-utils'
 import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground'
+import NumberPropEditor from '@theatre/studio/propEditors/simpleEditors/NumberPropEditor'
+import type {IDetailSimplePropEditorProps} from './DetailSimplePropEditor'
+import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
 
 const Container = styled.div`
   --step: 15px;
   --left-pad: 15px;
   ${pointerEventsAutoInNormalMode};
+  --right-width: 60%;
 `
 
 const Header = deriver(styled.div<{isHighlighted: PropHighlighted}>`
@@ -40,6 +47,7 @@ const Padding = styled.div`
   padding-left: ${rowIndentationFormulaCSS};
   display: flex;
   align-items: center;
+  width: calc(100% - var(--right-width));
 `
 
 const PropName = deriver(styled.div<{isHighlighted: PropHighlighted}>`
@@ -61,6 +69,51 @@ const color = transparentize(0.05, `#282b2f`)
 const SubProps = styled.div<{depth: number; lastSubIsComposite: boolean}>`
   /* background: ${({depth}) => darken(depth * 0.03, color)}; */
   /* padding: ${(props) => (props.lastSubIsComposite ? 0 : '4px')} 0; */
+`
+
+const isVectorProp = (propConfig: PropTypeConfig_Compound<any>) => {
+  const props = Object.entries(propConfig.props)
+
+  return (
+    props.length <= 3 &&
+    props.every(
+      ([name, conf]) =>
+        conf.type === 'number' && ['x', 'y', 'z'].includes(name),
+    )
+  )
+}
+
+function VectorComponentEditor<TPropTypeConfig extends PropTypeConfig_Number>({
+  propConfig,
+  pointerToProp,
+  obj,
+  SimpleEditorComponent: EditorComponent,
+}: IDetailSimplePropEditorProps<TPropTypeConfig>) {
+  const editingTools = useEditingToolsForSimplePropInDetailsPanel(
+    pointerToProp,
+    obj,
+    propConfig,
+  )
+
+  return (
+    <NumberPropEditor
+      editingTools={editingTools}
+      propConfig={propConfig}
+      value={editingTools.value}
+    />
+  )
+}
+
+const InputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  padding: 0 8px 0 2px;
+  box-sizing: border-box;
+  height: 100%;
+  width: var(--right-width);
+  flex-shrink: 0;
+  flex-grow: 0;
 `
 
 export type ICompoundPropDetailEditorProps<
@@ -114,6 +167,8 @@ function DetailCompoundPropEditor<
     [pointerToProp],
   )
 
+  const [isCollapsed, setIsCollapsed] = useState(true)
+
   return (
     <Container>
       {contextMenu}
@@ -127,32 +182,54 @@ function DetailCompoundPropEditor<
           <PropName
             isHighlighted={isPropHighlightedD}
             ref={propNameContainerRef}
+            onClick={() => {
+              if (isVectorProp(propConfig)) {
+                setIsCollapsed((c) => !c)
+              }
+            }}
           >
             {propName || 'Props'}
           </PropName>
         </Padding>
+        {isVectorProp(propConfig) && isCollapsed && (
+          <InputContainer>
+            {[...allSubs].map(([subPropKey, subPropConfig]) => {
+              return (
+                <VectorComponentEditor
+                  key={'prop-' + subPropKey}
+                  // @ts-ignore
+                  propConfig={subPropConfig}
+                  pointerToProp={pointerToProp[subPropKey] as Pointer<$FixMe>}
+                  obj={obj}
+                />
+              )
+            })}
+          </InputContainer>
+        )}
       </Header>
 
-      <SubProps
-        // @ts-ignore
-        style={{'--depth': visualIndentation}}
-        depth={visualIndentation}
-        lastSubIsComposite={lastSubPropIsComposite}
-      >
-        {[...nonCompositeSubs, ...compositeSubs].map(
-          ([subPropKey, subPropConfig]) => {
-            return (
-              <DeterminePropEditorForDetail
-                key={'prop-' + subPropKey}
-                propConfig={subPropConfig}
-                pointerToProp={pointerToProp[subPropKey] as Pointer<$FixMe>}
-                obj={obj}
-                visualIndentation={visualIndentation + 1}
-              />
-            )
-          },
-        )}
-      </SubProps>
+      {(!isVectorProp(propConfig) || !isCollapsed) && (
+        <SubProps
+          // @ts-ignore
+          style={{'--depth': visualIndentation}}
+          depth={visualIndentation}
+          lastSubIsComposite={lastSubPropIsComposite}
+        >
+          {[...nonCompositeSubs, ...compositeSubs].map(
+            ([subPropKey, subPropConfig]) => {
+              return (
+                <DeterminePropEditorForDetail
+                  key={'prop-' + subPropKey}
+                  propConfig={subPropConfig}
+                  pointerToProp={pointerToProp[subPropKey] as Pointer<$FixMe>}
+                  obj={obj}
+                  visualIndentation={visualIndentation + 1}
+                />
+              )
+            },
+          )}
+        </SubProps>
+      )}
     </Container>
   )
 }
