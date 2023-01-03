@@ -50,6 +50,7 @@ type IAssetConf = {
 export type Conf = Partial<{
   state: OnDiskState
   assets: IAssetConf
+  assets: IAssetConf
   experiments: ExperimentsConf
 }>
 
@@ -156,15 +157,18 @@ export default class Project {
         }
       }, 0)
     } else {
-      setTimeout(() => {
-        if (!this._studio) {
-          if (typeof window === 'undefined') {
-            console.warn(
-              `Argument config.state in Theatre.getProject("${id}", config) is empty. ` +
-                `This is fine on SSR mode in development, but if you're creating a production bundle, make sure to set config.state, ` +
-                `otherwise your project's state will be empty and nothing will animate. Learn more at https://www.theatrejs.com/docs/latest/manual/projects#state`,
-            )
-          } else {
+      if (typeof window === 'undefined') {
+        if (process.env.NODE_ENV === 'production') {
+          console.error(
+            `Argument config.state in Theatre.getProject("${id}", config) is empty. ` +
+              `You can safely ignore this message if you're developing a Next.js/Remix project in development mode. But if you are shipping to your end-users, ` +
+              `then you need to set config.state, ` +
+              `otherwise your project's state will be empty and nothing will animate. Learn more at https://www.theatrejs.com/docs/latest/manual/projects#state`,
+          )
+        }
+      } else {
+        setTimeout(() => {
+          if (!this._studio) {
             throw new Error(
               `Argument config.state in Theatre.getProject("${id}", config) is empty. This is fine ` +
                 `while you are using @theatre/core along with @theatre/studio. But since @theatre/studio ` +
@@ -173,8 +177,8 @@ export default class Project {
                 `the project's state. Learn how to do that at https://www.theatrejs.com/docs/latest/manual/projects#state\n`,
             )
           }
-        }
-      }, 1000)
+        }, 1000)
+      }
     }
   }
 

@@ -1,6 +1,6 @@
 import {clamp, isInteger, round} from 'lodash-es'
-import type {MutableRefObject} from 'react';
-import { useEffect} from 'react'
+import type {MutableRefObject} from 'react'
+import {useEffect} from 'react'
 import {useState} from 'react'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
@@ -232,9 +232,12 @@ const BasicNumberInput: React.FC<{
       bodyCursorBeforeDrag.current = document.body.style.cursor
 
       return {
-        // note: we use mx because we need to constrain the `valueDuringDragging`
-        // and dx will keep accumulating past any constraints
         onDrag(_dx: number, _dy: number, e: MouseEvent, mx: number) {
+          // We use `mx` here because it allows us to offer better UX when dragging
+          // a value beyond its range. If we were to use `_dx`, and the number had a range,
+          // and the user nudged the number beyond its range, they would have to un-nudge all
+          // the way back until the number's value is within its range. But with `mx`,
+          // as soon as they reverse their mouse drag, the number will jump back to its range.
           const deltaX = e.altKey ? mx / 10 : mx
           const newValue =
             valueDuringDragging +

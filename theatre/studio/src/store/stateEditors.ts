@@ -2,6 +2,7 @@ import type {
   BasicKeyframedTrack,
   HistoricPositionalSequence,
   Keyframe,
+  KeyframeType,
   SheetState_Historic,
 } from '@theatre/core/projects/store/types/SheetState_Historic'
 import type {Drafts} from '@theatre/studio/StudioStore/StudioStore'
@@ -454,6 +455,7 @@ namespace stateEditors {
           }
         }
       }
+
       export namespace projects {
         export namespace stateByProjectId {
           export function _ensure(p: ProjectAddress) {
@@ -465,6 +467,33 @@ namespace stateEditors {
             }
 
             return s.projects.stateByProjectId[p.projectId]!
+          }
+
+          export namespace collapsedItemsInOutline {
+            export function _ensure(p: ProjectAddress) {
+              const projectState =
+                stateEditors.studio.ahistoric.projects.stateByProjectId._ensure(
+                  p,
+                )
+              if (!projectState.collapsedItemsInOutline) {
+                projectState.collapsedItemsInOutline = {}
+              }
+              return projectState.collapsedItemsInOutline!
+            }
+            export function set(
+              p: ProjectAddress & {isCollapsed: boolean; itemKey: string},
+            ) {
+              const collapsedItemsInOutline =
+                stateEditors.studio.ahistoric.projects.stateByProjectId.collapsedItemsInOutline._ensure(
+                  p,
+                )
+
+              if (p.isCollapsed) {
+                collapsedItemsInOutline[p.itemKey] = true
+              } else {
+                delete collapsedItemsInOutline[p.itemKey]
+              }
+            }
           }
 
           export namespace stateBySheetId {
@@ -696,6 +725,17 @@ namespace stateEditors {
             return _ensureTracksOfObject(p).trackData[p.trackId]
           }
 
+          function _getKeyframeById(
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+              keyframeId: KeyframeId
+            },
+          ): Keyframe | undefined {
+            const track = _getTrack(p)
+            if (!track) return
+            return track.keyframes.find((kf) => kf.id === p.keyframeId)
+          }
+
           /**
            * Sets a keyframe at the exact specified position.
            * Any position snapping should be done by the caller.
@@ -707,6 +747,7 @@ namespace stateEditors {
               handles?: [number, number, number, number]
               value: T
               snappingFunction: SnappingFunction
+              type?: KeyframeType
             },
           ) {
             const position = p.snappingFunction(p.position)
@@ -734,6 +775,7 @@ namespace stateEditors {
                 position,
                 connectedRight: true,
                 handles: p.handles || [0.5, 1, 0.5, 0],
+                type: p.type || 'bezier',
                 value: p.value,
               })
               return
@@ -744,6 +786,7 @@ namespace stateEditors {
               position,
               connectedRight: leftKeyframe.connectedRight,
               handles: p.handles || [0.5, 1, 0.5, 0],
+              type: p.type || 'bezier',
               value: p.value,
             })
           }
@@ -868,24 +911,15 @@ namespace stateEditors {
               end?: [number, number]
             },
           ) {
-            const track = _getTrack(p)
-            if (!track) return
-            track.keyframes = track.keyframes.map((kf) => {
-              if (kf.id === p.keyframeId) {
-                // Use given value or fallback to original value,
-                // allowing the caller to customize exactly which side
-                // of the curve they are editing.
-                return {
-                  ...kf,
-                  handles: [
-                    p.end?.[0] ?? kf.handles[0],
-                    p.end?.[1] ?? kf.handles[1],
-                    p.start?.[0] ?? kf.handles[2],
-                    p.start?.[1] ?? kf.handles[3],
-                  ],
-                }
-              } else return kf
-            })
+            const keyframe = _getKeyframeById(p)
+            if (keyframe) {
+              keyframe.handles = [
+                p.end?.[0] ?? keyframe.handles[0],
+                p.end?.[1] ?? keyframe.handles[1],
+                p.start?.[0] ?? keyframe.handles[2],
+                p.start?.[1] ?? keyframe.handles[3],
+              ]
+            }
           }
 
           export function deleteKeyframes(
@@ -900,6 +934,19 @@ namespace stateEditors {
             track.keyframes = track.keyframes.filter(
               (kf) => p.keyframeIds.indexOf(kf.id) === -1,
             )
+          }
+
+          export function setKeyframeType(
+            p: WithoutSheetInstance<SheetObjectAddress> & {
+              trackId: SequenceTrackId
+              keyframeId: KeyframeId
+              keyframeType: KeyframeType
+            },
+          ) {
+            const kf = _getKeyframeById(p)
+            if (kf) {
+              kf.type = p.keyframeType
+            }
           }
 
           // Future: consider whether a list of "partial" keyframes requiring `id` is possible to accept
