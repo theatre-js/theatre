@@ -167,7 +167,7 @@ function DetailCompoundPropEditor<
     [pointerToProp],
   )
 
-  const [isCollapsed, setIsCollapsed] = useState(true)
+  const [isCollapsed, setIsCollapsed] = useState(isVectorProp(propConfig))
 
   return (
     <Container>
@@ -183,9 +183,7 @@ function DetailCompoundPropEditor<
             isHighlighted={isPropHighlightedD}
             ref={propNameContainerRef}
             onClick={() => {
-              if (isVectorProp(propConfig)) {
-                setIsCollapsed((c) => !c)
-              }
+              setIsCollapsed((c) => !c)
             }}
           >
             {propName || 'Props'}
@@ -208,7 +206,7 @@ function DetailCompoundPropEditor<
         )}
       </Header>
 
-      {(!isVectorProp(propConfig) || !isCollapsed) && (
+      {!isCollapsed && (
         <SubProps
           // @ts-ignore
           style={{'--depth': visualIndentation}}
