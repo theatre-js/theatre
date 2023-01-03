@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import ObjectsList from '@theatre/studio/panels/OutlinePanel/ObjectsList/ObjectsList'
 import BaseItem from '@theatre/studio/panels/OutlinePanel/BaseItem'
 import type Sheet from '@theatre/core/sheets/Sheet'
+import {useCollapseStateInOutlinePanel} from '@theatre/studio/panels/OutlinePanel/outlinePanelUtils'
 
 const Head = styled.div`
   display: flex;
@@ -21,6 +22,8 @@ export const SheetInstanceItem: React.FC<{
   depth: number
   sheet: Sheet
 }> = ({sheet, depth}) => {
+  const {collapsed, setCollapsed} = useCollapseStateInOutlinePanel(sheet)
+
   const setSelectedSheet = useCallback(() => {
     getStudio()!.transaction(({stateEditors}) => {
       stateEditors.studio.historic.panels.outline.selection.set([sheet])
@@ -34,6 +37,8 @@ export const SheetInstanceItem: React.FC<{
       <BaseItem
         depth={depth}
         select={setSelectedSheet}
+        setIsCollapsed={setCollapsed}
+        collapsed={collapsed}
         selectionStatus={
           selection.some((s) => s === sheet)
             ? 'selected'
@@ -58,5 +63,5 @@ export const SheetInstanceItem: React.FC<{
         </Body>
       </BaseItem>
     )
-  }, [depth])
+  }, [depth, collapsed])
 }

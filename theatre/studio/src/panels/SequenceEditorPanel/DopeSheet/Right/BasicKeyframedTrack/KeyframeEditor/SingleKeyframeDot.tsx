@@ -38,7 +38,7 @@ const dotTheme = {
   selectedAndInlineEditorOpenColor: '#CBEBEA',
 }
 
-const selectBacgroundForDiamond = ({
+const selectBackgroundForDiamond = ({
   isSelected,
   isInlineEditorPopoverOpen,
 }: IDiamond) => {
@@ -64,8 +64,21 @@ const Diamond = styled.div<IDiamond>`
   position: absolute;
   ${absoluteDims(DOT_SIZE_PX)}
 
-  background: ${(props) => selectBacgroundForDiamond(props)};
+  background: ${(props) => selectBackgroundForDiamond(props)};
   transform: rotateZ(45deg);
+
+  ${(props) =>
+    props.flag === PresenceFlag.Primary ? 'outline: 2px solid white;' : ''};
+
+  z-index: 1;
+  pointer-events: none;
+`
+
+const Square = styled.div<IDiamond>`
+  position: absolute;
+  ${absoluteDims(DOT_SIZE_PX * 1.5)}
+
+  background: ${(props) => selectBackgroundForDiamond(props)};
 
   ${(props) =>
     props.flag === PresenceFlag.Primary ? 'outline: 2px solid white;' : ''};
@@ -121,6 +134,8 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
     },
   })
 
+  const showDiamond = !props.keyframe.type || props.keyframe.type === 'bezier'
+
   return (
     <>
       <HitZone
@@ -128,11 +143,19 @@ const SingleKeyframeDot: React.VFC<ISingleKeyframeDotProps> = (props) => {
         isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
         {...presence.attrs}
       />
-      <Diamond
-        isSelected={!!props.selection}
-        isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
-        flag={presence.flag}
-      />
+      {showDiamond ? (
+        <Diamond
+          isSelected={!!props.selection}
+          isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+          flag={presence.flag}
+        />
+      ) : (
+        <Square
+          isSelected={!!props.selection}
+          isInlineEditorPopoverOpen={isInlineEditorPopoverOpen}
+          flag={presence.flag}
+        />
+      )}
       {inlineEditorPopover}
       {contextMenu}
     </>
