@@ -109,7 +109,7 @@ export default class SheetObjectTemplate {
   }
 
   registerAction(name: string, action: SheetObjectAction) {
-    this._actions.setIn([name], action)
+    this._actions.setByPointer((p) => p[name], action)
   }
 
   /**
