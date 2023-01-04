@@ -1,3 +1,3 @@
-import {clean} from './utils.mjs'
+import {clean} from './scripts.mjs'
 
 await clean()

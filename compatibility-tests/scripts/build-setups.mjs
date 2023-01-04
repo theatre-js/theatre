@@ -3,10 +3,10 @@
  */
 
 import path from 'path'
-import {colorize, getCompatibilityTestSetups} from './utils.mjs'
+import {cd, fs, $} from 'zx'
+import {getCompatibilityTestSetups} from './utils.mjs'
 
-const root = path.resolve(__dirname, '../..')
-const absPathOfCompatibilityTestSetups = getCompatibilityTestSetups(root)
+const absPathOfCompatibilityTestSetups = getCompatibilityTestSetups()
 
 const setupsWithErros = []
 
@@ -15,7 +15,7 @@ const setupsWithErros = []
   for (const setupDir of absPathOfCompatibilityTestSetups) {
     try {
       cd(setupDir)
-      const pathToSetup = path.join(absPathOfCompatibilityTestSetups, setupDir)
+      const pathToSetup = path.join(setupDir, setupDir)
       fs.removeSync(path.join(pathToSetup, 'node_modules'))
       fs.removeSync(path.join(pathToSetup, 'package-lock.json'))
       fs.removeSync(path.join(pathToSetup, 'yarn.lock'))
@@ -31,7 +31,7 @@ const setupsWithErros = []
   // and print all of them to the console.
   if (setupsWithErros.length !== 0) {
     throw new Error(
-      `The following setups had problems when their dependencies were being installed:\n${colorize.red(
+      `The following setups had problems when their dependencies were being installed:\n${(
         setupsWithErros.join('\n'),
       )}`,
     )
