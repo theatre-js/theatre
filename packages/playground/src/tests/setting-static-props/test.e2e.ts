@@ -61,6 +61,7 @@ test.describe('setting-static-props', () => {
     await expect(secondInput).toHaveAttribute('value', '2')
 
     // Our first visual regression test
+    // @ts-ignore - probably percy uses a different version of playwright
     await percySnapshot(page, test.info().titlePath.join('/') + '/After redo')
   })
 })

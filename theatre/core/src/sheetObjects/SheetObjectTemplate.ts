@@ -1,7 +1,11 @@
 import type Project from '@theatre/core/projects/Project'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
-import type {SheetObjectPropTypeConfig} from '@theatre/core/sheets/TheatreSheet'
+import type {
+  SheetObjectAction,
+  SheetObjectActionsConfig,
+  SheetObjectPropTypeConfig,
+} from '@theatre/core/sheets/TheatreSheet'
 import {emptyArray} from '@theatre/shared/utils'
 import type {
   PathToProp,
@@ -58,6 +62,7 @@ export default class SheetObjectTemplate {
   readonly address: WithoutSheetInstance<SheetObjectAddress>
   readonly type: 'Theatre_SheetObjectTemplate' = 'Theatre_SheetObjectTemplate'
   protected _config: Atom<SheetObjectPropTypeConfig>
+  readonly _actions: Atom<SheetObjectActionsConfig>
   readonly _cache = new SimpleCache()
   readonly project: Project
 
@@ -69,14 +74,24 @@ export default class SheetObjectTemplate {
     return this._config.pointer
   }
 
+  get staticActions() {
+    return this._actions.getState()
+  }
+
+  get actionsPointer() {
+    return this._actions.pointer
+  }
+
   constructor(
     readonly sheetTemplate: SheetTemplate,
     objectKey: ObjectAddressKey,
     nativeObject: unknown,
     config: SheetObjectPropTypeConfig,
+    actions: SheetObjectActionsConfig,
   ) {
     this.address = {...sheetTemplate.address, objectKey}
     this._config = new Atom(config)
+    this._actions = new Atom(actions)
     this.project = sheetTemplate.project
   }
 
@@ -91,6 +106,10 @@ export default class SheetObjectTemplate {
 
   reconfigure(config: SheetObjectPropTypeConfig) {
     this._config.setState(config)
+  }
+
+  registerAction(name: string, action: SheetObjectAction) {
+    this._actions.setIn([name], action)
   }
 
   /**
