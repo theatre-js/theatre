@@ -6,6 +6,36 @@ import DeterminePropEditorForDetail from './DeterminePropEditorForDetail'
 import {useVal} from '@theatre/react'
 import uniqueKeyForAnyObject from '@theatre/shared/utils/uniqueKeyForAnyObject'
 import getStudio from '@theatre/studio/getStudio'
+import styled from 'styled-components'
+
+const ActionButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+`
+
+const ActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  border-radius: 2px;
+
+  color: #a8a8a9;
+  background: rgba(255, 255, 255, 0.1);
+
+  border: none;
+  height: 28px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  &:active {
+    background: rgba(255, 255, 255, 0.2);
+  }
+`
 
 const ObjectDetails: React.FC<{
   /** TODO: add support for multiple objects (it would show their common props) */
@@ -28,26 +58,21 @@ const ObjectDetails: React.FC<{
         propConfig={config}
         visualIndentation={1}
       />
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      <ActionButtonContainer>
         {actions &&
           Object.entries(actions).map(([actionName, action]) => {
             return (
-              <button
+              <ActionButton
                 key={actionName}
                 onClick={() => {
                   action(obj.publicApi, getStudio().publicApi)
                 }}
               >
                 {actionName}
-              </button>
+              </ActionButton>
             )
           })}
-      </div>
+      </ActionButtonContainer>
     </>
   )
 }
