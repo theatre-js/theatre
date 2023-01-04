@@ -1,7 +1,10 @@
 import type Project from '@theatre/core/projects/Project'
 import Sequence from '@theatre/core/sequences/Sequence'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import type {SheetObjectPropTypeConfig} from '@theatre/core/sheets/TheatreSheet'
+import type {
+  SheetObjectActionsConfig,
+  SheetObjectPropTypeConfig,
+} from '@theatre/core/sheets/TheatreSheet'
 import TheatreSheet from '@theatre/core/sheets/TheatreSheet'
 import type {SheetAddress} from '@theatre/shared/utils/addresses'
 import {Atom, valueDerivation} from '@theatre/dataverse'
@@ -55,11 +58,13 @@ export default class Sheet {
     objectKey: ObjectAddressKey,
     nativeObject: ObjectNativeObject,
     config: SheetObjectPropTypeConfig,
+    actions: SheetObjectActionsConfig = {},
   ): SheetObject {
     const objTemplate = this.template.getObjectTemplate(
       objectKey,
       nativeObject,
       config,
+      actions,
     )
 
     const object = objTemplate.createInstance(this, nativeObject, config)
