@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-${{ matrix.node-version }}-yarn-
 
       - run: yarn install
-      # This will test whether `npm install`/`yarn install` can actually run on each compatibility test fixture
+      # This will test whether `npm install`/`yarn install` can actually run on each compatibility test fixture. See `compatibility-tests/README.md` for more info.
       - run: yarn workspace @theatre/compatibility-tests run install-fixtures
-      # after that, we run the
+      # after that, we run the jest tests for each fixture
       - run: yarn test:compat
