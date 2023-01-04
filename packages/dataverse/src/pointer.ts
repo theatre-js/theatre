@@ -144,7 +144,7 @@ export const getPointerParts = <_>(
  * Creates a pointer to a (nested) property of an {@link Atom}.
  *
  * @remarks
- * Pointers are used to make derivations of properties or nested properties of
+ * Pointers are used to make prisms of properties or nested properties of
  * {@link Atom|Atoms}.
  *
  * Pointers also allow easy construction of new pointers pointing to nested members
@@ -153,7 +153,7 @@ export const getPointerParts = <_>(
  *
  * @example
  * ```ts
- * // Here, sum is a derivation that updates whenever the a or b prop of someAtom does.
+ * // Here, sum is a prism that updates whenever the a or b prop of someAtom does.
  * const sum = prism(() => {
  *   return val(pointer({root: someAtom, path: ['a']})) + val(pointer({root: someAtom, path: ['b']}));
  * });

@@ -40,16 +40,20 @@ const boxObjectConfig = {
       amount: types.number(10, {range: [0, 1000], label: '$'}),
     }),
   }),
-  x: types.number(200),
-  y: types.number(200),
+  pos: {
+    x: types.number(200),
+    y: types.number(200),
+  },
   color: types.rgba({r: 1, g: 0, b: 0, a: 1}),
 }
 
 // this can also be inferred with
 type _State = ShorthandCompoundPropsToInitialValue<typeof boxObjectConfig>
 type State = {
-  x: number
-  y: number
+  pos: {
+    x: number
+    y: number
+  }
   test: string
   testLiteral: string
   bool: boolean
@@ -78,8 +82,10 @@ const Box: React.FC<{
     () =>
       Object.assign({}, boxObjectConfig, {
         // give the box initial values offset from each other
-        x: ((id.codePointAt(0) ?? 0) % 15) * 100,
-        y: ((id.codePointAt(0) ?? 0) % 15) * 100,
+        pos: {
+          x: ((id.codePointAt(0) ?? 0) % 15) * 100,
+          y: ((id.codePointAt(0) ?? 0) % 15) * 100,
+        },
       }),
     [id],
   )
@@ -95,7 +101,7 @@ const Box: React.FC<{
 
   useLayoutEffect(() => {
     const unsubscribeFromChanges = onChange(obj.props, (newValues) => {
-      boxRef.current.style.transform = `translate(${newValues.x}px, ${newValues.y}px)`
+      boxRef.current.style.transform = `translate(${newValues.pos.x}px, ${newValues.pos.y}px)`
       preRef.current.innerText = JSON.stringify(newValues, null, 2)
       colorRef.current.style.background = newValues.color.toString()
     })
@@ -104,12 +110,12 @@ const Box: React.FC<{
 
   const dragOpts = useMemo((): UseDragOpts => {
     let scrub: IScrub | undefined
-    let initial: typeof obj.value
+    let initial: typeof obj.value.pos
     let firstOnDragCalled = false
     return {
       onDragStart() {
         scrub = studio.scrub()
-        initial = obj.value
+        initial = obj.value.pos
         firstOnDragCalled = false
       },
       onDrag(x, y) {
@@ -118,7 +124,7 @@ const Box: React.FC<{
           firstOnDragCalled = true
         }
         scrub!.capture(({set}) => {
-          set(obj.props, {
+          set(obj.props.pos, {
             ...initial,
             x: x + initial.x,
             y: y + initial.y,
@@ -177,7 +183,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
     return studio.onSelectionChange((newState) => {
       setSelection(newState)
     })
-  })
+  }, [])
 
   const containerRef = useRef<HTMLDivElement>(null!)
 

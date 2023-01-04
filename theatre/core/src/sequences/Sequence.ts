@@ -1,12 +1,12 @@
 import type Project from '@theatre/core/projects/Project'
-import coreTicker from '@theatre/core/coreTicker'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SequenceAddress} from '@theatre/shared/utils/addresses'
 import didYouMean from '@theatre/shared/utils/didYouMean'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
-import type {IBox, IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
+import {Atom} from '@theatre/dataverse'
 import {pointer} from '@theatre/dataverse'
-import {Box, prism, val, valueDerivation} from '@theatre/dataverse'
+import {prism, val} from '@theatre/dataverse'
 import {padStart} from 'lodash-es'
 import type {
   IPlaybackController,
@@ -17,6 +17,7 @@ import TheatreSequence from './TheatreSequence'
 import type {ILogger} from '@theatre/shared/logger'
 import type {ISequence} from '..'
 import {notify} from '@theatre/shared/notify'
+import {getCoreTicker} from '@theatre/core/coreTicker'
 
 export type IPlaybackRange = [from: number, to: number]
 
@@ -37,21 +38,21 @@ export default class Sequence {
   public readonly address: SequenceAddress
   publicApi: TheatreSequence
 
-  private _playbackControllerBox: IBox<IPlaybackController>
-  private _statePointerDerivation: IDerivation<Pointer<IPlaybackState>>
-  private _positionD: IDerivation<number>
-  private _positionFormatterD: IDerivation<ISequencePositionFormatter>
-  _playableRangeD: undefined | IDerivation<{start: number; end: number}>
+  private _playbackControllerBox: Atom<IPlaybackController>
+  private _prismOfStatePointer: Prism<Pointer<IPlaybackState>>
+  private _positionD: Prism<number>
+  private _positionFormatterD: Prism<ISequencePositionFormatter>
+  _playableRangeD: undefined | Prism<{start: number; end: number}>
 
   readonly pointer: ISequence['pointer'] = pointer({root: this, path: []})
-  readonly $$isIdentityDerivationProvider = true
+  readonly $$isIdentityPrismProvider = true
   readonly _logger: ILogger
 
   constructor(
     readonly _project: Project,
     readonly _sheet: Sheet,
-    readonly _lengthD: IDerivation<number>,
-    readonly _subUnitsPerUnitD: IDerivation<number>,
+    readonly _lengthD: Prism<number>,
+    readonly _subUnitsPerUnitD: Prism<number>,
     playbackController?: IPlaybackController,
   ) {
     this._logger = _project._logger
@@ -62,24 +63,26 @@ export default class Sequence {
 
     this.publicApi = new TheatreSequence(this)
 
-    this._playbackControllerBox = new Box(
-      playbackController ?? new DefaultPlaybackController(coreTicker),
+    this._playbackControllerBox = new Atom(
+      playbackController ?? new DefaultPlaybackController(getCoreTicker()),
     )
 
-    this._statePointerDerivation = this._playbackControllerBox.derivation.map(
-      (playbackController) => playbackController.statePointer,
+    this._prismOfStatePointer = prism(
+      () => this._playbackControllerBox.prism.getValue().statePointer,
     )
 
-    this._positionD = this._statePointerDerivation.flatMap((statePointer) =>
-      valueDerivation(statePointer.position),
-    )
+    this._positionD = prism(() => {
+      const statePointer = this._prismOfStatePointer.getValue()
+      return val(statePointer.position)
+    })
 
-    this._positionFormatterD = this._subUnitsPerUnitD.map(
-      (subUnitsPerUnit) => new TimeBasedPositionFormatter(subUnitsPerUnit),
-    )
+    this._positionFormatterD = prism(() => {
+      const subUnitsPerUnit = val(this._subUnitsPerUnitD)
+      return new TimeBasedPositionFormatter(subUnitsPerUnit)
+    })
   }
 
-  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
+  getIdentityPrism(path: Array<string | number>): Prism<unknown> {
     if (path.length === 0) {
       return prism((): ISequence['pointer']['$$__pointer_type'] => ({
         length: val(this.pointer.length),
@@ -97,7 +100,7 @@ export default class Sequence {
       return this._positionD
     } else if (prop === 'playing') {
       return prism(() => {
-        return val(this._statePointerDerivation.getValue().playing)
+        return val(this._prismOfStatePointer.getValue().playing)
       })
     } else {
       return prism(() => undefined)
@@ -108,20 +111,20 @@ export default class Sequence {
     return this._positionFormatterD.getValue()
   }
 
-  get derivationToStatePointer() {
-    return this._statePointerDerivation
+  get prismOfStatePointer() {
+    return this._prismOfStatePointer
   }
 
   get length() {
     return this._lengthD.getValue()
   }
 
-  get positionDerivation() {
+  get positionPrism() {
     return this._positionD
   }
 
   get position() {
-    return this._playbackControllerBox.get().getCurrentPosition()
+    return this._playbackControllerBox.getState().getCurrentPosition()
   }
 
   get subUnitsPerUnit(): number {
@@ -163,7 +166,7 @@ export default class Sequence {
     }
     const dur = this.length
     this._playbackControllerBox
-      .get()
+      .getState()
       .gotoPosition(position > dur ? dur : position)
   }
 
@@ -172,10 +175,10 @@ export default class Sequence {
   }
 
   get playing() {
-    return val(this._playbackControllerBox.get().statePointer.playing)
+    return val(this._playbackControllerBox.getState().statePointer.playing)
   }
 
-  _makeRangeFromSequenceTemplate(): IDerivation<IPlaybackRange> {
+  _makeRangeFromSequenceTemplate(): Prism<IPlaybackRange> {
     return prism(() => {
       return [0, val(this._lengthD)]
     })
@@ -187,13 +190,13 @@ export default class Sequence {
    * @remarks
    *   One use case for this is to play the playback within the focus range.
    *
-   * @param rangeD - The derivation that contains the range that will be used for the playback
+   * @param rangeD - The prism that contains the range that will be used for the playback
    *
    * @returns  a promise that gets rejected if the playback stopped for whatever reason
    *
    */
-  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
-    return this._playbackControllerBox.get().playDynamicRange(rangeD)
+  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown> {
+    return this._playbackControllerBox.getState().playDynamicRange(rangeD)
   }
 
   async play(
@@ -327,18 +330,18 @@ To fix this, either set \`conf.range[1]\` to be less the duration of the sequenc
     direction: IPlaybackDirection,
   ): Promise<boolean> {
     return this._playbackControllerBox
-      .get()
+      .getState()
       .play(iterationCount, range, rate, direction)
   }
 
   pause() {
-    this._playbackControllerBox.get().pause()
+    this._playbackControllerBox.getState().pause()
   }
 
   replacePlaybackController(playbackController: IPlaybackController) {
     this.pause()
-    const oldController = this._playbackControllerBox.get()
-    this._playbackControllerBox.set(playbackController)
+    const oldController = this._playbackControllerBox.getState()
+    this._playbackControllerBox.setState(playbackController)
 
     const time = oldController.getCurrentPosition()
     oldController.destroy()

@@ -86,7 +86,7 @@ const StampsGrid: React.FC<{
         sequencePositionFormatter: sequence.positionFormatter,
         snapToGrid: (n: number) => sequence.closestGridPosition(n),
       }
-    }).tapImmediate(studioTicker, drawStamps)
+    }).onChange(studioTicker, drawStamps, true)
   }, [fullSecondStampsContainer, width, layoutP])
 
   return (

@@ -1,6 +1,6 @@
 import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import type {IProject} from '@theatre/core/projects/TheatreProject'
-import coreTicker from '@theatre/core/coreTicker'
+import {getCoreTicker} from '@theatre/core/coreTicker'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
@@ -9,7 +9,7 @@ import type {
   DeepPartialOfSerializableValue,
   VoidFn,
 } from '@theatre/shared/utils/types'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import type SheetObject from './SheetObject'
 import type {
@@ -147,10 +147,10 @@ export default class TheatreSheetObject<
     return {...privateAPI(this).address}
   }
 
-  private _valuesDerivation(): IDerivation<this['value']> {
-    return this._cache.get('onValuesChangeDerivation', () => {
+  private _valuesPrism(): Prism<this['value']> {
+    return this._cache.get('_valuesPrism', () => {
       const sheetObject = privateAPI(this)
-      const d: IDerivation<PropsValue<Props>> = prism(() => {
+      const d: Prism<PropsValue<Props>> = prism(() => {
         return val(sheetObject.getValues().getValue()) as $FixMe
       })
       return d
@@ -158,15 +158,15 @@ export default class TheatreSheetObject<
   }
 
   onValuesChange(fn: (values: this['value']) => void): VoidFn {
-    return this._valuesDerivation().tapImmediate(coreTicker, fn)
+    return this._valuesPrism().onChange(getCoreTicker(), fn, true)
   }
 
   // internal: Make the deviration keepHot if directly read
   get value(): PropsValue<Props> {
-    const der = this._valuesDerivation()
+    const der = this._valuesPrism()
     if (KEEP_HOT_FOR_MS != null) {
       if (!der.isHot) {
-        // derivation not hot, so keep it hot and set up `_keepHotUntapDebounce`
+        // prism not hot, so keep it hot and set up `_keepHotUntapDebounce`
         if (this._keepHotUntapDebounce != null) {
           // defensive checks
           if (process.env.NODE_ENV === 'development') {

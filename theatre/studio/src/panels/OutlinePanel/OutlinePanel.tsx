@@ -5,7 +5,7 @@ import ProjectsList from './ProjectsList/ProjectsList'
 import {useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
-import {Box, prism, val} from '@theatre/dataverse'
+import {Atom, prism, val} from '@theatre/dataverse'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 
 const headerHeight = `44px`
@@ -79,12 +79,12 @@ const OutlinePanel: React.FC<{}> = () => {
 
 export default OutlinePanel
 
-const isOutlinePanelHotspotActiveB = new Box<boolean>(false)
-const isOutlinePanelHoveredB = new Box<boolean>(false)
+const isOutlinePanelHotspotActiveB = new Atom<boolean>(false)
+const isOutlinePanelHoveredB = new Atom<boolean>(false)
 
 export const shouldShowOutlineD = prism<boolean>(() => {
-  const isHovered = val(isOutlinePanelHoveredB.derivation)
-  const isHotspotActive = val(isOutlinePanelHotspotActiveB.derivation)
+  const isHovered = val(isOutlinePanelHoveredB.prism)
+  const isHotspotActive = val(isOutlinePanelHotspotActiveB.prism)
 
   return isHovered || isHotspotActive
 })

@@ -75,12 +75,16 @@ const FrameGrid: React.FC<{
         fps: sequence.subUnitsPerUnit,
         snapToGrid: (n: number) => sequence.closestGridPosition(n),
       }
-    }).tapImmediate(studioTicker, (p) => {
-      ctx.save()
-      ctx.scale(ratio!, ratio!)
-      drawGrid(p)
-      ctx.restore()
-    })
+    }).onChange(
+      studioTicker,
+      (p) => {
+        ctx.save()
+        ctx.scale(ratio!, ratio!)
+        drawGrid(p)
+        ctx.restore()
+      },
+      true,
+    )
 
     return () => {
       untap()

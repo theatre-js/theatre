@@ -1,17 +1,17 @@
-import {isDerivation, prism, val} from '@theatre/dataverse'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
-import {useDerivation} from '@theatre/react'
+import {isPrism, prism, val} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
+import {usePrismInstance} from '@theatre/react'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import React, {useMemo, useRef} from 'react'
 import {invariant} from './invariant'
 
-type DeriveAll<T> = IDerivation<
+type DeriveAll<T> = Prism<
   {
     [P in keyof T]: T[P] extends $<infer R> ? R : never
   }
 >
 
-export type $<T> = IDerivation<T> | Pointer<T>
+export type $<T> = Prism<T> | Pointer<T>
 
 function deriveAllD<T extends [...$<any>[]]>(obj: T): DeriveAll<T>
 function deriveAllD<T extends Record<string, $<any>>>(obj: T): DeriveAll<T>
@@ -40,9 +40,9 @@ interface TSErrors<M> extends Error {}
 
 type ReactDeriver<Props extends {}> = (
   props: {
-    [P in keyof Props]: Props[P] extends IDerivation<infer _>
+    [P in keyof Props]: Props[P] extends Prism<infer _>
       ? TSErrors<"Can't both use Derivation properties while wrapping with deriver">
-      : Props[P] | IDerivation<Props[P]>
+      : Props[P] | Prism<Props[P]>
   },
 ) => React.ReactElement | null
 
@@ -64,13 +64,13 @@ export function deriver<Props extends {}>(
       ref,
     ) {
       let observableArr = []
-      const observables: Record<string, IDerivation<$IntentionalAny>> = {}
+      const observables: Record<string, Prism<$IntentionalAny>> = {}
       const normalProps: Record<string, $IntentionalAny> = {
         ref,
       }
       for (const key in props) {
         const value = props[key]
-        if (isDerivation(value)) {
+        if (isPrism(value)) {
           observableArr.push(value)
           observables[key] = value
         } else {
@@ -86,7 +86,7 @@ export function deriver<Props extends {}>(
       )
 
       const allD = useMemo(() => deriveAllD(observables), observableArr)
-      const observedPropState = useDerivation(allD)
+      const observedPropState = usePrismInstance(allD)
 
       return (
         observedPropState &&

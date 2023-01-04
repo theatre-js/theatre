@@ -10,11 +10,11 @@ import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfVal
 import deepEqual from 'fast-deep-equal'
 import type {PointerType} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
-import {isDerivation, valueDerivation} from '@theatre/dataverse'
+import {isPrism, pointerToPrism} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
-import coreTicker from './coreTicker'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import {_coreLogger} from './_coreLogger'
+import {getCoreTicker} from './coreTicker'
 export {notify} from '@theatre/shared/notify'
 export {types}
 
@@ -155,13 +155,13 @@ export function onChange<P extends PointerType<$IntentionalAny>>(
   callback: (value: P extends PointerType<infer T> ? T : unknown) => void,
 ): VoidFn {
   if (isPointer(pointer)) {
-    const derivation = valueDerivation(pointer)
-    return derivation.tapImmediate(coreTicker, callback as $IntentionalAny)
-  } else if (isDerivation(pointer)) {
-    return pointer.tapImmediate(coreTicker, callback as $IntentionalAny)
+    const pr = pointerToPrism(pointer)
+    return pr.onChange(getCoreTicker(), callback as $IntentionalAny, true)
+  } else if (isPrism(pointer)) {
+    return pointer.onChange(getCoreTicker(), callback as $IntentionalAny, true)
   } else {
     throw new Error(
-      `Called onChange(p) where p is neither a pointer nor a derivation.`,
+      `Called onChange(p) where p is neither a pointer nor a prism.`,
     )
   }
 }
@@ -185,7 +185,7 @@ export function onChange<P extends PointerType<$IntentionalAny>>(
  */
 export function val<T>(pointer: PointerType<T>): T {
   if (isPointer(pointer)) {
-    return valueDerivation(pointer).getValue() as $IntentionalAny
+    return pointerToPrism(pointer).getValue() as $IntentionalAny
   } else {
     throw new Error(`Called val(p) where p is not a pointer.`)
   }

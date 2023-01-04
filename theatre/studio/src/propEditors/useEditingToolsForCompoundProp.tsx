@@ -235,7 +235,7 @@ function ControlIndicators({
   return usePrism(() => {
     const pathToProp = getPointerParts(pointerToProp).path
 
-    const sequencePosition = val(obj.sheet.getSequence().positionDerivation)
+    const sequencePosition = val(obj.sheet.getSequence().positionPrism)
 
     /*
     2/10 perf concern:

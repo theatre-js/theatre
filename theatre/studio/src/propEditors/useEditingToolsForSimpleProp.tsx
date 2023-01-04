@@ -1,13 +1,13 @@
 import get from 'lodash-es/get'
 import React from 'react'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import type Scrub from '@theatre/studio/Scrub'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getDeep from '@theatre/shared/utils/getDeep'
-import {useDerivation} from '@theatre/react'
+import {usePrismInstance} from '@theatre/react'
 import type {
   $IntentionalAny,
   SerializablePrimitive as SerializablePrimitive,
@@ -59,17 +59,17 @@ type EditingTools<T> =
   | EditingToolsStatic<T>
   | EditingToolsSequenced<T>
 
-const cache = new WeakMap<{}, IDerivation<EditingTools<$IntentionalAny>>>()
+const cache = new WeakMap<{}, Prism<EditingTools<$IntentionalAny>>>()
 
 /**
  * Note: we're able to get `obj` and `propConfig` from `pointerToProp`,
  * so the only reason they're still in the arguments list is that
  */
-function createDerivation<T extends SerializablePrimitive>(
+function createPrism<T extends SerializablePrimitive>(
   pointerToProp: Pointer<T>,
   obj: SheetObject,
   propConfig: PropTypeConfig_AllSimples,
-): IDerivation<EditingTools<T>> {
+): Prism<EditingTools<T>> {
   return prism(() => {
     const pathToProp = getPointerParts(pointerToProp).path
 
@@ -181,9 +181,7 @@ function createDerivation<T extends SerializablePrimitive>(
                 sequenceTrackId
               ],
             )
-            const sequencePosition = val(
-              obj.sheet.getSequence().positionDerivation,
-            )
+            const sequencePosition = val(obj.sheet.getSequence().positionPrism)
             return getNearbyKeyframesOfTrack(
               obj,
               track && {
@@ -325,15 +323,15 @@ function createDerivation<T extends SerializablePrimitive>(
   })
 }
 
-function getDerivation<T extends SerializablePrimitive>(
+function getPrism<T extends SerializablePrimitive>(
   pointerToProp: Pointer<T>,
   obj: SheetObject,
   propConfig: PropTypeConfig_AllSimples,
-): IDerivation<EditingTools<T>> {
+): Prism<EditingTools<T>> {
   if (cache.has(pointerToProp)) {
     return cache.get(pointerToProp)!
   } else {
-    const d = createDerivation(pointerToProp, obj, propConfig)
+    const d = createPrism(pointerToProp, obj, propConfig)
     cache.set(pointerToProp, d)
     return d
   }
@@ -354,8 +352,8 @@ export function useEditingToolsForSimplePropInDetailsPanel<
   obj: SheetObject,
   propConfig: PropTypeConfig_AllSimples,
 ): EditingTools<T> {
-  const der = getDerivation(pointerToProp, obj, propConfig)
-  return useDerivation(der)
+  const der = getPrism(pointerToProp, obj, propConfig)
+  return usePrismInstance(der)
 }
 
 type Shade =

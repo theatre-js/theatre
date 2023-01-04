@@ -2,7 +2,7 @@ import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
 import type UI from '@theatre/studio/UI'
 import type {Pointer} from '@theatre/dataverse'
-import {Atom, PointerProxy, valueDerivation} from '@theatre/dataverse'
+import {Atom, PointerProxy, pointerToPrism} from '@theatre/dataverse'
 import type {
   CommitOrDiscard,
   ITransactionPrivateApi,
@@ -23,11 +23,18 @@ import {defer} from '@theatre/shared/utils/defer'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import checkForUpdates from './checkForUpdates'
 import shallowEqual from 'shallowequal'
+import {createStore} from './IDBStorage'
+import {getAllPossibleAssetIDs} from '@theatre/shared/utils/assets'
+import {notify} from './notify'
 
 export type CoreExports = typeof _coreExports
 
 const UIConstructorModule =
   typeof window !== 'undefined' ? require('./UI') : null
+
+// this package has a reference to `window` that breaks SSR, so we require it conditionally
+const blobCompare =
+  typeof window !== 'undefined' ? require('blob-compare') : null
 
 const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
 \`\`\`
@@ -164,7 +171,7 @@ export class Studio {
   }
 
   _attachToIncomingProjects() {
-    const projectsD = valueDerivation(this.projectsP)
+    const projectsD = pointerToPrism(this.projectsP)
 
     const attachToProjects = (projects: Record<string, Project>) => {
       for (const project of Object.values(projects)) {
@@ -173,7 +180,7 @@ export class Studio {
         }
       }
     }
-    projectsD.changesWithoutValues().tap(() => {
+    projectsD.onStale(() => {
       attachToProjects(projectsD.getValue())
     })
     attachToProjects(projectsD.getValue())
@@ -181,7 +188,7 @@ export class Studio {
 
   setCoreBits(coreBits: CoreBits) {
     this._corePrivateApi = coreBits.privateAPI
-    this._coreAtom.setIn(['core'], coreBits.coreExports)
+    this._coreAtom.setByPointer((p) => p.core, coreBits.coreExports)
     this._setProjectsP(coreBits.projectsP)
   }
 
@@ -290,5 +297,177 @@ export class Studio {
 
   createContentOfSaveFile(projectId: string): OnDiskState {
     return this._store.createContentOfSaveFile(projectId as ProjectId)
+  }
+
+  /** A function that returns a promise to an object containing asset storage methods for a project to be used by studio. */
+  async createAssetStorage(project: Project, baseUrl?: string) {
+    // in SSR we bail out and return a dummy asset manager
+    if (typeof window === 'undefined') {
+      return {
+        getAssetUrl: () => '',
+        createAsset: () => Promise.resolve(null),
+      }
+    }
+
+    // Check for support.
+    if (!('indexedDB' in window)) {
+      console.log("This browser doesn't support IndexedDB.")
+
+      return {
+        getAssetUrl: (assetId: string) => {
+          throw new Error(
+            `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
+          )
+        },
+        createAsset: (asset: Blob) => {
+          throw new Error(
+            `IndexedDB is required by the default asset manager, but it's not supported by this browser. To use assets, please provide your own asset manager to the project config.`,
+          )
+        },
+      }
+    }
+
+    const idb = createStore(`${project.address.projectId}-assets`)
+
+    // get all possible asset ids referenced by either static props or keyframes
+    const possibleAssetIDs = getAllPossibleAssetIDs(project)
+
+    // Clean up assets not referenced by the project. We can only do this at the start because otherwise
+    // we'd break undo/redo.
+    const idbKeys = await idb.keys<string>()
+    await Promise.all(
+      idbKeys.map(async (key) => {
+        if (!possibleAssetIDs.includes(key)) {
+          await idb.del(key)
+        }
+      }),
+    )
+
+    // Clean up idb entries exported to disk
+    await Promise.all(
+      idbKeys.map(async (key) => {
+        const assetUrl = `${baseUrl}/${key}`
+
+        try {
+          const response = await fetch(assetUrl, {method: 'HEAD'})
+          if (response.ok) {
+            await idb.del(key)
+          }
+        } catch (e) {
+          notify.error(
+            'Failed to access assets',
+            `Failed to access assets at ${
+              project.config.assets?.baseUrl ?? '/'
+            }. This is likely due to a CORS issue.`,
+          )
+        }
+      }),
+    )
+
+    // A map for caching the assets outside of the db. We also need this to be able to retrieve idb asset urls synchronously.
+    const assetsMap = new Map(await idb.entries<string, Blob>())
+
+    // A map for caching the object urls created from idb assets.
+    const urlCache = new Map<Blob, string>()
+
+    /** Gets idb aset url from asset blob */
+    const getUrlForAsset = (asset: Blob) => {
+      if (urlCache.has(asset)) {
+        return urlCache.get(asset)!
+      } else {
+        const url = URL.createObjectURL(asset)
+        urlCache.set(asset, url)
+        return url
+      }
+    }
+
+    /** Gets idb asset url from id */
+    const getUrlForId = (assetId: string) => {
+      const asset = assetsMap.get(assetId)
+      if (!asset) {
+        throw new Error(`Asset with id ${assetId} not found`)
+      }
+      return getUrlForAsset(asset)
+    }
+
+    return {
+      getAssetUrl: (assetId: string) => {
+        return assetsMap.has(assetId)
+          ? getUrlForId(assetId)
+          : `${baseUrl}/${assetId}`
+      },
+      createAsset: async (asset: File) => {
+        const existingIDs = getAllPossibleAssetIDs(project)
+
+        let sameSame = false
+
+        if (existingIDs.includes(asset.name)) {
+          let existingAsset: Blob | undefined
+          try {
+            existingAsset =
+              assetsMap.get(asset.name) ??
+              (await fetch(`${baseUrl}/${asset.name}`).then((r) =>
+                r.ok ? r.blob() : undefined,
+              ))
+          } catch (e) {
+            notify.error(
+              'Failed to access assets',
+              `Failed to access assets at ${
+                project.config.assets?.baseUrl ?? '/'
+              }. This is likely due to a CORS issue.`,
+            )
+
+            return Promise.resolve(null)
+          }
+
+          if (existingAsset) {
+            // @ts-ignore
+            sameSame = await blobCompare!.isEqual(asset, existingAsset)
+
+            // if same same, we do nothing
+            if (sameSame) {
+              return asset.name
+              // if different, we ask the user to pls rename
+            } else {
+              /** Initiates rename using a dialog. Returns a boolean indicating if the rename was succesful. */
+              const renameAsset = (text: string): boolean => {
+                const newAssetName = prompt(text, asset.name)
+
+                if (newAssetName === null) {
+                  // asset creation canceled
+                  return false
+                } else if (newAssetName === '') {
+                  return renameAsset(
+                    'Asset name cannot be empty. Please choose a different file name for this asset.',
+                  )
+                } else if (existingIDs.includes(newAssetName)) {
+                  console.log(existingIDs)
+                  return renameAsset(
+                    'An asset with this name already exists. Please choose a different file name for this asset.',
+                  )
+                }
+
+                // rename asset
+                asset = new File([asset], newAssetName, {type: asset.type})
+                return true
+              }
+
+              // rename asset returns false if the user cancels the rename
+              const success = renameAsset(
+                'An asset with this name already exists. Please choose a different file name for this asset.',
+              )
+
+              if (!success) {
+                return null
+              }
+            }
+          }
+        }
+
+        assetsMap.set(asset.name, asset)
+        await idb.set(asset.name, asset)
+        return asset.name
+      },
+    }
   }
 }

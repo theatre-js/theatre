@@ -5,7 +5,7 @@ import type {
 import {defer} from '@theatre/shared/utils/defer'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import noop from '@theatre/shared/utils/noop'
-import type {IDerivation, Pointer, Ticker} from '@theatre/dataverse'
+import type {Prism, Pointer, Ticker} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import type {
   IPlaybackController,
@@ -34,7 +34,7 @@ export default class AudioPlaybackController implements IPlaybackController {
     this._mainGain.connect(this._nodeDestination)
   }
 
-  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
+  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown> {
     const deferred = defer<boolean>()
     if (this._playing) this.pause()
 
@@ -49,7 +49,7 @@ export default class AudioPlaybackController implements IPlaybackController {
 
     // We're keeping the rangeD hot, so we can read from it on every tick without
     // causing unnecessary recalculations
-    const untapFromRangeD = rangeD.changesWithoutValues().tap(play)
+    const untapFromRangeD = rangeD.onStale(play)
     play()
 
     this._stopPlayCallback = () => {
@@ -120,11 +120,11 @@ export default class AudioPlaybackController implements IPlaybackController {
   }
 
   private get _playing() {
-    return this._state.getState().playing
+    return this._state.get().playing
   }
 
   private set _playing(playing: boolean) {
-    this._state.setIn(['playing'], playing)
+    this._state.setByPointer((p) => p.playing, playing)
   }
 
   destroy() {}
@@ -140,11 +140,11 @@ export default class AudioPlaybackController implements IPlaybackController {
   }
 
   private _updatePositionInState(time: number) {
-    this._state.reduceState(['position'], () => time)
+    this._state.reduce((s) => ({...s, position: time}))
   }
 
   getCurrentPosition() {
-    return this._state.getState().position
+    return this._state.get().position
   }
 
   play(

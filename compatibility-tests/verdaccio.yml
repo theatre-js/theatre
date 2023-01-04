@@ -21,4 +21,7 @@ packages:
   '**':
     access: $all
     proxy: npmjs
-log: {type: stdout, format: pretty, level: http}
+logs:
+  type: stdout
+  format: pretty
+  level: error

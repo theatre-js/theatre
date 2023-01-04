@@ -1,4 +1,4 @@
-import type {IDerivation} from '@theatre/dataverse'
+import type {Prism} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import type {
   KeyframeId,
@@ -53,7 +53,7 @@ export function selectedKeyframeConnections(
   projectId: ProjectId,
   sheetId: SheetId,
   selection: DopeSheetSelection | undefined,
-): IDerivation<Array<KeyframeConnectionWithAddress>> {
+): Prism<Array<KeyframeConnectionWithAddress>> {
   return prism(() => {
     if (selection === undefined) return []
 

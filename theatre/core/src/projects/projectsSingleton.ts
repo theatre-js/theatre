@@ -14,11 +14,11 @@ class ProjectsSingleton {
    * We're trusting here that each project id is unique
    */
   add(id: ProjectId, project: Project) {
-    this.atom.reduceState(['projects', id], () => project)
+    this.atom.setByPointer((p) => p.projects[id], project)
   }
 
   get(id: ProjectId): Project | undefined {
-    return this.atom.getState().projects[id]
+    return this.atom.get().projects[id]
   }
 
   has(id: ProjectId) {

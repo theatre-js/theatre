@@ -1,6 +1,6 @@
 import type {IProject, ISheet, ISheetObject} from '@theatre/core'
 import studioTicker from '@theatre/studio/studioTicker'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
@@ -410,8 +410,8 @@ export default class TheatreStudio implements IStudio {
     })
   }
 
-  private _getSelectionDerivation(): IDerivation<(ISheetObject | ISheet)[]> {
-    return this._cache.get('_getStateDerivation()', () =>
+  private _getSelectionPrism(): Prism<(ISheetObject | ISheet)[]> {
+    return this._cache.get('_getSelectionPrism()', () =>
       prism((): (ISheetObject | ISheet)[] => {
         return getOutlineSelection()
           .filter(
@@ -424,7 +424,7 @@ export default class TheatreStudio implements IStudio {
   }
 
   private _getSelection(): (ISheetObject | ISheet)[] {
-    return this._getSelectionDerivation().getValue()
+    return this._getSelectionPrism().getValue()
   }
 
   setSelection(selection: Array<ISheetObject | ISheet>): void {
@@ -440,7 +440,7 @@ export default class TheatreStudio implements IStudio {
   }
 
   onSelectionChange(fn: (s: (ISheetObject | ISheet)[]) => void): VoidFn {
-    return this._getSelectionDerivation().tapImmediate(studioTicker, fn)
+    return this._getSelectionPrism().onChange(studioTicker, fn, true)
   }
 
   get selection(): Array<ISheetObject | ISheet> {

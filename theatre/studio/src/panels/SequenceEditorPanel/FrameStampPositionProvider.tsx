@@ -1,4 +1,4 @@
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {Atom, prism, val} from '@theatre/dataverse'
 import mousePositionD from '@theatre/studio/utils/mousePositionD'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
@@ -26,7 +26,7 @@ export enum FrameStampPositionType {
 }
 
 const context = createContext<{
-  currentD: IDerivation<[pos: number, posType: FrameStampPositionType]>
+  currentD: Prism<[pos: number, posType: FrameStampPositionType]>
   getLock(): FrameStampPositionLock
 }>(null as $IntentionalAny)
 
@@ -49,7 +49,7 @@ let lastLockId = 0
 const FrameStampPositionProvider: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({children, layoutP}) => {
-  const locksAtom = useMemo(() => new Atom<{list: LockItem[]}>({list: []}), [])
+  const locksAtom = useMemo(() => new Atom<LockItem[]>([]), [])
   const currentD = useMemo(
     () =>
       prism(() => {
@@ -57,7 +57,7 @@ const FrameStampPositionProvider: React.FC<{
           .memo('p', () => pointerPositionInUnitSpace(layoutP), [layoutP])
           .getValue()
 
-        const locks = val(locksAtom.pointer.list)
+        const locks = val(locksAtom.pointer)
 
         if (locks.length > 0) {
           return last(locks)!.position
@@ -69,7 +69,7 @@ const FrameStampPositionProvider: React.FC<{
   )
   const getLock = useCallback(() => {
     const id = lastLockId++
-    locksAtom.reduceState(['list'], (list) => [
+    locksAtom.reduce((list) => [
       ...list,
       {
         id,
@@ -78,13 +78,11 @@ const FrameStampPositionProvider: React.FC<{
     ])
 
     const unlock = () => {
-      locksAtom.reduceState(['list'], (list) =>
-        list.filter((lock) => lock.id !== id),
-      )
+      locksAtom.reduce((list) => list.filter((lock) => lock.id !== id))
     }
 
     const set = (posInUnitSpace: number) => {
-      locksAtom.reduceState(['list'], (list) => {
+      locksAtom.reduce((list) => {
         const index = list.findIndex((lock) => lock.id === id)
         if (index === -1) {
           console.warn(`Lock is already freed. This is a bug.`)
@@ -211,7 +209,7 @@ const ATTR_LOCK_FRAMESTAMP = 'data-theatre-lock-framestamp-to'
 
 const pointerPositionInUnitSpace = (
   layoutP: Pointer<SequenceEditorPanelLayout>,
-): IDerivation<[pos: number, posType: FrameStampPositionType]> => {
+): Prism<[pos: number, posType: FrameStampPositionType]> => {
   return prism(() => {
     const rightDims = val(layoutP.rightDims)
     const clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)

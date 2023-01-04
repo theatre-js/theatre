@@ -1,5 +1,5 @@
-import {startRegistry} from './utils.mjs'
+import {installTests} from './scripts.mjs'
 ;(async function runCI() {
-  await startRegistry()
+  await installTests()
   process.exit(0)
 })()

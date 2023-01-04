@@ -13,7 +13,7 @@ import type {
 } from '@theatre/shared/utils/ids'
 import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
-import {prism, val, valueDerivation} from '@theatre/dataverse'
+import {prism, val, pointerToPrism} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import {titleBarHeight} from '@theatre/studio/panels/BasePanel/common'
 import type {Studio} from '@theatre/studio/Studio'
@@ -116,7 +116,7 @@ export const calculateSequenceEditorTree = (
 
   const isCollapsedP =
     collapsableItemSetP.byId[createStudioSheetItemKey.forSheet()].isCollapsed
-  const isCollapsed = valueDerivation(isCollapsedP).getValue() ?? false
+  const isCollapsed = pointerToPrism(isCollapsedP).getValue() ?? false
 
   const tree: SequenceEditorTree = {
     type: 'sheet',
@@ -165,7 +165,7 @@ export const calculateSequenceEditorTree = (
       collapsableItemSetP.byId[
         createStudioSheetItemKey.forSheetObject(sheetObject)
       ].isCollapsed
-    const isCollapsed = valueDerivation(isCollapsedP).getValue() ?? false
+    const isCollapsed = pointerToPrism(isCollapsedP).getValue() ?? false
 
     const row: SequenceEditorTree_SheetObject = {
       type: 'sheetObject',
@@ -284,7 +284,7 @@ export const calculateSequenceEditorTree = (
       collapsableItemSetP.byId[
         createStudioSheetItemKey.forSheetObjectProp(sheetObject, pathToProp)
       ].isCollapsed
-    const isCollapsed = valueDerivation(isCollapsedP).getValue() ?? false
+    const isCollapsed = pointerToPrism(isCollapsedP).getValue() ?? false
 
     const row: SequenceEditorTree_PropWithChildren = {
       type: 'propWithChildren',

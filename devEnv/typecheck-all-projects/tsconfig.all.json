@@ -9,6 +9,7 @@
     {"path": "../../theatre"},
     {"path": "../../packages/dataverse"},
     {"path": "../../packages/playground"},
+    {"path": "../../packages/benchmarks"},
     {"path": "../../packages/r3f"},
     {"path": "../../examples/basic-dom"}
   ]

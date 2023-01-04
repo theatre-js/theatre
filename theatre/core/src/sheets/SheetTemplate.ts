@@ -8,7 +8,10 @@ import {Atom} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import Sheet from './Sheet'
 import type {ObjectNativeObject} from './Sheet'
-import type {SheetObjectPropTypeConfig} from './TheatreSheet'
+import type {
+  SheetObjectActionsConfig,
+  SheetObjectPropTypeConfig,
+} from './TheatreSheet'
 import type {
   ObjectAddressKey,
   SheetId,
@@ -40,7 +43,7 @@ export default class SheetTemplate {
 
     if (!inst) {
       inst = new Sheet(this, instanceId)
-      this._instances.setIn([instanceId], inst)
+      this._instances.setByPointer((p) => p[instanceId], inst)
     }
 
     return inst
@@ -50,12 +53,19 @@ export default class SheetTemplate {
     objectKey: ObjectAddressKey,
     nativeObject: ObjectNativeObject,
     config: SheetObjectPropTypeConfig,
+    actions: SheetObjectActionsConfig,
   ): SheetObjectTemplate {
     let template = this._objectTemplates.getState()[objectKey]
 
     if (!template) {
-      template = new SheetObjectTemplate(this, objectKey, nativeObject, config)
-      this._objectTemplates.setIn([objectKey], template)
+      template = new SheetObjectTemplate(
+        this,
+        objectKey,
+        nativeObject,
+        config,
+        actions,
+      )
+      this._objectTemplates.setByPointer((p) => p[objectKey], template)
     }
 
     return template

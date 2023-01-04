@@ -4,7 +4,7 @@ import type {
 } from '@theatre/core/sequences/Sequence'
 import {defer} from '@theatre/shared/utils/defer'
 import noop from '@theatre/shared/utils/noop'
-import type {IDerivation, Pointer, Ticker} from '@theatre/dataverse'
+import type {Prism, Pointer, Ticker} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 
 export interface IPlaybackState {
@@ -31,12 +31,12 @@ export interface IPlaybackController {
    * @remarks
    *   One use case for this is to play the playback within the focus range.
    *
-   * @param rangeD - The derivation that contains the range that will be used for the playback
+   * @param rangeD - The prism that contains the range that will be used for the playback
    *
    * @returns  a promise that gets rejected if the playback stopped for whatever reason
    *
    */
-  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown>
+  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown>
 
   pause(): void
 }
@@ -66,19 +66,19 @@ export default class DefaultPlaybackController implements IPlaybackController {
   }
 
   private _updatePositionInState(time: number) {
-    this._state.reduceState(['position'], () => time)
+    this._state.setByPointer((p) => p.position, time)
   }
 
   getCurrentPosition() {
-    return this._state.getState().position
+    return this._state.get().position
   }
 
   get playing() {
-    return this._state.getState().playing
+    return this._state.get().playing
   }
 
   set playing(playing: boolean) {
-    this._state.setIn(['playing'], playing)
+    this._state.setByPointer((p) => p.playing, playing)
   }
 
   play(
@@ -203,7 +203,7 @@ export default class DefaultPlaybackController implements IPlaybackController {
     return deferred.promise
   }
 
-  playDynamicRange(rangeD: IDerivation<IPlaybackRange>): Promise<unknown> {
+  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown> {
     if (this.playing) {
       this.pause()
     }

@@ -19,7 +19,7 @@ import ObjectDetails from './ObjectDetails'
 import ProjectDetails from './ProjectDetails'
 import getStudio from '@theatre/studio/getStudio'
 import useHotspot from '@theatre/studio/uiComponents/useHotspot'
-import {Box, prism, val} from '@theatre/dataverse'
+import {Atom, prism, val} from '@theatre/dataverse'
 import EmptyState from './EmptyState'
 import useLockSet from '@theatre/studio/uiComponents/useLockSet'
 import {usePresenceListenersOnRootElement} from '@theatre/studio/uiComponents/usePresence'
@@ -195,12 +195,12 @@ export default () => {
   )
 }
 
-const isDetailPanelHotspotActiveB = new Box<boolean>(false)
-const isDetailPanelHoveredB = new Box<boolean>(false)
+const isDetailPanelHotspotActiveB = new Atom<boolean>(false)
+const isDetailPanelHoveredB = new Atom<boolean>(false)
 
 export const shouldShowDetailD = prism<boolean>(() => {
-  const isHovered = val(isDetailPanelHoveredB.derivation)
-  const isHotspotActive = val(isDetailPanelHotspotActiveB.derivation)
+  const isHovered = val(isDetailPanelHoveredB.prism)
+  const isHotspotActive = val(isDetailPanelHotspotActiveB.prism)
 
   return isHovered || isHotspotActive
 })

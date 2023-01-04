@@ -1,7 +1,11 @@
 import type Project from '@theatre/core/projects/Project'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
-import type {SheetObjectPropTypeConfig} from '@theatre/core/sheets/TheatreSheet'
+import type {
+  SheetObjectAction,
+  SheetObjectActionsConfig,
+  SheetObjectPropTypeConfig,
+} from '@theatre/core/sheets/TheatreSheet'
 import {emptyArray} from '@theatre/shared/utils'
 import type {
   PathToProp,
@@ -17,7 +21,7 @@ import type {
   SerializableMap,
   SerializableValue,
 } from '@theatre/shared/utils/types'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
 import set from 'lodash-es/set'
 import getPropDefaultsOfSheetObject from './getPropDefaultsOfSheetObject'
@@ -58,6 +62,7 @@ export default class SheetObjectTemplate {
   readonly address: WithoutSheetInstance<SheetObjectAddress>
   readonly type: 'Theatre_SheetObjectTemplate' = 'Theatre_SheetObjectTemplate'
   protected _config: Atom<SheetObjectPropTypeConfig>
+  readonly _actions: Atom<SheetObjectActionsConfig>
   readonly _cache = new SimpleCache()
   readonly project: Project
 
@@ -69,14 +74,24 @@ export default class SheetObjectTemplate {
     return this._config.pointer
   }
 
+  get staticActions() {
+    return this._actions.getState()
+  }
+
+  get actionsPointer() {
+    return this._actions.pointer
+  }
+
   constructor(
     readonly sheetTemplate: SheetTemplate,
     objectKey: ObjectAddressKey,
     nativeObject: unknown,
     config: SheetObjectPropTypeConfig,
+    actions: SheetObjectActionsConfig,
   ) {
     this.address = {...sheetTemplate.address, objectKey}
     this._config = new Atom(config)
+    this._actions = new Atom(actions)
     this.project = sheetTemplate.project
   }
 
@@ -93,10 +108,14 @@ export default class SheetObjectTemplate {
     this._config.setState(config)
   }
 
+  registerAction(name: string, action: SheetObjectAction) {
+    this._actions.setByPointer((p) => p[name], action)
+  }
+
   /**
    * Returns the default values (all defaults are read from the config)
    */
-  getDefaultValues(): IDerivation<SerializableMap> {
+  getDefaultValues(): Prism<SerializableMap> {
     return this._cache.get('getDefaultValues()', () =>
       prism(() => {
         const config = val(this.configPointer)
@@ -108,8 +127,8 @@ export default class SheetObjectTemplate {
   /**
    * Returns values that are set statically (ie, not sequenced, and not defaults)
    */
-  getStaticValues(): IDerivation<SerializableMap> {
-    return this._cache.get('getDerivationOfStatics', () =>
+  getStaticValues(): Prism<SerializableMap> {
+    return this._cache.get('getStaticValues', () =>
       prism(() => {
         const pointerToSheetState =
           this.sheetTemplate.project.pointers.historic.sheetsById[
@@ -136,7 +155,7 @@ export default class SheetObjectTemplate {
    *
    * Returns an array.
    */
-  getArrayOfValidSequenceTracks(): IDerivation<
+  getArrayOfValidSequenceTracks(): Prism<
     Array<{pathToProp: PathToProp; trackId: SequenceTrackId}>
   > {
     return this._cache.get('getArrayOfValidSequenceTracks', () =>
@@ -207,9 +226,10 @@ export default class SheetObjectTemplate {
    *
    * Not available in core.
    */
-  getMapOfValidSequenceTracks_forStudio(): IDerivation<IPropPathToTrackIdTree> {
+  getMapOfValidSequenceTracks_forStudio(): Prism<IPropPathToTrackIdTree> {
     return this._cache.get('getMapOfValidSequenceTracks_forStudio', () =>
-      this.getArrayOfValidSequenceTracks().map((arr) => {
+      prism(() => {
+        const arr = val(this.getArrayOfValidSequenceTracks())
         let map = {}
 
         for (const {pathToProp, trackId} of arr) {

@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "lib": ["ESNext", "DOM"],
+    "rootDir": ".",
+    "types": ["jest", "node"],
+    "emitDeclarationOnly": false,
+    "composite": true,
+    "resolveJsonModule": true
+  },
+  "references": [
+    {"path": "../../theatre"},
+    {"path": "../dataverse"},
+    {"path": "../r3f"}
+  ],
+  "include": ["./src/**/*", "./devEnv/**/*"]
+}

@@ -1,18 +1,20 @@
 {
   "name": "@theatre/compatibility-tests",
   "private": true,
+  "type": "module",
   "scripts": {
-    "registry:start": "zx ./scripts/start-registry.mjs",
-    "test:ci": "zx ./scripts/ci.mjs",
+    "install-fixtures": "zx ./scripts/install-fixtures.mjs",
     "clean": "zx ./scripts/clean.mjs"
   },
   "dependencies": {
+    "@cspotcode/zx": "^6.1.2",
     "node-cleanup": "^2.1.2",
+    "playwright": "^1.28.1",
     "prettier": "^2.6.2",
     "verdaccio": "^5.10.2",
     "verdaccio-auth-memory": "^10.2.0",
     "verdaccio-memory": "^10.2.0",
-    "zx": "^6.1.0"
+    "zx": "^7.1.1"
   },
   "version": "0.0.1-COMPAT.1"
 }

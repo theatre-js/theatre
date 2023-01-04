@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-import type {IDerivation} from '@theatre/dataverse'
-import {Box} from '@theatre/dataverse'
+import type { Prism} from '@theatre/dataverse';
+import {Atom} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {findIndex} from 'lodash-es'
 import queueMicrotask from 'queue-microtask'
@@ -41,7 +41,7 @@ function useForceUpdate(debugLabel?: string) {
 /**
  * A React hook that executes the callback function and returns its return value
  * whenever there's a change in the values of the dependency array, or in the
- * derivations that are used within the callback function.
+ * prisms that are used within the callback function.
  *
  * @param fn - The callback function
  * @param deps - The dependency array
@@ -58,23 +58,23 @@ export function usePrism<T>(
   debugLabel?: string,
 ): T {
   const fnAsCallback = useCallback(fn, deps)
-  const boxRef = useRef<Box<typeof fn>>(null as $IntentionalAny)
-  if (!boxRef.current) {
-    boxRef.current = new Box(fnAsCallback)
+  const atomRef = useRef<Atom<typeof fn>>(null as $IntentionalAny)
+  if (!atomRef.current) {
+    atomRef.current = new Atom(fnAsCallback)
   } else {
-    boxRef.current.set(fnAsCallback)
+    atomRef.current.setState(fnAsCallback)
   }
 
-  const derivation = useMemo(
+  const prsm = useMemo(
     () =>
       prism(() => {
-        const fn = boxRef.current.derivation.getValue()
+        const fn = atomRef.current.prism.getValue()
         return fn()
       }),
     [],
   )
 
-  return useDerivation(derivation, debugLabel)
+  return usePrismInstance(prsm, debugLabel)
 }
 
 export const useVal: typeof val = (p: $IntentionalAny, debugLabel?: string) => {
@@ -88,9 +88,9 @@ export const useVal: typeof val = (p: $IntentionalAny, debugLabel?: string) => {
 let lastOrder = 0
 
 /**
- * A sorted array of derivations that need to be refreshed. The derivations are sorted
- * by their order, which means a parent derivation always gets priority to children
- * and descendents. Ie. we refresh the derivations top to bottom.
+ * A sorted array of prisms that need to be refreshed. The prisms are sorted
+ * by their order, which means a parent prism always gets priority to children
+ * and descendents. Ie. we refresh the prisms top to bottom.
  */
 const queue: QueueItem[] = []
 const setOfQueuedItems = new Set<QueueItem>()
@@ -99,7 +99,7 @@ type QueueItem<T = unknown> = {
   order: number
   /**
    * runUpdate() is the equivalent of a forceUpdate() call. It would only be called
-   * if the value of the inner derivation has _actually_ changed.
+   * if the value of the inner prism has _actually_ changed.
    */
   runUpdate: VoidFn
   /**
@@ -107,7 +107,7 @@ type QueueItem<T = unknown> = {
    */
   debug?: {
     /**
-     * The `debugLabel` given to `usePrism()/useDerivation()`
+     * The `debugLabel` given to `usePrism()/usePrismInstance()`
      */
     label?: string
     /**
@@ -115,8 +115,8 @@ type QueueItem<T = unknown> = {
      */
     traceOfFirstTimeRender: Error
     /**
-     * An array of the operations done on/about this useDerivation. This is helpful to trace
-     * why a useDerivation's update was added to the queue and why it re-rendered
+     * An array of the operations done on/about this usePrismInstance. This is helpful to trace
+     * why a usePrismInstance's update was added to the queue and why it re-rendered
      */
     history: Array<
       /**
@@ -132,9 +132,9 @@ type QueueItem<T = unknown> = {
        */
       | `queueUpdate()`
       /**
-       * `cb` in `item.der.changesWithoutValues(cb)` was called
+       * `cb` in `item.der.onStale(cb)` was called
        */
-      | `changesWithoutValues(cb)`
+      | `onStale(cb)`
       /**
        * Item was rendered
        */
@@ -142,23 +142,23 @@ type QueueItem<T = unknown> = {
     >
   }
   /**
-   * A reference to the derivation
+   * A reference to the prism
    */
-  der: IDerivation<T>
+  der: Prism<T>
   /**
-   * The last value of this derivation.
+   * The last value of this prism.
    */
   lastValue: T
   /**
-   * Would be set to true if the element hosting the `useDerivation()` was unmounted
+   * Would be set to true if the element hosting the `usePrismInstance()` was unmounted
    */
   unmounted: boolean
   /**
-   * Adds the `useDerivation` to the update queue
+   * Adds the `usePrismInstance` to the update queue
    */
   queueUpdate: () => void
   /**
-   * Untaps from `this.der.changesWithoutValues()`
+   * Untaps from `this.der.unStale()`
    */
   untap: () => void
 }
@@ -224,7 +224,7 @@ function queueIfNeeded() {
             item.debug?.history.push(`queue: der.getValue() errored`)
           }
           console.error(
-            'A `der.getValue()` in `useDerivation(der)` threw an error. ' +
+            'A `der.getValue()` in `usePrismInstance(der)` threw an error. ' +
               "This may be a zombie child issue, so we're gonna try to get its value again in a normal react render phase." +
               'If you see the same error again, then you either have an error in your prism code, or the deps array in `usePrism(fn, deps)` is missing ' +
               'a dependency and causing the prism to read stale values.',
@@ -246,17 +246,17 @@ function queueIfNeeded() {
   })
 }
 /**
- * A React hook that returns the value of the derivation that it received as the first argument.
+ * A React hook that returns the value of the prism that it received as the first argument.
  * It works like an implementation of Dataverse's Ticker, except that it runs the side effects in
- * an order where a component's derivation is guaranteed to run before any of its descendents' derivations.
+ * an order where a component's prism is guaranteed to run before any of its descendents' prisms.
  *
- * @param der - The derivation
+ * @param der - The prism
  * @param debugLabel - The label used by the debugger
  *
  * @remarks
- * It looks like this new implementation of useDerivation() manages to:
- * 1. Not over-calculate the derivations
- * 2. Render derivation in ancestor -\> descendent order
+ * It looks like this new implementation of usePrism() manages to:
+ * 1. Not over-calculate the prisms
+ * 2. Render prism in ancestor -\> descendent order
  * 3. Not set off React's concurrent mode alarms
  *
  *
@@ -266,44 +266,44 @@ function queueIfNeeded() {
  *
  * Notes on the latest implementation:
  *
- * # Remove cold derivation reads
+ * # Remove cold prism reads
  *
- * Prior to the latest change, the first render of every `useDerivation()` resulted in a cold read of its inner derivation.
+ * Prior to the latest change, the first render of every `usePrismInstance()` resulted in a cold read of its inner prism.
  * Cold reads are predictably slow. The reason we'd run cold reads was to comply with react's rule of not running side-effects
- * during render. (Turning a derivation hot is _technically_ a side-effect).
+ * during render. (Turning a prism hot is _technically_ a side-effect).
  *
  * However, now that users are animating scenes with hundreds of objects in the same sequence, the lag started to be noticable.
  *
- * This commit changes `useDerivation()` so that it turns its derivation hot before rendering them.
+ * This commit changes `usePrismInstance()` so that it turns its prism hot before rendering them.
  *
- * # Freshen derivations before render
+ * # Freshen prisms before render
  *
  * Previously in order to avoid the zombie child problem (https://kaihao.dev/posts/stale-props-and-zombie-children-in-redux)
- * we deferred freshening the derivations to the render phase of components. This meant that if a derivation's dependencies
- * changed, `useDerivation()` would schedule a re-render, regardless of whether that change actually affected the derivation's
+ * we deferred freshening the prisms to the render phase of components. This meant that if a prism's dependencies
+ * changed, `usePrismInstance()` would schedule a re-render, regardless of whether that change actually affected the prism's
  * value. Here is a contrived example:
  *
  * ```ts
  * const num = new Box(1)
- * const isPositiveD = prism(() => num.derivation.getValue() >= 0)
+ * const isPositiveD = prism(() => num.prism.getValue() >= 0)
  *
  * const Comp = () => {
- *   return <div>{useDerivation(isPositiveD)}</div>
+ *   return <div>{usePrismInstance(isPositiveD)}</div>
  * }
  *
  * num.set(2) // would cause Comp to re-render- even though 1 is still a positive number
  * ```
  *
- * We now avoid this problem by freshening the derivation (i.e. calling `der.getValue()`) inside `runQueue()`,
- * and then only causing a re-render if the derivation's value is actually changed.
+ * We now avoid this problem by freshening the prism (i.e. calling `der.getValue()`) inside `runQueue()`,
+ * and then only causing a re-render if the prism's value is actually changed.
  *
- * This still avoids the zombie-child problem because `runQueue` reads the derivations in-order of their position in
+ * This still avoids the zombie-child problem because `runQueue` reads the prisms in-order of their position in
  * the mounting tree.
  *
  * On the off-chance that one of them still turns out to be a zombile child, `runQueue` will defer that particular
- * `useDerivation()` to be read inside a normal react render phase.
+ * `usePrismInstance()` to be read inside a normal react render phase.
  */
-export function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
+export function usePrismInstance<T>(der: Prism<T>, debugLabel?: string): T {
   const _forceUpdate = useForceUpdate(debugLabel)
 
   const ref = useRef<QueueItem<T>>(undefined as $IntentionalAny)
@@ -327,9 +327,9 @@ export function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
         }
         pushToQueue(ref.current)
       },
-      untap: der.changesWithoutValues().tap(() => {
+      untap: der.onStale(() => {
         if (TRACE) {
-          ref.current.debug!.history.push(`changesWithoutValues(cb)`)
+          ref.current.debug!.history.push(`onStale(cb)`)
         }
         ref.current!.queueUpdate()
       }),
@@ -347,7 +347,7 @@ export function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
   if (process.env.NODE_ENV !== 'production') {
     if (der !== ref.current.der) {
       console.error(
-        'Argument `der` in `useDerivation(der)` should not change between renders.',
+        'Argument `der` in `usePrismInstance(der)` should not change between renders.',
       )
     }
   }
@@ -374,33 +374,31 @@ export function useDerivation<T>(der: IDerivation<T>, debugLabel?: string): T {
 }
 
 /**
- * This makes sure the prism derivation remains hot as long as the
+ * This makes sure the prism prism remains hot as long as the
  * component calling the hook is alive, but it does not
- * return the value of the derivation, and it does not
- * re-render the component if the value of the derivation changes.
+ * return the value of the prism, and it does not
+ * re-render the component if the value of the prism changes.
  *
- * Use this hook if you plan to read a derivation in a
- * useEffect() call, without the derivation causing your
+ * Use this hook if you plan to read a prism in a
+ * useEffect() call, without the prism causing your
  * element to re-render.
  */
 export function usePrismWithoutReRender<T>(
   fn: () => T,
   deps: unknown[],
-): IDerivation<T> {
-  const derivation = useMemo(() => prism(fn), deps)
+): Prism<T> {
+  const pr = useMemo(() => prism(fn), deps)
 
-  return useDerivationWithoutReRender(derivation)
+  return usePrismInstanceWithoutReRender(pr)
 }
 
 /**
- * This makes sure the derivation remains hot as long as the
+ * This makes sure the prism remains hot as long as the
  * component calling the hook is alive, but it does not
- * return the value of the derivation, and it does not
- * re-render the component if the value of the derivation changes.
+ * return the value of the prism, and it does not
+ * re-render the component if the value of the prism changes.
  */
-export function useDerivationWithoutReRender<T>(
-  der: IDerivation<T>,
-): IDerivation<T> {
+export function usePrismInstanceWithoutReRender<T>(der: Prism<T>): Prism<T> {
   useEffect(() => {
     const untap = der.keepHot()
 

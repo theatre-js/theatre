@@ -1,4 +1,4 @@
-import {Box} from '@theatre/dataverse'
+import {Atom} from '@theatre/dataverse'
 import {useVal} from '@theatre/react'
 import type {IExtension} from '@theatre/studio'
 import getStudio from '@theatre/studio/getStudio'
@@ -29,18 +29,18 @@ const ExtensionToolsetRender: React.FC<{
   extension: IExtension
   toolbarId: string
 }> = ({extension, toolbarId}) => {
-  const toolsetConfigBox = useMemo(() => new Box<ToolsetConfig>([]), [])
+  const toolsetConfigBox = useMemo(() => new Atom<ToolsetConfig>([]), [])
 
   useLayoutEffect(() => {
     const detach = extension.toolbars?.[toolbarId]?.(
-      toolsetConfigBox.set.bind(toolsetConfigBox),
+      toolsetConfigBox.setState.bind(toolsetConfigBox),
       getStudio()!.publicApi,
     )
 
     if (typeof detach === 'function') return detach
   }, [extension, toolbarId])
 
-  const config = useVal(toolsetConfigBox.derivation)
+  const config = useVal(toolsetConfigBox.prism)
 
   return <Toolset config={config} />
 }

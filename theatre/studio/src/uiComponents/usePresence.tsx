@@ -3,10 +3,11 @@ import type {StrictRecord} from '@theatre/shared/utils/types'
 import React, {useMemo} from 'react'
 import {useEffect} from 'react'
 import {useLogger} from './useLogger'
-import {Box, prism, valueDerivation} from '@theatre/dataverse'
+import {prism, pointerToPrism} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
-import {useDerivation} from '@theatre/react'
+import {usePrismInstance} from '@theatre/react'
 import {selectClosestHTMLAncestor} from '@theatre/studio/utils/selectClosestHTMLAncestor'
+import pointerDeep from '@theatre/shared/utils/pointerDeep'
 
 /** To mean the presence value */
 export enum PresenceFlag {
@@ -24,7 +25,7 @@ undefinedD.keepHot() // constant anyway...
 function createPresenceContext(options: {
   enabled: boolean
 }): InternalPresenceContext {
-  const currentUserHoverItemB = new Box<StudioSheetItemKey | undefined>(
+  const currentUserHoverItemB = new Atom<StudioSheetItemKey | undefined>(
     undefined,
   )
   const currentUserHoverFlagItemsAtom = new Atom(
@@ -53,12 +54,15 @@ function createPresenceContext(options: {
           flag: rel.flag,
         }
         const path = [rel.affects, itemKey, relationId]
-        relationsAtom.setIn(path, presence)
+        relationsAtom.setByPointer((p) => pointerDeep(p, path), presence)
         return path
       })
       return () => {
         for (const pathToUndo of undoAtPaths) {
-          relationsAtom.setIn(pathToUndo, undefined)
+          relationsAtom.setByPointer(
+            (p) => pointerDeep(p, pathToUndo),
+            undefined,
+          )
         }
       }
     },
@@ -68,11 +72,11 @@ function createPresenceContext(options: {
       const focusD = useMemo(() => {
         if (!itemKey) return undefinedD
         // this is the thing being hovered
-        const currentD = currentUserHoverItemB.derivation
-        const primaryFocusDer = valueDerivation(
+        const currentD = currentUserHoverItemB.prism
+        const primaryFocusDer = pointerToPrism(
           currentUserHoverFlagItemsAtom.pointer[itemKey],
         )
-        const relationsDer = valueDerivation(relationsAtom.pointer[itemKey])
+        const relationsDer = pointerToPrism(relationsAtom.pointer[itemKey])
         return prism(() => {
           const primary = primaryFocusDer.getValue()
           if (primary) {
@@ -95,7 +99,7 @@ function createPresenceContext(options: {
           }
         })
       }, [itemKey])
-      return useDerivation(focusD)
+      return usePrismInstance(focusD)
     },
     setUserHover(itemKeyOpt) {
       const prev = currentUserHoverItemB.get()
@@ -103,11 +107,11 @@ function createPresenceContext(options: {
         return
       }
       if (prev) {
-        currentUserHoverFlagItemsAtom.setIn([prev], false)
+        currentUserHoverFlagItemsAtom.setByPointer((p) => p[prev], false)
       }
       currentUserHoverItemB.set(itemKeyOpt)
       if (itemKeyOpt) {
-        currentUserHoverFlagItemsAtom.setIn([itemKeyOpt], true)
+        currentUserHoverFlagItemsAtom.setByPointer((p) => p[itemKeyOpt], true)
       }
     },
   }

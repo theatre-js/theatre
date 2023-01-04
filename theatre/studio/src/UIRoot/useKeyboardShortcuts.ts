@@ -3,8 +3,8 @@ import getStudio from '@theatre/studio/getStudio'
 import {cmdIsDown} from '@theatre/studio/utils/keyboardUtils'
 import {getSelectedSequence} from '@theatre/studio/selectors'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import type {IDerivation} from '@theatre/dataverse'
-import {Box, prism, val} from '@theatre/dataverse'
+import type {Prism} from '@theatre/dataverse'
+import {Atom, prism, val} from '@theatre/dataverse'
 import type {IPlaybackRange} from '@theatre/core/sequences/Sequence'
 import type Sequence from '@theatre/core/sequences/Sequence'
 import memoizeFn from '@theatre/shared/utils/memoizeFn'
@@ -54,7 +54,7 @@ export default function useKeyboardShortcuts() {
             const {projectId, sheetId} = seq.address
 
             /*
-             * The value of this derivation is an array that contains the
+             * The value of this prism is an array that contains the
              * range of the playback (start and end), and a boolean that is
              * `true` if the playback should be played within that range.
              */
@@ -109,7 +109,7 @@ export default function useKeyboardShortcuts() {
             )
 
             const playbackPromise = seq.playDynamicRange(
-              controlledPlaybackStateD.map(({range}) => range),
+              prism(() => val(controlledPlaybackStateD).range),
             )
 
             const playbackStateBox = getPlaybackStateBox(seq)
@@ -150,19 +150,19 @@ export default function useKeyboardShortcuts() {
   }, [])
 }
 
-type ControlledPlaybackStateBox = Box<
-  undefined | IDerivation<{range: IPlaybackRange; isFollowingARange: boolean}>
+type ControlledPlaybackStateBox = Atom<
+  undefined | Prism<{range: IPlaybackRange; isFollowingARange: boolean}>
 >
 
 const getPlaybackStateBox = memoizeFn(
   (sequence: Sequence): ControlledPlaybackStateBox => {
-    const box = new Box(undefined) as ControlledPlaybackStateBox
+    const box = new Atom(undefined) as ControlledPlaybackStateBox
     return box
   },
 )
 
 /*
- * A memoized function that returns a derivation with a boolean value.
+ * A memoized function that returns a prism with a boolean value.
  * This value is set to `true` if:
  * 1. the playback is playing and using the focus range instead of the whole sequence
  * 2. the playback is stopped, but would use the focus range if it were started.
@@ -171,7 +171,7 @@ export const getIsPlayheadAttachedToFocusRange = memoizeFn(
   (sequence: Sequence) =>
     prism<boolean>(() => {
       const controlledPlaybackState =
-        getPlaybackStateBox(sequence).derivation.getValue()
+        getPlaybackStateBox(sequence).prism.getValue()
       if (controlledPlaybackState) {
         return controlledPlaybackState.getValue().isFollowingARange
       } else {

@@ -1,36 +1,35 @@
-import type {IdentityDerivationProvider} from './Atom'
+import type {IdentityPrismProvider} from './Atom'
+import Atom, {val} from './Atom'
 import type {Pointer} from './pointer'
 import pointer from './pointer'
-import type {IBox} from './Box'
-import Box from './Box'
 import type {$FixMe, $IntentionalAny} from './types'
-import {valueDerivation} from './Atom'
+import prism from './prism/prism'
 
 /**
- * Allows creating pointer-derivations where the pointer can be switched out.
+ * Allows creating pointer-prisms where the pointer can be switched out.
  *
  * @remarks
  * This allows reacting not just to value changes at a certain pointer, but changes
  * to the proxied pointer too.
  */
 export default class PointerProxy<O extends {}>
-  implements IdentityDerivationProvider
+  implements IdentityPrismProvider
 {
   /**
    * @internal
    */
-  readonly $$isIdentityDerivationProvider = true
-  private readonly _currentPointerBox: IBox<Pointer<O>>
+  readonly $$isIdentityPrismProvider = true
+  private readonly _currentPointerBox: Atom<Pointer<O>>
   /**
    * Convenience pointer pointing to the root of this PointerProxy.
    *
    * @remarks
-   * Allows convenient use of {@link valueDerivation} and {@link val}.
+   * Allows convenient use of {@link pointerToPrism} and {@link val}.
    */
   readonly pointer: Pointer<O>
 
   constructor(currentPointer: Pointer<O>) {
-    this._currentPointerBox = new Box(currentPointer)
+    this._currentPointerBox = new Atom(currentPointer)
     this.pointer = pointer({root: this as $FixMe, path: []})
   }
 
@@ -43,17 +42,18 @@ export default class PointerProxy<O extends {}>
   }
 
   /**
-   * Returns a derivation of the value at the provided sub-path of the proxied pointer.
+   * Returns a prism of the value at the provided sub-path of the proxied pointer.
    *
-   * @param path - The path to create the derivation at.
+   * @param path - The path to create the prism at.
    */
-  getIdentityDerivation(path: Array<string | number>) {
-    return this._currentPointerBox.derivation.flatMap((p) => {
+  getIdentityPrism(path: Array<string | number>) {
+    return prism(() => {
+      const currentPointer = this._currentPointerBox.prism.getValue()
       const subPointer = path.reduce(
         (pointerSoFar, pathItem) => (pointerSoFar as $IntentionalAny)[pathItem],
-        p,
+        currentPointer,
       )
-      return valueDerivation(subPointer)
+      return val(subPointer)
     })
   }
 }

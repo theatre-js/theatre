@@ -14,11 +14,7 @@ import type {
   SerializableValue,
 } from '@theatre/shared/utils/types'
 import {valToAtom} from '@theatre/shared/utils/valToAtom'
-import type {
-  IdentityDerivationProvider,
-  IDerivation,
-  Pointer,
-} from '@theatre/dataverse'
+import type {IdentityPrismProvider, Prism, Pointer} from '@theatre/dataverse'
 
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
@@ -42,11 +38,11 @@ type SheetObjectPropsValue = SerializableMap
  * Note that this cannot be generic over `Props`, since the user is
  * able to change prop configs for the sheet object's properties.
  */
-export default class SheetObject implements IdentityDerivationProvider {
+export default class SheetObject implements IdentityPrismProvider {
   get type(): 'Theatre_SheetObject' {
     return 'Theatre_SheetObject'
   }
-  readonly $$isIdentityDerivationProvider: true = true
+  readonly $$isIdentityPrismProvider: true = true
   readonly address: SheetObjectAddress
   readonly publicApi: TheatreSheetObject
   private readonly _initialValue = new Atom<SheetObjectPropsValue>({})
@@ -73,9 +69,9 @@ export default class SheetObject implements IdentityDerivationProvider {
     this.publicApi = new TheatreSheetObject(this)
   }
 
-  getValues(): IDerivation<Pointer<SheetObjectPropsValue>> {
-    // Cache the derivation because only one is needed per SheetObject.
-    // Also, if `onValuesChange()` is unsubscribed from, this derivation will go cold
+  getValues(): Prism<Pointer<SheetObjectPropsValue>> {
+    // Cache the prism because only one is needed per SheetObject.
+    // Also, if `onValuesChange()` is unsubscribed from, this prism will go cold
     // and free its resources. So it's no problem to still keep it on the cache.
     return this._cache.get('getValues()', () =>
       prism(() => {
@@ -89,7 +85,7 @@ export default class SheetObject implements IdentityDerivationProvider {
          * if boo.bar.baz is sequenced and the sequence is playing, this prism will recalculate on every frame.
          * This might sound inefficient, but we have a few tricks to make it fast:
          *
-         * First, on each recalculation, most of the derivations that this prism depends on will not have changed,
+         * First, on each recalculation, most of the prisms that this prism depends on will not have changed,
          * and so reading them is cheap. For example, if foo.bar.baz changed due to being sequenced, but
          * foo.bar2 hasn't because it is static, reading foo.bar2 will be cheap.
          *
@@ -111,7 +107,7 @@ export default class SheetObject implements IdentityDerivationProvider {
 
         /**
          * The lowest layer is the default value of the root prop. Since an object's config
-         * _could_ change, we read it as a derivation. Otherwise, we could have just `getDefaultsOfPropTypeConfig(this.template.staticConfig)`.
+         * _could_ change, we read it as a prism. Otherwise, we could have just `getDefaultsOfPropTypeConfig(this.template.staticConfig)`.
          *
          * Note: If studio is not present, there is no known use-case for the config of an object to change on the fly, so
          * we could read this value statically.
@@ -172,7 +168,7 @@ export default class SheetObject implements IdentityDerivationProvider {
         let sequenced
 
         {
-          // NOTE: we're reading the sequenced values as a derivation to a pointer. This should be refactored
+          // NOTE: we're reading the sequenced values as a prism to a pointer. This should be refactored
           // to a simple pointer.
           const pointerToSequencedValuesD = prism.memo(
             'seq',
@@ -189,7 +185,7 @@ export default class SheetObject implements IdentityDerivationProvider {
           )
 
           // read the sequenced values
-          // (val(val(x))) unwraps the pointer and the derivation
+          // (val(val(x))) unwraps the pointer and the prism
           sequenced = val(val(pointerToSequencedValuesD))
 
           // deep-merge the sequenced values with the previous layer
@@ -215,7 +211,7 @@ export default class SheetObject implements IdentityDerivationProvider {
     ) as SerializableValue as T
   }
 
-  getIdentityDerivation(path: Array<string | number>): IDerivation<unknown> {
+  getIdentityPrism(path: Array<string | number>): Prism<unknown> {
     /**
      * @remarks
      * TODO perf: Too much indirection here.
@@ -229,7 +225,7 @@ export default class SheetObject implements IdentityDerivationProvider {
   /**
    * Returns values of props that are sequenced.
    */
-  getSequencedValues(): IDerivation<Pointer<SheetObjectPropsValue>> {
+  getSequencedValues(): Prism<Pointer<SheetObjectPropsValue>> {
     return prism(() => {
       const tracksToProcessD = prism.memo(
         'tracksToProcess',
@@ -247,7 +243,7 @@ export default class SheetObject implements IdentityDerivationProvider {
           const untaps: Array<() => void> = []
 
           for (const {trackId, pathToProp} of tracksToProcess) {
-            const derivation = this._trackIdToDerivation(trackId)
+            const pr = this._trackIdToPrism(trackId)
             const propConfig = getPropConfigByPath(
               config,
               pathToProp,
@@ -257,10 +253,14 @@ export default class SheetObject implements IdentityDerivationProvider {
             const interpolate =
               propConfig.interpolate! as Interpolator<$IntentionalAny>
 
-            const updateSequenceValueFromItsDerivation = () => {
-              const triple = derivation.getValue()
+            const updateSequenceValueFromItsPrism = () => {
+              const triple = pr.getValue()
 
-              if (!triple) return valsAtom.setIn(pathToProp, undefined)
+              if (!triple)
+                return valsAtom.setByPointer(
+                  (p) => pointerDeep(p, pathToProp),
+                  undefined,
+                )
 
               const leftDeserialized = deserializeAndSanitize(triple.left)
 
@@ -270,7 +270,10 @@ export default class SheetObject implements IdentityDerivationProvider {
                   : leftDeserialized
 
               if (triple.right === undefined)
-                return valsAtom.setIn(pathToProp, left)
+                return valsAtom.setByPointer(
+                  (p) => pointerDeep(p, pathToProp),
+                  left,
+                )
 
               const rightDeserialized = deserializeAndSanitize(triple.right)
               const right =
@@ -278,16 +281,14 @@ export default class SheetObject implements IdentityDerivationProvider {
                   ? propConfig.default
                   : rightDeserialized
 
-              return valsAtom.setIn(
-                pathToProp,
+              return valsAtom.setByPointer(
+                (p) => pointerDeep(p, pathToProp),
                 interpolate(left, right, triple.progression),
               )
             }
-            const untap = derivation
-              .changesWithoutValues()
-              .tap(updateSequenceValueFromItsDerivation)
+            const untap = pr.onStale(updateSequenceValueFromItsPrism)
 
-            updateSequenceValueFromItsDerivation()
+            updateSequenceValueFromItsPrism()
             untaps.push(untap)
           }
           return () => {
@@ -303,14 +304,14 @@ export default class SheetObject implements IdentityDerivationProvider {
     })
   }
 
-  protected _trackIdToDerivation(
+  protected _trackIdToPrism(
     trackId: SequenceTrackId,
-  ): IDerivation<InterpolationTriple | undefined> {
+  ): Prism<InterpolationTriple | undefined> {
     const trackP =
       this.template.project.pointers.historic.sheetsById[this.address.sheetId]
         .sequence.tracksByObject[this.address.objectKey].trackData[trackId]
 
-    const timeD = this.sheet.getSequence().positionDerivation
+    const timeD = this.sheet.getSequence().positionPrism
 
     return interpolationTripleAtPosition(this._internalUtilCtx, trackP, timeD)
   }

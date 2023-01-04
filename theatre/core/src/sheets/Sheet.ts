@@ -1,10 +1,13 @@
 import type Project from '@theatre/core/projects/Project'
 import Sequence from '@theatre/core/sequences/Sequence'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import type {SheetObjectPropTypeConfig} from '@theatre/core/sheets/TheatreSheet'
+import type {
+  SheetObjectActionsConfig,
+  SheetObjectPropTypeConfig,
+} from '@theatre/core/sheets/TheatreSheet'
 import TheatreSheet from '@theatre/core/sheets/TheatreSheet'
 import type {SheetAddress} from '@theatre/shared/utils/addresses'
-import {Atom, valueDerivation} from '@theatre/dataverse'
+import {Atom, prism, val} from '@theatre/dataverse'
 import type SheetTemplate from './SheetTemplate'
 import type {ObjectAddressKey, SheetInstanceId} from '@theatre/shared/utils/ids'
 import type {StrictRecord} from '@theatre/shared/utils/types'
@@ -55,16 +58,18 @@ export default class Sheet {
     objectKey: ObjectAddressKey,
     nativeObject: ObjectNativeObject,
     config: SheetObjectPropTypeConfig,
+    actions: SheetObjectActionsConfig = {},
   ): SheetObject {
     const objTemplate = this.template.getObjectTemplate(
       objectKey,
       nativeObject,
       config,
+      actions,
     )
 
     const object = objTemplate.createInstance(this, nativeObject, config)
 
-    this._objects.setIn([objectKey], object)
+    this._objects.setByPointer((p) => p[objectKey], object)
 
     return object
   }
@@ -74,7 +79,7 @@ export default class Sheet {
   }
 
   deleteObject(objectKey: ObjectAddressKey) {
-    this._objects.reduceState([], (state) => {
+    this._objects.reduce((state) => {
       const newState = {...state}
       delete newState[objectKey]
       return newState
@@ -83,15 +88,21 @@ export default class Sheet {
 
   getSequence(): Sequence {
     if (!this._sequence) {
-      const lengthD = valueDerivation(
-        this.project.pointers.historic.sheetsById[this.address.sheetId].sequence
-          .length,
-      ).map(sanitizeSequenceLength)
+      const lengthD = prism(() => {
+        const unsanitized = val(
+          this.project.pointers.historic.sheetsById[this.address.sheetId]
+            .sequence.length,
+        )
+        return sanitizeSequenceLength(unsanitized)
+      })
 
-      const subUnitsPerUnitD = valueDerivation(
-        this.project.pointers.historic.sheetsById[this.address.sheetId].sequence
-          .subUnitsPerUnit,
-      ).map(sanitizeSequenceSubUnitsPerUnit)
+      const subUnitsPerUnitD = prism(() => {
+        const unsanitized = val(
+          this.project.pointers.historic.sheetsById[this.address.sheetId]
+            .sequence.subUnitsPerUnit,
+        )
+        return sanitizeSequenceSubUnitsPerUnit(unsanitized)
+      })
 
       this._sequence = new Sequence(
         this.template.project,

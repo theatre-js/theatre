@@ -1,5 +1,5 @@
-import type {IDerivation} from '@theatre/dataverse'
-import {Box} from '@theatre/dataverse'
+import type { Prism} from '@theatre/dataverse';
+import {Atom} from '@theatre/dataverse'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {
   createContext,
@@ -10,7 +10,7 @@ import React, {
 } from 'react'
 
 const ctx = createContext<{
-  cur: IDerivation<number>
+  cur: Prism<number>
   set: (id: number, delay: number) => void
 }>(null!)
 
@@ -29,7 +29,7 @@ export const useTooltipOpenState = (): [
   }, [])
 
   useEffect(() => {
-    return cur.changesWithoutValues().tap(() => {
+    return cur.onStale(() => {
       const flag = cur.getValue() === id
 
       if (isOpenRef.current !== flag) isOpenRef.current = flag
@@ -40,8 +40,8 @@ export const useTooltipOpenState = (): [
 }
 
 const TooltipContext: React.FC<{}> = ({children}) => {
-  const currentTooltipId = useMemo(() => new Box(-1), [])
-  const cur = currentTooltipId.derivation
+  const currentTooltipId = useMemo(() => new Atom(-1), [])
+  const cur = currentTooltipId.prism
 
   const set = useMemo(() => {
     let lastTimeout: NodeJS.Timeout | undefined = undefined

@@ -455,6 +455,7 @@ namespace stateEditors {
           }
         }
       }
+
       export namespace projects {
         export namespace stateByProjectId {
           export function _ensure(p: ProjectAddress) {
@@ -466,6 +467,33 @@ namespace stateEditors {
             }
 
             return s.projects.stateByProjectId[p.projectId]!
+          }
+
+          export namespace collapsedItemsInOutline {
+            export function _ensure(p: ProjectAddress) {
+              const projectState =
+                stateEditors.studio.ahistoric.projects.stateByProjectId._ensure(
+                  p,
+                )
+              if (!projectState.collapsedItemsInOutline) {
+                projectState.collapsedItemsInOutline = {}
+              }
+              return projectState.collapsedItemsInOutline!
+            }
+            export function set(
+              p: ProjectAddress & {isCollapsed: boolean; itemKey: string},
+            ) {
+              const collapsedItemsInOutline =
+                stateEditors.studio.ahistoric.projects.stateByProjectId.collapsedItemsInOutline._ensure(
+                  p,
+                )
+
+              if (p.isCollapsed) {
+                collapsedItemsInOutline[p.itemKey] = true
+              } else {
+                delete collapsedItemsInOutline[p.itemKey]
+              }
+            }
           }
 
           export namespace stateBySheetId {

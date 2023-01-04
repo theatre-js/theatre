@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import Atom, {val} from './Atom'
-import prism from './derivations/prism/prism'
+import prism from './prism/prism'
 import Ticker from './Ticker'
 
 describe(`v2 atom`, () => {
@@ -20,7 +20,7 @@ describe(`v2 atom`, () => {
       expect(d.getValue()).toEqual(0)
       const ticker = new Ticker()
       const changes: number[] = []
-      d.changes(ticker).tap((c) => {
+      d.onChange(ticker, (c) => {
         changes.push(c)
       })
       a.setState({...data, bar: 1})

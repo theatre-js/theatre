@@ -8,8 +8,8 @@ import type {
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import {usePrism, useVal} from '@theatre/react'
-import type {IDerivation, Pointer} from '@theatre/dataverse'
-import {prism, val, valueDerivation} from '@theatre/dataverse'
+import type {Prism, Pointer} from '@theatre/dataverse'
+import {prism, val, pointerToPrism} from '@theatre/dataverse'
 import React, {useMemo, Fragment} from 'react'
 import styled from 'styled-components'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
@@ -230,7 +230,7 @@ function useCollectedSelectedPositions(
 function collectedSelectedPositions(
   layoutP: Pointer<SequenceEditorPanelLayout>,
   aggregatedKeyframes: AggregatedKeyframes,
-): IDerivation<_AggSelection> {
+): Prism<_AggSelection> {
   return prism(() => {
     const selectionAtom = val(layoutP.selectionAtom)
     const selection = val(selectionAtom.pointer.current)
@@ -302,7 +302,7 @@ function useAggregatedKeyframeTrackContextMenu(
     displayName: 'Aggregate Keyframe Track',
     menuItems: () => {
       const selectionKeyframes =
-        valueDerivation(
+        pointerToPrism(
           getStudio()!.atomP.ahistoric.clipboard.keyframesWithRelativePaths,
         ).getValue() ?? []
 
@@ -355,7 +355,7 @@ function pasteKeyframesSheet(
 
   if (areKeyframesAllOnSingleTrack) {
     for (const object of viewModel.children.map((child) => child.sheetObject)) {
-      const tracksByObject = valueDerivation(
+      const tracksByObject = pointerToPrism(
         getStudio().atomP.historic.coreByProject[projectId].sheetsById[sheetId]
           .sequence.tracksByObject[object.address.objectKey],
       ).getValue()
@@ -370,7 +370,7 @@ function pasteKeyframesSheet(
       )
     }
   } else {
-    const tracksByObject = valueDerivation(
+    const tracksByObject = pointerToPrism(
       getStudio().atomP.historic.coreByProject[projectId].sheetsById[sheetId]
         .sequence.tracksByObject,
     ).getValue()
@@ -418,7 +418,7 @@ function pasteKeyframesObjectOrCompound(
 ) {
   const {projectId, sheetId, objectKey} = viewModel.sheetObject.address
 
-  const trackRecords = valueDerivation(
+  const trackRecords = pointerToPrism(
     getStudio().atomP.historic.coreByProject[projectId].sheetsById[sheetId]
       .sequence.tracksByObject[objectKey],
   ).getValue()
