@@ -51,7 +51,7 @@ export interface ISheet {
    *
    * @param key - Each object is identified by a key, which is a non-empty string
    * @param props - The props of the object. See examples
-   * @param options - (Optional) Provide `{reconfigure: true}` to reconfigure an existing object. Reac the example below for details.
+   * @param options - (Optional) Provide `{reconfigure: true}` to reconfigure an existing object, or `{actions: { ... }}` to add custom buttons to the UI. Read the example below for details.
    *
    * @returns An Object
    *
@@ -80,6 +80,18 @@ export interface ISheet {
    * console.log(object.value.bar) // prints 0, since we've introduced this prop by reconfiguring the object
    *
    * assert(obj === obj2) // passes, because reconfiguring the object returns the same object
+   *
+   * // you can add custom actions to an object:
+   * const obj = sheet.object("obj", {foo: 0}, {
+   *   actions: {
+   *     // This will display a button in the UI that will reset the value of `foo` to 0
+   *     Reset: () => {
+   *       studio.transaction((api) => {
+   *         api.set(obj.props.foo, 0)
+   *       })
+   *     }
+   *   }
+   * })
    * ```
    */
   object<Props extends UnknownShorthandCompoundProps>(
