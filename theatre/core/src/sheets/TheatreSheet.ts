@@ -19,9 +19,14 @@ import type {
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {ObjectAddressKey} from '@theatre/shared/utils/ids'
 import {notify} from '@theatre/shared/notify'
+import type {IStudio} from '@theatre/studio'
 
 export type SheetObjectPropTypeConfig =
   PropTypeConfig_Compound<UnknownValidCompoundProps>
+
+export type SheetObjectAction = (object: ISheetObject, studio: IStudio) => void
+
+export type SheetObjectActionsConfig = Record<string, SheetObjectAction>
 
 export interface ISheet {
   /**
@@ -82,6 +87,7 @@ export interface ISheet {
     props: Props,
     options?: {
       reconfigure?: boolean
+      actions?: SheetObjectActionsConfig
     },
   ): ISheetObject<Props>
 
@@ -120,7 +126,7 @@ export default class TheatreSheet implements ISheet {
   object<Props extends UnknownShorthandCompoundProps>(
     key: string,
     config: Props,
-    opts?: {reconfigure?: boolean},
+    opts?: {reconfigure?: boolean; actions?: SheetObjectActionsConfig},
   ): ISheetObject<Props> {
     const internal = privateAPI(this)
     const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
@@ -161,6 +167,13 @@ export default class TheatreSheet implements ISheet {
         }
       }
 
+      if (opts?.actions) {
+        Object.entries(opts.actions).forEach(([key, action]) => {
+          existingObject.template.registerAction(key, action)
+        })
+        console.log('registered actions', opts.actions)
+      }
+
       return existingObject.publicApi as $IntentionalAny
     } else {
       const sanitizedConfig = compound(config)
@@ -168,6 +181,7 @@ export default class TheatreSheet implements ISheet {
         sanitizedPath as ObjectAddressKey,
         nativeObject,
         sanitizedConfig,
+        opts?.actions,
       )
       if (process.env.NODE_ENV !== 'production') {
         weakMapOfUnsanitizedProps.set(object as $FixMe, config)
