@@ -23,8 +23,6 @@ import {defer} from '@theatre/shared/utils/defer'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import checkForUpdates from './checkForUpdates'
 import shallowEqual from 'shallowequal'
-// @ts-ignore
-import blobCompare from 'blob-compare'
 import {createStore} from './IDBStorage'
 import {getAllPossibleAssetIDs} from '@theatre/shared/utils/assets'
 import {notify} from './notify'
@@ -33,6 +31,10 @@ export type CoreExports = typeof _coreExports
 
 const UIConstructorModule =
   typeof window !== 'undefined' ? require('./UI') : null
+
+// this package has a reference to `window` that breaks SSR, so we require it conditionally
+const blobCompare =
+  typeof window !== 'undefined' ? require('blob-compare') : null
 
 const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
 \`\`\`
@@ -420,7 +422,7 @@ export class Studio {
 
           if (existingAsset) {
             // @ts-ignore
-            sameSame = await blobCompare.isEqual(asset, existingAsset)
+            sameSame = await blobCompare!.isEqual(asset, existingAsset)
 
             // if same same, we do nothing
             if (sameSame) {
