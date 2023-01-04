@@ -4,7 +4,7 @@ import type {
 } from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
 import type {$FixMe} from '@theatre/shared/utils/types'
-import {Box, getPointerParts} from '@theatre/dataverse'
+import {Atom, getPointerParts} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
@@ -177,7 +177,7 @@ function DetailCompoundPropEditor<
 
   useLayoutEffect(() => {
     if (!collapsedMap.has(globalPointerPath)) {
-      collapsedMap.set(globalPointerPath, new Box(isVectorProp(propConfig)))
+      collapsedMap.set(globalPointerPath, new Atom(isVectorProp(propConfig)))
     }
   }, [])
 
@@ -186,7 +186,7 @@ function DetailCompoundPropEditor<
   const isCollapsed = usePrism(() => {
     const box = collapsedMap.get(globalPointerPath)
 
-    return box ? val(box.derivation) : isVectorProp(propConfig)
+    return box ? val(box.pointer) : isVectorProp(propConfig)
   }, [box])
 
   return (
@@ -263,4 +263,4 @@ function DetailCompoundPropEditor<
 
 export default React.memo(DetailCompoundPropEditor)
 
-const collapsedMap = new Map<string, Box<boolean>>()
+const collapsedMap = new Map<string, Atom<boolean>>()
