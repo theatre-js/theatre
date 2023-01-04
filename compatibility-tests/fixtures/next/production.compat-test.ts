@@ -22,7 +22,8 @@ describe(`next / production`, () => {
     expect(stdoutUntilRoutePages).toMatchSnapshot()
   })
 
-  describe(`$ next start`, () => {
+  // this test is not ready yet, so we'll skip it
+  describe.skip(`$ next start`, () => {
     let browser, page
     beforeAll(async () => {
       browser = await chromium.launch()

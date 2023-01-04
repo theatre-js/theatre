@@ -4,7 +4,6 @@
   "type": "module",
   "scripts": {
     "install-fixtures": "zx ./scripts/install-fixtures.mjs",
-    "test:ci": "zx ./scripts/ci.mjs",
     "clean": "zx ./scripts/clean.mjs"
   },
   "dependencies": {

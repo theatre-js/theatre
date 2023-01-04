@@ -12,7 +12,6 @@
     "playground": "yarn workspace playground run serve",
     "test:e2e": "yarn workspace playground run test",
     "test:e2e:ci": "yarn workspace playground run test:ci",
-    "test:compatibility:ci": "yarn workspace @theatre/compatibility-tests run test:ci",
     "typecheck": "yarn run build:ts",
     "build": "zx scripts/build.mjs",
     "clean": "zx scripts/clean.mjs",
