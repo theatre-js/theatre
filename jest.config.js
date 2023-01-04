@@ -10,7 +10,10 @@ module.exports = {
     'lodash-es/(.*)': 'lodash/$1',
     'react-use/esm/(.*)': 'react-use/lib/$1',
     'lodash-es': 'lodash',
-    // An ES module that jest can't handle at the moment.
+    // ES modules that jest can't handle at the moment.
+    uuid: '<rootDir>/node_modules/uuid/dist/index.js',
+    nanoid: '<rootDir>/node_modules/nanoid/index.cjs',
+    'nanoid/non-secure': '<rootDir>/node_modules/nanoid/non-secure/index.cjs',
     'react-icons/(.*)': 'identity-obj-proxy',
   },
   setupFiles: ['./theatre/shared/src/setupTestEnv.ts'],
