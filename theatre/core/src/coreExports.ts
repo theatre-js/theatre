@@ -8,8 +8,7 @@ import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import deepEqual from 'fast-deep-equal'
-import type {PointerType} from '@theatre/dataverse';
-import { Ticker} from '@theatre/dataverse'
+import type {PointerType} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
 import {isPrism, pointerToPrism} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
@@ -18,6 +17,8 @@ import {_coreLogger} from './_coreLogger'
 import {getCoreTicker} from './coreTicker'
 export {notify} from '@theatre/shared/notify'
 export {types}
+export {createRafDriver} from './rafDrivers'
+export type {IRafDriver} from './rafDrivers'
 
 /**
  * Returns a project of the given id, or creates one if it doesn't already exist.
@@ -165,65 +166,6 @@ export function onChange<P extends PointerType<$IntentionalAny>>(
       `Called onChange(p) where p is neither a pointer nor a prism.`,
     )
   }
-}
-
-interface RafDriver {
-  id: number
-  state: 'stopped' | 'running'
-  stop: null | VoidFn
-  start: (tick: (t: number) => void) => void
-}
-
-let lastDriverId = 0
-// creates a custom request animation frame driver with a stop function
-function createRafDriver(
-  startFn: (tick: (t: number) => void) => undefined | (() => void),
-) {
-  const driver: RafDriver = {
-    id: lastDriverId++,
-    state: 'stopped' as 'stopped' | 'running',
-    stop: null as null | VoidFn,
-    start: (tick) => {
-      const stop = startFn(tick)
-      driver.stop = () => {
-        if (stop) {
-          driver.state = 'stopped'
-          stop()
-        }
-      }
-      driver.state = 'running'
-    },
-  }
-}
-
-createRafDriver(function startTicking(tick) {
-  let rafId: number
-  function loop() {
-    tick(performance.now())
-    rafId = requestAnimationFrame(loop)
-  }
-  rafId = requestAnimationFrame(loop)
-
-  return function stopTicking() {
-    cancelAnimationFrame(rafId)
-  }
-})
-
-const tickerDriverMap = new WeakMap<unknown, Ticker>()
-
-function createSimplerRafDriver(conf?: {
-  name?: string
-  start?: () => void
-  stop?: () => void
-}): {tick: (time: number) => void; name: string; id: number} {
-  const tick = (time: number): void => {}
-
-  const ticker = new Ticker()
-
-  const driver = {tick, id: lastDriverId++, name: conf?.name ?? ''}
-  tickerDriverMap.set(driver, ticker)
-
-  return driver
 }
 
 /**
