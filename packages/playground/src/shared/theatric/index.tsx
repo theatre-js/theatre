@@ -2,10 +2,14 @@ import {useControls} from 'theatric'
 import {render} from 'react-dom'
 import React, {useState} from 'react'
 
-function SomeComponent() {
-  const {foo} = useControls({foo: 0})
+function SomeComponent({id}: {id: string}) {
+  const {foo} = useControls(id, {foo: 0})
 
-  return <div>{foo}</div>
+  return (
+    <div>
+      {id}: {foo}
+    </div>
+  )
 }
 
 function App() {
@@ -24,6 +28,8 @@ function App() {
       }}
     >
       <div>{bar}</div>
+      <SomeComponent id="first" />
+      <SomeComponent id="second" />
       <button
         onClick={() => {
           setShowComponent(!showComponent)
@@ -31,7 +37,7 @@ function App() {
       >
         Show another component
       </button>
-      {showComponent && <SomeComponent />}
+      {showComponent && <SomeComponent id="hidden" />}
     </div>
   )
 }
