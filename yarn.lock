@@ -31360,7 +31360,6 @@ fsevents@^1.2.7:
     "@theatre/react": "workspace:*"
     "@theatre/studio": "workspace:*"
     "@types/jest": ^26.0.23
-    "@types/lodash-es": ^4.17.4
     "@types/node": ^15.6.2
     "@types/react": ^17.0.9
     "@types/react-dom": ^17.0.6
