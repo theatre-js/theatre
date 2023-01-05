@@ -31351,6 +31351,29 @@ fsevents@^1.2.7:
   languageName: unknown
   linkType: soft
 
+"theatric@workspace:packages/theatric":
+  version: 0.0.0-use.local
+  resolution: "theatric@workspace:packages/theatric"
+  dependencies:
+    "@microsoft/api-extractor": ^7.18.11
+    "@theatre/core": "workspace:*"
+    "@theatre/react": "workspace:*"
+    "@theatre/studio": "workspace:*"
+    "@types/jest": ^26.0.23
+    "@types/lodash-es": ^4.17.4
+    "@types/node": ^15.6.2
+    "@types/react": ^17.0.9
+    "@types/react-dom": ^17.0.6
+    esbuild: ^0.12.15
+    esbuild-register: ^2.5.0
+    npm-run-all: ^4.1.5
+    typescript: ^4.4.2
+  peerDependencies:
+    react: "*"
+    react-dom: "*"
+  languageName: unknown
+  linkType: soft
+
 "three-mesh-bvh@npm:^0.4.1":
   version: 0.4.1
   resolution: "three-mesh-bvh@npm:0.4.1"
