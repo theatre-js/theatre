@@ -40,16 +40,16 @@ type ControlsAndButtons = {
   [key: string]: {type: 'button'} | UnknownShorthandCompoundProps[string]
 }
 
-export function useControls<Props extends ControlsAndButtons>(
-  configOrFolderName: string | Props,
-  configIfFolderName?: Props,
+export function useControls<Config extends ControlsAndButtons>(
+  configOrFolderName: string | Config,
+  configIfFolderName?: Config,
 ) {
   const folderName =
     typeof configOrFolderName === 'string' ? configOrFolderName : undefined
   let config =
     typeof configOrFolderName === 'string'
-      ? configIfFolderName ?? ({} as Props)
-      : (configOrFolderName as Props)
+      ? configIfFolderName ?? ({} as Config)
+      : (configOrFolderName as Config)
 
   const controlsWithoutButtons = Object.fromEntries(
     Object.entries(config).filter(
@@ -120,9 +120,9 @@ export function useControls<Props extends ControlsAndButtons>(
   return useVal(
     folderName
       ? ((object as ISheetObject).props[folderName] as ISheetObject<
-          OmitMatching<Props, {type: 'button'}>
+          OmitMatching<Config, {type: 'button'}>
         >['props'])
-      : (object as ISheetObject<OmitMatching<Props, {type: 'button'}>>).props,
+      : (object as ISheetObject<OmitMatching<Config, {type: 'button'}>>).props,
   )
 }
 
