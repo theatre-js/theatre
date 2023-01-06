@@ -14,8 +14,6 @@ type KeysMatching<T extends object, V> = {
   [K in keyof T]-?: T[K] extends V ? K : never
 }[keyof T]
 
-type PickMatching<T extends object, V> = Pick<T, KeysMatching<T, V>>
-
 type OmitMatching<T extends object, V> = Omit<T, KeysMatching<T, V>>
 
 studio.initialize()
@@ -75,6 +73,10 @@ export function useControls<Props extends ControlsAndButtons>(
       (object: ISheetObject, studio: IStudio) => {
         value.onClick(
           (path, value) => {
+            // this is not ideal because it will create a separate undo level for each set call,
+            // but this is the only thing that theatre's public API allows us to do.
+            // Wrapping the whole thing in a transaction wouldn't work either because side effects
+            // would be run twice.
             studio.transaction((api) => {
               api.set(
                 get(folderName ? object.props[folderName] : object.props, path),
