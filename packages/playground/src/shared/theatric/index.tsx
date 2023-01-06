@@ -23,7 +23,7 @@ function SomeComponent({id}: {id: string}) {
 function App() {
   const {bar} = useControls({
     bar: {foo: 'bar'},
-    baz: button((set, get) => console.log(get('bar'))),
+    baz: button((set, get) => console.log(get('bar.foo'))),
   })
   const [showComponent, setShowComponent] = useState(false)
 
