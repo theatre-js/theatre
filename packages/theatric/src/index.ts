@@ -27,8 +27,15 @@ const project = getProject('Tweaks')
 const sheet = project.sheet('default')
 const object = sheet.object('default', {})
 
+type Button = {
+  type: 'button'
+  onClick: (
+    set: (path: string, value: any) => void,
+    get: (path: string) => void,
+  ) => void
+}
 type Buttons = {
-  [key: string]: {type: 'button'; onClick: (get: (path: string) => any) => void}
+  [key: string]: Button
 }
 
 type ControlsAndButtons = {
@@ -66,8 +73,17 @@ export function useControls<Props extends ControlsAndButtons>(
     Object.entries(buttons).map(([key, value]) => [
       `${folderName ? `${folderName}: ` : ''}${key}`,
       (object: ISheetObject, studio: IStudio) => {
-        value.onClick((path) =>
-          get(folderName ? object.value[folderName] : object.value, path),
+        value.onClick(
+          (path, value) => {
+            studio.transaction((api) => {
+              api.set(
+                get(folderName ? object.props[folderName] : object.props, path),
+                value,
+              )
+            })
+          },
+          (path) =>
+            get(folderName ? object.value[folderName] : object.value, path),
         )
       },
     ]),
@@ -110,7 +126,7 @@ export function useControls<Props extends ControlsAndButtons>(
 
 export {types} from '@theatre/core'
 
-export const button = (onClick: (get: (path: string) => any) => void) => {
+export const button = (onClick: Button['onClick']) => {
   return {
     type: 'button' as const,
     onClick,

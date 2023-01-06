@@ -5,7 +5,12 @@ import React, {useState} from 'react'
 function SomeComponent({id}: {id: string}) {
   const {foo} = useControls(id, {
     foo: 0,
-    bez: button((get) => console.log(get('foo'))),
+    bar: 0,
+    bez: button((set, get) => {
+      set('foo', 2)
+      set('bar', 3)
+      console.log(get('foo'))
+    }),
   })
 
   return (
@@ -18,7 +23,7 @@ function SomeComponent({id}: {id: string}) {
 function App() {
   const {bar} = useControls({
     bar: {foo: 'bar'},
-    baz: button((get) => console.log(get('bar'))),
+    baz: button((set, get) => console.log(get('bar'))),
   })
   const [showComponent, setShowComponent] = useState(false)
 
