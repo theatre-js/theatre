@@ -51,7 +51,7 @@ export function useControls<Props extends ControlsAndButtons>(
       ? configIfFolderName ?? ({} as Props)
       : (configOrFolderName as Props)
 
-  const controlsWithoutActions = Object.fromEntries(
+  const controlsWithoutButtons = Object.fromEntries(
     Object.entries(config).filter(
       ([key, value]) => (value as any).type !== 'button',
     ),
@@ -64,8 +64,8 @@ export function useControls<Props extends ControlsAndButtons>(
   ) as unknown as Buttons
 
   const props = folderName
-    ? {[folderName]: controlsWithoutActions}
-    : controlsWithoutActions
+    ? {[folderName]: controlsWithoutButtons}
+    : controlsWithoutButtons
 
   const actions = Object.fromEntries(
     Object.entries(buttons).map(([key, value]) => [
