@@ -1,9 +1,12 @@
-import {useControls} from 'theatric'
+import {button, useControls} from 'theatric'
 import {render} from 'react-dom'
 import React, {useState} from 'react'
 
 function SomeComponent({id}: {id: string}) {
-  const {foo} = useControls(id, {foo: 0})
+  const {foo} = useControls(id, {
+    foo: 0,
+    bez: button((get) => console.log(get('foo'))),
+  })
 
   return (
     <div>
@@ -13,10 +16,11 @@ function SomeComponent({id}: {id: string}) {
 }
 
 function App() {
-  const {bar} = useControls({bar: 'bar'})
+  const {bar} = useControls({
+    bar: {foo: 'bar'},
+    baz: button((get) => console.log(get('bar'))),
+  })
   const [showComponent, setShowComponent] = useState(false)
-
-  console.log(bar)
 
   return (
     <div
@@ -27,7 +31,7 @@ function App() {
         justifyContent: 'center',
       }}
     >
-      <div>{bar}</div>
+      <div>{JSON.stringify(bar)}</div>
       <SomeComponent id="first" />
       <SomeComponent id="second" />
       <button

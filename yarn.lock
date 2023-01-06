@@ -31365,6 +31365,7 @@ fsevents@^1.2.7:
     "@types/react-dom": ^17.0.6
     esbuild: ^0.12.15
     esbuild-register: ^2.5.0
+    lodash-es: ^4.17.21
     npm-run-all: ^4.1.5
     typescript: ^4.4.2
   peerDependencies:

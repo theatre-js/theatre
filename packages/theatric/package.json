@@ -41,7 +41,8 @@
   "dependencies": {
     "@theatre/core": "workspace:*",
     "@theatre/react": "workspace:*",
-    "@theatre/studio": "workspace:*"
+    "@theatre/studio": "workspace:*",
+    "lodash-es": "^4.17.21"
   },
   "peerDependencies": {
     "react": "*",

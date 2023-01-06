@@ -180,10 +180,7 @@ export default class TheatreSheet implements ISheet {
       }
 
       if (opts?.actions) {
-        Object.entries(opts.actions).forEach(([key, action]) => {
-          existingObject.template.registerAction(key, action)
-        })
-        console.log('registered actions', opts.actions)
+        existingObject.template.setActions(opts.actions)
       }
 
       return existingObject.publicApi as $IntentionalAny

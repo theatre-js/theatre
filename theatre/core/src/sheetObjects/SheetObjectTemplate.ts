@@ -2,7 +2,6 @@ import type Project from '@theatre/core/projects/Project'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type {
-  SheetObjectAction,
   SheetObjectActionsConfig,
   SheetObjectPropTypeConfig,
 } from '@theatre/core/sheets/TheatreSheet'
@@ -74,7 +73,7 @@ export default class SheetObjectTemplate {
     return this._config.pointer
   }
 
-  get staticActions() {
+  get actions() {
     return this._actions.get()
   }
 
@@ -108,8 +107,8 @@ export default class SheetObjectTemplate {
     this._config.set(config)
   }
 
-  registerAction(name: string, action: SheetObjectAction) {
-    this._actions.setByPointer((p) => p[name], action)
+  setActions(actions: SheetObjectActionsConfig) {
+    this._actions.set(actions)
   }
 
   /**

@@ -1,71 +1,118 @@
-import type {ISheetObject, UnknownShorthandCompoundProps} from '@theatre/core'
+import type {
+  ISheetObject,
+  SheetObjectActionsConfig,
+  UnknownShorthandCompoundProps,
+} from '@theatre/core'
 import {getProject} from '@theatre/core'
 import {useVal} from '@theatre/react'
+import type {IStudio} from '@theatre/studio'
 import studio from '@theatre/studio'
+import {get} from 'lodash-es'
 import {useEffect} from 'react'
+
+type KeysMatching<T extends object, V> = {
+  [K in keyof T]-?: T[K] extends V ? K : never
+}[keyof T]
+
+type PickMatching<T extends object, V> = Pick<T, KeysMatching<T, V>>
+
+type OmitMatching<T extends object, V> = Omit<T, KeysMatching<T, V>>
 
 studio.initialize()
 
 const allProps: UnknownShorthandCompoundProps[] = []
+const allActions: SheetObjectActionsConfig[] = []
 
 const project = getProject('Tweaks')
 const sheet = project.sheet('default')
 const object = sheet.object('default', {})
 
-export function useControls<Props extends UnknownShorthandCompoundProps>(
-  propsOrFolderName: string | Props,
-  props?: Props,
+type Buttons = {
+  [key: string]: {type: 'button'; onClick: (get: (path: string) => any) => void}
+}
+
+type ControlsAndButtons = {
+  [key: string]: {type: 'button'} | UnknownShorthandCompoundProps[string]
+}
+
+export function useControls<Props extends ControlsAndButtons>(
+  configOrFolderName: string | Props,
+  configIfFolderName?: Props,
 ) {
   const folderName =
-    typeof propsOrFolderName === 'string' ? propsOrFolderName : undefined
-  const actualProps =
-    typeof propsOrFolderName === 'string'
-      ? props ?? ({} as Props)
-      : (propsOrFolderName as Props)
+    typeof configOrFolderName === 'string' ? configOrFolderName : undefined
+  let config =
+    typeof configOrFolderName === 'string'
+      ? configIfFolderName ?? ({} as Props)
+      : (configOrFolderName as Props)
 
-  // have to do this to make sure the values are immediately available
-  sheet.object(
-    'default',
-    Object.assign(
-      {},
-      ...allProps,
-      folderName ? {[folderName]: actualProps} : actualProps,
+  const controlsWithoutActions = Object.fromEntries(
+    Object.entries(config).filter(
+      ([key, value]) => (value as any).type !== 'button',
     ),
-    {
-      reconfigure: true,
-    },
+  ) as UnknownShorthandCompoundProps
+
+  const buttons = Object.fromEntries(
+    Object.entries(config).filter(
+      ([key, value]) => (value as any).type === 'button',
+    ),
+  ) as unknown as Buttons
+
+  const props = folderName
+    ? {[folderName]: controlsWithoutActions}
+    : controlsWithoutActions
+
+  const actions = Object.fromEntries(
+    Object.entries(buttons).map(([key, value]) => [
+      `${folderName ? `${folderName}: ` : ''}${key}`,
+      (object: ISheetObject, studio: IStudio) => {
+        value.onClick((path) =>
+          get(folderName ? object.value[folderName] : object.value, path),
+        )
+      },
+    ]),
   )
 
+  // have to do this to make sure the values are immediately available
+  sheet.object('default', Object.assign({}, ...allProps, props), {
+    reconfigure: true,
+    actions: Object.assign({}, ...allActions, actions),
+  })
+
   useEffect(() => {
-    const propConfingForThisHook = folderName
-      ? {[folderName]: actualProps}
-      : actualProps
-    allProps.push(propConfingForThisHook)
+    allProps.push(props)
+    allActions.push(actions)
     // cleanup runs after render, so we have to reconfigure with the new props here too, doing it during render just makes sure that
     // the very first values returned are not undefined
-    sheet.object(
-      'default',
-      Object.assign({}, ...allProps, propConfingForThisHook),
-      {
-        reconfigure: true,
-      },
-    )
+    sheet.object('default', Object.assign({}, ...allProps), {
+      reconfigure: true,
+      actions: Object.assign({}, ...allActions),
+    })
 
     return () => {
-      allProps.splice(allProps.indexOf(propConfingForThisHook), 1)
+      allProps.splice(allProps.indexOf(props), 1)
+      allActions.splice(allActions.indexOf(actions), 1)
       sheet.object('default', Object.assign({}, ...allProps), {
         reconfigure: true,
+        actions: Object.assign({}, ...allActions),
       })
     }
-  }, [actualProps])
+  }, [props, actions])
 
   return useVal(
     folderName
-      ? ((object as ISheetObject).props[
-          folderName
-        ] as ISheetObject<Props>['props'])
-      : (object as ISheetObject<Props>).props,
+      ? ((object as ISheetObject).props[folderName] as ISheetObject<
+          OmitMatching<Props, {type: 'button'}>
+        >['props'])
+      : (object as ISheetObject<OmitMatching<Props, {type: 'button'}>>).props,
   )
 }
 
 export {types} from '@theatre/core'
+
+export const button = (onClick: (get: (path: string) => any) => void) => {
+  return {
+    type: 'button' as const,
+    onClick,
+  }
+}
