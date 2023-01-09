@@ -45,8 +45,6 @@ const ObjectDetails: React.FC<{
   const config = useVal(obj.template.configPointer)
   const actions = useVal(obj.template.actionsPointer)
 
-  console.log(actions)
-
   return (
     <>
       <DeterminePropEditorForDetail
