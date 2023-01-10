@@ -1,7 +1,7 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
 import type UI from '@theatre/studio/UI'
-import type {Pointer} from '@theatre/dataverse'
+import type {Pointer, Ticker} from '@theatre/dataverse'
 import {Atom, PointerProxy, pointerToPrism} from '@theatre/dataverse'
 import type {
   CommitOrDiscard,
@@ -26,6 +26,7 @@ import shallowEqual from 'shallowequal'
 import {createStore} from './IDBStorage'
 import {getAllPossibleAssetIDs} from '@theatre/shared/utils/assets'
 import {notify} from './notify'
+import type {RafDriverPrivateAPI} from '@theatre/core/rafDrivers'
 
 export type CoreExports = typeof _coreExports
 
@@ -98,6 +99,22 @@ export class Studio {
    */
   private _didWarnAboutNotInitializing = false
 
+  /**
+   * This will be set as soon as `@theatre/core` registers itself on `@theatre/studio`
+   */
+  private _coreBits: CoreBits | undefined
+
+  get ticker(): Ticker {
+    if (!this._rafDriver) {
+      throw new Error(
+        '`studio.ticker` was read before studio.initialize() was called.',
+      )
+    }
+    return this._rafDriver.ticker
+  }
+
+  private _rafDriver: RafDriverPrivateAPI | undefined
+
   get atomP() {
     return this._store.atomP
   }
@@ -126,6 +143,12 @@ export class Studio {
   }
 
   async initialize(opts?: Parameters<IStudio['initialize']>[0]) {
+    if (!this._coreBits) {
+      throw new Error(
+        `You seem to have imported \`@theatre/studio\` without importing \`@theatre/core\`. Make sure to include an import of \`@theatre/core\` before calling \`studio.initializer()\`.`,
+      )
+    }
+
     if (this._initializeFnCalled) {
       console.log(
         `\`studio.initialize()\` is already called. Ignoring subsequent calls.`,
@@ -149,6 +172,25 @@ export class Studio {
 
     if (opts?.usePersistentStorage === false || typeof window === 'undefined') {
       storeOpts.usePersistentStorage = false
+    }
+
+    if (opts?.rafDriver) {
+      if (opts.rafDriver.type !== 'Theatre_RafDriver_PublicAPI') {
+        throw new Error(
+          'parameter `rafDriver` in `studio.initialize({rafDriver})` must be either be undefined, or the return type of core.createRafDriver()',
+        )
+      }
+
+      const rafDriverPrivateApi = this._coreBits.privateAPI(opts.rafDriver)
+      if (!rafDriverPrivateApi) {
+        // TODO - need to educate the user about this edge case
+        throw new Error(
+          'parameter `rafDriver` in `studio.initialize({rafDriver})` seems to come from a different version of `@theatre/core` than the version that is attached to `@theatre/studio`',
+        )
+      }
+      this._rafDriver = rafDriverPrivateApi
+    } else {
+      this._rafDriver = this._coreBits.getCoreRafDriver()
     }
 
     try {
@@ -187,6 +229,7 @@ export class Studio {
   }
 
   setCoreBits(coreBits: CoreBits) {
+    this._coreBits = coreBits
     this._corePrivateApi = coreBits.privateAPI
     this._coreAtom.setByPointer((p) => p.core, coreBits.coreExports)
     this._setProjectsP(coreBits.projectsP)

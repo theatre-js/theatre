@@ -8,13 +8,15 @@ import {InvalidArgumentError} from '@theatre/shared/utils/errors'
 import {validateName} from '@theatre/shared/utils/sanitizers'
 import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
 import deepEqual from 'fast-deep-equal'
-import type {PointerType} from '@theatre/dataverse'
+import type {PointerType, Prism} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
 import {isPrism, pointerToPrism} from '@theatre/dataverse'
 import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
 import type {ProjectId} from '@theatre/shared/utils/ids'
 import {_coreLogger} from './_coreLogger'
 import {getCoreTicker} from './coreTicker'
+import type {IRafDriver} from './rafDrivers'
+import {privateAPI} from './privateAPIs'
 export {notify} from '@theatre/shared/notify'
 export {types}
 export {createRafDriver} from './rafDrivers'
@@ -152,15 +154,26 @@ const validateProjectIdOrThrow = (value: string) => {
  * setTimeout(usubscribe, 10000) // stop listening to changes after 10 seconds
  * ```
  */
-export function onChange<P extends PointerType<$IntentionalAny>>(
+export function onChange<
+  P extends PointerType<$IntentionalAny> | Prism<$IntentionalAny>,
+>(
   pointer: P,
-  callback: (value: P extends PointerType<infer T> ? T : unknown) => void,
+  callback: (
+    value: P extends PointerType<infer T>
+      ? T
+      : P extends Prism<infer T>
+      ? T
+      : unknown,
+  ) => void,
+  driver?: IRafDriver,
 ): VoidFn {
+  const ticker = driver ? privateAPI(driver).ticker : getCoreTicker()
+
   if (isPointer(pointer)) {
     const pr = pointerToPrism(pointer)
-    return pr.onChange(getCoreTicker(), callback as $IntentionalAny, true)
+    return pr.onChange(ticker, callback as $IntentionalAny, true)
   } else if (isPrism(pointer)) {
-    return pointer.onChange(getCoreTicker(), callback as $IntentionalAny, true)
+    return pointer.onChange(ticker, callback as $IntentionalAny, true)
   } else {
     throw new Error(
       `Called onChange(p) where p is neither a pointer nor a prism.`,

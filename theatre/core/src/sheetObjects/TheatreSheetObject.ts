@@ -1,6 +1,5 @@
 import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import type {IProject} from '@theatre/core/projects/TheatreProject'
-import {getCoreTicker} from '@theatre/core/coreTicker'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
@@ -18,6 +17,8 @@ import type {
 } from '@theatre/core/propTypes/internals'
 import {debounce} from 'lodash-es'
 import type {DebouncedFunc} from 'lodash-es'
+import type {IRafDriver} from '@theatre/core/rafDrivers'
+import {onChange} from '@theatre/core/coreExports'
 
 export interface ISheetObject<
   Props extends UnknownShorthandCompoundProps = UnknownShorthandCompoundProps,
@@ -70,6 +71,8 @@ export interface ISheetObject<
   /**
    * Calls `fn` every time the value of the props change.
    *
+   * @param fn - The callback is called every time the value of the props change, plus once at the beginning.
+   * @param rafDriver - (Optional) The RAF driver to use. Defaults to the core RAF driver.
    * @returns an Unsubscribe function
    *
    * @example
@@ -86,7 +89,10 @@ export interface ISheetObject<
    * // you can call unsubscribe() to stop listening to changes
    * ```
    */
-  onValuesChange(fn: (values: this['value']) => void): VoidFn
+  onValuesChange(
+    fn: (values: this['value']) => void,
+    rafDriver?: IRafDriver,
+  ): VoidFn
 
   /**
    * Sets the initial value of the object. This value overrides the default
@@ -157,8 +163,11 @@ export default class TheatreSheetObject<
     })
   }
 
-  onValuesChange(fn: (values: this['value']) => void): VoidFn {
-    return this._valuesPrism().onChange(getCoreTicker(), fn, true)
+  onValuesChange(
+    fn: (values: this['value']) => void,
+    rafDriver?: IRafDriver,
+  ): VoidFn {
+    return onChange(this._valuesPrism(), fn, rafDriver)
   }
 
   // internal: Make the deviration keepHot if directly read

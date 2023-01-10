@@ -25,8 +25,10 @@ export function createRafDriver(conf?: {
   name?: string
   start?: () => void
   stop?: () => void
-}): {tick: (time: number) => void; name: string; id: number} {
-  const tick = (time: number): void => {}
+}): IRafDriver {
+  const tick = (time: number): void => {
+    ticker.tick(time)
+  }
 
   const ticker = new Ticker()
 
@@ -41,9 +43,15 @@ export function createRafDriver(conf?: {
     type: 'Theatre_RafDriver_PrivateAPI',
     publicApi: driverPublicApi,
     ticker,
+    start: conf?.start,
+    stop: conf?.stop,
   }
 
   setPrivateAPI(driverPublicApi, driverPrivateApi)
+
+  // for now, we'll always call start as soon as the driver is created. Later we can
+  // call start if ticker actually has events queued, and stop if it doesn't.
+  driverPrivateApi.start?.()
 
   return driverPublicApi
 }

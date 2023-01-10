@@ -1,5 +1,4 @@
-import type {IProject, ISheet, ISheetObject} from '@theatre/core'
-import studioTicker from '@theatre/studio/studioTicker'
+import type {IProject, IRafDriver, ISheet, ISheetObject} from '@theatre/core'
 import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
@@ -173,6 +172,8 @@ export interface _StudioInitializeOpts {
    * Default: true
    */
   usePersistentStorage?: boolean
+
+  rafDriver?: IRafDriver | undefined
 }
 
 /**
@@ -440,7 +441,9 @@ export default class TheatreStudio implements IStudio {
   }
 
   onSelectionChange(fn: (s: (ISheetObject | ISheet)[]) => void): VoidFn {
-    return this._getSelectionPrism().onChange(studioTicker, fn, true)
+    const studio = getStudio()
+
+    return this._getSelectionPrism().onChange(studio.ticker, fn, true)
   }
 
   get selection(): Array<ISheetObject | ISheet> {

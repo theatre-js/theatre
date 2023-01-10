@@ -3,14 +3,16 @@ import ReactDOM from 'react-dom'
 import App from './App'
 import studio from '@theatre/studio'
 import extension from '@theatre/r3f/dist/extension'
-import {Ticker} from '@theatre/dataverse'
+import getStudio from '@theatre/studio/getStudio'
+
+const studioPrivate = getStudio()
 
 studio.extend(extension)
 studio.initialize()
 
 ReactDOM.render(<App />, document.getElementById('root'))
 
-const raf = Ticker.raf
+const raf = studioPrivate.ticker
 
 // Show "ticks per second" information in performance measurements using the User Timing API
 // See https://developer.mozilla.org/en-US/docs/Web/API/User_Timing_API

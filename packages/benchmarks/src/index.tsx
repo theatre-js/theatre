@@ -1,5 +1,5 @@
 // import studio from '@theatre/studio'
-import {getProject} from '@theatre/core'
+import {createRafDriver, getProject} from '@theatre/core'
 import type {
   UnknownShorthandCompoundProps,
   ISheet,
@@ -7,11 +7,11 @@ import type {
 } from '@theatre/core'
 // @ts-ignore
 import benchProject1State from './Bench project 1.theatre-project-state.json'
-import {Ticker} from '@theatre/dataverse'
-import {setCoreTicker} from '@theatre/core/coreTicker'
+import {setCoreRafDriver} from '@theatre/core/coreTicker'
 
-const ticker = new Ticker()
-setCoreTicker(ticker)
+const driver = createRafDriver({name: 'BenchmarkRafDriver'})
+
+setCoreRafDriver(driver)
 
 // studio.initialize({})
 
@@ -79,7 +79,7 @@ async function test1() {
   }
 
   function iterateOnSequence() {
-    ticker.tick()
+    driver.tick(performance.now())
     const startTime = performance.now()
     for (let i = 1; i < CONFIG.numberOfIterations; i++) {
       onChangeEventsFired = 0
@@ -87,7 +87,7 @@ async function test1() {
       for (const sheet of sheets) {
         sheet.sequence.position = pos
       }
-      ticker.tick()
+      driver.tick(performance.now())
       if (onChangeEventsFired !== objects.length) {
         console.info(
           `Expected ${objects.length} onChange events, got ${onChangeEventsFired}`,

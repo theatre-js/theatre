@@ -11,6 +11,7 @@ import {makeStoreKey} from './utils'
 import type {$FixMe, $IntentionalAny} from '../types'
 import type {ISheetObject} from '@theatre/core'
 import {notify} from '@theatre/core'
+import {useCurrentRafDriver} from './RafDriverProvider'
 
 const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
   config: EditableFactoryConfig,
@@ -74,6 +75,7 @@ const createEditable = <Keys extends keyof JSX.IntrinsicElements>(
         const objectRef = useRef<JSX.IntrinsicElements[U]>()
 
         const sheet = useCurrentSheet()!
+        const rafDriver = useCurrentRafDriver()
 
         const [sheetObject, setSheetObject] = useState<
           undefined | ISheetObject<$FixMe>
@@ -211,15 +213,18 @@ Then you can use it in your JSX like any other editable component. Note the make
 
           setFromTheatre(sheetObject.value)
 
-          const untap = sheetObject.onValuesChange(setFromTheatre)
+          const unsubscribe = sheetObject.onValuesChange(
+            setFromTheatre,
+            rafDriver,
+          )
 
           return () => {
-            untap()
+            unsubscribe()
             sheetObject.sheet.detachObject(theatreKey)
             allRegisteredObjects.delete(sheetObject)
             editorStore.getState().removeEditable(storeKey)
           }
-        }, [sheetObject])
+        }, [sheetObject, rafDriver])
 
         return (
           // @ts-ignore
