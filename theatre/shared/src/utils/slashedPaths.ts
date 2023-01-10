@@ -26,8 +26,8 @@ const getValidationErrorsOfSlashedPath = (p: string): void | string => {
   for (let i = 0; i < components.length; i++) {
     const component = components[i].trim()
     if (component.length === 0) return `the component #${i + 1} is empty.`
-    if (component.length > 32)
-      return `the component '${component}' must have 32 characters or less.`
+    if (component.length > 64)
+      return `the component '${component}' must have 64 characters or less.`
   }
 }
 
