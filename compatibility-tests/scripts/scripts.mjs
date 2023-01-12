@@ -172,6 +172,10 @@ const startVerdaccio = (port) => {
         ),
       }
 
+      if (verbose) {
+        config.logs.level = 'info'
+      }
+
       const onReady = (webServer) => {
         webServer.listen(port, () => {
           resolved = true
