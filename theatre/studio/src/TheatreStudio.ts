@@ -89,18 +89,33 @@ export type ToolConfigIcon = {
   onClick: () => void
 }
 
+export type ToolConfigOption = {
+  value: string
+  label: string
+  svgSource: string
+}
+
 export type ToolConfigSwitch = {
   type: 'Switch'
   value: string
   onChange: (value: string) => void
-  options: {
-    value: string
-    label: string
-    svgSource: string
-  }[]
+  options: ToolConfigOption[]
 }
 
-export type ToolConfig = ToolConfigIcon | ToolConfigSwitch
+export type ToolConfigDowndownOption = {
+  label: string
+  value: any
+}
+
+export type ToolConfigDowndown = {
+  type: 'Downdown'
+  index?: number
+  svgSource: string
+  onChange: (option: ToolConfigDowndownOption) => void
+  options: ToolConfigDowndownOption[]
+}
+
+export type ToolConfig = ToolConfigIcon | ToolConfigSwitch | ToolConfigDowndown
 
 export type ToolsetConfig = Array<ToolConfig>
 

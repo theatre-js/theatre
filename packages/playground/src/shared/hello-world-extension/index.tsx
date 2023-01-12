@@ -40,6 +40,31 @@ studio.extend({
               studio.createPane('example')
             },
           },
+          {
+            type: 'Downdown',
+            svgSource: '🫠',
+            onChange: (value: any) => {
+              console.log('Change:', value)
+            },
+            options: [
+              {
+                label: 'Option 1',
+                value: 0,
+              },
+              {
+                label: 'Option 2',
+                value: 1,
+              },
+              {
+                label: 'Option 3',
+                value: 2,
+              },
+              {
+                label: 'Option 4',
+                value: 3,
+              },
+            ],
+          },
         ])
 
       updateToolset()

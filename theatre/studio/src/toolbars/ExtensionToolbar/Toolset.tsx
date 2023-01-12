@@ -5,6 +5,7 @@ import type {ToolConfig, ToolsetConfig} from '@theatre/studio/TheatreStudio'
 import React from 'react'
 import IconButton from './tools/IconButton'
 import Switch from './tools/Switch'
+import Downdown from './tools/Downdown'
 
 const Toolset: React.FC<{
   config: ToolsetConfig
@@ -25,6 +26,7 @@ const toolByType: {
 } = {
   Icon: IconButton,
   Switch: Switch,
+  Downdown: Downdown,
 }
 
 function getToolByType<Type extends ToolConfig['type']>(
