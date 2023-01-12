@@ -46,5 +46,6 @@ jobs:
       - run:
           yarn workspace @theatre/compatibility-tests run install-fixtures
           --verbose
+      - run: npm cache clean || npm cache verify
       # after that, we run the jest tests for each fixture
       - run: yarn test:compat
