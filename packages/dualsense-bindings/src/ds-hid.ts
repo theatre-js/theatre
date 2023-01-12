@@ -613,7 +613,6 @@ class DSControllerImpl implements DSController {
       return res
     }
 
-    // AHRS has gimbal lock glitches when using euler angles so we are not doing that
     const quaternion = mulQuat(
       this._ahrs.getQuaternion(),
       this._internalState.attitudeBias,
