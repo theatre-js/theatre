@@ -173,7 +173,7 @@ const startVerdaccio = (port) => {
       }
 
       if (verbose) {
-        config.logs.level = 'info'
+        config.logs.level = 'warn'
       }
 
       const onReady = (webServer) => {
