@@ -8178,6 +8178,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@theatre/dualsense-bindings@workspace:packages/dualsense-bindings":
+  version: 0.0.0-use.local
+  resolution: "@theatre/dualsense-bindings@workspace:packages/dualsense-bindings"
+  dependencies:
+    "@microsoft/api-extractor": ^7.18.11
+    "@types/jest": ^26.0.23
+    "@types/node": ^15.6.2
+    "@types/w3c-web-hid": ^1.0.2
+    ahrs: ^1.3.0
+    buffer: ^6.0.3
+    crc: ^4.1.0
+    esbuild: ^0.12.15
+    esbuild-register: ^2.5.0
+    lodash-es: 4.17.21
+    npm-run-all: ^4.1.5
+    threejs-math: ^0.147.0
+    typescript: ^4.4.2
+  peerDependencies:
+    "@theatre/core": "workspace:*"
+    "@theatre/studio": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@theatre/r3f@workspace:*, @theatre/r3f@workspace:packages/r3f":
   version: 0.0.0-use.local
   resolution: "@theatre/r3f@workspace:packages/r3f"
@@ -9029,6 +9052,13 @@ __metadata:
   version: 8.3.0
   resolution: "@types/uuid@npm:8.3.0"
   checksum: 0f46b15020b9c252473fb327a6491fd7d238c7b5bbaebd32195a0de178db040f6abb96902507ba25dd4a673cdd9cc28b8880512dba54561e8bc60d8f326c1e30
+  languageName: node
+  linkType: hard
+
+"@types/w3c-web-hid@npm:^1.0.2":
+  version: 1.0.3
+  resolution: "@types/w3c-web-hid@npm:1.0.3"
+  checksum: 90ee1eeb2acf5d5ddf0b7acefd4f8aaa7d0175d991c3606a9ad62bdfa7a8de93665f5f6218dc4ecb34ea1d2f3e357813b315f46c1ea6b8aa1693e217e436c9b2
   languageName: node
   linkType: hard
 
@@ -10198,6 +10228,13 @@ __metadata:
     clean-stack: ^2.0.0
     indent-string: ^4.0.0
   checksum: 1101a33f21baa27a2fa8e04b698271e64616b886795fd43c31068c07533c7b3facfcaf4e9e0cab3624bd88f729a592f1c901a1a229c9e490eafce411a8644b79
+  languageName: node
+  linkType: hard
+
+"ahrs@npm:^1.3.0":
+  version: 1.3.1
+  resolution: "ahrs@npm:1.3.1"
+  checksum: 235d1515ca6005a711bed2ff724b353bf4e9758c9ae099d6dc92646126ebbea173a826b974fb33e15893f81ee0a6d485e925488218f99d1a841412a62133ebed
   languageName: node
   linkType: hard
 
@@ -11603,7 +11640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"base64-js@npm:^1.0.2":
+"base64-js@npm:^1.0.2, base64-js@npm:^1.3.1":
   version: 1.5.1
   resolution: "base64-js@npm:1.5.1"
   checksum: 669632eb3745404c2f822a18fc3a0122d2f9a7a13f7fb8b5823ee19d1d2ff9ee5b52c53367176ea4ad093c332fd5ab4bd0ebae5a8e27917a4105a4cfc86b1005
@@ -12157,6 +12194,16 @@ __metadata:
     ieee754: ^1.1.4
     isarray: ^1.0.0
   checksum: 8801bc1ba08539f3be70eee307a8b9db3d40f6afbfd3cf623ab7ef41dffff1d0a31de0addbe1e66e0ca5f7193eeb667bfb1ecad3647f8f1b0750de07c13295c3
+  languageName: node
+  linkType: hard
+
+"buffer@npm:^6.0.3":
+  version: 6.0.3
+  resolution: "buffer@npm:6.0.3"
+  dependencies:
+    base64-js: ^1.3.1
+    ieee754: ^1.2.1
+  checksum: 5ad23293d9a731e4318e420025800b42bf0d264004c0286c8cc010af7a270c7a0f6522e84f54b9ad65cbd6db20b8badbfd8d2ebf4f80fa03dab093b89e68c3f9
   languageName: node
   linkType: hard
 
@@ -13373,6 +13420,15 @@ __metadata:
     path-type: ^4.0.0
     yaml: ^1.10.0
   checksum: 6801feaa0249e9b9fdde5b3d70dc33b4f9c69095bec94d67e3fe08b66eac24dc7e2099f053597cfbc94b743de269aa5d2cfa7da3fde765433423b06bd122941a
+  languageName: node
+  linkType: hard
+
+"crc@npm:^4.1.0":
+  version: 4.2.0
+  resolution: "crc@npm:4.2.0"
+  peerDependencies:
+    buffer: ">=6.0.3"
+  checksum: 29eabe6bcbee60b67348ba5e03742300c99617ad66d93d67e3bc62b665f0f2b1584157a35ade5b1037cef65b8a1fd8bedd6e0628c8449555fc9d16a866044318
   languageName: node
   linkType: hard
 
@@ -19058,7 +19114,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"ieee754@npm:^1.1.4":
+"ieee754@npm:^1.1.4, ieee754@npm:^1.2.1":
   version: 1.2.1
   resolution: "ieee754@npm:1.2.1"
   checksum: 5144c0c9815e54ada181d80a0b810221a253562422e7c6c3a60b1901154184f49326ec239d618c416c1c5945a2e197107aee8d986a3dd836b53dffefd99b5e7e
@@ -22451,7 +22507,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lodash-es@npm:^4.17.21, lodash-es@npm:^4.2.1":
+"lodash-es@npm:4.17.21, lodash-es@npm:^4.17.21, lodash-es@npm:^4.2.1":
   version: 4.17.21
   resolution: "lodash-es@npm:4.17.21"
   checksum: 05cbffad6e2adbb331a4e16fbd826e7faee403a1a04873b82b42c0f22090f280839f85b95393f487c1303c8a3d2a010048bf06151a6cbe03eee4d388fb0a12d2
@@ -31404,6 +31460,13 @@ fsevents@^1.2.7:
   version: 0.130.1
   resolution: "three@npm:0.130.1"
   checksum: 02208e409a261baff54644e526a91c2dd1482036c7c331ebdb555468a8c17baffccc607b8371d437ff2fe5557d028825313db2274ef35740cf93cbe16ad1e7d9
+  languageName: node
+  linkType: hard
+
+"threejs-math@npm:^0.147.0":
+  version: 0.147.0
+  resolution: "threejs-math@npm:0.147.0"
+  checksum: 314c12491f919cbb5974a382ac2a0fbfe0a04de7b144bc64d8edad5c06efbe7337e6b536b59cae9ae7b03063f56b24852d606f8b85dfa6408ebeed18f0c05c1b
   languageName: node
   linkType: hard
 
