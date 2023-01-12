@@ -4,11 +4,10 @@ import {getProject, notify} from '@theatre/core'
 import React, {Suspense, useEffect} from 'react'
 import {Canvas, useFrame} from '@react-three/fiber'
 import {useGLTF, PerspectiveCamera} from '@react-three/drei'
-import type {
-  MovementPlane} from '@theatre/dualsense-bindings';
+import type {MovementPlane} from '@theatre/dualsense-bindings'
 import DualSenseBindings, {
   createPositionBinding,
-  createRotationBinding
+  createRotationBinding,
 } from '@theatre/dualsense-bindings'
 import studio from '@theatre/studio'
 import type {GridHelper} from 'three'
@@ -133,32 +132,32 @@ function App() {
 
           <PositioningHelper />
 
-          <e.spotLight
-            theatreKey="Light 1"
+          <spotLight
             castShadow
             intensity={1.25}
             angle={0.2}
             penumbra={1}
             shadow-mapSize={[1024, 1024]}
             shadow-bias={-0.0001}
+            position={[0, 0, 60]}
           />
-          <e.spotLight
-            theatreKey="Light 2"
+          <spotLight
             castShadow
             intensity={1.25}
             angle={0.2}
             penumbra={1}
             shadow-mapSize={[1024, 1024]}
             shadow-bias={-0.0001}
+            position={[60, 0, 0]}
           />
-          <e.spotLight
-            theatreKey="Light 3"
+          <spotLight
             castShadow
             intensity={1.25}
             angle={0.2}
             penumbra={1}
             shadow-mapSize={[1024, 1024]}
             shadow-bias={-0.0001}
+            position={[0, 60, 0]}
           />
           <Plane
             args={[planeSize, planeSize]}
