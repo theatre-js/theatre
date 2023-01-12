@@ -85,7 +85,7 @@ async function runNpmInstallOnTestPackages() {
     try {
       console.log('Running npm install on ' + pathToPackageDir + '...')
       await $`npm install --registry ${config.VERDACCIO_URL} --loglevel ${
-        verbose ? 'verbose' : 'error'
+        verbose ? 'warn' : 'error'
       } --fund false`
     } catch (error) {
       console.error(`Failed to install dependencies for ${pathToPackageDir}
