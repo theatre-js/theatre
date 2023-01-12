@@ -42,10 +42,10 @@ jobs:
             ${{ runner.os }}-${{ matrix.node-version }}-yarn-
 
       - run: yarn install
+      # - run: npm cache clean || npm cache verify
       # This will test whether `npm install`/`yarn install` can actually run on each compatibility test fixture. See `compatibility-tests/README.md` for more info.
       - run:
           yarn workspace @theatre/compatibility-tests run install-fixtures
           --verbose
-      - run: npm cache clean || npm cache verify
       # after that, we run the jest tests for each fixture
       - run: yarn test:compat
