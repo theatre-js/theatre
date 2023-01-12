@@ -9,7 +9,9 @@ import onCleanup from 'node-cleanup'
 import * as verdaccioPackage from 'verdaccio'
 import {chromium, devices} from 'playwright'
 
-if (!argv['verbose']) {
+const verbose = !!argv['verbose']
+
+if (!verbose) {
   $.verbose = false
   console.log(
     'Running in quiet mode. Add --verbose to see the output of all commands.',
@@ -82,7 +84,9 @@ async function runNpmInstallOnTestPackages() {
     cd(pathToPackageDir)
     try {
       console.log('Running npm install on ' + pathToPackageDir + '...')
-      await $`npm install --registry ${config.VERDACCIO_URL} --loglevel error --fund false`
+      await $`npm install --registry ${config.VERDACCIO_URL} --loglevel ${
+        verbose ? 'warn' : 'error'
+      } --fund false`
     } catch (error) {
       console.error(`Failed to install dependencies for ${pathToPackageDir}
 Try running \`npm install\` in that directory manually via:
@@ -166,6 +170,10 @@ const startVerdaccio = (port) => {
         ...YAML.parse(
           fs.readFileSync(path.join(__dirname, '../verdaccio.yml'), 'utf8'),
         ),
+      }
+
+      if (verbose) {
+        config.logs.level = 'warn'
       }
 
       const onReady = (webServer) => {
