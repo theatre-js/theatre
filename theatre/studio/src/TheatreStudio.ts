@@ -173,7 +173,7 @@ export interface _StudioInitializeOpts {
    */
   usePersistentStorage?: boolean
 
-  rafDriver?: IRafDriver | undefined
+  __experimental_rafDriver?: IRafDriver | undefined
 }
 
 /**

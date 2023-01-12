@@ -12,7 +12,7 @@ setInterval(() => {
 
 studio.extend(extension)
 studio.initialize({
-  rafDriver,
+  __experimental_rafDriver: rafDriver,
 })
 
 ReactDOM.render(<App rafDriver={rafDriver} />, document.getElementById('root'))

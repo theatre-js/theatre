@@ -174,18 +174,22 @@ export class Studio {
       storeOpts.usePersistentStorage = false
     }
 
-    if (opts?.rafDriver) {
-      if (opts.rafDriver.type !== 'Theatre_RafDriver_PublicAPI') {
+    if (opts?.__experimental_rafDriver) {
+      if (
+        opts.__experimental_rafDriver.type !== 'Theatre_RafDriver_PublicAPI'
+      ) {
         throw new Error(
-          'parameter `rafDriver` in `studio.initialize({rafDriver})` must be either be undefined, or the return type of core.createRafDriver()',
+          'parameter `rafDriver` in `studio.initialize({__experimental_rafDriver})` must be either be undefined, or the return type of core.createRafDriver()',
         )
       }
 
-      const rafDriverPrivateApi = this._coreBits.privateAPI(opts.rafDriver)
+      const rafDriverPrivateApi = this._coreBits.privateAPI(
+        opts.__experimental_rafDriver,
+      )
       if (!rafDriverPrivateApi) {
         // TODO - need to educate the user about this edge case
         throw new Error(
-          'parameter `rafDriver` in `studio.initialize({rafDriver})` seems to come from a different version of `@theatre/core` than the version that is attached to `@theatre/studio`',
+          'parameter `rafDriver` in `studio.initialize({__experimental_rafDriver})` seems to come from a different version of `@theatre/core` than the version that is attached to `@theatre/studio`',
         )
       }
       this._rafDriver = rafDriverPrivateApi
