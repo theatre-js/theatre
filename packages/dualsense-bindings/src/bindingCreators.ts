@@ -115,11 +115,12 @@ export function createPositionBinding({
 
         const euler = new Euler().setFromQuaternion(new Quaternion(x, y, z, w))
 
+        // this is glitchy, better calculate the position straight from the quaternion
         if (movementPlane === 'xz') {
           api.set(propPointer, {
             x: existingPosition!.x - euler.y * 10,
             y: existingPosition!.y,
-            z: existingPosition!.z - euler.x * 10,
+            z: existingPosition!.z + euler.x * 10,
           })
         }
         if (movementPlane === 'xy') {
