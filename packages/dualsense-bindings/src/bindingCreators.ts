@@ -8,7 +8,7 @@ import {get} from 'lodash-es'
 
 export function createRotationBinding({propName = 'rotation'} = {}) {
   let scrub: IScrub | null = null
-  let existingRotation: Quaternion | null = null
+  let initialRotation: Quaternion | null = null
 
   return {
     cross: (pressed: boolean, {orientation, object, studio}: API) => {
@@ -22,7 +22,7 @@ export function createRotationBinding({propName = 'rotation'} = {}) {
         // "applies" the current orientation, so that it is treated as the "zero" orientation
         orientation.apply()
         scrub = studio.scrub()
-        existingRotation = new Quaternion().setFromEuler(
+        initialRotation = new Quaternion().setFromEuler(
           new Euler(propValue.x, propValue.y, propValue.z),
         )
       } else {
@@ -30,17 +30,17 @@ export function createRotationBinding({propName = 'rotation'} = {}) {
           scrub.commit()
           scrub = null
         }
-        existingRotation = null
+        initialRotation = null
       }
     },
     orientation(x: number, y: number, z: number, w: number, {object}: API) {
-      if (!scrub || !existingRotation) return
+      if (!scrub || !initialRotation) return
 
       const propPointer = get(object.props, propName)
 
       scrub.capture((api) => {
         const rotation = new Euler().setFromQuaternion(
-          new Quaternion(x, y, z, w).premultiply(existingRotation!),
+          new Quaternion(x, y, z, w).premultiply(initialRotation!),
         )
 
         api.set(propPointer, {
@@ -63,11 +63,11 @@ export function createPositionBinding({
   propName?: string
   onStart?: (
     movementPlane: MovementPlane,
-    originalPosition: [number, number, number],
+    initialPosition: [number, number, number],
   ) => void
   onEnd?: () => void
 } = {}) {
-  let existingPosition: Vector3 | null = null
+  let initialPosition: Vector3 | null = null
   let movementPlane: MovementPlane | null = null
   let scrub: IScrub | null = null
 
@@ -88,7 +88,7 @@ export function createPositionBinding({
         // "applies" the current orientation, so that it is treated as the "zero" orientation
         orientation.apply()
         scrub = studio.scrub()
-        existingPosition = new Vector3(propValue.x, propValue.y, propValue.z)
+        initialPosition = new Vector3(propValue.x, propValue.y, propValue.z)
       } else {
         onEnd()
 
@@ -96,7 +96,7 @@ export function createPositionBinding({
           scrub.commit()
           scrub = null
         }
-        existingPosition = null
+        initialPosition = null
         movementPlane = null
       }
     }
@@ -106,35 +106,57 @@ export function createPositionBinding({
     triangle: createButtonHandler('xy'),
     circle: createButtonHandler('yz'),
     orientation(x: number, y: number, z: number, w: number, {object}: API) {
-      if (!scrub || !existingPosition) return
+      if (!scrub || !initialPosition) return
 
       scrub.capture((api) => {
         if (!object.value.rotation) return
 
         const propPointer = get(object.props, propName)
 
-        const euler = new Euler().setFromQuaternion(new Quaternion(x, y, z, w))
+        // calculate the controller's forward vector
+        const vector = new Vector3(0, 0, -1).applyQuaternion(
+          new Quaternion(x, y, z, w),
+        )
 
-        // this is glitchy, better calculate the position straight from the quaternion
         if (movementPlane === 'xz') {
           api.set(propPointer, {
-            x: existingPosition!.x - euler.y * 10,
-            y: existingPosition!.y,
-            z: existingPosition!.z + euler.x * 10,
+            // Take the tangent of the angle between the forward vector and the orthogonal plane of the initial forward vector
+            // by dividing the x and y components by the z component.
+            // Limit the z component to at least 0.3 so that the position doesn't fly off the handle
+            // when we divide by z (and to avoid NaN).
+            // Below z = 0.3 the movement becomes too noisy anyway.
+            // We then multiply by 6 to make the movement a bit more sensitive. This value is chosen as a balance between sensitivity and noise.
+            // We then add the resulting components to the initial position to get the final position.
+            x:
+              initialPosition!.x +
+              (vector.x / Math.max(Math.abs(vector.z), 0.3)) * 8,
+            y: initialPosition!.y,
+            z:
+              initialPosition!.z +
+              (vector.y / Math.max(Math.abs(vector.z), 0.3)) * 8,
           })
         }
+        // Do the same for the other planes too
         if (movementPlane === 'xy') {
           api.set(propPointer, {
-            x: existingPosition!.x - euler.y * 10,
-            y: existingPosition!.y + euler.x * 10,
-            z: existingPosition!.z,
+            x:
+              initialPosition!.x +
+              (vector.x / Math.max(Math.abs(vector.z), 0.3)) * 6,
+            y:
+              initialPosition!.y +
+              (vector.y / Math.max(Math.abs(vector.z), 0.3)) * 6,
+            z: initialPosition!.z,
           })
         }
         if (movementPlane === 'yz') {
           api.set(propPointer, {
-            x: existingPosition!.x,
-            y: existingPosition!.y + euler.x * 10,
-            z: existingPosition!.z + euler.y * 10,
+            x: initialPosition!.x,
+            y:
+              initialPosition!.y +
+              (vector.y / Math.max(Math.abs(vector.z), 0.3)) * 6,
+            z:
+              initialPosition!.z -
+              (vector.x / Math.max(Math.abs(vector.z), 0.3)) * 6,
           })
         }
       })
