@@ -43,8 +43,13 @@ const Downdown: React.FC<{
   }
 
   const selectOption = (index: number, option: ToolConfigDowndownOption) => {
-    config.onChange(option.value)
-    setCurrentIndex(index)
+    if (index !== currentIndex) {
+      config.onChange(option.value)
+      setCurrentIndex(index)
+    } else {
+      config.onChange(null)
+      setCurrentIndex(-1)
+    }
     setShowOptions(false)
   }
 
