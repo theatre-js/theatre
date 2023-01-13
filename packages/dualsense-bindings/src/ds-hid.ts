@@ -614,8 +614,8 @@ class DSControllerImpl implements DSController {
     }
 
     const quaternion = mulQuat(
-      this._ahrs.getQuaternion(),
       this._internalState.attitudeBias,
+      this._ahrs.getQuaternion(),
     )
 
     // mapping from AHRS' Z-up coordinate system to the controller's Y-up coordinate system
