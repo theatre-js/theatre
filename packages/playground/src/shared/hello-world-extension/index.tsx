@@ -46,6 +46,7 @@ studio.extend({
             onChange: (value: any) => {
               console.log('Change:', value)
             },
+            selectable: false,
             options: [
               {
                 label: 'Option 1',

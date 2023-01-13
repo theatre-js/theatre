@@ -111,6 +111,7 @@ export type ToolConfigDowndown = {
   type: 'Downdown'
   index?: number
   svgSource: string
+  selectable: boolean
   onChange: (option: ToolConfigDowndownOption | null) => void
   options: ToolConfigDowndownOption[]
 }
