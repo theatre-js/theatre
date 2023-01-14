@@ -148,7 +148,7 @@ export function createPositionBinding({
           const xTranslationTrackball = (upVector.x / Math.max(Math.abs(upVector.y), 0.3)) * 6
 
           It could be tempting to combine the two metaphors, but this can result in a confusing experience,
-          since the roll or the yaw of the controller can be changed inadvertnetly, which makes it difficult to
+          since the roll or the yaw of the controller can easily be changed inadvertently, which makes it difficult to
           determine the user's intent.
 
           This implementation uses the laser pointer metaphor with the tangent method.
