@@ -1,11 +1,12 @@
 import SnapshotEditor from './components/SnapshotEditor'
 import type {IExtension} from '@theatre/studio'
-import {prism, Ticker, val} from '@theatre/dataverse'
+import {prism, val} from '@theatre/dataverse'
 import {getEditorSheetObject} from './editorStuff'
 import ReactDOM from 'react-dom'
 import React from 'react'
 import type {ToolsetConfig} from '@theatre/studio'
 import useExtensionStore from './useExtensionStore'
+import {onChange} from '@theatre/core'
 
 const io5CameraOutline = `<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><title>Camera</title><path d="M350.54 148.68l-26.62-42.06C318.31 100.08 310.62 96 302 96h-92c-8.62 0-16.31 4.08-21.92 10.62l-26.62 42.06C155.85 155.23 148.62 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.65 0-16.85-4.77-22.46-11.32z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="256" cy="272" r="80" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M124 158v-22h-24v22"/></svg>`
 const gameIconMove = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 34.47l-90.51 90.51h67.883v108.393H124.98V165.49L34.47 256l90.51 90.51v-67.883h108.393V387.02H165.49L256 477.53l90.51-90.51h-67.883V278.627H387.02v67.883L477.53 256l-90.51-90.51v67.883H278.627V124.98h67.883L256 34.47z"/></svg>`
@@ -35,13 +36,9 @@ const r3fExtension: IExtension = {
           },
         ]
       })
-      return calc.onChange(
-        Ticker.raf,
-        () => {
-          set(calc.getValue())
-        },
-        true,
-      )
+      return onChange(calc, () => {
+        set(calc.getValue())
+      })
     },
     'snapshot-editor': (set, studio) => {
       const {createSnapshot} = useExtensionStore.getState()
@@ -140,13 +137,9 @@ const r3fExtension: IExtension = {
           },
         ]
       })
-      return calc.onChange(
-        Ticker.raf,
-        () => {
-          set(calc.getValue())
-        },
-        true,
-      )
+      return onChange(calc, () => {
+        set(calc.getValue())
+      })
     },
   },
   panes: [

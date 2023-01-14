@@ -1,44 +1,36 @@
 type ICallback = (t: number) => void
 
-function createRafTicker() {
-  const ticker = new Ticker()
-
-  if (typeof window !== 'undefined') {
-    /**
-     * @remarks
-     * TODO users should also be able to define their own ticker.
-     */
-    const onAnimationFrame = (t: number) => {
-      ticker.tick(t)
-      window.requestAnimationFrame(onAnimationFrame)
-    }
-    window.requestAnimationFrame(onAnimationFrame)
-  } else {
-    ticker.tick(0)
-    setTimeout(() => ticker.tick(1), 0)
-  }
-
-  return ticker
-}
-
-let rafTicker: undefined | Ticker
+/**
+ * The number of ticks that can pass without any scheduled callbacks before the Ticker goes dormant. This is to prevent
+ * the Ticker from staying active forever, even if there are no scheduled callbacks.
+ *
+ * Perhaps counting ticks vs. time is not the best way to do this. But it's a start.
+ */
+const EMPTY_TICKS_BEFORE_GOING_DORMANT = 60 /*fps*/ * 3 /*seconds*/ // on a 60fps screen, 3 seconds should pass before the ticker goes dormant
 
 /**
  * The Ticker class helps schedule callbacks. Scheduled callbacks are executed per tick. Ticks can be triggered by an
  * external scheduling strategy, e.g. a raf.
  */
 export default class Ticker {
-  /** Get a shared `requestAnimationFrame` ticker. */
-  static get raf(): Ticker {
-    if (!rafTicker) {
-      rafTicker = createRafTicker()
-    }
-    return rafTicker
-  }
   private _scheduledForThisOrNextTick: Set<ICallback>
   private _scheduledForNextTick: Set<ICallback>
   private _timeAtCurrentTick: number
   private _ticking: boolean = false
+
+  /**
+   * Whether the Ticker is dormant
+   */
+  private _dormant: boolean = true
+
+  private _numberOfDormantTicks = 0
+
+  /**
+   * Whether the Ticker is dormant
+   */
+  get dormant(): boolean {
+    return this._dormant
+  }
   /**
    * Counts up for every tick executed.
    * Internally, this is used to measure ticks per second.
@@ -48,7 +40,18 @@ export default class Ticker {
    */
   public __ticks = 0
 
-  constructor() {
+  constructor(
+    private _conf?: {
+      /**
+       * This is called when the Ticker goes dormant.
+       */
+      onDormant?: () => void
+      /**
+       * This is called when the Ticker goes active.
+       */
+      onActive?: () => void
+    },
+  ) {
     this._scheduledForThisOrNextTick = new Set()
     this._scheduledForNextTick = new Set()
     this._timeAtCurrentTick = 0
@@ -70,6 +73,9 @@ export default class Ticker {
    */
   onThisOrNextTick(fn: ICallback) {
     this._scheduledForThisOrNextTick.add(fn)
+    if (this._dormant) {
+      this._goActive()
+    }
   }
 
   /**
@@ -82,6 +88,9 @@ export default class Ticker {
    */
   onNextTick(fn: ICallback) {
     this._scheduledForNextTick.add(fn)
+    if (this._dormant) {
+      this._goActive()
+    }
   }
 
   /**
@@ -116,6 +125,19 @@ export default class Ticker {
     } else return performance.now()
   }
 
+  private _goActive() {
+    if (!this._dormant) return
+    this._dormant = false
+    this._conf?.onActive?.()
+  }
+
+  private _goDormant() {
+    if (this._dormant) return
+    this._dormant = true
+    this._numberOfDormantTicks = 0
+    this._conf?.onDormant?.()
+  }
+
   /**
    * Triggers a tick which starts executing the callbacks scheduled for this tick.
    *
@@ -134,6 +156,19 @@ export default class Ticker {
     }
 
     this.__ticks++
+
+    if (!this._dormant) {
+      if (
+        this._scheduledForNextTick.size === 0 &&
+        this._scheduledForThisOrNextTick.size === 0
+      ) {
+        this._numberOfDormantTicks++
+        if (this._numberOfDormantTicks >= EMPTY_TICKS_BEFORE_GOING_DORMANT) {
+          this._goDormant()
+          return
+        }
+      }
+    }
 
     this._ticking = true
     this._timeAtCurrentTick = t
