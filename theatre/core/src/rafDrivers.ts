@@ -30,7 +30,14 @@ export function createRafDriver(conf?: {
     ticker.tick(time)
   }
 
-  const ticker = new Ticker()
+  const ticker = new Ticker({
+    onActive() {
+      conf?.start?.()
+    },
+    onDormant() {
+      conf?.stop?.()
+    },
+  })
 
   const driverPublicApi: IRafDriver = {
     tick,
@@ -48,10 +55,6 @@ export function createRafDriver(conf?: {
   }
 
   setPrivateAPI(driverPublicApi, driverPrivateApi)
-
-  // for now, we'll always call start as soon as the driver is created. Later we can
-  // call start if ticker actually has events queued, and stop if it doesn't.
-  driverPrivateApi.start?.()
 
   return driverPublicApi
 }
