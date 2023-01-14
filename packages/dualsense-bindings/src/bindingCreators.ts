@@ -125,7 +125,8 @@ export function createPositionBinding({
         Here are some methods and their caveats:
         - Take the cotangent of the orientation with respect to a plane
           This is the method preferred here, since it allows for precise, slower movements at small orientation changes,
-          while allowing for fast movements at the extremes. This method also fits best the the laser pointer metaphor (see below).
+          while allowing for fast movements at the extremes. This method fits best the the laser pointer metaphor (see below).
+          A downside of this method is that since the mapping is not linear, the movement is harder to predict towards the extremes.
         - Take the cosine of the orientation with respect to a plane
           The movement slows down towards the extremes, which is less useful than the tangent method described above.
         - Map the orientation to a triangle wave with respect to a plane
