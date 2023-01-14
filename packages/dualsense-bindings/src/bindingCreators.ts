@@ -133,8 +133,8 @@ export function createPositionBinding({
           This method results in linear movement, which fits the trackball metaphor (see below). While the movement is more
           predictable, the precision that can be achieved is lower than with the tangent method.
 
-          const xTranslationLinear = ((2 * a) / Math.PI) * Math.asin(vector.x)
-          const yTranslationLinear = a - ((2 * a) / Math.PI) * Math.acos(vector.y)
+          const xTranslationLinear = ((2 * a) / Math.PI) * Math.asin(forwardVector.x)
+          const yTranslationLinear = a - ((2 * a) / Math.PI) * Math.acos(forwardVector.y)
 
         There are also different metaphors we can consider in the implementation:
         - Laser pointer
