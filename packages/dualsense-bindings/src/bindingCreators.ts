@@ -113,50 +113,82 @@ export function createPositionBinding({
 
         const propPointer = get(object.props, propName)
 
+        /*
+        Calculating the position involves mapping the orientation to a point on a plane. This can be done using different
+        trigonometric methods.
+
+        Things to consider:
+        - We need to balance the speed of movement with the precision of the movement.
+        - We need to balance the speed of movement with the sensor noise. Larger coefficients will make the
+          movement noisier.
+        
+        Here are some methods and their caveats:
+        - Take the cotangent of the orientation with respect to a plane
+          This is the method preferred here, since it allows for precise, slower movements at small orientation changes,
+          while allowing for fast movements at the extremes. This method also fits best the the laser pointer metaphor (see below).
+        - Take the cosine of the orientation with respect to a plane
+          The movement slows down towards the extremes,which is less useful than the tangent method described above.
+        - Map the orientation to a triangle wave with respect to a plane
+          This results in linear movement, which fits the trackball metaphor (see below).
+
+          const xTranslationLinear = ((2 * a) / Math.PI) * Math.asin(vector.x)
+          const yTranslationLinear = a - ((2 * a) / Math.PI) * Math.acos(vector.y)
+
+        There are also different metaphors we can consider in the implementation:
+        - Laser pointer
+          The controller is a laser pointer, projecting a point onto a flat surface. In this metaphor, the roll
+          of the controller is ignored, since it doesn't change the direction of the laser pointer. Orientation maps
+          tangentially to movement. At the extremes, movement becomes faster per orientation change.
+        - Trackball
+          The controller is a trackball. Changes in roll results in movement along the x axis,
+          changes in pitch results in changes in the y axis. The yaw of the controller is ignored, since a
+          trackpall can't be yawed. Orientation maps lineraly to movement.
+
+          const upVector = new Vector3(0, 1, 0).applyQuaternion(new Quaternion(x, y, z, w))
+          const xTranslationTrackball = (upVector.x / Math.max(Math.abs(upVector.y), 0.3)) * 6
+
+          It could be tempting to combine the two metaphors, but this can result in a confusing experience,
+          since the roll or the yaw of the controller can be changed inadvertnetly, which makes it difficult to
+          determine the user's intent.
+
+          This implementation uses the laser pointer metaphor with the tangent method.
+        */
+
         // calculate the controller's forward vector
-        const vector = new Vector3(0, 0, -1).applyQuaternion(
+        const forwardVector = new Vector3(0, 0, -1).applyQuaternion(
           new Quaternion(x, y, z, w),
         )
 
+        // Take the tangent of the angle between the forward vector and the orthogonal plane of the initial forward vector
+        // by dividing the x and y components by the z component.
+        // Limit the z component to at least 0.3 so that the position doesn't fly off the handle
+        // when we divide by z (and to avoid NaN).
+        // Below z = 0.3 the movement becomes too noisy anyway.
+        // We then multiply by 6 to make the movement a bit more sensitive. This value is chosen as a balance between sensitivity and noise.
+        const xTranslation =
+          (forwardVector.x / Math.max(Math.abs(forwardVector.z), 0.3)) * 6
+        const yTranslation =
+          (forwardVector.y / Math.max(Math.abs(forwardVector.z), 0.3)) * 6
+
         if (movementPlane === 'xz') {
           api.set(propPointer, {
-            // Take the tangent of the angle between the forward vector and the orthogonal plane of the initial forward vector
-            // by dividing the x and y components by the z component.
-            // Limit the z component to at least 0.3 so that the position doesn't fly off the handle
-            // when we divide by z (and to avoid NaN).
-            // Below z = 0.3 the movement becomes too noisy anyway.
-            // We then multiply by 6 to make the movement a bit more sensitive. This value is chosen as a balance between sensitivity and noise.
-            // We then add the resulting components to the initial position to get the final position.
-            x:
-              initialPosition!.x +
-              (vector.x / Math.max(Math.abs(vector.z), 0.3)) * 8,
+            x: initialPosition!.x + xTranslation,
             y: initialPosition!.y,
-            z:
-              initialPosition!.z +
-              (vector.y / Math.max(Math.abs(vector.z), 0.3)) * 8,
+            z: initialPosition!.z + yTranslation,
           })
         }
-        // Do the same for the other planes too
         if (movementPlane === 'xy') {
           api.set(propPointer, {
-            x:
-              initialPosition!.x +
-              (vector.x / Math.max(Math.abs(vector.z), 0.3)) * 6,
-            y:
-              initialPosition!.y +
-              (vector.y / Math.max(Math.abs(vector.z), 0.3)) * 6,
+            x: initialPosition!.x + xTranslation,
+            y: initialPosition!.y + yTranslation,
             z: initialPosition!.z,
           })
         }
         if (movementPlane === 'yz') {
           api.set(propPointer, {
             x: initialPosition!.x,
-            y:
-              initialPosition!.y +
-              (vector.y / Math.max(Math.abs(vector.z), 0.3)) * 6,
-            z:
-              initialPosition!.z -
-              (vector.x / Math.max(Math.abs(vector.z), 0.3)) * 6,
+            y: initialPosition!.y + yTranslation,
+            z: initialPosition!.z - xTranslation,
           })
         }
       })
