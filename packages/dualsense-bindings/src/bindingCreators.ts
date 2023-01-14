@@ -127,7 +127,7 @@ export function createPositionBinding({
           This is the method preferred here, since it allows for precise, slower movements at small orientation changes,
           while allowing for fast movements at the extremes. This method also fits best the the laser pointer metaphor (see below).
         - Take the cosine of the orientation with respect to a plane
-          The movement slows down towards the extremes,which is less useful than the tangent method described above.
+          The movement slows down towards the extremes, which is less useful than the tangent method described above.
         - Map the orientation to a triangle wave with respect to a plane
           This results in linear movement, which fits the trackball metaphor (see below).
 
