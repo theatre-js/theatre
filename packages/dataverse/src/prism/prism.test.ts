@@ -36,9 +36,9 @@ describe('prism', () => {
       return bD.getValue()
     })
     expect(cD.getValue()).toEqual(2)
-    const untap = cD.keepHot()
+    const unsubscribe = cD.keepHot()
     expect((cD as $IntentionalAny)._state.handle._dependencies.size).toEqual(1)
-    untap()
+    unsubscribe()
   })
 
   describe('prism.ref()', () => {

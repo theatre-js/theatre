@@ -5,7 +5,7 @@ import Atom, {val} from './Atom'
 import prism from './prism/prism'
 import Ticker from './Ticker'
 
-describe(`v2 atom`, () => {
+describe(`integration`, () => {
   describe(`identity pointers`, () => {
     it(`should work`, () => {
       const data = {foo: 'hi', bar: 0}

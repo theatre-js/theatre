@@ -6,7 +6,7 @@ type ICallback = (t: number) => void
  *
  * Perhaps counting ticks vs. time is not the best way to do this. But it's a start.
  */
-const EMPTY_TICKS_BEFORE_GOING_DORMANT = 60 /*fps*/ * 3 /*seconds*/ // on a 60fps screen, 3 seconds should pass before the ticker goes dormant
+export const EMPTY_TICKS_BEFORE_GOING_DORMANT = 60 /*fps*/ * 3 /*seconds*/ // on a 60fps screen, 3 seconds should pass before the ticker goes dormant
 
 /**
  * The Ticker class helps schedule callbacks. Scheduled callbacks are executed per tick. Ticks can be triggered by an
