@@ -3,6 +3,10 @@ import {privateAPI} from './privateAPIs'
 import type {IRafDriver, RafDriverPrivateAPI} from './rafDrivers'
 import {createRafDriver} from './rafDrivers'
 
+/**
+ * Creates a rafDrive that uses `window.requestAnimationFrame` in browsers,
+ * or a single `setTimeout` in SSR.
+ */
 function createBasicRafDriver(): IRafDriver {
   let rafId: number | null = null
   const start = (): void => {
@@ -35,6 +39,9 @@ function createBasicRafDriver(): IRafDriver {
 
 let coreRafDriver: RafDriverPrivateAPI | undefined
 
+/**
+ * Returns the rafDriver that is used by the core internally. Creates a new one if it's not set yet.
+ */
 export function getCoreRafDriver(): RafDriverPrivateAPI {
   if (!coreRafDriver) {
     setCoreRafDriver(createBasicRafDriver())
@@ -42,10 +49,17 @@ export function getCoreRafDriver(): RafDriverPrivateAPI {
   return coreRafDriver!
 }
 
+/**
+ *
+ * @returns The ticker that is used by the core internally.
+ */
 export function getCoreTicker(): Ticker {
   return getCoreRafDriver().ticker
 }
 
+/**
+ * Sets the rafDriver that is used by the core internally.
+ */
 export function setCoreRafDriver(driver: IRafDriver) {
   if (coreRafDriver) {
     throw new Error(`\`setCoreRafDriver()\` is already called.`)

@@ -72,7 +72,7 @@ export interface ISheetObject<
    * Calls `fn` every time the value of the props change.
    *
    * @param fn - The callback is called every time the value of the props change, plus once at the beginning.
-   * @param rafDriver - (Optional) The RAF driver to use. Defaults to the core RAF driver.
+   * @param rafDriver - (optional) The `rafDriver` to use. Learn how to use `rafDriver`s [from the docs](https://www.theatrejs.com/docs/latest/manual/advanced#rafdrivers).
    * @returns an Unsubscribe function
    *
    * @example

@@ -79,8 +79,9 @@ export interface ISequence {
     direction?: IPlaybackDirection
 
     /**
-     * Optionally provide a RAF driver to use for the playback. It'll default to
+     * Optionally provide a rafDriver to use for the playback. It'll default to
      * the core driver if not provided, which is a `requestAnimationFrame()` driver.
+     * Learn how to use `rafDriver`s [from the docs](https://www.theatrejs.com/docs/latest/manual/advanced#rafdrivers).
      */
     rafDriver?: IRafDriver
   }): Promise<boolean>

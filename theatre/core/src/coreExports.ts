@@ -138,6 +138,7 @@ const validateProjectIdOrThrow = (value: string) => {
  *
  * @param pointer - A Pointer (like `object.props.x`)
  * @param callback - The callback is called every time the value of pointer changes
+ * @param rafDriver - (optional) The `rafDriver` to use. Learn how to use `rafDriver`s [from the docs](https://www.theatrejs.com/docs/latest/manual/advanced#rafdrivers).
  * @returns An unsubscribe function
  *
  * @example
@@ -165,9 +166,9 @@ export function onChange<
       ? T
       : unknown,
   ) => void,
-  driver?: IRafDriver,
+  rafDriver?: IRafDriver,
 ): VoidFn {
-  const ticker = driver ? privateAPI(driver).ticker : getCoreTicker()
+  const ticker = rafDriver ? privateAPI(rafDriver).ticker : getCoreTicker()
 
   if (isPointer(pointer)) {
     const pr = pointerToPrism(pointer)
