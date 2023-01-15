@@ -31,6 +31,9 @@ describe(`Atom`, () => {
     atom.setByPointer((p) => p, {foo: 'newfoo', bar: -1})
     expect(atom.get()).toEqual({foo: 'newfoo', bar: -1})
 
+    // `getByPointer()` is to `get()` what `setByPointer()` is to `set()`
+    expect(atom.getByPointer((p) => p.bar)).toBe(-1)
+
     // `reduceByPointer()` is to `setByPointer()` what `reduce()` is to `set()`
     atom.reduceByPointer(
       (p) => p.bar,
