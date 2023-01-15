@@ -37,10 +37,10 @@ function createWhatPropIsHighlightedState() {
     replaceLock(address: WithoutSheetInstance<PropAddress>, cleanup: VoidFn) {
       const lockId = lastLockId++
 
-      const existingState = whatIsHighlighted.getState()
+      const existingState = whatIsHighlighted.get()
       if (existingState.hasLock) existingState.cleanup()
 
-      whatIsHighlighted.setState({
+      whatIsHighlighted.set({
         hasLock: true,
         lockId,
         cleanup,
@@ -48,10 +48,10 @@ function createWhatPropIsHighlightedState() {
       })
 
       return function unlock() {
-        const curr = whatIsHighlighted.getState()
+        const curr = whatIsHighlighted.get()
         if (curr.hasLock && curr.lockId === lockId) {
           curr.cleanup()
-          whatIsHighlighted.setState({hasLock: false})
+          whatIsHighlighted.set({hasLock: false})
         }
       }
     },

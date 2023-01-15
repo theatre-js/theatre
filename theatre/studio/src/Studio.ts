@@ -264,7 +264,7 @@ export class Studio {
   }
 
   get core() {
-    return this._coreAtom.getState().core
+    return this._coreAtom.get().core
   }
 
   get coreP() {

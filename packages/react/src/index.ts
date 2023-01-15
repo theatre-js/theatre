@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { Prism} from '@theatre/dataverse';
+import type {Prism} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {findIndex} from 'lodash-es'
@@ -62,7 +62,7 @@ export function usePrism<T>(
   if (!atomRef.current) {
     atomRef.current = new Atom(fnAsCallback)
   } else {
-    atomRef.current.setState(fnAsCallback)
+    atomRef.current.set(fnAsCallback)
   }
 
   const prsm = useMemo(

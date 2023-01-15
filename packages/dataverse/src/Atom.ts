@@ -150,30 +150,15 @@ export default class Atom<State> implements IdentityPrismProvider {
     this._checkUpdates(this._rootScope, oldState, newState)
   }
 
-  /**
-   * Gets the current state of the atom.
-   * @deprecated use {@link Atom.get} instead
-   */
-  getState() {
-    return this._currentState
-  }
-
   get() {
-    return this.getState()
-  }
-
-  /**
-   * @deprecated use {@link Atom.set} instead
-   */
-  setState(newState: State) {
-    this.set(newState)
+    return this._currentState
   }
 
   /**
    * Gets the state of the atom at `path`.
    */
   getIn(path: (string | number)[]): unknown {
-    return path.length === 0 ? this.getState() : get(this.getState(), path)
+    return path.length === 0 ? this.get() : get(this.get(), path)
   }
 
   reduce(fn: (state: State) => State) {

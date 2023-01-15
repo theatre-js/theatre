@@ -23,11 +23,11 @@ describe(`v2 atom`, () => {
       d.onChange(ticker, (c) => {
         changes.push(c)
       })
-      a.setState({...data, bar: 1})
+      a.set({...data, bar: 1})
       ticker.tick()
       expect(changes).toHaveLength(1)
       expect(changes[0]).toEqual(1)
-      a.setState({...data, bar: 1})
+      a.set({...data, bar: 1})
       ticker.tick()
       expect(changes).toHaveLength(1)
     })

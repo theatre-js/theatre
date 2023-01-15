@@ -123,7 +123,7 @@ export default class Sequence {
   }
 
   get position() {
-    return this._playbackControllerBox.getState().getCurrentPosition()
+    return this._playbackControllerBox.get().getCurrentPosition()
   }
 
   get subUnitsPerUnit(): number {
@@ -165,7 +165,7 @@ export default class Sequence {
     }
     const dur = this.length
     this._playbackControllerBox
-      .getState()
+      .get()
       .gotoPosition(position > dur ? dur : position)
   }
 
@@ -174,7 +174,7 @@ export default class Sequence {
   }
 
   get playing() {
-    return val(this._playbackControllerBox.getState().statePointer.playing)
+    return val(this._playbackControllerBox.get().statePointer.playing)
   }
 
   _makeRangeFromSequenceTemplate(): Prism<IPlaybackRange> {
@@ -198,9 +198,7 @@ export default class Sequence {
     rangeD: Prism<IPlaybackRange>,
     ticker: Ticker,
   ): Promise<unknown> {
-    return this._playbackControllerBox
-      .getState()
-      .playDynamicRange(rangeD, ticker)
+    return this._playbackControllerBox.get().playDynamicRange(rangeD, ticker)
   }
 
   async play(
@@ -337,18 +335,18 @@ To fix this, either set \`conf.range[1]\` to be less the duration of the sequenc
     ticker: Ticker,
   ): Promise<boolean> {
     return this._playbackControllerBox
-      .getState()
+      .get()
       .play(iterationCount, range, rate, direction, ticker)
   }
 
   pause() {
-    this._playbackControllerBox.getState().pause()
+    this._playbackControllerBox.get().pause()
   }
 
   replacePlaybackController(playbackController: IPlaybackController) {
     this.pause()
-    const oldController = this._playbackControllerBox.getState()
-    this._playbackControllerBox.setState(playbackController)
+    const oldController = this._playbackControllerBox.get()
+    this._playbackControllerBox.set(playbackController)
 
     const time = oldController.getCurrentPosition()
     oldController.destroy()

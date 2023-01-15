@@ -331,6 +331,6 @@ export default class SheetObject implements IdentityPrismProvider {
 
   setInitialValue(val: DeepPartialOfSerializableValue<SheetObjectPropsValue>) {
     this.validateValue(this.propsP, val)
-    this._initialValue.setState(val)
+    this._initialValue.set(val)
   }
 }

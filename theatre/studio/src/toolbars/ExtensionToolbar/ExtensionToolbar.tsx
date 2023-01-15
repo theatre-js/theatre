@@ -33,7 +33,7 @@ const ExtensionToolsetRender: React.FC<{
 
   useLayoutEffect(() => {
     const detach = extension.toolbars?.[toolbarId]?.(
-      toolsetConfigBox.setState.bind(toolsetConfigBox),
+      toolsetConfigBox.set.bind(toolsetConfigBox),
       getStudio()!.publicApi,
     )
 
