@@ -358,7 +358,8 @@ export class Studio {
 
     // Check for support.
     if (!('indexedDB' in window)) {
-      console.log("This browser doesn't support IndexedDB.")
+      if (process.env.NODE_ENV !== 'test')
+        console.log("This browser doesn't support IndexedDB.")
 
       return {
         getAssetUrl: (assetId: string) => {
