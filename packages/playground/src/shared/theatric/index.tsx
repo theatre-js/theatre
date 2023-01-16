@@ -3,15 +3,18 @@ import {render} from 'react-dom'
 import React, {useState} from 'react'
 
 function SomeComponent({id}: {id: string}) {
-  const {foo} = useControls(id, {
-    foo: 0,
-    bar: 0,
-    bez: button((set, get) => {
-      set('foo', 2)
-      set('bar', 3)
-      console.log(get('foo'))
-    }),
-  })
+  const {foo} = useControls(
+    {
+      foo: 0,
+      bar: 0,
+      bez: button((set, get) => {
+        set('foo', 2)
+        set('bar', 3)
+        console.log(get('foo'))
+      }),
+    },
+    {folder: id},
+  )
 
   return (
     <div>

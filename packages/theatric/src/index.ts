@@ -41,15 +41,10 @@ type ControlsAndButtons = {
 }
 
 export function useControls<Config extends ControlsAndButtons>(
-  configOrFolderName: string | Config,
-  configIfFolderName?: Config,
+  config: Config,
+  options: {folder?: string} = {},
 ) {
-  const folderName =
-    typeof configOrFolderName === 'string' ? configOrFolderName : undefined
-  let config =
-    typeof configOrFolderName === 'string'
-      ? configIfFolderName ?? ({} as Config)
-      : (configOrFolderName as Config)
+  const {folder: folderName} = options
 
   const controlsWithoutButtons = Object.fromEntries(
     Object.entries(config).filter(
