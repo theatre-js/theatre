@@ -28,6 +28,9 @@ function App() {
     bar: {foo: 'bar'},
     baz: button((set, get) => console.log(get('bar.foo'))),
   })
+
+  const [{}, set, get] = useControls({}, {advanced: true})
+
   const [showComponent, setShowComponent] = useState(false)
 
   return (
@@ -48,6 +51,13 @@ function App() {
         }}
       >
         Show another component
+      </button>
+      <button
+        onClick={() => {
+          set('first.foo', get('first.foo') + 1)
+        }}
+      >
+        Increment stuff
       </button>
       {showComponent && <SomeComponent id="hidden" />}
     </div>

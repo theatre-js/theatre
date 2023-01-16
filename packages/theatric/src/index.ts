@@ -41,11 +41,11 @@ type ControlsAndButtons = {
   [key: string]: {type: 'button'} | UnknownShorthandCompoundProps[string]
 }
 
-export function useControls<Config extends ControlsAndButtons>(
-  config: Config,
-  options: {folder?: string} = {},
-) {
-  const {folder: folderName} = options
+export function useControls<
+  Config extends ControlsAndButtons,
+  Advanced extends boolean = false,
+>(config: Config, options: {folder?: string; advanced?: Advanced} = {}) {
+  const {folder} = options
 
   const controlsWithoutButtons = Object.fromEntries(
     Object.entries(config).filter(
@@ -59,13 +59,13 @@ export function useControls<Config extends ControlsAndButtons>(
     ),
   ) as unknown as Buttons
 
-  const props = folderName
-    ? {[folderName]: controlsWithoutButtons}
+  const props = folder
+    ? {[folder]: controlsWithoutButtons}
     : controlsWithoutButtons
 
   const actions = Object.fromEntries(
     Object.entries(buttons).map(([key, value]) => [
-      `${folderName ? `${folderName}: ` : ''}${key}`,
+      `${folder ? `${folder}: ` : ''}${key}`,
       (object: ISheetObject, studio: IStudio) => {
         value.onClick(
           (path, value) => {
@@ -75,13 +75,12 @@ export function useControls<Config extends ControlsAndButtons>(
             // would be run twice.
             studio.transaction((api) => {
               api.set(
-                get(folderName ? object.props[folderName] : object.props, path),
+                get(folder ? object.props[folder] : object.props, path),
                 value,
               )
             })
           },
-          (path) =>
-            get(folderName ? object.value[folderName] : object.value, path),
+          (path) => get(folder ? object.value[folder] : object.value, path),
         )
       },
     ]),
@@ -113,13 +112,47 @@ export function useControls<Config extends ControlsAndButtons>(
     }
   }, [props, actions])
 
-  return useVal(
-    folderName
-      ? ((object as ISheetObject).props[folderName] as ISheetObject<
+  const values = useVal(
+    folder
+      ? ((object as ISheetObject).props[folder] as ISheetObject<
           OmitMatching<Config, {type: 'button'}>
         >['props'])
       : (object as ISheetObject<OmitMatching<Config, {type: 'button'}>>).props,
   )
+
+  type ReturnType = Advanced extends true
+    ? [typeof values, (path: string, value: any) => void, (path: string) => any]
+    : typeof values
+
+  return (
+    options.advanced
+      ? ([
+          values,
+          (path: string, value: any) => {
+            // this is not ideal because it will create a separate undo level for each set call,
+            // but this is the only thing that theatre's public API allows us to do.
+            // Wrapping the whole thing in a transaction wouldn't work either because side effects
+            // would be run twice.
+            studio.transaction((api) => {
+              api.set(
+                get(
+                  folder
+                    ? (object as ISheetObject).props[folder]
+                    : object.props,
+                  path,
+                ),
+                value,
+              )
+            })
+          },
+          (path: string) =>
+            get(
+              folder ? (object as ISheetObject).value[folder] : object.value,
+              path,
+            ),
+        ] as const)
+      : values
+  ) as ReturnType
 }
 
 export {types} from '@theatre/core'
