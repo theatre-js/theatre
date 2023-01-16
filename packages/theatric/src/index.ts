@@ -21,9 +21,10 @@ studio.initialize()
 const allProps: UnknownShorthandCompoundProps[] = []
 const allActions: SheetObjectActionsConfig[] = []
 
-const project = getProject('Tweaks')
-const sheet = project.sheet('default')
-const object = sheet.object('default', {})
+const project = getProject('Theatric')
+const sheet = project.sheet('Panels')
+const defaultPanelName = 'Default panel'
+const object = sheet.object(defaultPanelName, {})
 
 type Button = {
   type: 'button'
@@ -87,7 +88,7 @@ export function useControls<Config extends ControlsAndButtons>(
   )
 
   // have to do this to make sure the values are immediately available
-  sheet.object('default', Object.assign({}, ...allProps, props), {
+  sheet.object(defaultPanelName, Object.assign({}, ...allProps, props), {
     reconfigure: true,
     actions: Object.assign({}, ...allActions, actions),
   })
@@ -97,7 +98,7 @@ export function useControls<Config extends ControlsAndButtons>(
     allActions.push(actions)
     // cleanup runs after render, so we have to reconfigure with the new props here too, doing it during render just makes sure that
     // the very first values returned are not undefined
-    sheet.object('default', Object.assign({}, ...allProps), {
+    sheet.object(defaultPanelName, Object.assign({}, ...allProps), {
       reconfigure: true,
       actions: Object.assign({}, ...allActions),
     })
@@ -105,7 +106,7 @@ export function useControls<Config extends ControlsAndButtons>(
     return () => {
       allProps.splice(allProps.indexOf(props), 1)
       allActions.splice(allActions.indexOf(actions), 1)
-      sheet.object('default', Object.assign({}, ...allProps), {
+      sheet.object(defaultPanelName, Object.assign({}, ...allProps), {
         reconfigure: true,
         actions: Object.assign({}, ...allActions),
       })
