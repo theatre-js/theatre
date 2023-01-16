@@ -75,7 +75,7 @@ export default class Sheet {
   }
 
   getObject(key: ObjectAddressKey): SheetObject | undefined {
-    return this._objects.getState()[key]
+    return this._objects.get()[key]
   }
 
   deleteObject(objectKey: ObjectAddressKey) {

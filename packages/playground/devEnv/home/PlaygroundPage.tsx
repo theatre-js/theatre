@@ -36,16 +36,8 @@ export const PlaygroundPage = ({
         }}
         links={[
           {
-            label: 'Getting Started',
-            href: 'https://docs.theatrejs.com/getting-started/',
-          },
-          {
             label: 'Docs',
-            href: 'https://docs.theatrejs.com/',
-          },
-          {
-            label: 'API',
-            href: 'https://docs.theatrejs.com/api/',
+            href: 'https://www.theatrejs.com/docs/latest',
           },
           {
             label: 'Github',

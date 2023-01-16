@@ -7,7 +7,7 @@ export default function useValToAtom<S>(val: S): Atom<S> {
   }, [])
 
   useLayoutEffect(() => {
-    atom.setState(val)
+    atom.set(val)
   }, [val])
 
   return atom

@@ -2,11 +2,13 @@ import type {Studio} from '@theatre/studio/Studio'
 import projectsSingleton from './projects/projectsSingleton'
 import {privateAPI} from './privateAPIs'
 import * as coreExports from './coreExports'
+import {getCoreRafDriver} from './coreTicker'
 
 export type CoreBits = {
   projectsP: typeof projectsSingleton.atom.pointer.projects
   privateAPI: typeof privateAPI
   coreExports: typeof coreExports
+  getCoreRafDriver: typeof getCoreRafDriver
 }
 
 export default class CoreBundle {
@@ -30,6 +32,7 @@ export default class CoreBundle {
       projectsP: projectsSingleton.atom.pointer.projects,
       privateAPI: privateAPI,
       coreExports,
+      getCoreRafDriver,
     }
 
     callback(bits)

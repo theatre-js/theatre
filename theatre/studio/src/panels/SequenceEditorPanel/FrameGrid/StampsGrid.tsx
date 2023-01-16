@@ -6,7 +6,7 @@ import {darken} from 'polished'
 import React, {useLayoutEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
 import createGrid from './createGrid'
-import studioTicker from '@theatre/studio/studioTicker'
+import getStudio from '@theatre/studio/getStudio'
 
 const Container = styled.div`
   position: absolute;
@@ -86,7 +86,7 @@ const StampsGrid: React.FC<{
         sequencePositionFormatter: sequence.positionFormatter,
         snapToGrid: (n: number) => sequence.closestGridPosition(n),
       }
-    }).onChange(studioTicker, drawStamps, true)
+    }).onChange(getStudio().ticker, drawStamps, true)
   }, [fullSecondStampsContainer, width, layoutP])
 
   return (

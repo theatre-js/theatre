@@ -23,6 +23,7 @@ export interface IPlaybackController {
     range: IPlaybackRange,
     rate: number,
     direction: IPlaybackDirection,
+    ticker: Ticker,
   ): Promise<boolean>
 
   /**
@@ -36,7 +37,10 @@ export interface IPlaybackController {
    * @returns  a promise that gets rejected if the playback stopped for whatever reason
    *
    */
-  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown>
+  playDynamicRange(
+    rangeD: Prism<IPlaybackRange>,
+    ticker: Ticker,
+  ): Promise<unknown>
 
   pause(): void
 }
@@ -49,7 +53,7 @@ export default class DefaultPlaybackController implements IPlaybackController {
   })
   readonly statePointer: Pointer<IPlaybackState>
 
-  constructor(private readonly _ticker: Ticker) {
+  constructor() {
     this.statePointer = this._state.pointer
   }
 
@@ -86,6 +90,7 @@ export default class DefaultPlaybackController implements IPlaybackController {
     range: IPlaybackRange,
     rate: number,
     direction: IPlaybackDirection,
+    ticker: Ticker,
   ): Promise<boolean> {
     if (this.playing) {
       this.pause()
@@ -93,7 +98,6 @@ export default class DefaultPlaybackController implements IPlaybackController {
 
     this.playing = true
 
-    const ticker = this._ticker
     const iterationLength = range[1] - range[0]
 
     {
@@ -203,14 +207,15 @@ export default class DefaultPlaybackController implements IPlaybackController {
     return deferred.promise
   }
 
-  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown> {
+  playDynamicRange(
+    rangeD: Prism<IPlaybackRange>,
+    ticker: Ticker,
+  ): Promise<unknown> {
     if (this.playing) {
       this.pause()
     }
 
     this.playing = true
-
-    const ticker = this._ticker
 
     const deferred = defer<boolean>()
 

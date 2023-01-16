@@ -21,6 +21,10 @@ export {
 export {makeStoreKey as __private_makeStoreKey} from './main/utils'
 
 export {default as SheetProvider, useCurrentSheet} from './main/SheetProvider'
+export {
+  default as RafDriverProvider,
+  useCurrentRafDriver,
+} from './main/RafDriverProvider'
 export {refreshSnapshot} from './main/utils'
 export {default as RefreshSnapshot} from './main/RefreshSnapshot'
 export * from './drei'

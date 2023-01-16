@@ -23,7 +23,6 @@ export default class AudioPlaybackController implements IPlaybackController {
   _stopPlayCallback: () => void = noop
 
   constructor(
-    private readonly _ticker: Ticker,
     private readonly _decodedBuffer: AudioBuffer,
     private readonly _audioContext: AudioContext,
     private readonly _nodeDestination: AudioNode,
@@ -34,7 +33,10 @@ export default class AudioPlaybackController implements IPlaybackController {
     this._mainGain.connect(this._nodeDestination)
   }
 
-  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown> {
+  playDynamicRange(
+    rangeD: Prism<IPlaybackRange>,
+    ticker: Ticker,
+  ): Promise<unknown> {
     const deferred = defer<boolean>()
     if (this._playing) this.pause()
 
@@ -44,7 +46,7 @@ export default class AudioPlaybackController implements IPlaybackController {
 
     const play = () => {
       stop?.()
-      stop = this._loopInRange(rangeD.getValue()).stop
+      stop = this._loopInRange(rangeD.getValue(), ticker).stop
     }
 
     // We're keeping the rangeD hot, so we can read from it on every tick without
@@ -61,9 +63,11 @@ export default class AudioPlaybackController implements IPlaybackController {
     return deferred.promise
   }
 
-  private _loopInRange(range: IPlaybackRange): {stop: () => void} {
+  private _loopInRange(
+    range: IPlaybackRange,
+    ticker: Ticker,
+  ): {stop: () => void} {
     const rate = 1
-    const ticker = this._ticker
     let startPos = this.getCurrentPosition()
     const iterationLength = range[1] - range[0]
 
@@ -152,6 +156,7 @@ export default class AudioPlaybackController implements IPlaybackController {
     range: IPlaybackRange,
     rate: number,
     direction: IPlaybackDirection,
+    ticker: Ticker,
   ): Promise<boolean> {
     if (this._playing) {
       this.pause()
@@ -159,7 +164,6 @@ export default class AudioPlaybackController implements IPlaybackController {
 
     this._playing = true
 
-    const ticker = this._ticker
     let startPos = this.getCurrentPosition()
     const iterationLength = range[1] - range[0]
 

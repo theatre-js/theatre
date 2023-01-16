@@ -9,7 +9,7 @@ export default function atomFromReduxStore<State>(
 
   store.subscribe(() => {
     const newState = store.getState()
-    a.setState(newState)
+    a.set(newState)
     lastState = newState
   })
 

@@ -5,7 +5,7 @@ import {prism, val} from '@theatre/dataverse'
 import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import createGrid from './createGrid'
-import studioTicker from '@theatre/studio/studioTicker'
+import getStudio from '@theatre/studio/getStudio'
 
 const Container = styled.div`
   position: absolute;
@@ -76,7 +76,7 @@ const FrameGrid: React.FC<{
         snapToGrid: (n: number) => sequence.closestGridPosition(n),
       }
     }).onChange(
-      studioTicker,
+      getStudio().ticker,
       (p) => {
         ctx.save()
         ctx.scale(ratio!, ratio!)

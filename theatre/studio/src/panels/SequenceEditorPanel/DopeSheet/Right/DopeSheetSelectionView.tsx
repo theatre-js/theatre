@@ -113,7 +113,7 @@ function useCaptureSelection(
             v: [event.clientY - rect.top, event.clientY - rect.top],
           }
 
-          val(layoutP.selectionAtom).setState({current: undefined})
+          val(layoutP.selectionAtom).set({current: undefined})
 
           return {
             onDrag(_dx, _dy, event) {
@@ -140,7 +140,7 @@ function useCaptureSelection(
                 val(layoutP),
                 ref.current,
               )
-              val(layoutP.selectionAtom).setState({current: selection})
+              val(layoutP.selectionAtom).set({current: selection})
             },
             onDragEnd(_dragHappened) {
               ref.current = null
