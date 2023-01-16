@@ -14,7 +14,7 @@ import type {
   SerializableValue,
 } from '@theatre/shared/utils/types'
 import {valToAtom} from '@theatre/shared/utils/valToAtom'
-import type {IdentityPrismProvider, Prism, Pointer} from '@theatre/dataverse'
+import type {PointerToPrismProvider, Prism, Pointer} from '@theatre/dataverse'
 
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'
 import type SheetObjectTemplate from './SheetObjectTemplate'
@@ -38,11 +38,11 @@ type SheetObjectPropsValue = SerializableMap
  * Note that this cannot be generic over `Props`, since the user is
  * able to change prop configs for the sheet object's properties.
  */
-export default class SheetObject implements IdentityPrismProvider {
+export default class SheetObject implements PointerToPrismProvider {
   get type(): 'Theatre_SheetObject' {
     return 'Theatre_SheetObject'
   }
-  readonly $$isIdentityPrismProvider: true = true
+  readonly $$isPointerToPrismProvider: true = true
   readonly address: SheetObjectAddress
   readonly publicApi: TheatreSheetObject
   private readonly _initialValue = new Atom<SheetObjectPropsValue>({})
@@ -211,7 +211,8 @@ export default class SheetObject implements IdentityPrismProvider {
     ) as SerializableValue as T
   }
 
-  getIdentityPrism(path: Array<string | number>): Prism<unknown> {
+  pointerToPrism<P>(pointer: Pointer<P>): Prism<P> {
+    const {path} = getPointerParts(pointer)
     /**
      * @remarks
      * TODO perf: Too much indirection here.
@@ -219,7 +220,7 @@ export default class SheetObject implements IdentityPrismProvider {
     return prism(() => {
       const allValuesP = val(this.getValues())
       return val(pointerDeep(allValuesP as $FixMe, path)) as SerializableMap
-    })
+    }) as $IntentionalAny as Prism<P>
   }
 
   /**
