@@ -1,7 +1,92 @@
-import {prism} from '@theatre/dataverse'
+import {Atom, prism, Ticker, val} from '@theatre/dataverse'
 
-describe(`prism()`, () => {
-  // these tests are going will act as a guide on how to use prisms.
+describe(`Dataverse guide`, () => {
+  // Hi there! I'm writing this test suite as an ever-green guide to dataverse. You should be able
+  // to read it from top to bottom and understand the concepts of dataverse.
+  //
+  // Since this is a test suite, you should be able to run it in [debug mode](https://jestjs.io/docs/en/troubleshooting)
+  // and inspect the value of variables at any point in the test.
+
+  // before we dive into the concepts, let me show you how a simple dataverse setup looks like.
+  test('A simple dataverse setup', () => {
+    // In this setup, we're gonna write a program that renders an image of a sunset,
+    // like this:
+    //                         |
+    //                     \       /
+    //                       .-"-.
+    //                  --  /     \  --
+    // `~~^~^~^~^~^~^~^~^~^-=======-~^~^~^~~^~^~^~^~^~^~^~`
+    // `~^_~^~^~-~^_~^~^_~-=========- -~^~^~^-~^~^_~^~^~^~`
+    // `~^~-~~^~^~-^~^_~^~~ -=====- ~^~^~-~^~_~^~^~~^~-~^~`
+    // `~^~^~-~^~~^~-~^~~-~^~^~-~^~~^-~^~^~^-~^~^~^~^~~^~-`
+    // (Art by Joan G. Stark) https://www.asciiart.eu/nature/sunset
+
+    // our program is going to have one parameter, which is `timeOfDay`, which is a number between 0 and 24.
+    // the idea is that as `timeOfDay` changes, our program would render the sun in a different position.
+
+    // Let's express the state of our program as a dataverse `Atom`. An `Atom` basically holds
+    // a piece of state, and it can be read from and written to. It also provides a way to listen
+    // to changes in the state.
+    const state = new Atom({timeOfDay: 0, imageSize: 100})
+
+    // we should be able to advance the time of day by calling `timeOfDay.set()`
+    state.set({...state.get(), timeOfDay: 12})
+
+    // now, we're going to write a function that renders the image of the sunset.
+    // this function is going to be a "reactive function", which means that it's going to
+    // re-run whenever any of its dependencies change.
+    // in this case, the only dependency is `timeOfDay`, so we're going to use `prism()` to create
+    // a reactive function out of it.
+    const renderSunset = prism(() => {
+      const timeOfDay = val(state.pointer.timeOfDay)
+      // we're gonna cover what `val()` and `pointer` mean, later. For now, just know that
+      // `val()` is a function that returns the value of a pointer,
+      // and `state.pointer.timeOfDay` helps `val()` find only get the value of `timeOfDay` and
+      // not the value of the whole state.
+
+      // Okay, we're not _actually_ going to render a piece of ascii art here, although that would have been cool.
+      // For now, just a simple string will do.
+      return `The time of day is ${timeOfDay}`
+    })
+
+    // now, if we call `renderSunset.getValue()`, we'll get the string that we returned from the function.
+    expect(renderSunset.getValue()).toBe(`The time of day is 12`)
+
+    // now, to make our program reactive, we can simply listen to changes to the value of our prism:
+
+    // in order to listen to changes, we need to create a `Ticker`. We're gonna cover what a `Ticker` is later.
+    // But for now, just know that it's a way to schedule and batch computations, for performance reasons.
+    const ticker = new Ticker()
+
+    // Now let's define our listener. This one will be a jest mock function.
+    const listener = jest.fn()
+    const unsubscribe = renderSunset.onChange(ticker, listener)
+
+    // now, if we change the time of day, our listener should be called.
+    state.set({...state.get(), timeOfDay: 13})
+    ticker.tick()
+    expect(listener).toBeCalledTimes(1)
+    expect(listener).toBeCalledWith(`The time of day is 13`)
+
+    // and if we change the time of day again,
+    state.set({...state.get(), timeOfDay: 14})
+    // our listener would _not_ be called, because we haven't ticked the ticker yet.
+    expect(listener).toBeCalledTimes(1)
+    // but if we tick the ticker,
+    ticker.tick()
+    // our listener would be called again.
+    expect(listener).toBeCalledTimes(2)
+
+    // and that would be it for our simple program. But let's take stock of the concepts we've encountered so far.
+    // 1. We've created an `Atom` to hold the state of our program.
+    // 2. We've created a `prism` to create a reactive function out of `timeOfDay`.
+    // 3. We've used a pointer to get the value of `timeOfDay` from the state.
+    // 4. We've used a `Ticker` to schedule and batch computations.
+
+    // In the rest of this guide, we're gonna cover each of these concepts in detail.
+    // But let's wrap this test case up by cleaning up our resources.
+    unsubscribe()
+  })
 
   // prisms are a way to create a value that depends on other values.
   // prisms can be hot or cold, they have dependencies and dependents, and hot prisms can be stale or fresh.
