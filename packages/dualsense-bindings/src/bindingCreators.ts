@@ -129,12 +129,13 @@ export function createPositionBinding({
           A downside of this method is that since the mapping is not linear, the movement is harder to predict towards the extremes.
         - Take the cosine of the orientation with respect to a plane
           The movement slows down towards the extremes, which is less useful than the tangent method described above.
-        - Map the orientation to a triangle wave with respect to a plane
+        - Map two angles of the orientation linearly to the x and y axes of the plane
           This method results in linear movement, which fits the trackball metaphor (see below). While the movement is more
-          predictable, the precision that can be achieved is lower than with the tangent method.
+          predictable, the precision that can be achieved with the same range of movement is lower than with the tangent method.
 
-          const xTranslationLinear = ((2 * a) / Math.PI) * Math.asin(forwardVector.x)
-          const yTranslationLinear = a - ((2 * a) / Math.PI) * Math.acos(forwardVector.y)
+          const upVector = new Vector3(0, 1, 0).applyQuaternion(new Quaternion(x, y, z, w))
+          const xTranslationLinear = ((2 * a) / Math.PI) * Math.asin(upVector.x)
+          const yTranslationLinear = ((2 * a) / Math.PI) * Math.asin(upVector.y)
 
         There are also different metaphors we can consider in the implementation:
         - Laser pointer
@@ -145,9 +146,6 @@ export function createPositionBinding({
           The controller is a trackball. Changes in roll results in movement along the x axis,
           changes in pitch results in changes in the y axis. The yaw of the controller is ignored, since a
           trackpall can't be yawed. Orientation maps lineraly to movement.
-
-          const upVector = new Vector3(0, 1, 0).applyQuaternion(new Quaternion(x, y, z, w))
-          const xTranslationTrackball = (upVector.x / Math.max(Math.abs(upVector.y), 0.3)) * 6
 
           It could be tempting to combine the two metaphors, but this can result in a confusing experience,
           since the roll or the yaw of the controller can easily be changed inadvertently, which makes it difficult to
