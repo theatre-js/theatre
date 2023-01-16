@@ -67,7 +67,7 @@ export default class SheetObjectTemplate {
   readonly project: Project
 
   get staticConfig() {
-    return this._config.getState()
+    return this._config.get()
   }
 
   get configPointer() {
@@ -75,7 +75,7 @@ export default class SheetObjectTemplate {
   }
 
   get staticActions() {
-    return this._actions.getState()
+    return this._actions.get()
   }
 
   get actionsPointer() {
@@ -100,12 +100,12 @@ export default class SheetObjectTemplate {
     nativeObject: unknown,
     config: SheetObjectPropTypeConfig,
   ): SheetObject {
-    this._config.setState(config)
+    this._config.set(config)
     return new SheetObject(sheet, this, nativeObject)
   }
 
   reconfigure(config: SheetObjectPropTypeConfig) {
-    this._config.setState(config)
+    this._config.set(config)
   }
 
   registerAction(name: string, action: SheetObjectAction) {

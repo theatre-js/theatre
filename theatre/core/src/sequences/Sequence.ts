@@ -3,7 +3,7 @@ import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SequenceAddress} from '@theatre/shared/utils/addresses'
 import didYouMean from '@theatre/shared/utils/didYouMean'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
-import type {Prism, Pointer} from '@theatre/dataverse'
+import type {Prism, Pointer, Ticker} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import {pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
@@ -17,7 +17,6 @@ import TheatreSequence from './TheatreSequence'
 import type {ILogger} from '@theatre/shared/logger'
 import type {ISequence} from '..'
 import {notify} from '@theatre/shared/notify'
-import {getCoreTicker} from '@theatre/core/coreTicker'
 
 export type IPlaybackRange = [from: number, to: number]
 
@@ -64,7 +63,7 @@ export default class Sequence {
     this.publicApi = new TheatreSequence(this)
 
     this._playbackControllerBox = new Atom(
-      playbackController ?? new DefaultPlaybackController(getCoreTicker()),
+      playbackController ?? new DefaultPlaybackController(),
     )
 
     this._prismOfStatePointer = prism(
@@ -124,7 +123,7 @@ export default class Sequence {
   }
 
   get position() {
-    return this._playbackControllerBox.getState().getCurrentPosition()
+    return this._playbackControllerBox.get().getCurrentPosition()
   }
 
   get subUnitsPerUnit(): number {
@@ -166,7 +165,7 @@ export default class Sequence {
     }
     const dur = this.length
     this._playbackControllerBox
-      .getState()
+      .get()
       .gotoPosition(position > dur ? dur : position)
   }
 
@@ -175,7 +174,7 @@ export default class Sequence {
   }
 
   get playing() {
-    return val(this._playbackControllerBox.getState().statePointer.playing)
+    return val(this._playbackControllerBox.get().statePointer.playing)
   }
 
   _makeRangeFromSequenceTemplate(): Prism<IPlaybackRange> {
@@ -195,17 +194,21 @@ export default class Sequence {
    * @returns  a promise that gets rejected if the playback stopped for whatever reason
    *
    */
-  playDynamicRange(rangeD: Prism<IPlaybackRange>): Promise<unknown> {
-    return this._playbackControllerBox.getState().playDynamicRange(rangeD)
+  playDynamicRange(
+    rangeD: Prism<IPlaybackRange>,
+    ticker: Ticker,
+  ): Promise<unknown> {
+    return this._playbackControllerBox.get().playDynamicRange(rangeD, ticker)
   }
 
   async play(
-    conf?: Partial<{
+    conf: Partial<{
       iterationCount: number
       range: IPlaybackRange
       rate: number
       direction: IPlaybackDirection
     }>,
+    ticker: Ticker,
   ): Promise<boolean> {
     const sequenceDuration = this.length
     const range: IPlaybackRange =
@@ -320,6 +323,7 @@ To fix this, either set \`conf.range[1]\` to be less the duration of the sequenc
       [range[0], range[1]],
       rate,
       direction,
+      ticker,
     )
   }
 
@@ -328,20 +332,21 @@ To fix this, either set \`conf.range[1]\` to be less the duration of the sequenc
     range: IPlaybackRange,
     rate: number,
     direction: IPlaybackDirection,
+    ticker: Ticker,
   ): Promise<boolean> {
     return this._playbackControllerBox
-      .getState()
-      .play(iterationCount, range, rate, direction)
+      .get()
+      .play(iterationCount, range, rate, direction, ticker)
   }
 
   pause() {
-    this._playbackControllerBox.getState().pause()
+    this._playbackControllerBox.get().pause()
   }
 
   replacePlaybackController(playbackController: IPlaybackController) {
     this.pause()
-    const oldController = this._playbackControllerBox.getState()
-    this._playbackControllerBox.setState(playbackController)
+    const oldController = this._playbackControllerBox.get()
+    this._playbackControllerBox.set(playbackController)
 
     const time = oldController.getCurrentPosition()
     oldController.destroy()

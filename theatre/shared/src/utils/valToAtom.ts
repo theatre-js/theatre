@@ -5,6 +5,6 @@ import {Atom, prism} from '@theatre/dataverse'
  */
 export const valToAtom = <T>(key: string, vals: T): Atom<T> => {
   const a = prism.memo(key, () => new Atom(vals), [])
-  a.setState(vals)
+  a.set(vals)
   return a
 }

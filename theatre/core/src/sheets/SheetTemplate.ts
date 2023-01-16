@@ -39,7 +39,7 @@ export default class SheetTemplate {
   }
 
   getInstance(instanceId: SheetInstanceId): Sheet {
-    let inst = this._instances.getState()[instanceId]
+    let inst = this._instances.get()[instanceId]
 
     if (!inst) {
       inst = new Sheet(this, instanceId)
@@ -55,7 +55,7 @@ export default class SheetTemplate {
     config: SheetObjectPropTypeConfig,
     actions: SheetObjectActionsConfig,
   ): SheetObjectTemplate {
-    let template = this._objectTemplates.getState()[objectKey]
+    let template = this._objectTemplates.get()[objectKey]
 
     if (!template) {
       template = new SheetObjectTemplate(

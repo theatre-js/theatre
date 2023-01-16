@@ -4,7 +4,8 @@ import App from './App'
 import type {ToolsetConfig} from '@theatre/studio'
 import studio from '@theatre/studio'
 import extension from '@theatre/r3f/dist/extension'
-import {Atom, prism, Ticker, val} from '@theatre/dataverse'
+import {Atom, prism, val} from '@theatre/dataverse'
+import {onChange} from '@theatre/core'
 
 /**
  * Let's take a look at how we can use `prism`, `Ticker`, and `val` from Theatre.js's Dataverse library
@@ -28,41 +29,39 @@ studio.extend({
     global(set, studio) {
       const exampleBox = new Atom('mobile')
 
-      const untapFn = prism<ToolsetConfig>(() => [
-        {
-          type: 'Switch',
-          value: val(exampleBox.prism),
-          onChange: (value) => exampleBox.set(value),
-          options: [
-            {
-              value: 'mobile',
-              label: 'view mobile version',
-              svgSource: '😀',
-            },
-            {
-              value: 'desktop',
-              label: 'view desktop version',
-              svgSource: '🪢',
-            },
-          ],
-        },
-        {
-          type: 'Icon',
-          title: 'Example Icon',
-          svgSource: '👁‍🗨',
-          onClick: () => {
-            console.log('hello')
+      const untapFn = onChange(
+        prism<ToolsetConfig>(() => [
+          {
+            type: 'Switch',
+            value: val(exampleBox.prism),
+            onChange: (value) => exampleBox.set(value),
+            options: [
+              {
+                value: 'mobile',
+                label: 'view mobile version',
+                svgSource: '😀',
+              },
+              {
+                value: 'desktop',
+                label: 'view desktop version',
+                svgSource: '🪢',
+              },
+            ],
           },
-        },
-      ])
-        // listen to changes to this prism using the requestAnimationFrame shared ticker
-        .onChange(
-          Ticker.raf,
-          (value) => {
-            set(value)
+          {
+            type: 'Icon',
+            title: 'Example Icon',
+            svgSource: '👁‍🗨',
+            onClick: () => {
+              console.log('hello')
+            },
           },
-          true,
-        )
+        ]),
+        (value) => {
+          set(value)
+        },
+      )
+      // listen to changes to this prism using the requestAnimationFrame shared ticker
 
       return untapFn
     },

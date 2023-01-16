@@ -8,6 +8,7 @@ import type Sheet from '@theatre/core/sheets/Sheet'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 import type {UnknownShorthandCompoundProps} from './propTypes/internals'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {IRafDriver, RafDriverPrivateAPI} from './rafDrivers'
 
 const publicAPIToPrivateAPIMap = new WeakMap()
 
@@ -24,6 +25,8 @@ export function privateAPI<P extends {type: string}>(
   ? SheetObject
   : P extends ISequence
   ? Sequence
+  : P extends IRafDriver
+  ? RafDriverPrivateAPI
   : never {
   return publicAPIToPrivateAPIMap.get(pub)
 }
@@ -35,6 +38,7 @@ export function privateAPI<P extends {type: string}>(
 export function setPrivateAPI(pub: IProject, priv: Project): void
 export function setPrivateAPI(pub: ISheet, priv: Sheet): void
 export function setPrivateAPI(pub: ISequence, priv: Sequence): void
+export function setPrivateAPI(pub: IRafDriver, priv: RafDriverPrivateAPI): void
 export function setPrivateAPI<Props extends UnknownShorthandCompoundProps>(
   pub: ISheetObject<Props>,
   priv: SheetObject,

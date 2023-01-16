@@ -6,6 +6,7 @@ import AudioPlaybackController from './playbackControllers/AudioPlaybackControll
 import {getCoreTicker} from '@theatre/core/coreTicker'
 import type {Pointer} from '@theatre/dataverse'
 import {notify} from '@theatre/shared/notify'
+import type {IRafDriver} from '@theatre/core/rafDrivers'
 
 interface IAttachAudioArgs {
   /**
@@ -76,6 +77,13 @@ export interface ISequence {
      * The direction of the playback. Similar to CSS's animation-direction
      */
     direction?: IPlaybackDirection
+
+    /**
+     * Optionally provide a rafDriver to use for the playback. It'll default to
+     * the core driver if not provided, which is a `requestAnimationFrame()` driver.
+     * Learn how to use `rafDriver`s [from the docs](https://www.theatrejs.com/docs/latest/manual/advanced#rafdrivers).
+     */
+    rafDriver?: IRafDriver
   }): Promise<boolean>
 
   /**
@@ -233,11 +241,15 @@ export default class TheatreSequence implements ISequence {
       range: IPlaybackRange
       rate: number
       direction: IPlaybackDirection
+      rafDriver: IRafDriver
     }>,
   ): Promise<boolean> {
     const priv = privateAPI(this)
     if (priv._project.isReady()) {
-      return priv.play(conf)
+      const ticker = conf?.rafDriver
+        ? privateAPI(conf.rafDriver).ticker
+        : getCoreTicker()
+      return priv.play(conf ?? {}, ticker)
     } else {
       if (process.env.NODE_ENV !== 'production') {
         notify.warning(
@@ -289,7 +301,6 @@ export default class TheatreSequence implements ISequence {
       await resolveAudioBuffer(args)
 
     const playbackController = new AudioPlaybackController(
-      getCoreTicker(),
       decodedBuffer,
       audioContext,
       gainNode,
