@@ -1,4 +1,5 @@
 import type {
+  IProjectConfig,
   ISheetObject,
   SheetObjectActionsConfig,
   UnknownShorthandCompoundProps,
@@ -8,7 +9,7 @@ import {useVal} from '@theatre/react'
 import type {IStudio} from '@theatre/studio'
 import studio from '@theatre/studio'
 import {get} from 'lodash-es'
-import {useEffect} from 'react'
+import {useEffect, useMemo} from 'react'
 
 type KeysMatching<T extends object, V> = {
   [K in keyof T]-?: T[K] extends V ? K : never
@@ -16,15 +17,34 @@ type KeysMatching<T extends object, V> = {
 
 type OmitMatching<T extends object, V> = Omit<T, KeysMatching<T, V>>
 
-studio.initialize()
+// Because treeshaking studio relies on static checks like the following, we can't make including studio configurable at runtime.
+// What we can do, if there arises a need to use studio in production with theatric, is to let users provide their own studio instance.
+// That way we can treeshake our own, and the user can give us theirs, if they want to.
+
+if (process.env.NODE_ENV === 'development') {
+  studio.initialize()
+}
+
+// Just to be able to treeshake studio out of the bundle
+const maybeTransaction =
+  process.env.NODE_ENV === 'development'
+    ? studio.transaction.bind(studio)
+    : () => {}
+
+let _state: IProjectConfig['state'] | undefined = undefined
+
+export function initialize(state: IProjectConfig['state']) {
+  if (_state !== undefined) {
+    console.warn(
+      'Theatric has already been initialized, either through another initialize call, or by calling useControls() before calling initialize().',
+    )
+    return
+  }
+  _state = state
+}
 
 const allProps: UnknownShorthandCompoundProps[] = []
 const allActions: SheetObjectActionsConfig[] = []
-
-const project = getProject('Theatric')
-const sheet = project.sheet('Panels')
-const defaultPanelName = 'Default panel'
-const object = sheet.object(defaultPanelName, {})
 
 type Button = {
   type: 'button'
@@ -45,6 +65,11 @@ export function useControls<
   Config extends ControlsAndButtons,
   Advanced extends boolean = false,
 >(config: Config, options: {folder?: string; advanced?: Advanced} = {}) {
+  // initialize state to null, if it hasn't been initialized yet
+  if (_state === undefined) {
+    _state = null
+  }
+
   const {folder} = options
 
   const controlsWithoutButtons = Object.fromEntries(
@@ -73,7 +98,7 @@ export function useControls<
             // but this is the only thing that theatre's public API allows us to do.
             // Wrapping the whole thing in a transaction wouldn't work either because side effects
             // would be run twice.
-            studio.transaction((api) => {
+            maybeTransaction((api) => {
               api.set(
                 get(folder ? object.props[folder] : object.props, path),
                 value,
@@ -86,11 +111,20 @@ export function useControls<
     ]),
   )
 
+  const sheet = useMemo(
+    () => getProject('Theatric', {state: _state}).sheet('Panels'),
+    [],
+  )
+  const defaultPanelName = 'Default panel'
   // have to do this to make sure the values are immediately available
-  sheet.object(defaultPanelName, Object.assign({}, ...allProps, props), {
-    reconfigure: true,
-    actions: Object.assign({}, ...allActions, actions),
-  })
+  const object = sheet.object(
+    defaultPanelName,
+    Object.assign({}, ...allProps, props),
+    {
+      reconfigure: true,
+      actions: Object.assign({}, ...allActions, actions),
+    },
+  )
 
   useEffect(() => {
     allProps.push(props)
@@ -110,7 +144,7 @@ export function useControls<
         actions: Object.assign({}, ...allActions),
       })
     }
-  }, [props, actions])
+  }, [props, actions, sheet, defaultPanelName, object])
 
   const values = useVal(
     folder
@@ -133,7 +167,7 @@ export function useControls<
             // but this is the only thing that theatre's public API allows us to do.
             // Wrapping the whole thing in a transaction wouldn't work either because side effects
             // would be run twice.
-            studio.transaction((api) => {
+            maybeTransaction((api) => {
               api.set(
                 get(
                   folder

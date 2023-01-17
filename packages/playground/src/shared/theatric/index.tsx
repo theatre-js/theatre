@@ -1,6 +1,9 @@
-import {button, useControls} from 'theatric'
+import {button, initialize, useControls} from 'theatric'
 import {render} from 'react-dom'
 import React, {useState} from 'react'
+import state from './state.json'
+
+initialize(state)
 
 function SomeComponent({id}: {id: string}) {
   const {foo} = useControls(
