@@ -43,8 +43,8 @@ export function initialize(state: IProjectConfig['state']) {
   _state = state
 }
 
-const allProps: UnknownShorthandCompoundProps[] = []
-const allActions: SheetObjectActionsConfig[] = []
+const allProps: Record<string, UnknownShorthandCompoundProps[]> = {}
+const allActions: Record<string, SheetObjectActionsConfig[]> = {}
 
 type Button = {
   type: 'button'
@@ -64,13 +64,16 @@ type ControlsAndButtons = {
 export function useControls<
   Config extends ControlsAndButtons,
   Advanced extends boolean = false,
->(config: Config, options: {folder?: string; advanced?: Advanced} = {}) {
+>(
+  config: Config,
+  options: {panel?: string; folder?: string; advanced?: Advanced} = {},
+) {
   // initialize state to null, if it hasn't been initialized yet
   if (_state === undefined) {
     _state = null
   }
 
-  const {folder} = options
+  const {folder, advanced} = options
 
   const controlsWithoutButtons = Object.fromEntries(
     Object.entries(config).filter(
@@ -115,36 +118,39 @@ export function useControls<
     () => getProject('Theatric', {state: _state}).sheet('Panels'),
     [],
   )
-  const defaultPanelName = 'Default panel'
+  const panel = options.panel ?? 'Default panel'
+  const allPanelProps = allProps[panel] ?? (allProps[panel] = [])
+  const allPanelActions = allActions[panel] ?? (allActions[panel] = [])
+
   // have to do this to make sure the values are immediately available
   const object = sheet.object(
-    defaultPanelName,
-    Object.assign({}, ...allProps, props),
+    panel,
+    Object.assign({}, ...allProps[panel], props),
     {
       reconfigure: true,
-      actions: Object.assign({}, ...allActions, actions),
+      actions: Object.assign({}, ...allActions[panel], actions),
     },
   )
 
   useEffect(() => {
-    allProps.push(props)
-    allActions.push(actions)
+    allPanelProps.push(props)
+    allPanelActions.push(actions)
     // cleanup runs after render, so we have to reconfigure with the new props here too, doing it during render just makes sure that
     // the very first values returned are not undefined
-    sheet.object(defaultPanelName, Object.assign({}, ...allProps), {
+    sheet.object(panel, Object.assign({}, ...allPanelProps), {
       reconfigure: true,
-      actions: Object.assign({}, ...allActions),
+      actions: Object.assign({}, ...allPanelActions),
     })
 
     return () => {
-      allProps.splice(allProps.indexOf(props), 1)
-      allActions.splice(allActions.indexOf(actions), 1)
-      sheet.object(defaultPanelName, Object.assign({}, ...allProps), {
+      allPanelProps.splice(allPanelProps.indexOf(props), 1)
+      allActions[panel].splice(allPanelActions.indexOf(actions), 1)
+      sheet.object(panel, Object.assign({}, ...allPanelProps), {
         reconfigure: true,
-        actions: Object.assign({}, ...allActions),
+        actions: Object.assign({}, ...allPanelActions),
       })
     }
-  }, [props, actions, sheet, defaultPanelName, object])
+  }, [props, actions, allPanelActions, allPanelProps, sheet, panel])
 
   const values = useVal(
     folder
@@ -159,7 +165,7 @@ export function useControls<
     : typeof values
 
   return (
-    options.advanced
+    advanced
       ? ([
           values,
           (path: string, value: any) => {

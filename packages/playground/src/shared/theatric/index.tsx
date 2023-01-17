@@ -32,6 +32,15 @@ function App() {
     baz: button((set, get) => console.log(get('bar.foo'))),
   })
 
+  const {another, panel, yo} = useControls(
+    {
+      another: '',
+      panel: '',
+      yo: 0,
+    },
+    {panel: 'My panel'},
+  )
+
   const [{}, set, get] = useControls({}, {advanced: true})
 
   const [showComponent, setShowComponent] = useState(false)
