@@ -123,13 +123,13 @@ export function useControls<
   const allPanelActions = allActions[panel] ?? (allActions[panel] = [])
 
   // have to do this to make sure the values are immediately available
-  const object = sheet.object(
-    panel,
-    Object.assign({}, ...allProps[panel], props),
-    {
-      reconfigure: true,
-      actions: Object.assign({}, ...allActions[panel], actions),
-    },
+  const object = useMemo(
+    () =>
+      sheet.object(panel, Object.assign({}, ...allProps[panel], props), {
+        reconfigure: true,
+        actions: Object.assign({}, ...allActions[panel], actions),
+      }),
+    [panel, props, actions],
   )
 
   useEffect(() => {
