@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-export type {IdentityPrismProvider} from './Atom'
+export type {PointerToPrismProvider} from './Atom'
 export {default as Atom, val, pointerToPrism} from './Atom'
 export {isPrism} from './prism/Interface'
 export type {Prism} from './prism/Interface'
