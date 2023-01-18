@@ -22,19 +22,17 @@ enum ValueTypes {
 /**
  * Interface for objects that can provide a prism at a certain path.
  */
-export interface IdentityPrismProvider {
+export interface PointerToPrismProvider {
   /**
    * @internal
-   * Future: We could consider using a `Symbol.for("dataverse/IdentityPrismProvider")` as a key here, similar to
+   * Future: We could consider using a `Symbol.for("dataverse/PointerToPrismProvider")` as a key here, similar to
    * how {@link Iterable} works for `of`.
    */
-  readonly $$isIdentityPrismProvider: true
+  readonly $$isPointerToPrismProvider: true
   /**
    * Returns a prism of the value at the provided path.
-   *
-   * @param path - The path to create the prism at.
    */
-  getIdentityPrism(path: Array<string | number>): Prism<unknown>
+  pointerToPrism<P>(pointer: Pointer<P>): Prism<P>
 }
 
 const getTypeOfValue = (v: unknown): ValueTypes => {
@@ -115,12 +113,12 @@ class Scope {
 /**
  * Wraps an object whose (sub)properties can be individually tracked.
  */
-export default class Atom<State> implements IdentityPrismProvider {
+export default class Atom<State> implements PointerToPrismProvider {
   private _currentState: State
   /**
    * @internal
    */
-  readonly $$isIdentityPrismProvider = true
+  readonly $$isPointerToPrismProvider = true
   private readonly _rootScope: Scope
   /**
    * Convenience property that gives you a pointer to the root of the atom.
@@ -128,14 +126,15 @@ export default class Atom<State> implements IdentityPrismProvider {
    * @remarks
    * Equivalent to `pointer({ root: thisAtom, path: [] })`.
    */
-  readonly pointer: Pointer<State>
+  readonly pointer: Pointer<State> = pointer({root: this as $FixMe, path: []})
 
-  readonly prism: Prism<State> = this.getIdentityPrism([]) as $IntentionalAny
+  readonly prism: Prism<State> = this.pointerToPrism(
+    this.pointer,
+  ) as $IntentionalAny
 
   constructor(initialState: State) {
     this._currentState = initialState
     this._rootScope = new Scope(undefined, [])
-    this.pointer = pointer({root: this as $FixMe, path: []})
   }
 
   /**
@@ -232,7 +231,8 @@ export default class Atom<State> implements IdentityPrismProvider {
    *
    * @param path - The path to create the prism at.
    */
-  getIdentityPrism(path: Array<string | number>): Prism<unknown> {
+  pointerToPrism<P>(pointer: Pointer<P>): Prism<P> {
+    const {path} = getPointerParts(pointer)
     const subscribe = (listener: (val: unknown) => void) =>
       this._onPathValueChange(path, listener)
 
@@ -240,7 +240,7 @@ export default class Atom<State> implements IdentityPrismProvider {
 
     return prism(() => {
       return prism.source(subscribe, getValue)
-    })
+    }) as Prism<P>
   }
 }
 
@@ -260,23 +260,22 @@ export const pointerToPrism = <P extends PointerType<$IntentionalAny>>(
   let prismInstance = identifyPrismWeakMap.get(meta)
   if (!prismInstance) {
     const root = meta.root
-    if (!isIdentityPrismProvider(root)) {
+    if (!isPointerToPrismProvider(root)) {
       throw new Error(
-        `Cannot run pointerToPrism() on a pointer whose root is not an IdentityPrismProvider`,
+        `Cannot run pointerToPrism() on a pointer whose root is not an PointerToPrismProvider`,
       )
     }
-    const {path} = meta
-    prismInstance = root.getIdentityPrism(path)
+    prismInstance = root.pointerToPrism(pointer as $IntentionalAny)
     identifyPrismWeakMap.set(meta, prismInstance)
   }
   return prismInstance as $IntentionalAny
 }
 
-function isIdentityPrismProvider(val: unknown): val is IdentityPrismProvider {
+function isPointerToPrismProvider(val: unknown): val is PointerToPrismProvider {
   return (
     typeof val === 'object' &&
     val !== null &&
-    (val as $IntentionalAny)['$$isIdentityPrismProvider'] === true
+    (val as $IntentionalAny)['$$isPointerToPrismProvider'] === true
   )
 }
 
