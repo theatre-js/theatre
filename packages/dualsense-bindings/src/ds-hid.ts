@@ -504,9 +504,6 @@ class DSControllerImpl implements DSController {
   private processInputReportBluetooth31(evt: HIDInputReportEvent) {
     let data = evt.data
 
-    // Technically, since input reports can come in at a different rate than the sensor refresh rate,
-    // setting the timestamp like this is not totally correct, but it's close enough I think.
-    // We could get the actual sensor timestamp later.
     this._state.prevTimestamp = this._state.timestamp
     this._state.timestamp = Date.now()
 
@@ -599,6 +596,9 @@ class DSControllerImpl implements DSController {
       0,
       0,
       0,
+      // Technically, since input reports can come in at a different rate than the sensor refresh rate,
+      // setting the delta from the report timestamp is not totally correct, but it's close enough I think.
+      // We could get the actual sensor timestamp later.
       this._state.prevTimestamp !== -1
         ? (this._state.timestamp - this._state.prevTimestamp) / 1000
         : 20,
