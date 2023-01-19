@@ -28,6 +28,9 @@
       "@theatre/r3f/dist/extension": ["./packages/r3f/src/extension/index.ts"],
       "@theatre/dataverse-experiments": [
         "./packages/dataverse-experiments/src/index.ts"
+      ],
+      "@theatre/dualsense-bindings": [
+        "./packages/dualsense-bindings/src/index.ts"
       ]
     },
     "forceConsistentCasingInFileNames": true

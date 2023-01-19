@@ -1,0 +1,203 @@
+import type {IScrub} from '@theatre/studio'
+// Using the slightly larger threejs-math library instead of @math-gl
+// because math-gl by default uses ZYX euler order, and some methods, notable fromQuaternion,
+// don't allow you to specify a different order, which we need, because threejs defaults to XYZ.
+import {Euler, Quaternion, Vector3} from 'threejs-math'
+import type {API} from '.'
+import {get} from 'lodash-es'
+
+export function createRotationBinding({propName = 'rotation'} = {}) {
+  let scrub: IScrub | null = null
+  let initialRotation: Quaternion | null = null
+
+  return {
+    cross: (pressed: boolean, {orientation, object, studio}: API) => {
+      const propValue = get(object.value, propName)
+
+      if (!propValue) {
+        console.warn(`Bindings: object has no ${propName} prop.`)
+        return
+      }
+      if (pressed) {
+        // "applies" the current orientation, so that it is treated as the "zero" orientation
+        orientation.apply()
+        scrub = studio.scrub()
+        initialRotation = new Quaternion().setFromEuler(
+          new Euler(propValue.x, propValue.y, propValue.z),
+        )
+      } else {
+        if (scrub) {
+          scrub.commit()
+          scrub = null
+        }
+        initialRotation = null
+      }
+    },
+    orientation(x: number, y: number, z: number, w: number, {object}: API) {
+      if (!scrub || !initialRotation) return
+
+      const propPointer = get(object.props, propName)
+
+      scrub.capture((api) => {
+        const rotation = new Euler().setFromQuaternion(
+          new Quaternion(x, y, z, w).premultiply(initialRotation!),
+        )
+
+        api.set(propPointer, {
+          x: rotation.x,
+          y: rotation.y,
+          z: rotation.z,
+        })
+      })
+    },
+  }
+}
+
+export type MovementPlane = 'xz' | 'xy' | 'yz'
+
+export function createPositionBinding({
+  propName = 'position',
+  onStart: onActive = () => {},
+  onEnd = () => {},
+}: {
+  propName?: string
+  onStart?: (
+    movementPlane: MovementPlane,
+    initialPosition: [number, number, number],
+  ) => void
+  onEnd?: () => void
+} = {}) {
+  let initialPosition: Vector3 | null = null
+  let movementPlane: MovementPlane | null = null
+  let scrub: IScrub | null = null
+
+  const createButtonHandler =
+    (plane: MovementPlane) =>
+    (pressed: boolean, {object, orientation, studio}: API) => {
+      if (movementPlane && movementPlane !== plane) return // only one button can be pressed at a time
+
+      const propValue = get(object.value, propName)
+
+      if (!propValue) {
+        console.warn(`Bindings: object has no ${propName} prop.`)
+        return
+      }
+
+      if (pressed) {
+        onActive(plane, [propValue.x, propValue.y, propValue.z])
+
+        movementPlane = plane
+        // "applies" the current orientation, so that it is treated as the "zero" orientation
+        orientation.apply()
+        scrub = studio.scrub()
+        initialPosition = new Vector3(propValue.x, propValue.y, propValue.z)
+      } else {
+        // if this button press was ignored, the release should be ignored too
+        if (movementPlane !== plane) return // only one button can be pressed at a time
+
+        onEnd()
+
+        if (scrub) {
+          scrub.commit()
+          scrub = null
+        }
+        initialPosition = null
+        movementPlane = null
+      }
+    }
+
+  return {
+    square: createButtonHandler('xz'),
+    triangle: createButtonHandler('xy'),
+    circle: createButtonHandler('yz'),
+    orientation(x: number, y: number, z: number, w: number, {object}: API) {
+      if (!scrub || !initialPosition) return
+
+      scrub.capture((api) => {
+        if (!object.value.rotation) return
+
+        const propPointer = get(object.props, propName)
+
+        /*
+        Calculating the position involves mapping the orientation to a point on a plane. This can be done using different
+        trigonometric methods.
+
+        Things to consider:
+        - We need to balance the speed of movement with the precision of the movement.
+        - We need to balance the speed of movement with the sensor noise. Larger coefficients will make the
+          movement noisier.
+        
+        Here are some methods and their caveats:
+        - Take the cotangent of the orientation with respect to a plane
+          This method allows for precise, slower movements at small orientation changes,
+          while allowing for fast movements at the extremes. This method fits best the the laser pointer metaphor (see below).
+          A downside of this method is that since the mapping is not linear, the movement is harder to predict towards the extremes.
+        - Take the cosine of the orientation with respect to a plane
+          The movement slows down towards the extremes, which is less useful than the tangent method described above.
+        - Map two angles of the orientation linearly to the x and y axes of the plane
+          This method results in linear movement. While the movement is more predictable, the precision that can be achieved
+          with the same range of movement is lower than with the tangent method.
+
+          const vector = new Vector3(0, 0, -1).applyQuaternion(new Quaternion(x, y, z, w))
+          const xTranslationLinear = ((2 * a) / Math.PI) * Math.asin(vector.x)
+          const yTranslationLinear = ((2 * a) / Math.PI) * Math.asin(vector.y)
+
+        There are also different metaphors we can consider in the implementation:
+        - Laser pointer
+          The controller is a laser pointer, projecting a point onto a flat surface. In this metaphor, the roll
+          of the controller is ignored, since it doesn't change the direction of the laser pointer. Orientation maps
+          tangentially to movement. At the extremes, movement becomes faster per orientation change.
+        - Trackball
+          The controller is a trackball. Rotation around the global z axis results in movement along the x axis, Rotation around the
+          global x axis results in changes in the y axis. Rotation around the global y axis is ignored. Orientation maps lineraly to movement.
+          Implementing this is different, since with the trackball, the path of rotations matters, we can't map the orientation
+          directly to movement, we have to use the deltas.
+
+        It could be tempting to combine the two metaphors, but this can result in a confusing experience,
+        since the roll or the yaw of the controller can easily be changed inadvertently, which makes it difficult to
+        determine the user's intent.
+
+        This implementation uses the laser pointer metaphor with the tangent method.
+        */
+
+        // calculate the controller's forward vector
+        const forwardVector = new Vector3(0, 0, -1).applyQuaternion(
+          new Quaternion(x, y, z, w),
+        )
+
+        // Take the tangent of the angle between the forward vector and the orthogonal plane of the initial forward vector
+        // by dividing the x and y components by the z component.
+        // Limit the z component to at least 0.3 so that the position doesn't fly off the handle
+        // when we divide by z (and to avoid NaN).
+        // Below z = 0.3 the movement becomes too noisy anyway.
+        // We then multiply by 6 to make the movement a bit more sensitive. This value is chosen as a balance between sensitivity and noise.
+        const xTranslation =
+          (forwardVector.x / Math.max(Math.abs(forwardVector.z), 0.3)) * 6
+        const yTranslation =
+          (forwardVector.y / Math.max(Math.abs(forwardVector.z), 0.3)) * 6
+
+        if (movementPlane === 'xz') {
+          api.set(propPointer, {
+            x: initialPosition!.x + xTranslation,
+            y: initialPosition!.y,
+            z: initialPosition!.z + yTranslation,
+          })
+        }
+        if (movementPlane === 'xy') {
+          api.set(propPointer, {
+            x: initialPosition!.x + xTranslation,
+            y: initialPosition!.y + yTranslation,
+            z: initialPosition!.z,
+          })
+        }
+        if (movementPlane === 'yz') {
+          api.set(propPointer, {
+            x: initialPosition!.x,
+            y: initialPosition!.y + yTranslation,
+            z: initialPosition!.z - xTranslation,
+          })
+        }
+      })
+    },
+  }
+}
