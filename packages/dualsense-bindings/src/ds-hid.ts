@@ -163,6 +163,9 @@ export class DSControllerState {
 
   attitude: [number, number, number, number] = [0, 0, 0, 1]
 
+  prevTimestamp: number = -1
+  timestamp: number = -1
+
   raw01: any = {}
   raw31: any = {}
 }
@@ -237,7 +240,8 @@ function floatToUnorm(x: number) {
 }
 
 const ahrsConfig = {
-  // Is this always correct? Should we use delta time instead?
+  // Ahrs won't use this because we provide timestamps instead at every update. Using this would break
+  // because the DS can reduce the refrehs rate based on things like battery level.
   sampleInterval: 20,
   algorithm: 'Madgwick',
   beta: 0.1,
@@ -500,6 +504,12 @@ class DSControllerImpl implements DSController {
   private processInputReportBluetooth31(evt: HIDInputReportEvent) {
     let data = evt.data
 
+    // Technically, since input reports can come in at a different rate than the sensor refresh rate,
+    // setting the timestamp like this is not totally correct, but it's close enough I think.
+    // We could get the actual sensor timestamp later.
+    this._state.prevTimestamp = this._state.timestamp
+    this._state.timestamp = Date.now()
+
     this._state.leftStickX = shiftedSnormToFloat(data.getUint8(1))
     this._state.leftStickY = shiftedSnormToFloat(data.getUint8(2))
     this._state.rightStickX = shiftedSnormToFloat(data.getUint8(3))
@@ -589,6 +599,9 @@ class DSControllerImpl implements DSController {
       0,
       0,
       0,
+      this._state.prevTimestamp !== -1
+        ? (this._state.timestamp - this._state.prevTimestamp) / 1000
+        : 20,
     )
 
     type Quaternion = ReturnType<typeof this._ahrs.getQuaternion>

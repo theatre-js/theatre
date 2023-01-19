@@ -74,6 +74,8 @@ export function createPositionBinding({
   const createButtonHandler =
     (plane: MovementPlane) =>
     (pressed: boolean, {object, orientation, studio}: API) => {
+      if (movementPlane && movementPlane !== plane) return // only one button can be pressed at a time
+
       const propValue = get(object.value, propName)
 
       if (!propValue) {
@@ -90,6 +92,9 @@ export function createPositionBinding({
         scrub = studio.scrub()
         initialPosition = new Vector3(propValue.x, propValue.y, propValue.z)
       } else {
+        // if this button press was ignored, the release should be ignored too
+        if (movementPlane !== plane) return // only one button can be pressed at a time
+
         onEnd()
 
         if (scrub) {
@@ -130,12 +135,12 @@ export function createPositionBinding({
         - Take the cosine of the orientation with respect to a plane
           The movement slows down towards the extremes, which is less useful than the tangent method described above.
         - Map two angles of the orientation linearly to the x and y axes of the plane
-          This method results in linear movement, which fits the trackball metaphor (see below). While the movement is more
-          predictable, the precision that can be achieved with the same range of movement is lower than with the tangent method.
+          This method results in linear movement. While the movement is more predictable, the precision that can be achieved
+          with the same range of movement is lower than with the tangent method.
 
-          const upVector = new Vector3(0, 1, 0).applyQuaternion(new Quaternion(x, y, z, w))
-          const xTranslationLinear = ((2 * a) / Math.PI) * Math.asin(upVector.x)
-          const yTranslationLinear = ((2 * a) / Math.PI) * Math.asin(upVector.y)
+          const vector = new Vector3(0, 0, -1).applyQuaternion(new Quaternion(x, y, z, w))
+          const xTranslationLinear = ((2 * a) / Math.PI) * Math.asin(vector.x)
+          const yTranslationLinear = ((2 * a) / Math.PI) * Math.asin(vector.y)
 
         There are also different metaphors we can consider in the implementation:
         - Laser pointer
@@ -143,15 +148,16 @@ export function createPositionBinding({
           of the controller is ignored, since it doesn't change the direction of the laser pointer. Orientation maps
           tangentially to movement. At the extremes, movement becomes faster per orientation change.
         - Trackball
-          The controller is a trackball. Changes in roll results in movement along the x axis,
-          changes in pitch results in changes in the y axis. The yaw of the controller is ignored, since a
-          trackpall can't be yawed. Orientation maps lineraly to movement.
+          The controller is a trackball. Rotation around the global z axis results in movement along the x axis, Rotation around the
+          global x axis results in changes in the y axis. Rotation around the global y axis is ignored. Orientation maps lineraly to movement.
+          Implementing this is different, since with the trackball, the path of rotations matters, we can't map the orientation
+          directly to movement, we have to use the deltas.
 
-          It could be tempting to combine the two metaphors, but this can result in a confusing experience,
-          since the roll or the yaw of the controller can easily be changed inadvertently, which makes it difficult to
-          determine the user's intent.
+        It could be tempting to combine the two metaphors, but this can result in a confusing experience,
+        since the roll or the yaw of the controller can easily be changed inadvertently, which makes it difficult to
+        determine the user's intent.
 
-          This implementation uses the laser pointer metaphor with the tangent method.
+        This implementation uses the laser pointer metaphor with the tangent method.
         */
 
         // calculate the controller's forward vector
