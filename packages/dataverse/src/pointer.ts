@@ -2,7 +2,7 @@ import type {$IntentionalAny} from './types'
 
 type PathToProp = Array<string | number>
 
-type PointerMeta = {
+export type PointerMeta = {
   root: {}
   path: (string | number)[]
 }

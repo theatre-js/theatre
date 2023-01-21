@@ -22,8 +22,7 @@ import type {Asset} from '@theatre/shared/utils/assets'
 // Notes on naming:
 // As of now, prop types are either `simple` or `composite`.
 // The compound type is a composite type. So is the upcoming enum type.
-// Composite types are not directly sequenceable yet. Their simple sub/ancestor props are.
-// We’ll provide a nice UX to manage keyframing of multiple sub-props.
+// Composite types are not directly sequenceable yet. Their simple sub/descendent props are.
 
 /**
  * Validates the common options given to all prop types, such as `opts.label`

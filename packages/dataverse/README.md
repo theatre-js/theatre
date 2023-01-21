@@ -6,4 +6,4 @@ Dataverse is currently an internal library. It is used within Theatre.js, but it
 
 ## Documentation
 
-> TODO: Write new docs. Enough has changed between 0.5 and 0.6, that the 0.5 docs are not useful anymore.
+* [The exhaustive guide to dataverse](./src/dataverse.test.ts)
