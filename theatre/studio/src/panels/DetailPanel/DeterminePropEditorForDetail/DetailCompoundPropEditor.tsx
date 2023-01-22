@@ -47,6 +47,12 @@ const Padding = styled.div`
   padding-left: ${rowIndentationFormulaCSS};
   display: flex;
   align-items: center;
+  width: calc(100% - var(--right-width));
+  overflow: hidden;
+`
+
+const ControlIndicators = styled.div`
+  flexshrink: 0;
 `
 
 const PropName = deriver(styled.div<{isHighlighted: PropHighlighted}>`
@@ -60,6 +66,7 @@ const PropName = deriver(styled.div<{isHighlighted: PropHighlighted}>`
   &:hover {
     color: white;
   }
+  overflow: hidden;
 
   ${() => propNameTextCSS};
 `)
@@ -214,7 +221,8 @@ function DetailCompoundPropEditor<
         style={{'--depth': visualIndentation - 1}}
       >
         <Padding>
-          {tools.controlIndicators}
+          <ControlIndicators>{tools.controlIndicators}</ControlIndicators>
+
           <PropName
             isHighlighted={isPropHighlightedD}
             ref={propNameContainerRef}
