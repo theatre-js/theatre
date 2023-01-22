@@ -31,16 +31,16 @@ const maybeTransaction =
     ? studio.transaction.bind(studio)
     : () => {}
 
-let _state: IProjectConfig['state'] | undefined = undefined
+let _projectConfig: IProjectConfig['state'] | undefined = undefined
 
-export function initialize(state: IProjectConfig['state']) {
-  if (_state !== undefined) {
+export function initialize(config: IProjectConfig) {
+  if (_projectConfig !== undefined) {
     console.warn(
       'Theatric has already been initialized, either through another initialize call, or by calling useControls() before calling initialize().',
     )
     return
   }
-  _state = state
+  _projectConfig = config
 }
 
 const allProps: Record<string, UnknownShorthandCompoundProps[]> = {}
@@ -81,8 +81,8 @@ export function useControls<Config extends ControlsAndButtons>(
   $get: Getter<OmitMatching<Config, {type: 'button'}>>
 } {
   // initialize state to null, if it hasn't been initialized yet
-  if (_state === undefined) {
-    _state = null
+  if (_projectConfig === undefined) {
+    _projectConfig = null
   }
 
   /*
@@ -150,7 +150,7 @@ export function useControls<Config extends ControlsAndButtons>(
   )
 
   const sheet = useMemo(
-    () => getProject('Theatric', {state: _state}).sheet('Panels'),
+    () => getProject('Theatric', _projectConfig ?? undefined).sheet('Panels'),
     [],
   )
   const panel = options.panel ?? 'Default panel'
