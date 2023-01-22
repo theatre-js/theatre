@@ -25,14 +25,13 @@ import {deriver} from '@theatre/studio/utils/derive-utils'
 import NumberPropEditor from '@theatre/studio/propEditors/simpleEditors/NumberPropEditor'
 import type {IDetailSimplePropEditorProps} from './DetailSimplePropEditor'
 import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
-import {EllipsisFill} from '@theatre/studio/uiComponents/icons'
 import {usePrism} from '@theatre/react'
 import {val} from '@theatre/dataverse'
 import {HiOutlineChevronRight} from 'react-icons/all'
 
 const Container = styled.div`
   --step: 15px;
-  --left-pad: 35px;
+  --left-pad: 15px;
   ${pointerEventsAutoInNormalMode};
   --right-width: 60%;
 `
@@ -65,15 +64,7 @@ const PropName = deriver(styled.div<{isHighlighted: PropHighlighted}>`
   ${() => propNameTextCSS};
 `)
 
-const CollapseIconContainer = styled.div`
-  position: relative;
-  width: 0;
-  height: 28px;
-`
-
 const CollapseIcon = styled.span<{isCollapsed: boolean}>`
-  position: absolute;
-  left: -35px;
   width: 28px;
   height: 28px;
   font-size: 9px;
@@ -223,32 +214,21 @@ function DetailCompoundPropEditor<
         style={{'--depth': visualIndentation - 1}}
       >
         <Padding>
-          <CollapseIconContainer>
-            <CollapseIcon
-              isCollapsed={isCollapsed}
-              onClick={() => {
-                box?.set(!box.get())
-              }}
-            >
-              <HiOutlineChevronRight />
-            </CollapseIcon>
-          </CollapseIconContainer>
           {tools.controlIndicators}
           <PropName
             isHighlighted={isPropHighlightedD}
             ref={propNameContainerRef}
           >
             <span>{propName || 'Props'}</span>
-            {!isVectorProp(propConfig) && isCollapsed && (
-              <EllipsisFill
-                width={24}
-                height={24}
-                style={{
-                  transform: 'translateY(2px)',
-                }}
-              />
-            )}
           </PropName>
+          <CollapseIcon
+            isCollapsed={isCollapsed}
+            onClick={() => {
+              box?.set(!box.get())
+            }}
+          >
+            <HiOutlineChevronRight />
+          </CollapseIcon>
         </Padding>
         {isVectorProp(propConfig) && isCollapsed && (
           <InputContainer>
