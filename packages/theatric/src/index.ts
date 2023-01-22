@@ -76,13 +76,14 @@ export function useControls<
    * This is a performance hack just to avoid a bunch of unnecessary calculations and effect runs whenever the hook is called,
    * since the config object is very likely not memoized by the user.
    * Since the config object can include functions, we can't rely for correctness on just deep comparing the config object,
-   * we also have to perform a deep comparison on the object values before calling setState in order to make sure we avoid infinite loops in this case.
+   * we also have to perform a deep comparison on the theatre object values in onValuesChange before calling setState in order
+   * to truly make sure we avoid infinite loops in this case.
    *
    * Note: normally object.onValuesChange wouldn't be called twice with the same values, but when the object is reconfigured (which it is),
    * this doesn't seem to be the case.
    *
-   * Also note: normally it'd be illegal to set refs during render, but it is fine here because we are only using it for memoization,
-   * _config is never going to be stale.
+   * Also note: normally it'd be illegal to set refs during render (since renders might not be committed), but it is fine here
+   * because we are only using it for memoization, _config is never going to be stale.
    */
   const configRef = React.useRef(config)
   const _config = useMemo(() => {
