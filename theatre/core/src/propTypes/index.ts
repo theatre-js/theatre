@@ -734,7 +734,6 @@ const defaultNumberNudgeFn: NumberNudgeFn = ({
   magnitude,
 }) => {
   const {range} = config
-  console.log(deltaX, deltaFraction, config)
 
   if (
     !config.nudgeMultiplier &&

@@ -50,7 +50,6 @@ const Padding = styled.div`
   padding-left: ${rowIndentationFormulaCSS};
   display: flex;
   align-items: center;
-  width: calc(100% - var(--right-width));
 `
 
 const PropName = deriver(styled.div<{isHighlighted: PropHighlighted}>`
@@ -179,13 +178,11 @@ function DetailCompoundPropEditor<
     if (!collapsedMap.has(globalPointerPath)) {
       collapsedMap.set(globalPointerPath, new Atom(isVectorProp(propConfig)))
     }
-  }, [])
+  }, [globalPointerPath, propConfig])
 
   const box = collapsedMap.get(globalPointerPath)
 
   const isCollapsed = usePrism(() => {
-    const box = collapsedMap.get(globalPointerPath)
-
     return box ? val(box.pointer) : isVectorProp(propConfig)
   }, [box])
 
