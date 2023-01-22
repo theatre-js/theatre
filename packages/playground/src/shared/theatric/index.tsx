@@ -3,7 +3,7 @@ import {render} from 'react-dom'
 import React, {useState} from 'react'
 import state from './state.json'
 
-initialize(state)
+initialize({state})
 
 function SomeComponent({id}: {id: string}) {
   const {foo, $get, $set} = useControls(
