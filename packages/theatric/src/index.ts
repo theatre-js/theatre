@@ -5,11 +5,10 @@ import type {
   UnknownShorthandCompoundProps,
 } from '@theatre/core'
 import {getProject} from '@theatre/core'
-import {useVal} from '@theatre/react'
 import type {IStudio} from '@theatre/studio'
 import studio from '@theatre/studio'
-import {get} from 'lodash-es'
-import {useEffect, useMemo} from 'react'
+import {get, isEqual} from 'lodash-es'
+import React, {useEffect, useMemo, useState} from 'react'
 
 type KeysMatching<T extends object, V> = {
   [K in keyof T]-?: T[K] extends V ? K : never
@@ -73,45 +72,81 @@ export function useControls<
     _state = null
   }
 
+  /*
+   * This is a performance hack just to avoid a bunch of unnecessary calculations and effect runs whenever the hook is called,
+   * since the config object is very likely not memoized by the user.
+   * Since the config object can include functions, we can't rely for correctness on just deep comparing the config object,
+   * we also have to perform a deep comparison on the object values before calling setState in order to make sure we avoid infinite loops in this case.
+   *
+   * Note: normally object.onValuesChange wouldn't be called twice with the same values, but when the object is reconfigured (which it is),
+   * this doesn't seem to be the case.
+   *
+   * Also note: normally it'd be illegal to set refs during render, but it is fine here because we are only using it for memoization,
+   * _config is never going to be stale.
+   */
+  const configRef = React.useRef(config)
+  const _config = useMemo(() => {
+    if (isEqual(config, configRef.current)) {
+      return configRef.current
+    } else {
+      configRef.current = config
+      return config
+    }
+  }, [config])
+
   const {folder, advanced} = options
 
-  const controlsWithoutButtons = Object.fromEntries(
-    Object.entries(config).filter(
-      ([key, value]) => (value as any).type !== 'button',
-    ),
-  ) as UnknownShorthandCompoundProps
+  const controlsWithoutButtons = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(_config).filter(
+          ([key, value]) => (value as any).type !== 'button',
+        ),
+      ) as UnknownShorthandCompoundProps,
+    [_config],
+  )
 
-  const buttons = Object.fromEntries(
-    Object.entries(config).filter(
-      ([key, value]) => (value as any).type === 'button',
-    ),
-  ) as unknown as Buttons
+  const buttons = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(_config).filter(
+          ([key, value]) => (value as any).type === 'button',
+        ),
+      ) as unknown as Buttons,
+    [_config],
+  )
 
-  const props = folder
-    ? {[folder]: controlsWithoutButtons}
-    : controlsWithoutButtons
+  const props = useMemo(
+    () =>
+      folder ? {[folder]: controlsWithoutButtons} : controlsWithoutButtons,
+    [folder, controlsWithoutButtons],
+  )
 
-  const actions = Object.fromEntries(
-    Object.entries(buttons).map(([key, value]) => [
-      `${folder ? `${folder}: ` : ''}${key}`,
-      (object: ISheetObject, studio: IStudio) => {
-        value.onClick(
-          (path, value) => {
-            // this is not ideal because it will create a separate undo level for each set call,
-            // but this is the only thing that theatre's public API allows us to do.
-            // Wrapping the whole thing in a transaction wouldn't work either because side effects
-            // would be run twice.
-            maybeTransaction((api) => {
-              api.set(
-                get(folder ? object.props[folder] : object.props, path),
-                value,
-              )
-            })
+  const actions = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(buttons).map(([key, value]) => [
+          `${folder ? `${folder}: ` : ''}${key}`,
+          (object: ISheetObject, studio: IStudio) => {
+            value.onClick(
+              (path, value) => {
+                // this is not ideal because it will create a separate undo level for each set call,
+                // but this is the only thing that theatre's public API allows us to do.
+                // Wrapping the whole thing in a transaction wouldn't work either because side effects
+                // would be run twice.
+                maybeTransaction((api) => {
+                  api.set(
+                    get(folder ? object.props[folder] : object.props, path),
+                    value,
+                  )
+                })
+              },
+              (path) => get(folder ? object.value[folder] : object.value, path),
+            )
           },
-          (path) => get(folder ? object.value[folder] : object.value, path),
-        )
-      },
-    ]),
+        ]),
+      ),
+    [buttons, folder],
   )
 
   const sheet = useMemo(
@@ -152,13 +187,28 @@ export function useControls<
     }
   }, [props, actions, allPanelActions, allPanelProps, sheet, panel])
 
-  const values = useVal(
-    folder
-      ? ((object as ISheetObject).props[folder] as ISheetObject<
-          OmitMatching<Config, {type: 'button'}>
-        >['props'])
-      : (object as ISheetObject<OmitMatching<Config, {type: 'button'}>>).props,
+  const [values, setValues] = useState(
+    (folder ? object.value[folder] : object.value) as ISheetObject<
+      OmitMatching<Config, {type: 'button'}>
+    >['value'],
   )
+
+  const valuesRef = React.useRef(object.value)
+
+  useEffect(() => {
+    const unsub = object.onValuesChange((newValues) => {
+      if (folder) newValues = newValues[folder]
+
+      // Normally object.onValuesChange wouldn't be called twice with the same values, but when the object is reconfigured (like we do above),
+      // this doesn't seem to be the case, so we need to explicitly do this here to avoid infinite loops.
+      if (isEqual(newValues, valuesRef.current)) return
+
+      valuesRef.current = newValues
+      setValues(newValues as any)
+    })
+
+    return unsub
+  }, [object])
 
   type ReturnType = Advanced extends true
     ? [typeof values, (path: string, value: any) => void, (path: string) => any]

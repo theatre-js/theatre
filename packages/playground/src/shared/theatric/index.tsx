@@ -72,6 +72,7 @@ function App() {
         Increment stuff
       </button>
       {showComponent && <SomeComponent id="hidden" />}
+      {yo}
     </div>
   )
 }
