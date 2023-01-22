@@ -99,7 +99,7 @@ export interface ISheet {
     props: Props,
     options?: {
       reconfigure?: boolean
-      actions?: SheetObjectActionsConfig
+      __actions__THIS_API_IS_UNSTABLE_AND_WILL_CHANGE_IN_THE_NEXT_VERSION?: SheetObjectActionsConfig
     },
   ): ISheetObject<Props>
 
@@ -138,7 +138,10 @@ export default class TheatreSheet implements ISheet {
   object<Props extends UnknownShorthandCompoundProps>(
     key: string,
     config: Props,
-    opts?: {reconfigure?: boolean; actions?: SheetObjectActionsConfig},
+    opts?: {
+      reconfigure?: boolean
+      __actions__THIS_API_IS_UNSTABLE_AND_WILL_CHANGE_IN_THE_NEXT_VERSION?: SheetObjectActionsConfig
+    },
   ): ISheetObject<Props> {
     const internal = privateAPI(this)
     const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
@@ -156,6 +159,9 @@ export default class TheatreSheet implements ISheet {
      * For example, a THREEjs object or an HTMLElement is passed in.
      */
     const nativeObject = null
+
+    const actions =
+      opts?.__actions__THIS_API_IS_UNSTABLE_AND_WILL_CHANGE_IN_THE_NEXT_VERSION
 
     if (existingObject) {
       if (process.env.NODE_ENV !== 'production') {
@@ -179,8 +185,8 @@ export default class TheatreSheet implements ISheet {
         }
       }
 
-      if (opts?.actions) {
-        existingObject.template.setActions(opts.actions)
+      if (actions) {
+        existingObject.template._temp_setActions(actions)
       }
 
       return existingObject.publicApi as $IntentionalAny
@@ -190,7 +196,7 @@ export default class TheatreSheet implements ISheet {
         sanitizedPath as ObjectAddressKey,
         nativeObject,
         sanitizedConfig,
-        opts?.actions,
+        actions,
       )
       if (process.env.NODE_ENV !== 'production') {
         weakMapOfUnsanitizedProps.set(object as $FixMe, config)

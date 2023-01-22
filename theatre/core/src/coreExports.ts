@@ -206,5 +206,3 @@ export function val<T>(pointer: PointerType<T>): T {
     throw new Error(`Called val(p) where p is not a pointer.`)
   }
 }
-
-export type {SheetObjectActionsConfig} from './sheets/TheatreSheet'
