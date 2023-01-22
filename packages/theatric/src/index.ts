@@ -1,14 +1,12 @@
 import type {
   IProjectConfig,
   ISheetObject,
-  SheetObjectActionsConfig,
   UnknownShorthandCompoundProps,
 } from '@theatre/core'
 import {val} from '@theatre/core'
 import {getProject} from '@theatre/core'
 import type {Pointer} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
-import type {IStudio} from '@theatre/studio'
 import studio from '@theatre/studio'
 import isEqual from 'lodash-es/isEqual'
 import {useEffect, useMemo, useState, useRef} from 'react'
@@ -46,7 +44,7 @@ export function initialize(state: IProjectConfig['state']) {
 }
 
 const allProps: Record<string, UnknownShorthandCompoundProps[]> = {}
-const allActions: Record<string, SheetObjectActionsConfig[]> = {}
+const allActions: Record<string, Record<string, () => void>[]> = {}
 
 type Button = {
   type: 'button'
@@ -143,23 +141,8 @@ export function useControls<Config extends ControlsAndButtons>(
       Object.fromEntries(
         Object.entries(buttons).map(([key, value]) => [
           `${folder ? `${folder}: ` : ''}${key}`,
-          (object: ISheetObject, studio: IStudio) => {
-            value
-              .onClick
-              // (path, value) => {
-              //   // this is not ideal because it will create a separate undo level for each set call,
-              //   // but this is the only thing that theatre's public API allows us to do.
-              //   // Wrapping the whole thing in a transaction wouldn't work either because side effects
-              //   // would be run twice.
-              //   maybeTransaction((api) => {
-              //     api.set(
-              //       get(folder ? object.props[folder] : object.props, path),
-              //       value,
-              //     )
-              //   })
-              // },
-              // (path) => get(folder ? object.value[folder] : object.value, path),
-              ()
+          () => {
+            value.onClick()
           },
         ]),
       ),
@@ -179,7 +162,8 @@ export function useControls<Config extends ControlsAndButtons>(
     () =>
       sheet.object(panel, Object.assign({}, ...allProps[panel], props), {
         reconfigure: true,
-        actions: Object.assign({}, ...allActions[panel], actions),
+        __actions__THIS_API_IS_UNSTABLE_AND_WILL_CHANGE_IN_THE_NEXT_VERSION:
+          Object.assign({}, ...allActions[panel], actions),
       }),
     [panel, props, actions],
   )
@@ -191,7 +175,8 @@ export function useControls<Config extends ControlsAndButtons>(
     // the very first values returned are not undefined
     sheet.object(panel, Object.assign({}, ...allPanelProps), {
       reconfigure: true,
-      actions: Object.assign({}, ...allPanelActions),
+      __actions__THIS_API_IS_UNSTABLE_AND_WILL_CHANGE_IN_THE_NEXT_VERSION:
+        Object.assign({}, ...allPanelActions),
     })
 
     return () => {
@@ -199,7 +184,8 @@ export function useControls<Config extends ControlsAndButtons>(
       allActions[panel].splice(allPanelActions.indexOf(actions), 1)
       sheet.object(panel, Object.assign({}, ...allPanelProps), {
         reconfigure: true,
-        actions: Object.assign({}, ...allPanelActions),
+        __actions__THIS_API_IS_UNSTABLE_AND_WILL_CHANGE_IN_THE_NEXT_VERSION:
+          Object.assign({}, ...allPanelActions),
       })
     }
   }, [props, actions, allPanelActions, allPanelProps, sheet, panel])
