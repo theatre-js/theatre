@@ -26,6 +26,14 @@ const definedGlobals = {
 
 function createBundles(watch: boolean) {
   const pathToPackage = path.join(__dirname, '../')
+  const pkgJson = require(path.join(pathToPackage, 'package.json'))
+  const listOfDependencies = Object.keys(pkgJson.dependencies || {})
+  const listOfPeerDependencies = Object.keys(pkgJson.peerDependencies || {})
+  const listOfAllDependencies = [
+    ...listOfDependencies,
+    ...listOfPeerDependencies,
+  ]
+
   const esbuildConfig: Parameters<typeof build>[0] = {
     entryPoints: [path.join(pathToPackage, 'src/index.ts')],
     bundle: true,
@@ -36,7 +44,12 @@ function createBundles(watch: boolean) {
     mainFields: ['browser', 'module', 'main'],
     target: ['firefox57', 'chrome58'],
     conditions: ['browser', 'node'],
-    plugins: [externalPlugin([/^[\@a-zA-Z]+/])],
+    plugins: [
+      externalPlugin([
+        // if a dependency is listed in the package.json, it should be external
+        ...listOfAllDependencies.map((d) => new RegExp(`^${d}`)),
+      ]),
+    ],
   }
 
   build({

@@ -8,6 +8,7 @@ const packagesToBuild = [
   '@theatre/react',
   '@theatre/browser-bundles',
   '@theatre/r3f',
+  'theatric',
 ]
 ;(async function () {
   // better quote function from https://github.com/google/zx/pull/167

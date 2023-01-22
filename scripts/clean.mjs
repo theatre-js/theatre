@@ -8,6 +8,7 @@ const packages = [
   '@theatre/react',
   '@theatre/browser-bundles',
   '@theatre/r3f',
+  'theatric',
 ]
 
 ;(async function () {
