@@ -43,12 +43,13 @@ const Header = styled.div<{isHighlighted: PropHighlighted}>`
   position: relative;
 `
 
-const Padding = styled.div`
+const Padding = styled.div<{isVectorProp: boolean}>`
   padding-left: ${rowIndentationFormulaCSS};
   display: flex;
   align-items: center;
-  width: calc(100% - var(--right-width));
   overflow: hidden;
+  ${({isVectorProp}) =>
+    isVectorProp ? 'width: calc(100% - var(--right-width))' : ''};
 `
 
 const ControlIndicators = styled.div`
@@ -220,7 +221,7 @@ function DetailCompoundPropEditor<
         // @ts-ignore
         style={{'--depth': visualIndentation - 1}}
       >
-        <Padding>
+        <Padding isVectorProp={isVectorProp(propConfig)}>
           <ControlIndicators>{tools.controlIndicators}</ControlIndicators>
 
           <PropName
