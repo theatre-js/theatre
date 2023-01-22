@@ -4,10 +4,13 @@ import type {
   SheetObjectActionsConfig,
   UnknownShorthandCompoundProps,
 } from '@theatre/core'
+import {val} from '@theatre/core'
 import {getProject} from '@theatre/core'
+import type {Pointer} from '@theatre/dataverse'
+import {isPointer} from '@theatre/dataverse'
 import type {IStudio} from '@theatre/studio'
 import studio from '@theatre/studio'
-import {get, isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual'
 import {useEffect, useMemo, useState, useRef} from 'react'
 
 type KeysMatching<T extends object, V> = {
@@ -47,10 +50,7 @@ const allActions: Record<string, SheetObjectActionsConfig[]> = {}
 
 type Button = {
   type: 'button'
-  onClick: (
-    set: (path: string, value: any) => void,
-    get: (path: string) => void,
-  ) => void
+  onClick: () => void
 }
 type Buttons = {
   [key: string]: Button
@@ -60,13 +60,28 @@ type ControlsAndButtons = {
   [key: string]: {type: 'button'} | UnknownShorthandCompoundProps[string]
 }
 
-export function useControls<
-  Config extends ControlsAndButtons,
-  Advanced extends boolean = false,
->(
+/**
+ * The type of the `$set()` function returned by `useControls()`.
+ */
+type Setter<Config extends UnknownShorthandCompoundProps> = <S>(
+  pointer: (p: ISheetObject<Config>['props']) => Pointer<S>,
+  value: S,
+) => void
+
+/**
+ * The type of the `$get()` function returned by `useControls()`.
+ */
+type Getter<Config extends UnknownShorthandCompoundProps> = <S>(
+  pointer: (p: ISheetObject<Config>['props']) => Pointer<S>,
+) => S
+
+export function useControls<Config extends ControlsAndButtons>(
   config: Config,
-  options: {panel?: string; folder?: string; advanced?: Advanced} = {},
-) {
+  options: {panel?: string; folder?: string} = {},
+): ISheetObject<OmitMatching<Config, {type: 'button'}>>['value'] & {
+  $set: Setter<OmitMatching<Config, {type: 'button'}>>
+  $get: Getter<OmitMatching<Config, {type: 'button'}>>
+} {
   // initialize state to null, if it hasn't been initialized yet
   if (_state === undefined) {
     _state = null
@@ -95,7 +110,7 @@ export function useControls<
     }
   }, [config])
 
-  const {folder, advanced} = options
+  const {folder} = options
 
   const controlsWithoutButtons = useMemo(
     () =>
@@ -129,21 +144,22 @@ export function useControls<
         Object.entries(buttons).map(([key, value]) => [
           `${folder ? `${folder}: ` : ''}${key}`,
           (object: ISheetObject, studio: IStudio) => {
-            value.onClick(
-              (path, value) => {
-                // this is not ideal because it will create a separate undo level for each set call,
-                // but this is the only thing that theatre's public API allows us to do.
-                // Wrapping the whole thing in a transaction wouldn't work either because side effects
-                // would be run twice.
-                maybeTransaction((api) => {
-                  api.set(
-                    get(folder ? object.props[folder] : object.props, path),
-                    value,
-                  )
-                })
-              },
-              (path) => get(folder ? object.value[folder] : object.value, path),
-            )
+            value
+              .onClick
+              // (path, value) => {
+              //   // this is not ideal because it will create a separate undo level for each set call,
+              //   // but this is the only thing that theatre's public API allows us to do.
+              //   // Wrapping the whole thing in a transaction wouldn't work either because side effects
+              //   // would be run twice.
+              //   maybeTransaction((api) => {
+              //     api.set(
+              //       get(folder ? object.props[folder] : object.props, path),
+              //       value,
+              //     )
+              //   })
+              // },
+              // (path) => get(folder ? object.value[folder] : object.value, path),
+              ()
           },
         ]),
       ),
@@ -211,39 +227,59 @@ export function useControls<
     return unsub
   }, [object])
 
-  type ReturnType = Advanced extends true
-    ? [typeof values, (path: string, value: any) => void, (path: string) => any]
-    : typeof values
+  const $setAndGet = useMemo(() => {
+    const rootPointer = folder
+      ? (object as ISheetObject).props[folder]
+      : object.props
 
-  return (
-    advanced
-      ? ([
-          values,
-          (path: string, value: any) => {
-            // this is not ideal because it will create a separate undo level for each set call,
-            // but this is the only thing that theatre's public API allows us to do.
-            // Wrapping the whole thing in a transaction wouldn't work either because side effects
-            // would be run twice.
-            maybeTransaction((api) => {
-              api.set(
-                get(
-                  folder
-                    ? (object as ISheetObject).props[folder]
-                    : object.props,
-                  path,
-                ),
-                value,
-              )
-            })
-          },
-          (path: string) =>
-            get(
-              folder ? (object as ISheetObject).value[folder] : object.value,
-              path,
-            ),
-        ] as const)
-      : values
-  ) as ReturnType
+    const $set: Setter<OmitMatching<Config, {type: 'button'}>> = (
+      getPointer,
+      value,
+    ) => {
+      if (typeof getPointer !== 'function') {
+        throw new Error(
+          `The first argument to $set must be a function that returns a pointer. Instead, it was ${typeof getPointer}`,
+        )
+      }
+
+      const pointer = getPointer(rootPointer as any)
+      if (!isPointer(pointer)) {
+        throw new Error(
+          `The function passed to $set must return a pointer. Instead, it returned ${pointer}`,
+        )
+      }
+      // this is not ideal because it will create a separate undo level for each set call,
+      // but this is the only thing that theatre's public API allows us to do.
+      // Wrapping the whole thing in a transaction wouldn't work either because side effects
+      // would be run twice.
+      maybeTransaction((api) => {
+        api.set(pointer, value)
+      })
+    }
+
+    const $get: Getter<OmitMatching<Config, {type: 'button'}>> = (
+      getPointer,
+    ) => {
+      if (typeof getPointer !== 'function') {
+        throw new Error(
+          `The first argument to $get must be a function that returns a pointer. Instead, it was ${typeof getPointer}`,
+        )
+      }
+
+      const pointer = getPointer(rootPointer as any)
+      if (!isPointer(pointer)) {
+        throw new Error(
+          `The function passed to $get must return a pointer. Instead, it returned ${pointer}`,
+        )
+      }
+
+      return val(pointer)
+    }
+
+    return {$set, $get}
+  }, [folder, object])
+
+  return {...values, ...$setAndGet}
 }
 
 export {types} from '@theatre/core'

@@ -6,14 +6,14 @@ import state from './state.json'
 initialize(state)
 
 function SomeComponent({id}: {id: string}) {
-  const {foo} = useControls(
+  const {foo, $get, $set} = useControls(
     {
       foo: 0,
       bar: 0,
-      bez: button((set, get) => {
-        set('foo', 2)
-        set('bar', 3)
-        console.log(get('foo'))
+      bez: button(() => {
+        $set((p) => p.foo, 2)
+        $set((p) => p.bar, 3)
+        console.log($get((p) => p.foo))
       }),
     },
     {folder: id},
@@ -27,9 +27,9 @@ function SomeComponent({id}: {id: string}) {
 }
 
 function App() {
-  const {bar} = useControls({
+  const {bar, $set, $get} = useControls({
     bar: {foo: 'bar'},
-    baz: button((set, get) => console.log(get('bar.foo'))),
+    baz: button(() => console.log($get((p) => p.bar))),
   })
 
   const {another, panel, yo} = useControls(
@@ -41,7 +41,7 @@ function App() {
     {panel: 'My panel'},
   )
 
-  const [{}, set, get] = useControls({}, {advanced: true})
+  const {} = useControls({})
 
   const [showComponent, setShowComponent] = useState(false)
 
@@ -66,7 +66,7 @@ function App() {
       </button>
       <button
         onClick={() => {
-          set('first.foo', get('first.foo') + 1)
+          $set((p) => p.bar.foo, $get((p) => p.bar.foo) + 1)
         }}
       >
         Increment stuff
