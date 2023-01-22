@@ -8,7 +8,7 @@ import {getProject} from '@theatre/core'
 import type {IStudio} from '@theatre/studio'
 import studio from '@theatre/studio'
 import {get, isEqual} from 'lodash-es'
-import React, {useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState, useRef} from 'react'
 
 type KeysMatching<T extends object, V> = {
   [K in keyof T]-?: T[K] extends V ? K : never
@@ -85,7 +85,7 @@ export function useControls<
    * Also note: normally it'd be illegal to set refs during render (since renders might not be committed), but it is fine here
    * because we are only using it for memoization, _config is never going to be stale.
    */
-  const configRef = React.useRef(config)
+  const configRef = useRef(config)
   const _config = useMemo(() => {
     if (isEqual(config, configRef.current)) {
       return configRef.current
@@ -194,7 +194,7 @@ export function useControls<
     >['value'],
   )
 
-  const valuesRef = React.useRef(object.value)
+  const valuesRef = useRef(object.value)
 
   useEffect(() => {
     const unsub = object.onValuesChange((newValues) => {
