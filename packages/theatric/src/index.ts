@@ -77,7 +77,7 @@ export function useControls<
    * since the config object is very likely not memoized by the user.
    * Since the config object can include functions, we can't rely for correctness on just deep comparing the config object,
    * we also have to perform a deep comparison on the theatre object values in onValuesChange before calling setState in order
-   * to truly make sure we avoid infinite loops in this case.
+   * to truly make sure we avoid infinite loops in this case, since then the config object will always be reported to be different by isEqual.
    *
    * Note: normally object.onValuesChange wouldn't be called twice with the same values, but when the object is reconfigured (which it is),
    * this doesn't seem to be the case.
