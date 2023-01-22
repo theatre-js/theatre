@@ -1,40 +1,62 @@
 import type {PropTypeConfig_Image} from '@theatre/core/propTypes'
 import {Trash} from '@theatre/studio/uiComponents/icons'
 import React, {useCallback, useEffect} from 'react'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
 
-const Container = styled.div`
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  padding: 2px;
-`
-
-const Group = styled.div<{empty: boolean}>`
-  box-sizing: border-box;
-  position: relative;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  border-radius: 4px;
-  overflow: hidden;
-  ${({empty}) =>
-    empty
-      ? `border: 1px dashed rgba(255, 255, 255, 0.2)`
-      : `border: 1px solid rgba(255, 255, 255, 0.05)`}
-`
-
-const InputLabel = styled.label`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
+const Container = styled.div<{empty: boolean}>`
   display: flex;
   align-items: center;
-  justify-content: center;
+  height: 100%;
+  gap: 4px;
+`
+
+const AddImage = styled.div`
+  position: absolute;
+  inset: -5px;
+  // rotate 45deg
+  transform: rotate(45deg);
+  --checker-color: #ededed36;
+  &:hover {
+    --checker-color: #ededed77;
+  }
+  // checkerboard background with 4px squares
+  background-image: linear-gradient(
+      45deg,
+      var(--checker-color) 25%,
+      transparent 25%
+    ),
+    linear-gradient(-45deg, var(--checker-color) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker-color) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker-color) 75%);
+  background-size: 5px 5px;
+`
+
+const InputLabel = styled.label<{empty: boolean}>`
+  position: relative;
+  cursor: default;
   box-sizing: border-box;
-  color: #919191;
+
+  height: 18px;
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+
+  overflow: hidden;
+  color: #ccc;
+  &:hover {
+    color: white;
+  }
+
+  border-radius: 99999px;
+  border: 1px solid hwb(220deg 40% 52%);
+  &:hover {
+    border-color: hwb(220deg 45% 52%);
+  }
+
+  ${(props) => (props.empty ? css`` : css``)}
 `
 
 // file input
@@ -45,8 +67,9 @@ const Input = styled.input.attrs({type: 'file', accept: 'image/*'})`
 const Preview = styled.img`
   position: absolute;
   inset: 0;
-  width: 100%;
   height: 100%;
+  aspect-ratio: 1;
+
   object-fit: cover;
 `
 
@@ -55,16 +78,22 @@ const DeleteButton = styled.button`
   align-items: center;
   justify-content: center;
   outline: none;
-
+  background: transparent;
   color: #a8a8a9;
-  background: rgba(255, 255, 255, 0.1);
 
   border: none;
   height: 100%;
   aspect-ratio: 1/1;
 
+  opacity: 0;
+
+  ${Container}:hover & {
+    opacity: 0.8;
+  }
+
   &:hover {
-    background: rgba(255, 255, 255, 0.15);
+    opacity: 1;
+    color: white;
   }
 `
 
@@ -103,28 +132,35 @@ function ImagePropEditor({
     [editingTools, value],
   )
 
+  const empty = !value?.id
+
   return (
-    <Container>
-      <Group empty={!value}>
-        <InputLabel>
-          <Input
-            type="file"
-            onChange={onChange}
-            accept="image/*"
-            autoFocus={autoFocus}
-          />
-          {previewUrl ? <Preview src={previewUrl} /> : <span>Add image</span>}
-        </InputLabel>
-        {value && (
-          <DeleteButton
-            onClick={() => {
-              editingTools.permanentlySetValue({type: 'image', id: undefined})
-            }}
-          >
-            <Trash />
-          </DeleteButton>
-        )}
-      </Group>
+    <Container empty={empty}>
+      <InputLabel
+        empty={empty}
+        title={
+          empty ? 'Upload image' : `"${value.id}" (Click to upload new image)`
+        }
+      >
+        <Input
+          type="file"
+          onChange={onChange}
+          accept="image/*"
+          autoFocus={autoFocus}
+        />
+        {previewUrl ? <Preview src={previewUrl} /> : <AddImage />}
+      </InputLabel>
+
+      {!empty && (
+        <DeleteButton
+          title="Delete image"
+          onClick={() => {
+            editingTools.permanentlySetValue({type: 'image', id: undefined})
+          }}
+        >
+          <Trash />
+        </DeleteButton>
+      )}
     </Container>
   )
 }
