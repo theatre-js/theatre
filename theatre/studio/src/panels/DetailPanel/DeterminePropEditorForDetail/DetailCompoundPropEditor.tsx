@@ -22,13 +22,12 @@ import {useEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEdi
 import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
 import {whatPropIsHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
 import {deriver} from '@theatre/studio/utils/derive-utils'
-import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground'
 import NumberPropEditor from '@theatre/studio/propEditors/simpleEditors/NumberPropEditor'
 import type {IDetailSimplePropEditorProps} from './DetailSimplePropEditor'
 import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
-import {EllipsisFill} from '@theatre/studio/uiComponents/icons'
 import {usePrism} from '@theatre/react'
 import {val} from '@theatre/dataverse'
+import {HiOutlineChevronRight} from 'react-icons/all'
 
 const Container = styled.div`
   --step: 15px;
@@ -37,19 +36,24 @@ const Container = styled.div`
   --right-width: 60%;
 `
 
-const Header = deriver(styled.div<{isHighlighted: PropHighlighted}>`
+const Header = styled.div<{isHighlighted: PropHighlighted}>`
   height: 30px;
   display: flex;
   align-items: stretch;
   position: relative;
+`
 
-  /* background-color: ${getDetailRowHighlightBackground}; */
-`)
-
-const Padding = styled.div`
+const Padding = styled.div<{isVectorProp: boolean}>`
   padding-left: ${rowIndentationFormulaCSS};
   display: flex;
   align-items: center;
+  overflow: hidden;
+  ${({isVectorProp}) =>
+    isVectorProp ? 'width: calc(100% - var(--right-width))' : ''};
+`
+
+const ControlIndicators = styled.div`
+  flexshrink: 0;
 `
 
 const PropName = deriver(styled.div<{isHighlighted: PropHighlighted}>`
@@ -63,9 +67,33 @@ const PropName = deriver(styled.div<{isHighlighted: PropHighlighted}>`
   &:hover {
     color: white;
   }
+  overflow: hidden;
 
   ${() => propNameTextCSS};
 `)
+
+const CollapseIcon = styled.span<{isCollapsed: boolean}>`
+  width: 28px;
+  height: 28px;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: transform 0.05s ease-out, color 0.1s ease-out;
+  transform: rotateZ(${(props) => (props.isCollapsed ? 0 : 90)}deg);
+  color: #66686a;
+
+  visibility: hidden;
+  ${Header}:hover & {
+    visibility: visible;
+  }
+
+  &:hover {
+    transform: rotateZ(${(props) => (props.isCollapsed ? 15 : 75)}deg);
+    color: #c0c4c9;
+  }
+`
 
 const color = transparentize(0.05, `#282b2f`)
 
@@ -190,30 +218,26 @@ function DetailCompoundPropEditor<
     <Container>
       {contextMenu}
       <Header
-        isHighlighted={isPropHighlightedD}
         // @ts-ignore
         style={{'--depth': visualIndentation - 1}}
       >
-        <Padding>
-          {tools.controlIndicators}
+        <Padding isVectorProp={isVectorProp(propConfig)}>
+          <ControlIndicators>{tools.controlIndicators}</ControlIndicators>
+
           <PropName
             isHighlighted={isPropHighlightedD}
             ref={propNameContainerRef}
+          >
+            <span>{propName || 'Props'}</span>
+          </PropName>
+          <CollapseIcon
+            isCollapsed={isCollapsed}
             onClick={() => {
               box?.set(!box.get())
             }}
           >
-            <span>{propName || 'Props'}</span>
-            {!isVectorProp(propConfig) && isCollapsed && (
-              <EllipsisFill
-                width={24}
-                height={24}
-                style={{
-                  transform: 'translateY(2px)',
-                }}
-              />
-            )}
-          </PropName>
+            <HiOutlineChevronRight />
+          </CollapseIcon>
         </Padding>
         {isVectorProp(propConfig) && isCollapsed && (
           <InputContainer>
