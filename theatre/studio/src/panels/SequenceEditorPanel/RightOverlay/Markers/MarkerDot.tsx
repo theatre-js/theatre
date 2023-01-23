@@ -19,13 +19,16 @@ import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type {StudioHistoricStateSequenceEditorMarker} from '@theatre/studio/store/types'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
-import DopeSnap from './DopeSnap'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
-import {DopeSnapHitZoneUI} from './DopeSnapHitZoneUI'
+import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import {
   snapToAll,
   snapToNone,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
+import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
+import MarkerEditorPopover from './MarkerEditorPopover'
 
 const MARKER_SIZE_W_PX = 12
 const MARKER_SIZE_H_PX = 12
@@ -164,11 +167,32 @@ const MarkerDotVisible: React.VFC<IMarkerDotVisibleProps> = ({
     marker,
   })
 
+  const {
+    node: popoverNode,
+    toggle: togglePopover,
+    close: closePopover,
+  } = usePopover({debugName: 'MarkerPopover'}, () => {
+    return (
+      <BasicPopover>
+        <MarkerEditorPopover
+          marker={marker}
+          layoutP={layoutP}
+          onRequestClose={closePopover}
+        />
+      </BasicPopover>
+    )
+  })
+
   return (
     <>
       {contextMenu}
+      {popoverNode}
       <HitZone
+        title={marker.label ? `Marker: ${marker.label}` : 'Marker'}
         ref={markRef}
+        onClick={(e) => {
+          togglePopover(e, markRef.current!)
+        }}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging,
           position: marker.position,

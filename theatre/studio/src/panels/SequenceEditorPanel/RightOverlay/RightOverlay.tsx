@@ -11,7 +11,7 @@ import HorizontalScrollbar from './HorizontalScrollbar'
 import Playhead from './Playhead'
 import TopStrip from './TopStrip'
 import FocusRangeCurtains from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/FocusRangeCurtains'
-import Markers from './Markers'
+import Markers from './Markers/Markers'
 
 const Container = styled.div`
   position: absolute;
