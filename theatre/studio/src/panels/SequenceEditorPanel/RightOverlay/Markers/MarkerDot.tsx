@@ -8,7 +8,7 @@ import {
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
@@ -19,13 +19,16 @@ import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
 import type {StudioHistoricStateSequenceEditorMarker} from '@theatre/studio/store/types'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
-import DopeSnap from './DopeSnap'
+import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
-import {DopeSnapHitZoneUI} from './DopeSnapHitZoneUI'
+import {DopeSnapHitZoneUI} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnapHitZoneUI'
 import {
   snapToAll,
   snapToNone,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
+import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
+import MarkerEditorPopover from './MarkerEditorPopover'
 
 const MARKER_SIZE_W_PX = 12
 const MARKER_SIZE_H_PX = 12
@@ -64,21 +67,6 @@ const MarkerVisualDot = React.memo(() => (
     }
   />
 ))
-
-const MarkerForm = styled.form`
-  transform: translate(-6px, -100%);
-  z-index: 0;
-`
-
-const InputText = styled.input`
-  background: #40aaa4;
-  border: none;
-  color: #fff;
-  display: inline;
-  outline: none;
-  padding: 2px;
-  pointer-events: visible;
-`
 
 const HitZone = styled.div`
   z-index: 1;
@@ -179,42 +167,37 @@ const MarkerDotVisible: React.VFC<IMarkerDotVisibleProps> = ({
     marker,
   })
 
-  const [markerText, setMarkerText] = useState(marker.name ?? '')
-
-  const updateMarkerText = (evt: any) => {
-    const markerName = evt.target.value
-    setMarkerText(markerName)
-    // Save
-    getStudio().transaction(({stateEditors}) => {
-      stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.updateMarker(
-        {
-          sheetAddress: sheetAddress,
-          markerId: marker.id,
-          name: markerName,
-        },
-      )
-    })
-  }
+  const {
+    node: popoverNode,
+    toggle: togglePopover,
+    close: closePopover,
+  } = usePopover({debugName: 'MarkerPopover'}, () => {
+    return (
+      <BasicPopover>
+        <MarkerEditorPopover
+          marker={marker}
+          layoutP={layoutP}
+          onRequestClose={closePopover}
+        />
+      </BasicPopover>
+    )
+  })
 
   return (
     <>
       {contextMenu}
+      {popoverNode}
       <HitZone
+        title={marker.label ? `Marker: ${marker.label}` : 'Marker'}
         ref={markRef}
+        onClick={(e) => {
+          togglePopover(e, markRef.current!)
+        }}
         {...DopeSnapHitZoneUI.reactProps({
           isDragging,
           position: marker.position,
         })}
       />
-      <MarkerForm>
-        <InputText
-          type="text"
-          size={Math.min(30, Math.max(markerText.length, 2))}
-          maxLength={30}
-          value={markerText}
-          onChange={updateMarkerText}
-        />
-      </MarkerForm>
       <MarkerVisualDot />
     </>
   )

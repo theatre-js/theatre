@@ -332,7 +332,6 @@ function usePlayheadContextMenu(
                     {
                       id: generateSequenceMarkerId(),
                       position: sheetSequence.position,
-                      name: `Marker ${sheetSequence.position.toFixed(2)}`,
                     },
                   ],
                   snappingFunction: sheetSequence.closestGridPosition,

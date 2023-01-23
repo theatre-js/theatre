@@ -342,11 +342,11 @@ namespace stateEditors {
               export function updateMarker(options: {
                 sheetAddress: SheetAddress
                 markerId: SequenceMarkerId
-                name: string
+                label: string
               }) {
                 const currentMarkerSet = _ensureMarkers(options.sheetAddress)
                 const marker = currentMarkerSet.byId[options.markerId]
-                if (marker !== undefined) marker.name = options.name
+                if (marker !== undefined) marker.label = options.label
               }
             }
           }
