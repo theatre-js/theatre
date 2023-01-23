@@ -9,6 +9,13 @@ import onCleanup from 'node-cleanup'
 import * as verdaccioPackage from 'verdaccio'
 import {chromium, devices} from 'playwright'
 
+/**
+ * @param {string} pkg
+ * @returns boolean
+ */
+const isTheatreDependency = (pkg) =>
+  pkg.startsWith('@theatre/') || pkg === 'theatric'
+
 const verbose = !!argv['verbose']
 
 if (!verbose) {
@@ -120,7 +127,7 @@ async function patchTheatreDependencies(pathToPackageJson, version) {
     const dependencies = packageJson[dependencyType]
     if (dependencies) {
       for (const dependencyName of Object.keys(dependencies)) {
-        if (dependencyName.startsWith('@theatre/')) {
+        if (isTheatreDependency(dependencyName)) {
           dependencies[dependencyName] = version
         }
       }
@@ -210,6 +217,7 @@ const packagesToPublish = [
   '@theatre/react',
   '@theatre/browser-bundles',
   '@theatre/r3f',
+  'theatric',
 ]
 
 /**

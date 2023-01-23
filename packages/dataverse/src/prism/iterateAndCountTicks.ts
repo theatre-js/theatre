@@ -1,4 +1,4 @@
-import {pointerToPrism} from '../Atom'
+import {pointerToPrism} from '../pointerToPrism'
 import type {Pointer} from '../pointer'
 import {isPointer} from '../pointer'
 import type {Prism} from './Interface'

@@ -1,4 +1,5 @@
-import {val} from '@theatre/dataverse'
+import {pointerToPrism, val} from '@theatre/dataverse'
+import {defer} from '@theatre/shared/utils/defer'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import getStudio from './getStudio'
 import type {UpdateCheckerResponse} from './store/types'
@@ -6,7 +7,30 @@ import type {UpdateCheckerResponse} from './store/types'
 const UPDATE_CHECK_INTERVAL = 30 * 60 * 1000 // check for updates every 30 minutes
 const TIME_TO_WAIT_ON_ERROR = 1000 * 60 * 60 // an hour
 
+/**
+ * Returns a promise that will resolve when the UI is visible. If the UI is hidden, it'll
+ * wait for it to become visible.
+ */
+async function waitTilUIIsVisible(): Promise<undefined> {
+  const visibilityStatePt = getStudio().atomP.ahistoric.visibilityState
+  if (val(visibilityStatePt) === 'everythingIsVisible') return
+  const deferred = defer<undefined>()
+
+  const unsub = pointerToPrism(visibilityStatePt).onStale(() => {
+    const newVal = val(visibilityStatePt)
+    if (newVal === 'everythingIsVisible') {
+      unsub()
+      deferred.resolve(undefined)
+    }
+  })
+
+  return deferred.promise
+}
+
 export default async function checkForUpdates() {
+  // let's wait a bit in case the user has called for the UI to be hidden.
+  await wait(500)
+  await waitTilUIIsVisible()
   while (true) {
     const state = val(getStudio().atomP.ahistoric.updateChecker)
     if (state) {

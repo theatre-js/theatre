@@ -541,6 +541,26 @@ type IMemo = {
   cachedValue: unknown
 }
 
+/**
+ * Just like React's `useRef()`, `prism.ref()` allows us to create a prism that holds a reference to some value.
+ * The only difference is that `prism.ref()` requires a key to be passed into it, whlie `useRef()` doesn't.
+ * This means that we can call `prism.ref()` in any order, and we can call it multiple times with the same key.
+ * @param key - The key for the ref. Should be unique inside of the prism.
+ * @param initialValue - The initial value for the ref.
+ * @returns `{current: V}` - The ref object.
+ *
+ * Note that the ref object will always return its initial value if the prism is cold. It'll only record
+ * its current value if the prism is hot (and will forget again if the prism goes cold again).
+ *
+ * @example
+ * ```ts
+ * const pr = prism(() => {
+ *   const ref1 = prism.ref("ref1", 0)
+ *   console.log(ref1.current) // will print 0, and if the prism is hot, it'll print the current value
+ *   ref1.current++ // changing the current value of the ref
+ * })
+ * ```
+ */
 function ref<T>(key: string, initialValue: T): IRef<T> {
   const scope = hookScopeStack.peek()
   if (!scope) {
@@ -585,12 +605,21 @@ function depsHaveChanged(
 }
 
 /**
- * Store a value to this {@link prism} stack.
+ * `prism.memo()` works just like React's `useMemo()` hook. It's a way to cache the result of a function call.
+ * The only difference is that `prism.memo()` requires a key to be passed into it, whlie `useMemo()` doesn't.
+ * This means that we can call `prism.memo()` in any order, and we can call it multiple times with the same key.
  *
- * Unlike hooks seen in popular frameworks like React, you provide an exact `key` so
- * we can call `prism.memo` in any order, and conditionally.
+ * @param key - The key for the memo. Should be unique inside of the prism
+ * @param fn - The function to memoize
+ * @param deps - The dependency array. Provide `[]` if you want to the value to be memoized only once and never re-calculated.
+ * @returns The result of the function call
  *
- * @param deps - Passing in `undefined` will always cause a recompute
+ * @example
+ * ```ts
+ * const pr = prism(() => {
+ *  const memoizedReturnValueOfExpensiveFn = prism.memo("memo1", expensiveFn, [])
+ * })
+ * ```
  */
 function memo<T>(
   key: string,
@@ -688,6 +717,16 @@ function scope<T>(key: string, fn: () => T): T {
   return ret as $IntentionalAny as T
 }
 
+/**
+ * Just an alias for `prism.memo(key, () => prism(fn), deps).getValue()`. It creates a new prism, memoizes it, and returns the value.
+ * `prism.sub()` is useful when you want to divide your prism into smaller prisms, each of which
+ * would _only_ recalculate when _certain_ dependencies change. In other words, it's an optimization tool.
+ *
+ * @param key - The key for the memo. Should be unique inside of the prism
+ * @param fn - The function to run inside the prism
+ * @param deps - The dependency array. Provide `[]` if you want to the value to be memoized only once and never re-calculated.
+ * @returns The value of the inner prism
+ */
 function sub<T>(
   key: string,
   fn: () => T,
@@ -696,6 +735,9 @@ function sub<T>(
   return memo(key, () => prism(fn), deps).getValue()
 }
 
+/**
+ * @returns true if the current function is running inside a `prism()` call.
+ */
 function inPrism(): boolean {
   return !!hookScopeStack.peek()
 }
@@ -710,6 +752,34 @@ const possiblePrismToValue = <P extends Prism<$IntentionalAny> | unknown>(
   }
 }
 
+/**
+ * `prism.source()`  allow a prism to react to changes in some external source (other than other prisms).
+ * For example, `Atom.pointerToPrism()` uses `prism.source()` to create a prism that reacts to changes in the atom's value.
+ 
+ * @param subscribe - The prism will call this function as soon as the prism goes hot. This function should return an unsubscribe function function which the prism will call when it goes cold.
+ * @param getValue - A function that returns the current value of the external source.
+ * @returns The current value of the source
+ * 
+ * Example:
+ * ```ts
+ * function prismFromInputElement(input: HTMLInputElement): Prism<string> {
+ *   function listen(cb: (value: string) => void) {
+ *     const listener = () => {
+ *       cb(input.value)
+ *     }
+ *     input.addEventListener('input', listener)
+ *     return () => {
+ *       input.removeEventListener('input', listener)
+ *     }
+ *   }
+ *   
+ *   function get() {
+ *     return input.value
+ *   }
+ *   return prism(() => prism.source(listen, get))
+ * }
+ * ```
+ */
 function source<V>(
   subscribe: (fn: (val: V) => void) => VoidFn,
   getValue: () => V,

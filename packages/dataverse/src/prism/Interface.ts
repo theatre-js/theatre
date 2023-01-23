@@ -64,5 +64,5 @@ export interface Prism<V> {
  * Returns whether `d` is a prism.
  */
 export function isPrism(d: any): d is Prism<unknown> {
-  return d && d.isPrism && d.isPrism === true
+  return !!(d && d.isPrism && d.isPrism === true)
 }

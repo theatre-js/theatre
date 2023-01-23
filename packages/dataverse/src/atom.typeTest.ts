@@ -1,4 +1,5 @@
-import Atom, {val} from './Atom'
+import Atom from './Atom'
+import {val} from './val'
 import {expectType, _any} from './utils/typeTestUtils'
 ;() => {
   const p = new Atom<{foo: string; bar: number; optional?: boolean}>(_any)

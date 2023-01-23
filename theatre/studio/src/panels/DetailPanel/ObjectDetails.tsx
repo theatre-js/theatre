@@ -43,7 +43,7 @@ const ObjectDetails: React.FC<{
 }> = ({objects}) => {
   const obj = objects[0]
   const config = useVal(obj.template.configPointer)
-  const actions = useVal(obj.template.actionsPointer)
+  const actions = useVal(obj.template._temp_actionsPointer)
 
   return (
     <>

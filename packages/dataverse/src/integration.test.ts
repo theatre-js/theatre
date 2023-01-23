@@ -1,7 +1,8 @@
 /*
  * @jest-environment jsdom
  */
-import Atom, {val} from './Atom'
+import Atom from './Atom'
+import {val} from './val'
 import prism from './prism/prism'
 import Ticker from './Ticker'
 

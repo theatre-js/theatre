@@ -36,6 +36,7 @@ const ImageTypeExample: React.FC<{}> = (props) => {
         label: 'another texture',
       }),
       something: 'asdf',
+      color: types.rgba(),
     })
     object.onValuesChange(({image}) => {
       setImageUrl(project.getAssetUrl(image))
