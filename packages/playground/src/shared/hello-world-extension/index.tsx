@@ -41,28 +41,32 @@ studio.extend({
             },
           },
           {
-            type: 'Downdown',
-            svgSource: '🫠',
-            onChange: (value: any) => {
-              console.log('Change:', value)
-            },
-            selectable: false,
-            options: [
+            type: 'Flyout',
+            label: '🫠',
+            items: [
               {
-                label: 'Option 1',
-                value: 0,
+                label: 'Item 1',
+                onClick: () => {
+                  console.log('Item 1 clicked')
+                },
               },
               {
-                label: 'Option 2',
-                value: 1,
+                label: 'Item 2',
+                onClick: () => {
+                  console.log('Item 2 clicked')
+                },
               },
               {
-                label: 'Option 3',
-                value: 2,
+                label: 'Item 3',
+                onClick: () => {
+                  console.log('Item 3 clicked')
+                },
               },
               {
-                label: 'Option 4',
-                value: 3,
+                label: 'Item 4',
+                onClick: () => {
+                  console.log('Item 4 clicked')
+                },
               },
             ],
           },
