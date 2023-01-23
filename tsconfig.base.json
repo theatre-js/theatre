@@ -28,7 +28,8 @@
       "@theatre/r3f/dist/extension": ["./packages/r3f/src/extension/index.ts"],
       "@theatre/dataverse-experiments": [
         "./packages/dataverse-experiments/src/index.ts"
-      ]
+      ],
+      "theatric": ["./packages/theatric/src/index.ts"]
     },
     "forceConsistentCasingInFileNames": true
   },

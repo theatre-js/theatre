@@ -2,14 +2,14 @@ import get from 'lodash-es/get'
 import isPlainObject from 'lodash-es/isPlainObject'
 import last from 'lodash-es/last'
 import type {Prism} from './prism/Interface'
-import {isPrism} from './prism/Interface'
-import type {Pointer, PointerType} from './pointer'
+import type {Pointer} from './pointer'
 import {getPointerParts} from './pointer'
 import {isPointer} from './pointer'
-import pointer, {getPointerMeta} from './pointer'
+import pointer from './pointer'
 import type {$FixMe, $IntentionalAny} from './types'
 import updateDeep from './utils/updateDeep'
 import prism from './prism/prism'
+import type {PointerToPrismProvider} from './pointerToPrism'
 
 type Listener = (newVal: unknown) => void
 
@@ -17,24 +17,6 @@ enum ValueTypes {
   Dict,
   Array,
   Other,
-}
-
-/**
- * Interface for objects that can provide a prism at a certain path.
- */
-export interface IdentityPrismProvider {
-  /**
-   * @internal
-   * Future: We could consider using a `Symbol.for("dataverse/IdentityPrismProvider")` as a key here, similar to
-   * how {@link Iterable} works for `of`.
-   */
-  readonly $$isIdentityPrismProvider: true
-  /**
-   * Returns a prism of the value at the provided path.
-   *
-   * @param path - The path to create the prism at.
-   */
-  getIdentityPrism(path: Array<string | number>): Prism<unknown>
 }
 
 const getTypeOfValue = (v: unknown): ValueTypes => {
@@ -115,12 +97,12 @@ class Scope {
 /**
  * Wraps an object whose (sub)properties can be individually tracked.
  */
-export default class Atom<State> implements IdentityPrismProvider {
+export default class Atom<State> implements PointerToPrismProvider {
   private _currentState: State
   /**
    * @internal
    */
-  readonly $$isIdentityPrismProvider = true
+  readonly $$isPointerToPrismProvider = true
   private readonly _rootScope: Scope
   /**
    * Convenience property that gives you a pointer to the root of the atom.
@@ -128,14 +110,15 @@ export default class Atom<State> implements IdentityPrismProvider {
    * @remarks
    * Equivalent to `pointer({ root: thisAtom, path: [] })`.
    */
-  readonly pointer: Pointer<State>
+  readonly pointer: Pointer<State> = pointer({root: this as $FixMe, path: []})
 
-  readonly prism: Prism<State> = this.getIdentityPrism([]) as $IntentionalAny
+  readonly prism: Prism<State> = this.pointerToPrism(
+    this.pointer,
+  ) as $IntentionalAny
 
   constructor(initialState: State) {
     this._currentState = initialState
     this._rootScope = new Scope(undefined, [])
-    this.pointer = pointer({root: this as $FixMe, path: []})
   }
 
   /**
@@ -154,8 +137,25 @@ export default class Atom<State> implements IdentityPrismProvider {
     return this._currentState
   }
 
-  getByPointer<S>(fn: (p: Pointer<State>) => Pointer<S>): S {
-    const pointer = fn(this.pointer)
+  /**
+   * Returns the value at the given pointer
+   *
+   * @param pointerOrFn - A pointer to the desired path. Could also be a function returning a pointer
+   *
+   * Example
+   * ```ts
+   * const atom = atom({ a: { b: 1 } })
+   * atom.getByPointer(atom.pointer.a.b) // 1
+   * atom.getByPointer((p) => p.a.b) // 1
+   * ```
+   */
+  getByPointer<S>(
+    pointerOrFn: Pointer<S> | ((p: Pointer<State>) => Pointer<S>),
+  ): S {
+    const pointer = isPointer(pointerOrFn)
+      ? pointerOrFn
+      : (pointerOrFn as $IntentionalAny)(this.pointer)
+
     const path = getPointerParts(pointer).path
     return this._getIn(path) as S
   }
@@ -171,18 +171,48 @@ export default class Atom<State> implements IdentityPrismProvider {
     this.set(fn(this.get()))
   }
 
+  /**
+   * Reduces the value at the given pointer
+   *
+   * @param pointerOrFn - A pointer to the desired path. Could also be a function returning a pointer
+   *
+   * Example
+   * ```ts
+   * const atom = atom({ a: { b: 1 } })
+   * atom.reduceByPointer(atom.pointer.a.b, (b) => b + 1) // atom.get().a.b === 2
+   * atom.reduceByPointer((p) => p.a.b, (b) => b + 1) // atom.get().a.b === 2
+   * ```
+   */
   reduceByPointer<S>(
-    fn: (p: Pointer<State>) => Pointer<S>,
+    pointerOrFn: Pointer<S> | ((p: Pointer<State>) => Pointer<S>),
     reducer: (s: S) => S,
   ) {
-    const pointer = fn(this.pointer)
+    const pointer = isPointer(pointerOrFn)
+      ? pointerOrFn
+      : (pointerOrFn as $IntentionalAny)(this.pointer)
+
     const path = getPointerParts(pointer).path
     const newState = updateDeep(this.get(), path, reducer)
     this.set(newState)
   }
 
-  setByPointer<S>(fn: (p: Pointer<State>) => Pointer<S>, val: S) {
-    this.reduceByPointer(fn, () => val)
+  /**
+   * Sets the value at the given pointer
+   *
+   * @param pointerOrFn - A pointer to the desired path. Could also be a function returning a pointer
+   *
+   * Example
+   * ```ts
+   * const atom = atom({ a: { b: 1 } })
+   * atom.setByPointer(atom.pointer.a.b, 2) // atom.get().a.b === 2
+   * atom.setByPointer((p) => p.a.b, 2) // atom.get().a.b === 2
+   * ```
+   */
+  setByPointer<S>(
+    pointerOrFn: Pointer<S> | ((p: Pointer<State>) => Pointer<S>),
+    val: S,
+  ) {
+    this.reduceByPointer(pointerOrFn, () => val)
   }
 
   private _checkUpdates(scope: Scope, oldState: unknown, newState: unknown) {
@@ -215,101 +245,38 @@ export default class Atom<State> implements IdentityPrismProvider {
     return curScope
   }
 
-  private _onPathValueChange = (
-    path: (string | number)[],
-    cb: (v: unknown) => void,
-  ) => {
+  private _onPointerValueChange = <P>(
+    pointer: Pointer<P>,
+    cb: (v: P) => void,
+  ): (() => void) => {
+    const {path} = getPointerParts(pointer)
     const scope = this._getOrCreateScopeForPath(path)
-    scope.identityChangeListeners.add(cb)
-    const untap = () => {
-      scope.identityChangeListeners.delete(cb)
+    scope.identityChangeListeners.add(cb as $IntentionalAny)
+    const unsubscribe = () => {
+      scope.identityChangeListeners.delete(cb as $IntentionalAny)
     }
-    return untap
+    return unsubscribe
   }
 
   /**
    * Returns a new prism of the value at the provided path.
    *
-   * @param path - The path to create the prism at.
+   * @param pointer - The path to create the prism at.
+   *
+   * ```ts
+   * const pr = atom({ a: { b: 1 } }).pointerToPrism(atom.pointer.a.b)
+   * pr.getValue() // 1
+   * ```
    */
-  getIdentityPrism(path: Array<string | number>): Prism<unknown> {
+  pointerToPrism<P>(pointer: Pointer<P>): Prism<P> {
+    const {path} = getPointerParts(pointer)
     const subscribe = (listener: (val: unknown) => void) =>
-      this._onPathValueChange(path, listener)
+      this._onPointerValueChange(pointer, listener)
 
     const getValue = () => this._getIn(path)
 
     return prism(() => {
       return prism.source(subscribe, getValue)
-    })
-  }
-}
-
-const identifyPrismWeakMap = new WeakMap<{}, Prism<unknown>>()
-
-/**
- * Returns a prism of the value at the provided pointer. Prisms are
- * cached per pointer.
- *
- * @param pointer - The pointer to return the prism at.
- */
-export const pointerToPrism = <P extends PointerType<$IntentionalAny>>(
-  pointer: P,
-): Prism<P extends PointerType<infer T> ? T : void> => {
-  const meta = getPointerMeta(pointer)
-
-  let prismInstance = identifyPrismWeakMap.get(meta)
-  if (!prismInstance) {
-    const root = meta.root
-    if (!isIdentityPrismProvider(root)) {
-      throw new Error(
-        `Cannot run pointerToPrism() on a pointer whose root is not an IdentityPrismProvider`,
-      )
-    }
-    const {path} = meta
-    prismInstance = root.getIdentityPrism(path)
-    identifyPrismWeakMap.set(meta, prismInstance)
-  }
-  return prismInstance as $IntentionalAny
-}
-
-function isIdentityPrismProvider(val: unknown): val is IdentityPrismProvider {
-  return (
-    typeof val === 'object' &&
-    val !== null &&
-    (val as $IntentionalAny)['$$isIdentityPrismProvider'] === true
-  )
-}
-
-/**
- * Convenience function that returns a plain value from its argument, whether it
- * is a pointer, a prism or a plain value itself.
- *
- * @remarks
- * For pointers, the value is returned by first creating a prism, so it is
- * reactive e.g. when used in a `prism`.
- *
- * @param input - The argument to return a value from.
- */
-export const val = <
-  P extends
-    | PointerType<$IntentionalAny>
-    | Prism<$IntentionalAny>
-    | undefined
-    | null,
->(
-  input: P,
-): P extends PointerType<infer T>
-  ? T
-  : P extends Prism<infer T>
-  ? T
-  : P extends undefined | null
-  ? P
-  : unknown => {
-  if (isPointer(input)) {
-    return pointerToPrism(input).getValue() as $IntentionalAny
-  } else if (isPrism(input)) {
-    return input.getValue() as $IntentionalAny
-  } else {
-    return input as $IntentionalAny
+    }) as Prism<P>
   }
 }

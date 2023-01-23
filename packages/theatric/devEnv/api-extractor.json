@@ -1,0 +1,36 @@
+/**
+ * Config file for API Extractor.  For more info, please visit: https://api-extractor.com
+ */
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+
+  /**
+   * Optionally specifies another JSON config file that this file extends from.  This provides a way for
+   * standard settings to be shared across multiple projects.
+   *
+   * If the path starts with "./" or "../", the path is resolved relative to the folder of the file that contains
+   * the "extends" field.  Otherwise, the first path segment is interpreted as an NPM package name, and will be
+   * resolved using NodeJS require().
+   *
+   * SUPPORTED TOKENS: none
+   * DEFAULT VALUE: ""
+   */
+  "extends": "../../../devEnv/api-extractor-base.json",
+  // "extends": "my-package/include/api-extractor-base.json"
+
+  /**
+   * Determines the "<projectFolder>" token that can be used with other config file settings.  The project folder
+   * typically contains the tsconfig.json and package.json config files, but the path is user-defined.
+   *
+   * The path is resolved relative to the folder of the config file that contains the setting.
+   *
+   * The default value for "projectFolder" is the token "<lookup>", which means the folder is determined by traversing
+   * parent folders, starting from the folder containing api-extractor.json, and stopping at the first folder
+   * that contains a tsconfig.json file.  If a tsconfig.json file cannot be found in this way, then an error
+   * will be reported.
+   *
+   * SUPPORTED TOKENS: <lookup>
+   * DEFAULT VALUE: "<lookup>"
+   */
+  "projectFolder": ".."
+}

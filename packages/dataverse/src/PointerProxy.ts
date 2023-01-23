@@ -1,9 +1,12 @@
-import type {IdentityPrismProvider} from './Atom'
-import Atom, {val} from './Atom'
+import Atom from './Atom'
+import {val} from './val'
 import type {Pointer} from './pointer'
+import {getPointerMeta} from './pointer'
 import pointer from './pointer'
 import type {$FixMe, $IntentionalAny} from './types'
 import prism from './prism/prism'
+import type {Prism} from './prism/Interface'
+import type {PointerToPrismProvider} from './pointerToPrism'
 
 /**
  * Allows creating pointer-prisms where the pointer can be switched out.
@@ -13,12 +16,12 @@ import prism from './prism/prism'
  * to the proxied pointer too.
  */
 export default class PointerProxy<O extends {}>
-  implements IdentityPrismProvider
+  implements PointerToPrismProvider
 {
   /**
    * @internal
    */
-  readonly $$isIdentityPrismProvider = true
+  readonly $$isPointerToPrismProvider = true
   private readonly _currentPointerBox: Atom<Pointer<O>>
   /**
    * Convenience pointer pointing to the root of this PointerProxy.
@@ -46,14 +49,15 @@ export default class PointerProxy<O extends {}>
    *
    * @param path - The path to create the prism at.
    */
-  getIdentityPrism(path: Array<string | number>) {
+  pointerToPrism<P>(pointer: Pointer<P>): Prism<P> {
+    const {path} = getPointerMeta(pointer)
     return prism(() => {
       const currentPointer = this._currentPointerBox.prism.getValue()
       const subPointer = path.reduce(
         (pointerSoFar, pathItem) => (pointerSoFar as $IntentionalAny)[pathItem],
         currentPointer,
       )
-      return val(subPointer)
+      return val(subPointer) as P
     })
   }
 }

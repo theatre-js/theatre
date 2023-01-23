@@ -12,7 +12,8 @@
   "references": [
     {"path": "../../theatre"},
     {"path": "../dataverse"},
-    {"path": "../r3f"}
+    {"path": "../r3f"},
+    {"path": "../theatric"}
   ],
   "include": ["./src/**/*", "./src/**/*.json", "./devEnv/**/*"]
 }

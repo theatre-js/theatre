@@ -15,6 +15,9 @@ packages:
   '@theatre/*':
     access: $all
     publish: $all
+  'theatric':
+    access: $all
+    publish: $all
   '@*/*':
     access: $all
     publish: $all

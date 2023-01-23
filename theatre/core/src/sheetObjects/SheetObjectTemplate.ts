@@ -2,7 +2,6 @@ import type Project from '@theatre/core/projects/Project'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type {
-  SheetObjectAction,
   SheetObjectActionsConfig,
   SheetObjectPropTypeConfig,
 } from '@theatre/core/sheets/TheatreSheet'
@@ -62,7 +61,7 @@ export default class SheetObjectTemplate {
   readonly address: WithoutSheetInstance<SheetObjectAddress>
   readonly type: 'Theatre_SheetObjectTemplate' = 'Theatre_SheetObjectTemplate'
   protected _config: Atom<SheetObjectPropTypeConfig>
-  readonly _actions: Atom<SheetObjectActionsConfig>
+  readonly _temp_actions_atom: Atom<SheetObjectActionsConfig>
   readonly _cache = new SimpleCache()
   readonly project: Project
 
@@ -74,12 +73,12 @@ export default class SheetObjectTemplate {
     return this._config.pointer
   }
 
-  get staticActions() {
-    return this._actions.get()
+  get _temp_actions() {
+    return this._temp_actions_atom.get()
   }
 
-  get actionsPointer() {
-    return this._actions.pointer
+  get _temp_actionsPointer() {
+    return this._temp_actions_atom.pointer
   }
 
   constructor(
@@ -87,11 +86,11 @@ export default class SheetObjectTemplate {
     objectKey: ObjectAddressKey,
     nativeObject: unknown,
     config: SheetObjectPropTypeConfig,
-    actions: SheetObjectActionsConfig,
+    _temp_actions: SheetObjectActionsConfig,
   ) {
     this.address = {...sheetTemplate.address, objectKey}
     this._config = new Atom(config)
-    this._actions = new Atom(actions)
+    this._temp_actions_atom = new Atom(_temp_actions)
     this.project = sheetTemplate.project
   }
 
@@ -108,8 +107,11 @@ export default class SheetObjectTemplate {
     this._config.set(config)
   }
 
-  registerAction(name: string, action: SheetObjectAction) {
-    this._actions.setByPointer((p) => p[name], action)
+  /**
+   * The `actions` api is temporary until we implement events.
+   */
+  _temp_setActions(actions: SheetObjectActionsConfig) {
+    this._temp_actions_atom.set(actions)
   }
 
   /**
