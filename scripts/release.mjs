@@ -21,6 +21,7 @@ const packagesToBuild = [
   '@theatre/react',
   '@theatre/browser-bundles',
   '@theatre/r3f',
+  'theatric',
 ]
 
 const packagesToPublish = [
@@ -30,6 +31,7 @@ const packagesToPublish = [
   '@theatre/react',
   '@theatre/browser-bundles',
   '@theatre/r3f',
+  'theatric',
 ]
 
 /**
@@ -44,6 +46,7 @@ const packagesWhoseVersionsShouldBump = [
   'packages/react',
   'packages/browser-bundles',
   'packages/r3f',
+  'theatric',
 ]
 
 ;(async function () {

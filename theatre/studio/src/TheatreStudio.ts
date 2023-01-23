@@ -89,18 +89,40 @@ export type ToolConfigIcon = {
   onClick: () => void
 }
 
+export type ToolConfigOption = {
+  value: string
+  label: string
+  svgSource: string
+}
+
 export type ToolConfigSwitch = {
   type: 'Switch'
   value: string
   onChange: (value: string) => void
-  options: {
-    value: string
-    label: string
-    svgSource: string
-  }[]
+  options: ToolConfigOption[]
 }
 
-export type ToolConfig = ToolConfigIcon | ToolConfigSwitch
+export type ToolconfigFlyoutMenuItem = {
+  label: string
+  onClick?: () => void
+}
+
+export type ToolConfigFlyoutMenu = {
+  /**
+   * A flyout menu
+   */
+  type: 'Flyout'
+  /**
+   * The label of the trigger button
+   */
+  label: string
+  items: ToolconfigFlyoutMenuItem[]
+}
+
+export type ToolConfig =
+  | ToolConfigIcon
+  | ToolConfigSwitch
+  | ToolConfigFlyoutMenu
 
 export type ToolsetConfig = Array<ToolConfig>
 

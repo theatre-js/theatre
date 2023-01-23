@@ -1,0 +1,19 @@
+{
+  "sheetsById": {
+    "Panels": {
+      "staticOverrides": {
+        "byObject": {
+          "Default panel": {
+            "first": {
+              "foo": 73
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitionVersion": "0.4.0",
+  "revisionHistory": [
+    "cfRereBjMbBNLzC3"
+  ]
+}

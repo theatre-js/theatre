@@ -1,7 +1,8 @@
 /*
  * @jest-environment jsdom
  */
-import Atom, {val} from '../Atom'
+import Atom from '../Atom'
+import {val} from '../val'
 import Ticker from '../Ticker'
 import type {$FixMe, $IntentionalAny} from '../types'
 import iterateAndCountTicks from './iterateAndCountTicks'

@@ -13,7 +13,7 @@ const IconContainer = styled.div`
   }
 `
 
-const IconButton: React.FC<{
+const Switch: React.FC<{
   config: ToolConfigSwitch
 }> = ({config}) => {
   return (
@@ -29,4 +29,4 @@ const IconButton: React.FC<{
   )
 }
 
-export default IconButton
+export default Switch

@@ -1,11 +1,12 @@
-import type {PointerToPrismProvider} from './Atom'
-import Atom, {val} from './Atom'
+import Atom from './Atom'
+import {val} from './val'
 import type {Pointer} from './pointer'
 import {getPointerMeta} from './pointer'
 import pointer from './pointer'
 import type {$FixMe, $IntentionalAny} from './types'
 import prism from './prism/prism'
 import type {Prism} from './prism/Interface'
+import type {PointerToPrismProvider} from './pointerToPrism'
 
 /**
  * Allows creating pointer-prisms where the pointer can be switched out.
