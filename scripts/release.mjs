@@ -46,7 +46,7 @@ const packagesWhoseVersionsShouldBump = [
   'packages/react',
   'packages/browser-bundles',
   'packages/r3f',
-  'theatric',
+  'packages/theatric',
 ]
 
 ;(async function () {
