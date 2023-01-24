@@ -18,6 +18,12 @@ It comes with no peer-dependencies, all you need to do to set it up is run
 
 ## API
 
+[`useControls(controls, options?)`](#usecontrolscontrols-options)
+
+[`initialize(config)`](#initializeconfig)
+
+[`types`](#types)
+
 ### `useControls(controls, options?)`
 
 `useControls` is Theatric's main API. It is a React hook which you can call from
