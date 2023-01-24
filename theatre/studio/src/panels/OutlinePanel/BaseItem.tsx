@@ -101,9 +101,18 @@ const Head_Icon_WithDescendants = styled.span`
   font-size: 9px;
   position: relative;
   display: block;
+  transition: transform 0.1s ease-out;
+
+  &:hover {
+    transform: rotate(-20deg);
+  }
 
   ${Container}.collapsed & {
     transform: rotate(-90deg);
+
+    &:hover {
+      transform: rotate(-70deg);
+    }
   }
 `
 
@@ -157,8 +166,8 @@ const BaseItem: React.FC<{
             <Head_Icon_WithDescendants
               onClick={(evt) => {
                 evt.stopPropagation()
+                evt.preventDefault()
                 setIsCollapsed?.(!collapsed)
-                select?.()
               }}
             >
               <ChevronDown />
