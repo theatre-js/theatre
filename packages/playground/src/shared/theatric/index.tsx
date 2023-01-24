@@ -1,4 +1,4 @@
-import {button, initialize, useControls} from 'theatric'
+import {button, initialize, types, useControls} from 'theatric'
 import {render} from 'react-dom'
 import React, {useState} from 'react'
 import state from './state.json'
@@ -32,11 +32,12 @@ function App() {
     baz: button(() => console.log($get((p) => p.bar))),
   })
 
-  const {another, panel, yo} = useControls(
+  const {another, panel, col, yo} = useControls(
     {
       another: '',
       panel: '',
-      yo: 0,
+      yo: types.number(0),
+      col: types.rgba(),
     },
     {panel: 'My panel'},
   )
@@ -54,7 +55,7 @@ function App() {
         justifyContent: 'center',
       }}
     >
-      <div>{JSON.stringify(bar)}</div>
+      {/* <div>{JSON.stringify(bar)}</div> */}
       <SomeComponent id="first" />
       <SomeComponent id="second" />
       <button
@@ -73,6 +74,7 @@ function App() {
       </button>
       {showComponent && <SomeComponent id="hidden" />}
       {yo}
+      {JSON.stringify(col)}
     </div>
   )
 }

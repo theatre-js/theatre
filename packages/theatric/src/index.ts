@@ -8,6 +8,7 @@ import {getProject} from '@theatre/core'
 import type {Pointer} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
 import studio from '@theatre/studio'
+import isEqualWith from 'lodash-es/isEqualWith'
 import isEqual from 'lodash-es/isEqual'
 import {useEffect, useMemo, useState, useRef} from 'react'
 
@@ -32,6 +33,17 @@ const maybeTransaction =
     : () => {}
 
 let _projectConfig: IProjectConfig['state'] | undefined = undefined
+
+// used for comparing config objects, to avoid re-rendering when the config object is recreated
+// but the values are the same except for functions
+function equalityCheckWithFunctionsAlwaysEqual(
+  a: unknown,
+  b: unknown,
+): boolean | undefined {
+  if (typeof a === 'function' && typeof b === 'function') {
+    return true
+  }
+}
 
 export function initialize(config: IProjectConfig) {
   if (_projectConfig !== undefined) {
@@ -100,12 +112,20 @@ export function useControls<Config extends ControlsAndButtons>(
    */
   const configRef = useRef(config)
   const _config = useMemo(() => {
-    if (isEqual(config, configRef.current)) {
-      return configRef.current
-    } else {
+    let currentConfig = configRef.current
+
+    if (
+      !isEqualWith(
+        config,
+        configRef.current,
+        equalityCheckWithFunctionsAlwaysEqual,
+      )
+    ) {
       configRef.current = config
-      return config
+      currentConfig = config
     }
+
+    return currentConfig
   }, [config])
 
   const {folder} = options
@@ -142,7 +162,9 @@ export function useControls<Config extends ControlsAndButtons>(
         Object.entries(buttons).map(([key, value]) => [
           `${folder ? `${folder}: ` : ''}${key}`,
           () => {
-            value.onClick()
+            // the value of the button is a function, so we can't use it as a dependency, but we can use it as a ref
+            // @ts-ignore
+            configRef.current[key].onClick?.()
           },
         ]),
       ),
