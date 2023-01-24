@@ -73,7 +73,7 @@ function Introduction() {
   const {name, age, $get, $set} = useControls({name: 'Andrew', age: 28})
 
   const increaseAge = useCallback(() => {
-    $set((values) => values.age, $get(values.age + 1))
+    $set((values) => values.age, $get((values) => values.age) + 1)
   }, [$get, $set])
 
   return (
