@@ -34,7 +34,7 @@ interface EditingToolsCommon<T> {
   permanentlySetValue(v: T): void
 
   getAssetUrl: (asset: Asset) => string | undefined
-  createAsset(asset: Blob): Promise<string | null>
+  createAsset(asset: File): Promise<string | null>
 }
 
 interface EditingToolsDefault<T> extends EditingToolsCommon<T> {
@@ -114,7 +114,8 @@ function createPrism<T extends SerializablePrimitive>(
     )
 
     const editAssets = {
-      createAsset: obj.sheet.project.assetStorage.createAsset,
+      createAsset: (asset: File): Promise<string | null> =>
+        obj.sheet.project.assetStorage.createAsset(asset),
       getAssetUrl: (asset: Asset) =>
         asset.id
           ? obj.sheet.project.assetStorage.getAssetUrl(asset.id)

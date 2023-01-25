@@ -1,5 +1,9 @@
+import type {
+  PropTypeConfig_AllSimples,
+  PropTypeConfig_Compound,
+} from '@theatre/core/propTypes'
 import type {PathToProp} from './addresses'
-import type {$IntentionalAny, SerializableMap} from './types'
+import type {$IntentionalAny} from './types'
 
 /**
  * Iterates recursively over all props of an object (which should be a {@link SerializableMap}) and runs `fn`
@@ -24,20 +28,68 @@ import type {$IntentionalAny, SerializableMap} from './types'
  * // Also note that `a` is also skippped, because it's not a primitive value.
  * ```
  */
-export default function forEachDeep<
-  Primitive extends string | number | boolean,
+export default function forEachPropDeep<
+  Primitive extends
+    | string
+    | number
+    | boolean
+    | PropTypeConfig_AllSimples['valueType'],
 >(
-  m: SerializableMap<Primitive> | Primitive | undefined | unknown,
+  m:
+    | PropTypeConfig_Compound<$IntentionalAny>['valueType']
+    | Primitive
+    | undefined
+    | unknown,
   fn: (value: Primitive, path: PathToProp) => void,
   startingPath: PathToProp = [],
 ): void {
   if (typeof m === 'object' && m) {
+    if (isImage(m) || isRGBA(m)) {
+      fn(m as $IntentionalAny as Primitive, startingPath)
+      return
+    }
     for (const [key, value] of Object.entries(m)) {
-      forEachDeep(value!, fn, [...startingPath, key])
+      forEachPropDeep(value!, fn, [...startingPath, key])
     }
   } else if (m === undefined || m === null) {
     return
   } else {
     fn(m as $IntentionalAny as Primitive, startingPath)
   }
+}
+
+const isImage = (value: unknown): value is {type: 'image'; id: string} => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    Object.hasOwnProperty.call(value, 'type') &&
+    // @ts-ignore
+    value.type === 'image' &&
+    Object.hasOwnProperty.call(value, 'id') &&
+    // @ts-ignore
+    typeof value.id === 'string' &&
+    // @ts-ignore
+    value.id !== ''
+  )
+}
+
+const isRGBA = (
+  value: unknown,
+): value is {r: number; g: number; b: number; a: number} => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    Object.hasOwnProperty.call(value, 'r') &&
+    Object.hasOwnProperty.call(value, 'g') &&
+    Object.hasOwnProperty.call(value, 'b') &&
+    Object.hasOwnProperty.call(value, 'a') &&
+    // @ts-ignore
+    typeof value.r === 'number' &&
+    // @ts-ignore
+    typeof value.g === 'number' &&
+    // @ts-ignore
+    typeof value.b === 'number' &&
+    // @ts-ignore
+    typeof value.a === 'number'
+  )
 }

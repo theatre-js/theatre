@@ -1,4 +1,5 @@
 import type {
+  IProject,
   IProjectConfig,
   ISheetObject,
   UnknownShorthandCompoundProps,
@@ -45,14 +46,37 @@ function equalityCheckWithFunctionsAlwaysEqual(
   }
 }
 
-export function initialize(config: IProjectConfig) {
-  if (_projectConfig !== undefined) {
+export function initialize(config: IProjectConfig): Promise<void> {
+  if (_project) {
     console.warn(
       'Theatric has already been initialized, either through another initialize call, or by calling useControls() before calling initialize().',
     )
-    return
+    return _project.ready.then(() => {})
   }
   _projectConfig = config
+  const project = callGetProject()
+  return project.ready.then(() => {})
+}
+
+export function getAssetUrl(asset: {
+  type: 'image'
+  id: string | undefined
+}): string | undefined {
+  if (!_project) {
+    throw new Error(
+      'Theatric has not been initialized yet. Please call initialize() before calling getAssetUrl().',
+    )
+  }
+  if (!_project.isReady) {
+    throw new Error(
+      'Calling `getAssetUrl()` before `initialize()` is resolved.\n' +
+        'The best way to solve this is to delay rendering your react app until `project.ready` is resolved, like this: \n\n' +
+        '```\n' +
+        'project.ready.then(() => {ReactDom.render(...)})\n' +
+        '```',
+    )
+  }
+  return _project.getAssetUrl(asset)
 }
 
 const allProps: Record<string, UnknownShorthandCompoundProps[]> = {}
@@ -171,10 +195,8 @@ export function useControls<Config extends ControlsAndButtons>(
     [buttons, folder],
   )
 
-  const sheet = useMemo(
-    () => getProject('Theatric', _projectConfig ?? undefined).sheet('Panels'),
-    [],
-  )
+  const sheet = useMemo(() => callGetProject().sheet('Panels'), [])
+
   const panel = options.panel ?? 'Default panel'
   const allPanelProps = allProps[panel] ?? (allProps[panel] = [])
   const allPanelActions = allActions[panel] ?? (allActions[panel] = [])
@@ -297,4 +319,12 @@ export const button = (onClick: Button['onClick']) => {
     type: 'button' as const,
     onClick,
   }
+}
+
+let _project: undefined | IProject
+
+function callGetProject() {
+  if (_project) return _project
+  _project = getProject('Theatric', _projectConfig ?? undefined)
+  return _project
 }

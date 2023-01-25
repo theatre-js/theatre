@@ -1,4 +1,4 @@
-import forEachDeep from '@theatre/shared/utils/forEachDeep'
+import forEachPropDeep from '@theatre/shared/utils/forEachDeep'
 import type {$FixMe} from '@theatre/shared/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {getPointerParts} from '@theatre/dataverse'
@@ -213,7 +213,7 @@ export default class Scrub implements IScrub {
 
         const defaultValueOfProp = root.template.getDefaultsAtPointer(pointer)
 
-        forEachDeep(
+        forEachPropDeep(
           defaultValueOfProp,
           (val, pathToProp) => {
             stateEditors.studio.ephemeral.projects.stateByProjectId.stateBySheetId.stateByObjectKey.propsBeingScrubbed.flag(

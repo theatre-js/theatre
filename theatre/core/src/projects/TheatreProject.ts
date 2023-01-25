@@ -107,6 +107,15 @@ export default class TheatreProject implements IProject {
   }
 
   getAssetUrl(asset: Asset): string | undefined {
+    // probably should put this in project.getAssetUrl but this will do for now
+    if (!this.isReady) {
+      console.error(
+        'Calling `project.getAssetUrl()` before `project.ready` is resolved, will always return `undefined`. ' +
+          'Either use `project.ready.then(() => project.getAssetUrl())` or `await project.ready` before calling `project.getAssetUrl()`.',
+      )
+      return undefined
+    }
+
     return asset.id
       ? privateAPI(this).assetStorage.getAssetUrl(asset.id)
       : undefined

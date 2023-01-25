@@ -1,19 +1,32 @@
 import type Project from '@theatre/core/projects/Project'
 import {val} from '@theatre/dataverse'
+import forEachPropDeep from './forEachDeep'
+import type {$IntentionalAny} from './types'
 
 export function getAllPossibleAssetIDs(project: Project, type?: string) {
-  // Apparently the value returned by val() can be undefined. Should fix TS.
   const sheets = Object.values(val(project.pointers.historic.sheetsById) ?? {})
   const staticValues = sheets
     .flatMap((sheet) => Object.values(sheet?.staticOverrides.byObject ?? {}))
     .flatMap((overrides) => Object.values(overrides ?? {}))
+
   const keyframeValues = sheets
     .flatMap((sheet) => Object.values(sheet?.sequence?.tracksByObject ?? {}))
     .flatMap((tracks) => Object.values(tracks?.trackData ?? {}))
     .flatMap((track) => track?.keyframes)
     .map((keyframe) => keyframe?.value)
 
-  const allAssets = [...staticValues, ...keyframeValues]
+  const allValues = [...keyframeValues]
+  staticValues.forEach((value) => {
+    forEachPropDeep(
+      value,
+      (v) => {
+        allValues.push(v as $IntentionalAny)
+      },
+      [],
+    )
+  })
+
+  const allAssets = allValues
     // value is Asset of the type provided
     .filter((value) => {
       return (

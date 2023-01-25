@@ -3,7 +3,7 @@ import {isSheetObject} from '@theatre/shared/instanceTypes'
 import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
 import get from 'lodash-es/get'
 import type {ITransactionPrivateApi} from './StudioStore'
-import forEachDeep from '@theatre/shared/utils/forEachDeep'
+import forEachPropDeep from '@theatre/shared/utils/forEachDeep'
 import getDeep from '@theatre/shared/utils/getDeep'
 import type {SequenceTrackId} from '@theatre/shared/utils/ids'
 import {getPointerParts} from '@theatre/dataverse'
@@ -233,7 +233,7 @@ export default function createTransactionPrivateApi(
         }
 
         if (propConfig.type === 'compound') {
-          forEachDeep(
+          forEachPropDeep(
             defaultValue,
             (v, pathToProp) => {
               unsetStaticOrKeyframeProp(v, pathToProp)

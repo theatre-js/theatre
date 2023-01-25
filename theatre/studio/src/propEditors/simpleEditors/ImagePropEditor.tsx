@@ -60,7 +60,7 @@ const InputLabel = styled.label<{empty: boolean}>`
 `
 
 // file input
-const Input = styled.input.attrs({type: 'file', accept: 'image/*'})`
+const Input = styled.input.attrs({type: 'file'})`
   display: none;
 `
 
@@ -145,7 +145,7 @@ function ImagePropEditor({
         <Input
           type="file"
           onChange={onChange}
-          accept="image/*"
+          accept="image/*,.hdr"
           autoFocus={autoFocus}
         />
         {previewUrl ? <Preview src={previewUrl} /> : <AddImage />}
