@@ -44,48 +44,6 @@ export default function App() {
 
 Theatric supports all the prop types that Theatre.js supports. You can find a list of supported prop types [here](https://www.theatrejs.com/docs/latest/manual/prop-types).
 
-## Using assets
-
-Here is an example of using image assets in your controls. Learn more about assets [here](https://www.theatrejs.com/docs/latest/manual/assets).
-
-```tsx
-import {initialize, useControls, types, getAssetUrl} from 'theatric'
-import theatricState from './theatricState.json'
-
-initialize({
-  // if you're using assets in your controls, you can specify the base URL here.
-  
-  assets: {
-    // Defaults to '/'
-    // If you host your assets on a different domain, you can specify it here.
-    // For example if you're hosting your assets on https://cdn.example.com/theatric-assets
-    // you can set this to 'https://cdn.example.com/theatric-assets' (no trailing slash)
-    baseUrl: '/theatric-assets',
-  },
-}).then(() => {
-  // this is only necessary if you're using assets such as .hdr images in your prop values.
-  // awaiting the initialization ensures that the assets are loaded before rendering the app.
-  ReactDOM.render(<App />, document.getElementById('root'))
-})
-
-function App() {
-  const {img} = useControls({
-    // this will accept jpegs/pngs/hdrs/etc
-    // its default value is '' (empty string)
-    // learn more about assets here: https://www.theatrejs.com/docs/latest/manual/assets
-    img: types.image('')
-  })
-
-  const src = getAssetUrl(img)
-
-  return (
-    <div>
-      <img src={src} />
-    </div>
-  )
-}
-```
-
 ## API
 
 [`useControls(controls, options?)`](#usecontrolscontrols-options)
@@ -282,6 +240,48 @@ function Introduction() {
 
 This is simply a re-export via `export {types} from '@theatre/core'`. To learn more about types, check out the
 [types documentation](https://www.theatrejs.com/docs/latest/manual/prop-types).
+
+## Using assets
+
+Here is an example of using image assets in your controls. Learn more about assets [here](https://www.theatrejs.com/docs/latest/manual/assets).
+
+```tsx
+import {initialize, useControls, types, getAssetUrl} from 'theatric'
+import theatricState from './theatricState.json'
+
+initialize({
+  // if you're using assets in your controls, you can specify the base URL here.
+  
+  assets: {
+    // Defaults to '/'
+    // If you host your assets on a different domain, you can specify it here.
+    // For example if you're hosting your assets on https://cdn.example.com/theatric-assets
+    // you can set this to 'https://cdn.example.com/theatric-assets' (no trailing slash)
+    baseUrl: '/theatric-assets',
+  },
+}).then(() => {
+  // this is only necessary if you're using assets such as .hdr images in your prop values.
+  // awaiting the initialization ensures that the assets are loaded before rendering the app.
+  ReactDOM.render(<App />, document.getElementById('root'))
+})
+
+function App() {
+  const {img} = useControls({
+    // this will accept jpegs/pngs/hdrs/etc
+    // its default value is '' (empty string)
+    // learn more about assets here: https://www.theatrejs.com/docs/latest/manual/assets
+    img: types.image('')
+  })
+
+  const src = getAssetUrl(img)
+
+  return (
+    <div>
+      <img src={src} />
+    </div>
+  )
+}
+```
 
 ## How does Theatric compare to Theatre.js?
 
