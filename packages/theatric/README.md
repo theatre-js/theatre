@@ -16,11 +16,7 @@ $ npm install theatric
 
 ```tsx
 // index.jsx
-import {initialize} from 'theatric'
-
-initialize().then(() => {
-  ReactDOM.render(<App />, document.getElementById('root'))
-})
+ReactDOM.render(<App />, document.getElementById('root'))
 
 // App.jsx
 import {useControls} from 'theatric'
@@ -40,6 +36,48 @@ export default function App() {
 ## Supported prop types
 
 Theatric supports all the prop types that Theatre.js supports. You can find a list of supported prop types [here](https://www.theatrejs.com/docs/latest/manual/prop-types).
+
+## Using assets
+
+Here is an example of using image assets in your controls. Learn more about assets [here](https://www.theatrejs.com/docs/latest/manual/assets).
+
+```tsx
+import {initialize, useControls, types, getAssetUrl} from 'theatric'
+import theatricState from './theatricState.json'
+
+initialize({
+  // if you're using assets in your controls, you can specify the base URL here.
+  
+  assets: {
+    // Defaults to '/'
+    // If you host your assets on a different domain, you can specify it here.
+    // For example if you're hosting your assets on https://cdn.example.com/theatric-assets
+    // you can set this to 'https://cdn.example.com/theatric-assets' (no trailing slash)
+    baseUrl: '/theatric-assets',
+  },
+}).then(() => {
+  // this is only necessary if you're using assets such as .hdr images in your prop values.
+  // awaiting the initialization ensures that the assets are loaded before rendering the app.
+  ReactDOM.render(<App />, document.getElementById('root'))
+})
+
+function App() {
+  const {img} = useControls({
+    // this will accept jpegs/pngs/hdrs/etc
+    // its default value is '' (empty string)
+    // learn more about assets here: https://www.theatrejs.com/docs/latest/manual/assets
+    img: types.image('')
+  })
+
+  const src = getAssetUrl(img)
+
+  return (
+    <div>
+      <img src={src} />
+    </div>
+  )
+}
+```
 
 ## API
 
@@ -175,27 +213,35 @@ state, or to take advantage of features like
 [assets](https://www.theatrejs.com/docs/latest/manual/assets) support. `initialize()` takes the same
 config object as [`getProject()`](https://www.theatrejs.com/docs/latest/api/core#getproject_id-config_).
 
+
 ```tsx
-import {initialize, useControls} from 'theatric'
+import {initialize, useControls, types, getAssetUrl} from 'theatric'
 import theatricState from './theatricState.json'
 
 initialize({
+  // use the state of the state.json file you exported from the UI
   state: theatricState,
-  // if you're using assets in your controls, you can specify the base URL here.
-  // Learn more about assets here: https://www.theatrejs.com/docs/latest/manual/assets
-  assets: {
-    // Defaults to '/'
-    // If you host your assets on a different domain, you can specify it here.
-    // For example if you're hosting your assets on https://cdn.example.com/theatric-assets
-    // you can set this to 'https://cdn.example.com/theatric-assets' (no trailing slash)
-    baseUrl: '/theatric-assets',
-  },
 }).then(() => {
-  // this is only necessary if you're using assets such as .hdr images in your prop values.
-  // awaiting the initialization ensures that the assets are loaded before rendering the app.
-  ReactDOM.render(<App />, document.getElementById('root'))
+  // theatric is ready (although we don't have to wait for it unless we want to use assets)
 })
-})
+  
+ReactDOM.render(<App />, document.getElementById('root'))
+
+function App() {
+  const {img} = useControls({
+    name: 'Andrew',
+    age: types.number(28, {
+      range: [0, 150],
+    }),
+  })
+  
+
+  return (
+    <div>
+      Hey, I'm {name} and I'm {age} years old.
+    </div>
+  )
+}
 ```
 
 ### `types`
@@ -232,6 +278,10 @@ This is simply a re-export via `export {types} from '@theatre/core'`. To learn m
 
 ## How does Theatric compare to Theatre.js?
 
-First of all, you can use both Theatric and Theatre.js in the same project.
+* You can use both Theatric and Theatre.js in the same project. That's a common use-case.
+* You'd use Theatre.js if you're creating complex animation, or if you have large projects with many objects and props to control.
+* On the other hand, if you're just looking for a quick way to tweak a few values in your app, Theatric is a good choice. It requires no setup, no configuration, and no boilerplate. All of your values end up in a single Theatre.js [Object](https://www.theatrejs.com/docs/latest/manual/objects).
 
-Theatric's usage is similar to [Leva]
+## License
+
+Apache License Version 2.0. Theatric only embeds Theatre.js' studio in the development build, so studio won't be included in your production build.
