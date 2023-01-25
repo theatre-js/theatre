@@ -1,5 +1,9 @@
+# Theatric
+
 An easy to use [Tweakpane](https://cocopon.github.io/tweakpane/)/[Leva](https://github.com/pmndrs/leva)-like library for React, built on top of
 [Theatre.js](github.com/theatre-js/theatre).
+
+![s](https://raw.githubusercontent.com/theatre-js/website/main/public/images/manual/theatric/theatric-preview.mp4)
 
 With Theatric you can:
 
