@@ -1,20 +1,45 @@
-An easy to use Tweakpane/Leva-like library for React, built on top of
-Theatre.js.
+An easy to use [Tweakpane](https://cocopon.github.io/tweakpane/)/[Leva](https://github.com/pmndrs/leva)-like library for React, built on top of
+[Theatre.js](github.com/theatre-js/theatre).
 
-You can use Theatric to quickly tweak values in your React components, or create
-quick prototypes without worrying about setting up a UI.
+With Theatric you can:
 
-Unlike Leva or Tweakpane, Theatric can save or export the state of your controls
-and load it back in later. You can even share the state with other people, so
-they can see the same values you're seeing, or leave Theatric's `useControls`
-hooks in production, and let Theatric set the values from the provided state
-without displaying the UI.
+* Create controls for your React components.
+* Tweak those values while while your tweaks are persisted in the browser.
+* Undo/redo your tweaks, even after a page refresh.
+* Try out different assets (such as `.hdr` files), and once you're done, download your assets from the browser storage and put them in a static folder in your app.
 
-Since Theatric is built on top of Theatre.js, you can also animate all the
-values.
+## Quick start
 
-It comes with no peer-dependencies, all you need to do to set it up is run
-`yarn add theatric` or `npm install theatric`.
+```bash
+$ npm install theatric
+```
+
+```tsx
+// index.jsx
+import {initialize} from 'theatric'
+
+initialize().then(() => {
+  ReactDOM.render(<App />, document.getElementById('root'))
+})
+
+// App.jsx
+import {useControls} from 'theatric'
+import React from 'react'
+
+export default function App() {
+  const {name, age} = useControls({name: 'Andrew', age: 28})
+
+  return (
+    <div>
+      Hey, I'm {name} and I'm {age} years old.
+    </div>
+  )
+}
+```
+
+## Supported prop types
+
+Theatric supports all the prop types that Theatre.js supports. You can find a list of supported prop types [here](https://www.theatrejs.com/docs/latest/manual/prop-types).
 
 ## API
 
@@ -112,12 +137,43 @@ function Introduction() {
 }
 ```
 
+`$get()` and `$set()` use pointers to specify which prop to get/set. Learn more about pointers [here](https://www.theatrejs.com/docs/latest/api/core#pointers).
+
+Example of setting a nested prop:
+
+```tsx
+import {useControls, button} from 'theatric'
+
+function Introduction() {
+  const {person, $get, $set} = useControls({
+    // note how name and age are sub-props of person
+    person: {
+      name: 'Andrew',
+      age: 28,
+    },
+    
+    IncrementAge: button(() => {
+      // values.person.age is a pointer to the age prop of the person object
+      $set((values) => values.person.age, $get((values) => values.person.age) + 1)
+    }),
+  })
+
+  return (
+    <div>
+      <div>
+        Hey, I'm {person.name} and I'm {person.age} years old.
+      </div>
+    </div>
+  )
+}
+```
+
 ### `initialize(config)`
 
 Optionally, you can call `initialize()` to initialize the UI with a certain
 state, or to take advantage of features like
-[assets](/docs/latest/manual/assets) support. `initialize()` takes the same
-config object as [`getProject`](/docs/latest/api/core#getproject_id-config_).
+[assets](https://www.theatrejs.com/docs/latest/manual/assets) support. `initialize()` takes the same
+config object as [`getProject()`](https://www.theatrejs.com/docs/latest/api/core#getproject_id-config_).
 
 ```tsx
 import {initialize, useControls} from 'theatric'
@@ -125,10 +181,20 @@ import theatricState from './theatricState.json'
 
 initialize({
   state: theatricState,
+  // if you're using assets in your controls, you can specify the base URL here.
+  // Learn more about assets here: https://www.theatrejs.com/docs/latest/manual/assets
   assets: {
     // Defaults to '/'
+    // If you host your assets on a different domain, you can specify it here.
+    // For example if you're hosting your assets on https://cdn.example.com/theatric-assets
+    // you can set this to 'https://cdn.example.com/theatric-assets' (no trailing slash)
     baseUrl: '/theatric-assets',
   },
+}).then(() => {
+  // this is only necessary if you're using assets such as .hdr images in your prop values.
+  // awaiting the initialization ensures that the assets are loaded before rendering the app.
+  ReactDOM.render(<App />, document.getElementById('root'))
+})
 })
 ```
 
@@ -161,5 +227,11 @@ function Introduction() {
 }
 ```
 
-To learn more about types, check out the
-[types documentation](/docs/latest/api/core#prop-types).
+This is simply a re-export via `export {types} from '@theatre/core'`. To learn more about types, check out the
+[types documentation](https://www.theatrejs.com/docs/latest/manual/prop-types).
+
+## How does Theatric compare to Theatre.js?
+
+First of all, you can use both Theatric and Theatre.js in the same project.
+
+Theatric's usage is similar to [Leva]
