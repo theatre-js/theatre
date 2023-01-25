@@ -8,12 +8,12 @@ import React, {useEffect, useState} from 'react'
 import {render} from 'react-dom'
 import styled from 'styled-components'
 
-studio.initialize()
 const project = getProject('Image type playground', {
   assets: {
-    baseUrl: 'http://localhost:3000',
+    baseUrl: '/',
   },
 })
+studio.initialize()
 const sheet = project.sheet('Image type')
 
 const Wrapper = styled.div`
@@ -35,6 +35,7 @@ const ImageTypeExample: React.FC<{}> = (props) => {
       image2: types.image('', {
         label: 'another texture',
       }),
+      // audio: types.__genericAsset(''),
       something: 'asdf',
       color: types.rgba(),
     })

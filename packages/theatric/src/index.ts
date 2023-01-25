@@ -1,4 +1,5 @@
 import type {
+  IProject,
   IProjectConfig,
   ISheetObject,
   UnknownShorthandCompoundProps,
@@ -8,6 +9,7 @@ import {getProject} from '@theatre/core'
 import type {Pointer} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
 import studio from '@theatre/studio'
+import isEqualWith from 'lodash-es/isEqualWith'
 import isEqual from 'lodash-es/isEqual'
 import {useEffect, useMemo, useState, useRef} from 'react'
 
@@ -33,14 +35,48 @@ const maybeTransaction =
 
 let _projectConfig: IProjectConfig['state'] | undefined = undefined
 
-export function initialize(config: IProjectConfig) {
-  if (_projectConfig !== undefined) {
+// used for comparing config objects, to avoid re-rendering when the config object is recreated
+// but the values are the same except for functions
+function equalityCheckWithFunctionsAlwaysEqual(
+  a: unknown,
+  b: unknown,
+): boolean | undefined {
+  if (typeof a === 'function' && typeof b === 'function') {
+    return true
+  }
+}
+
+export function initialize(config: IProjectConfig): Promise<void> {
+  if (_project) {
     console.warn(
       'Theatric has already been initialized, either through another initialize call, or by calling useControls() before calling initialize().',
     )
-    return
+    return _project.ready.then(() => {})
   }
   _projectConfig = config
+  const project = callGetProject()
+  return project.ready.then(() => {})
+}
+
+export function getAssetUrl(asset: {
+  type: 'image'
+  id: string | undefined
+}): string | undefined {
+  if (!_project) {
+    throw new Error(
+      'Theatric has not been initialized yet. Please call initialize() before calling getAssetUrl().',
+    )
+  }
+  if (!_project.isReady) {
+    throw new Error(
+      'Calling `getAssetUrl()` before `initialize()` is resolved.\n' +
+        'The best way to solve this is to delay rendering your react app until `project.ready` is resolved, like this: \n\n' +
+        '```\n' +
+        'project.ready.then(() => {ReactDom.render(...)})\n' +
+        '```',
+    )
+  }
+  return _project.getAssetUrl(asset)
 }
 
 const allProps: Record<string, UnknownShorthandCompoundProps[]> = {}
@@ -100,12 +136,20 @@ export function useControls<Config extends ControlsAndButtons>(
    */
   const configRef = useRef(config)
   const _config = useMemo(() => {
-    if (isEqual(config, configRef.current)) {
-      return configRef.current
-    } else {
+    let currentConfig = configRef.current
+
+    if (
+      !isEqualWith(
+        config,
+        configRef.current,
+        equalityCheckWithFunctionsAlwaysEqual,
+      )
+    ) {
       configRef.current = config
-      return config
+      currentConfig = config
     }
+
+    return currentConfig
   }, [config])
 
   const {folder} = options
@@ -142,17 +186,17 @@ export function useControls<Config extends ControlsAndButtons>(
         Object.entries(buttons).map(([key, value]) => [
           `${folder ? `${folder}: ` : ''}${key}`,
           () => {
-            value.onClick()
+            // the value of the button is a function, so we can't use it as a dependency, but we can use it as a ref
+            // @ts-ignore
+            configRef.current[key].onClick?.()
           },
         ]),
       ),
     [buttons, folder],
   )
 
-  const sheet = useMemo(
-    () => getProject('Theatric', _projectConfig ?? undefined).sheet('Panels'),
-    [],
-  )
+  const sheet = useMemo(() => callGetProject().sheet('Panels'), [])
+
   const panel = options.panel ?? 'Default panel'
   const allPanelProps = allProps[panel] ?? (allProps[panel] = [])
   const allPanelActions = allActions[panel] ?? (allActions[panel] = [])
@@ -173,11 +217,13 @@ export function useControls<Config extends ControlsAndButtons>(
     allPanelActions.push(actions)
     // cleanup runs after render, so we have to reconfigure with the new props here too, doing it during render just makes sure that
     // the very first values returned are not undefined
-    sheet.object(panel, Object.assign({}, ...allPanelProps), {
+    let obj = sheet.object(panel, Object.assign({}, ...allPanelProps), {
       reconfigure: true,
       __actions__THIS_API_IS_UNSTABLE_AND_WILL_CHANGE_IN_THE_NEXT_VERSION:
         Object.assign({}, ...allPanelActions),
     })
+
+    selectObjectIfNecessary(obj)
 
     return () => {
       allPanelProps.splice(allPanelProps.indexOf(props), 1)
@@ -274,5 +320,27 @@ export const button = (onClick: Button['onClick']) => {
   return {
     type: 'button' as const,
     onClick,
+  }
+}
+
+let _project: undefined | IProject
+
+function callGetProject() {
+  if (_project) return _project
+  _project = getProject('Theatric', _projectConfig ?? undefined)
+  return _project
+}
+
+let objAlreadySelected = false
+// When the user first opens the page, no object will be selected, which for users
+// unfamiliar with theatre can be confusing. Let's help the user by selecting the first object
+// that is created using `useControls()`.
+function selectObjectIfNecessary(obj: ISheetObject) {
+  if (objAlreadySelected) return
+  objAlreadySelected = true
+  if (process.env.NODE_ENV === 'development') {
+    if (studio.selection.length === 0) {
+      studio.setSelection([obj])
+    }
   }
 }

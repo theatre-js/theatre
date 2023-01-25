@@ -3,7 +3,13 @@ import type Sheet from '@theatre/core/sheets/Sheet'
 import type {SequenceAddress} from '@theatre/shared/utils/addresses'
 import didYouMean from '@theatre/shared/utils/didYouMean'
 import {InvalidArgumentError} from '@theatre/shared/utils/errors'
-import type {Prism, Pointer, Ticker} from '@theatre/dataverse'
+import type {
+  Prism,
+  Pointer,
+  Ticker,
+  PointerToPrismProvider,
+} from '@theatre/dataverse'
+import {getPointerParts} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import {pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
@@ -17,6 +23,7 @@ import TheatreSequence from './TheatreSequence'
 import type {ILogger} from '@theatre/shared/logger'
 import type {ISequence} from '..'
 import {notify} from '@theatre/shared/notify'
+import type {$IntentionalAny} from '@theatre/dataverse/src/types'
 
 export type IPlaybackRange = [from: number, to: number]
 
@@ -33,7 +40,7 @@ const possibleDirections = [
   'alternateReverse',
 ]
 
-export default class Sequence {
+export default class Sequence implements PointerToPrismProvider {
   public readonly address: SequenceAddress
   publicApi: TheatreSequence
 
@@ -81,28 +88,29 @@ export default class Sequence {
     })
   }
 
-  pointerToPrism(path: Array<string | number>): Prism<unknown> {
+  pointerToPrism<V>(pointer: Pointer<V>): Prism<V> {
+    const {path} = getPointerParts(pointer)
     if (path.length === 0) {
       return prism((): ISequence['pointer']['$$__pointer_type'] => ({
         length: val(this.pointer.length),
         playing: val(this.pointer.playing),
         position: val(this.pointer.position),
-      }))
+      })) as $IntentionalAny as Prism<V>
     }
     if (path.length > 1) {
-      return prism(() => undefined)
+      return prism(() => undefined) as $IntentionalAny as Prism<V>
     }
     const [prop] = path
     if (prop === 'length') {
-      return this._lengthD
+      return this._lengthD as $IntentionalAny as Prism<V>
     } else if (prop === 'position') {
-      return this._positionD
+      return this._positionD as $IntentionalAny as Prism<V>
     } else if (prop === 'playing') {
       return prism(() => {
         return val(this._prismOfStatePointer.getValue().playing)
-      })
+      }) as $IntentionalAny as Prism<V>
     } else {
-      return prism(() => undefined)
+      return prism(() => undefined) as $IntentionalAny as Prism<V>
     }
   }
 

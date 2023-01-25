@@ -150,9 +150,6 @@ export class Studio {
     }
 
     if (this._initializeFnCalled) {
-      console.log(
-        `\`studio.initialize()\` is already called. Ignoring subsequent calls.`,
-      )
       return this._initializedDeferred.promise
     }
     this._initializeFnCalled = true
