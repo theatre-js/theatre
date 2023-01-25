@@ -15,6 +15,10 @@ import getStudio from './getStudio'
 import {debounce} from 'lodash-es'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {PaneInstanceId, ProjectId} from '@theatre/shared/utils/ids'
+import {
+  __experimental_disblePlayPauseKeyboardShortcut,
+  __experimental_enablePlayPauseKeyboardShortcut,
+} from './UIRoot/useKeyboardShortcuts'
 
 export interface ITransactionAPI {
   /**
@@ -390,6 +394,22 @@ export interface IStudio {
    * ```
    */
   createContentOfSaveFile(projectId: string): Record<string, unknown>
+
+  __experimental: {
+    /**
+     * Warning: This is an experimental API and will change in the future.
+     *
+     * Disables the play/pause keyboard shortcut (spacebar)
+     * Also see `__experimental_enablePlayPauseKeyboardShortcut()` to re-enable it.
+     */
+    __experimental_disblePlayPauseKeyboardShortcut(): void
+    /**
+     * Warning: This is an experimental API and will change in the future.
+     *
+     * Disables the play/pause keyboard shortcut (spacebar)
+     */
+    __experimental_enablePlayPauseKeyboardShortcut(): void
+  }
 }
 
 export default class TheatreStudio implements IStudio {
@@ -412,6 +432,15 @@ export default class TheatreStudio implements IStudio {
   }
 
   private readonly _cache = new SimpleCache()
+
+  __experimental = {
+    __experimental_disblePlayPauseKeyboardShortcut(): void {
+      __experimental_disblePlayPauseKeyboardShortcut()
+    },
+    __experimental_enablePlayPauseKeyboardShortcut(): void {
+      __experimental_enablePlayPauseKeyboardShortcut()
+    },
+  }
 
   /**
    * @internal
