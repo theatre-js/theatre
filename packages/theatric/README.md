@@ -3,7 +3,7 @@
 An easy to use [Tweakpane](https://cocopon.github.io/tweakpane/)/[Leva](https://github.com/pmndrs/leva)-like library for React, built on top of
 [Theatre.js](github.com/theatre-js/theatre).
 
-![s](https://raw.githubusercontent.com/theatre-js/website/main/public/images/manual/theatric/theatric-preview.mp4)
+https://user-images.githubusercontent.com/2991360/214639118-b64a9464-9df4-489d-b408-b70492990883.mp4
 
 With Theatric you can:
 
