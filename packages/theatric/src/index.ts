@@ -217,11 +217,13 @@ export function useControls<Config extends ControlsAndButtons>(
     allPanelActions.push(actions)
     // cleanup runs after render, so we have to reconfigure with the new props here too, doing it during render just makes sure that
     // the very first values returned are not undefined
-    sheet.object(panel, Object.assign({}, ...allPanelProps), {
+    let obj = sheet.object(panel, Object.assign({}, ...allPanelProps), {
       reconfigure: true,
       __actions__THIS_API_IS_UNSTABLE_AND_WILL_CHANGE_IN_THE_NEXT_VERSION:
         Object.assign({}, ...allPanelActions),
     })
+
+    selectObjectIfNecessary(obj)
 
     return () => {
       allPanelProps.splice(allPanelProps.indexOf(props), 1)
@@ -327,4 +329,18 @@ function callGetProject() {
   if (_project) return _project
   _project = getProject('Theatric', _projectConfig ?? undefined)
   return _project
+}
+
+let objAlreadySelected = false
+// When the user first opens the page, no object will be selected, which for users
+// unfamiliar with theatre can be confusing. Let's help the user by selecting the first object
+// that is created using `useControls()`.
+function selectObjectIfNecessary(obj: ISheetObject) {
+  if (objAlreadySelected) return
+  objAlreadySelected = true
+  if (process.env.NODE_ENV === 'development') {
+    if (studio.selection.length === 0) {
+      studio.setSelection([obj])
+    }
+  }
 }
