@@ -33,6 +33,9 @@ export default function App() {
 }
 ```
 
+- Example with `@react-three/fiber` on [Codesandbox](https://codesandbox.io/s/theatric-demo-vcgcmi?file=/src/App.js).
+- Example with assets on [Codesandbox](https://codesandbox.io/s/theatric-assets-demo-gl8x2k).
+
 ## Supported prop types
 
 Theatric supports all the prop types that Theatre.js supports. You can find a list of supported prop types [here](https://www.theatrejs.com/docs/latest/manual/prop-types).
