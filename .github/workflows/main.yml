@@ -61,7 +61,7 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
 
-      - run: yarn install --immutable --inline-builds --immutable-cache
+      - run: yarn install --immutable --inline-builds
         env:
           YARN_NM_MODE: 'hardlinks-local'
 
