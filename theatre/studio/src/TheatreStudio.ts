@@ -435,9 +435,15 @@ export default class TheatreStudio implements IStudio {
 
   __experimental = {
     __experimental_disblePlayPauseKeyboardShortcut(): void {
+      // This is an experimental API to respond to this issue: https://discord.com/channels/870988717190426644/870988717190426647/1067906775602430062
+      // Ideally we need a coherent way for the user to control keyboard inputs, so we will remove this method in the future.
+      // Here is the procedure for removing it:
+      // 1. Replace this code with a `throw new Error("This is experimental method is now deprecated, and here is how to migrate: ...")`
+      // 2. Then keep it for a few months, and then remove it.
       __experimental_disblePlayPauseKeyboardShortcut()
     },
     __experimental_enablePlayPauseKeyboardShortcut(): void {
+      // see __experimental_disblePlayPauseKeyboardShortcut()
       __experimental_enablePlayPauseKeyboardShortcut()
     },
   }
