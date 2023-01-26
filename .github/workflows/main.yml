@@ -46,11 +46,14 @@ jobs:
         id: yarn-node-modules-cache
         uses: actions/cache@v3
         with:
-          path: '**/node_modules'
+          path: |
+            '**/node_modules'
+            '.yarn/cache'
           key:
             ${{ runner.os }}-yarn-mono-nm-node-modules-${{
             hashFiles('yarn.lock', '.yarnrc.yml') }}
-      - run: yarn install --immutable
+
+      - run: yarn install --immutable --inline-builds
       # - run: yarn lint:all --max-warnings 0
       - run: yarn test
       # - run: yarn typecheck
