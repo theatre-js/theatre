@@ -54,7 +54,7 @@ jobs:
             ${{ runner.os }}-yarn-mono-nm-node-modules-${{
             hashFiles('yarn.lock', '.yarnrc.yml') }}
 
-      - run: yarn install --immutable --inline-builds
+      - run: yarn install --immutable --inline-builds --immutable-cache
         env:
           YARN_NM_MODE: 'hardlinks-local'
       # - run: yarn lint:all --max-warnings 0
