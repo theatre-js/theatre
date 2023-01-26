@@ -49,6 +49,7 @@ jobs:
           path: |
             **/node_modules
             .yarn/cache
+            ~/.cache/ms-playwright
           key:
             ${{ runner.os }}-yarn-mono-nm-node-modules-${{
             hashFiles('yarn.lock', '.yarnrc.yml') }}
