@@ -48,32 +48,32 @@ jobs:
         with:
           path: '**/node_modules'
           key:
-            ${{ runner.os }}-yarn-node-modules-${{ hashFiles('yarn.lock',
-            '.yarnrc.yml') }}
+            ${{ runner.os }}-yarn-mono-nm-node-modules-${{
+            hashFiles('yarn.lock', '.yarnrc.yml') }}
       - run: yarn install --immutable
       # - run: yarn lint:all --max-warnings 0
-      # - run: yarn test
+      - run: yarn test
       # - run: yarn typecheck
       # - run: yarn build
       # Thanks to https://github.com/rafaelbiten for this step https://github.com/microsoft/playwright/issues/7249#issuecomment-1385567519
-      - name: Store Playwright's Version
-        run: |
-          PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
-          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
-          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
-      - name: Cache Playwright Browsers for Playwright's Version
-        id: cache-playwright-browsers
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
-      - name: Download playwright
-        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: yarn workspace playground run playwright install --with-deps
+      # - name: Store Playwright's Version
+      #   run: |
+      #     PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright | sed 's/.*@//')
+      #     echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+      #     echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+      # - name: Cache Playwright Browsers for Playwright's Version
+      #   id: cache-playwright-browsers
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.cache/ms-playwright
+      #     key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+      # - name: Download playwright
+      #   if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+      #   run: yarn workspace playground run playwright install --with-deps
 
-      - name: Run e2e tests with percy
-        uses: percy/exec-action@v0.3.1
-        with:
-          custom-command: 'yarn test:e2e:ci'
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      # - name: Run e2e tests with percy
+      #   uses: percy/exec-action@v0.3.1
+      #   with:
+      #     custom-command: 'yarn test:e2e:ci'
+      #   env:
+      #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
