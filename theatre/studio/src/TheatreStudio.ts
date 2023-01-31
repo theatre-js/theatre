@@ -21,6 +21,7 @@ import {
 } from './UIRoot/useKeyboardShortcuts'
 import type TheatreSheetObject from '@theatre/core/sheetObjects/TheatreSheetObject'
 import type TheatreSheet from '@theatre/core/sheets/TheatreSheet'
+import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
 
 export interface ITransactionAPI {
   /**
@@ -410,7 +411,7 @@ export interface IStudio {
    * })
    * ```
    */
-  createContentOfSaveFile(projectId: string): Record<string, unknown>
+  createContentOfSaveFile(projectId: string): OnDiskState
 
   __experimental: {
     /**
@@ -619,9 +620,7 @@ export default class TheatreStudio implements IStudio {
     return getStudio().paneManager.destroyPane(paneId as PaneInstanceId)
   }
 
-  createContentOfSaveFile(projectId: string): Record<string, unknown> {
-    return getStudio().createContentOfSaveFile(
-      projectId as ProjectId,
-    ) as $IntentionalAny
+  createContentOfSaveFile(projectId: string): OnDiskState {
+    return getStudio().createContentOfSaveFile(projectId as ProjectId)
   }
 }
