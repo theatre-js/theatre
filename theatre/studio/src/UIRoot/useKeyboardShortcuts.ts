@@ -9,6 +9,15 @@ import type {IPlaybackRange} from '@theatre/core/sequences/Sequence'
 import type Sequence from '@theatre/core/sequences/Sequence'
 import memoizeFn from '@theatre/shared/utils/memoizeFn'
 
+let playPauseKeyboardShortcutIsEnabled = true
+export function __experimental_disblePlayPauseKeyboardShortcut() {
+  playPauseKeyboardShortcutIsEnabled = false
+}
+
+export function __experimental_enablePlayPauseKeyboardShortcut() {
+  playPauseKeyboardShortcutIsEnabled = true
+}
+
 export default function useKeyboardShortcuts() {
   const studio = getStudio()
   useEffect(() => {
@@ -39,6 +48,7 @@ export default function useKeyboardShortcuts() {
         !e.altKey &&
         !e.ctrlKey
       ) {
+        if (!playPauseKeyboardShortcutIsEnabled) return
         // Control the playback using the `Space` key
         const seq = getSelectedSequence()
         if (seq) {
