@@ -28,6 +28,7 @@ import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEd
 import {usePrism} from '@theatre/react'
 import {val} from '@theatre/dataverse'
 import {HiOutlineChevronRight} from 'react-icons/all'
+import memoizeFn from '@theatre/shared/utils/memoizeFn'
 
 const Container = styled.div`
   --step: 15px;
@@ -72,7 +73,7 @@ const PropName = deriver(styled.div<{isHighlighted: PropHighlighted}>`
   ${() => propNameTextCSS};
 `)
 
-const CollapseIcon = styled.span<{isCollapsed: boolean}>`
+const CollapseIcon = styled.span<{isCollapsed: boolean; isVector: boolean}>`
   width: 28px;
   height: 28px;
   font-size: 9px;
@@ -84,7 +85,14 @@ const CollapseIcon = styled.span<{isCollapsed: boolean}>`
   transform: rotateZ(${(props) => (props.isCollapsed ? 0 : 90)}deg);
   color: #66686a;
 
-  visibility: hidden;
+  visibility: ${(props) =>
+    // If it's a vector, show the collapse icon only when it's expanded
+    (!props.isVector && props.isCollapsed) ||
+    // If it's a regular compond prop, show the collapse icon only when it's collapsed
+    (props.isVector && !props.isCollapsed)
+      ? 'visible'
+      : 'hidden'};
+
   ${Header}:hover & {
     visibility: visible;
   }
@@ -102,7 +110,7 @@ const SubProps = styled.div<{depth: number; lastSubIsComposite: boolean}>`
   /* padding: ${(props) => (props.lastSubIsComposite ? 0 : '4px')} 0; */
 `
 
-const isVectorProp = (propConfig: PropTypeConfig_Compound<any>) => {
+const isVectorProp = memoizeFn((propConfig: PropTypeConfig_Compound<any>) => {
   const props = Object.entries(propConfig.props)
 
   return (
@@ -112,7 +120,7 @@ const isVectorProp = (propConfig: PropTypeConfig_Compound<any>) => {
         conf.type === 'number' && ['x', 'y', 'z'].includes(name),
     )
   )
-}
+})
 
 function VectorComponentEditor<TPropTypeConfig extends PropTypeConfig_Number>({
   propConfig,
@@ -202,16 +210,19 @@ function DetailCompoundPropEditor<
     obj.address.sheetInstanceId
   },${obj.address.objectKey},${getPointerParts(pointerToProp).path.join()}`
 
+  // isVectorProp is already memoized, so no need to wrap this in `useMemo()`
+  const isVector = isVectorProp(propConfig)
+
   useLayoutEffect(() => {
     if (!collapsedMap.has(globalPointerPath)) {
-      collapsedMap.set(globalPointerPath, new Atom(isVectorProp(propConfig)))
+      collapsedMap.set(globalPointerPath, new Atom(isVector))
     }
   }, [globalPointerPath, propConfig])
 
   const box = collapsedMap.get(globalPointerPath)
 
   const isCollapsed = usePrism(() => {
-    return box ? val(box.pointer) : isVectorProp(propConfig)
+    return box ? val(box.pointer) : isVector
   }, [box])
 
   return (
@@ -221,7 +232,7 @@ function DetailCompoundPropEditor<
         // @ts-ignore
         style={{'--depth': visualIndentation - 1}}
       >
-        <Padding isVectorProp={isVectorProp(propConfig)}>
+        <Padding isVectorProp={isVector}>
           <ControlIndicators>{tools.controlIndicators}</ControlIndicators>
 
           <PropName
@@ -232,6 +243,7 @@ function DetailCompoundPropEditor<
           </PropName>
           <CollapseIcon
             isCollapsed={isCollapsed}
+            isVector={isVector}
             onClick={() => {
               box?.set(!box.get())
             }}
@@ -239,7 +251,7 @@ function DetailCompoundPropEditor<
             <HiOutlineChevronRight />
           </CollapseIcon>
         </Padding>
-        {isVectorProp(propConfig) && isCollapsed && (
+        {isVector && isCollapsed && (
           <InputContainer>
             {[...allSubs].map(([subPropKey, subPropConfig]) => {
               return (
