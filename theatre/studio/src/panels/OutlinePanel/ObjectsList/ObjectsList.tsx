@@ -75,7 +75,7 @@ function Namespace(props: {
   const {collapsed, setCollapsed} = useCollapseStateInOutlinePanel({
     type: 'namespace',
     sheet,
-    path: props.path,
+    path: [...props.path, label],
   })
 
   const nestedChildrenElt = nested && (
