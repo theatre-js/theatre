@@ -18,6 +18,7 @@ import type {
   $FixMe,
   $IntentionalAny,
   SerializableMap,
+  SerializablePrimitive,
   SerializableValue,
 } from '@theatre/shared/utils/types'
 import type {Prism, Pointer} from '@theatre/dataverse'
@@ -31,6 +32,7 @@ import {
   isPropConfSequencable,
 } from '@theatre/shared/propTypes/utils'
 import getOrderingOfPropTypeConfig from './getOrderingOfPropTypeConfig'
+import type {SheetState_Historic} from '@theatre/core/projects/store/types/SheetState_Historic'
 
 /**
  * Given an object like: `{transform: {type: 'absolute', position: {x: 0}}}`,
@@ -64,6 +66,10 @@ export default class SheetObjectTemplate {
   readonly _temp_actions_atom: Atom<SheetObjectActionsConfig>
   readonly _cache = new SimpleCache()
   readonly project: Project
+  readonly pointerToSheetState: Pointer<SheetState_Historic | undefined>
+  readonly pointerToStaticOverrides: Pointer<
+    SerializableMap<SerializablePrimitive> | undefined
+  >
 
   get staticConfig() {
     return this._config.get()
@@ -92,6 +98,14 @@ export default class SheetObjectTemplate {
     this._config = new Atom(config)
     this._temp_actions_atom = new Atom(_temp_actions)
     this.project = sheetTemplate.project
+
+    this.pointerToSheetState =
+      this.sheetTemplate.project.pointers.historic.sheetsById[
+        this.address.sheetId
+      ]
+
+    this.pointerToStaticOverrides =
+      this.pointerToSheetState.staticOverrides.byObject[this.address.objectKey]
   }
 
   createInstance(
@@ -132,17 +146,7 @@ export default class SheetObjectTemplate {
   getStaticValues(): Prism<SerializableMap> {
     return this._cache.get('getStaticValues', () =>
       prism(() => {
-        const pointerToSheetState =
-          this.sheetTemplate.project.pointers.historic.sheetsById[
-            this.address.sheetId
-          ]
-
-        const json =
-          val(
-            pointerToSheetState.staticOverrides.byObject[
-              this.address.objectKey
-            ],
-          ) ?? {}
+        const json = val(this.pointerToStaticOverrides) ?? {}
 
         const config = val(this.configPointer)
         const deserialized = config.deserializeAndSanitize(json) || {}

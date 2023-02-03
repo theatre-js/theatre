@@ -54,6 +54,13 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
   obj: SheetObject,
   propConfig: PropTypeConfig_Compound<{}>,
 ): Stuff {
+  const pathToProp = getPointerParts(pointerToProp).path
+
+  const pointerToStaticOverrides = pointerDeep(
+    obj.template.pointerToStaticOverrides,
+    pathToProp,
+  )
+
   return usePrism((): Stuff => {
     // if the compound has no simple descendants, then there isn't much the user can do with it
     if (!compoundHasSimpleDescendants(propConfig)) {
@@ -66,8 +73,6 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
         ),
       }
     }
-
-    const pathToProp = getPointerParts(pointerToProp).path
 
     /**
      * TODO This implementation is wrong because {@link stateEditors.studio.ephemeral.projects.stateByProjectId.stateBySheetId.stateByObjectKey.propsBeingScrubbed.flag}
@@ -96,6 +101,11 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
       obj.template.getMapOfValidSequenceTracks_forStudio(),
     )
 
+    const staticOverrides = getDeep(
+      val(obj.template.getStaticValues()),
+      pathToProp,
+    )
+
     const possibleSequenceTrackIds = getDeep(
       validSequencedTracks,
       pathToProp,
@@ -106,9 +116,8 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
       Object.keys(possibleSequenceTrackIds).length !== 0 // check if object is empty or undefined
     const listOfDescendantTrackIds: SequenceTrackId[] = []
 
-    let hasOneOrMoreStatics = true
+    let hasOneOrMoreStatics = staticOverrides !== undefined
     if (hasOneOrMoreSequencedTracks) {
-      hasOneOrMoreStatics = false
       for (const descendant of iteratePropType(propConfig, [])) {
         if (isPropConfigComposite(descendant.conf)) continue
         const sequencedTrackIdBelongingToDescendant = getDeep(
@@ -214,7 +223,9 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
         ...common,
         type: 'AllStatic',
         controlIndicators: (
-          <DefaultOrStaticValueIndicator hasStaticOverride={false} />
+          <DefaultOrStaticValueIndicator
+            hasStaticOverride={hasOneOrMoreStatics}
+          />
         ),
       }
     }

@@ -2,9 +2,9 @@ import {transparentize} from 'polished'
 import React from 'react'
 import styled from 'styled-components'
 
-export const theme = {
+const theme = {
   defaultState: {
-    color: transparentize(0.85, `#C4C4C4`),
+    color: transparentize(0.95, `#C4C4C4`),
   },
   withStaticOverride: {
     color: transparentize(0.85, `#C4C4C4`),
@@ -28,24 +28,31 @@ const Rect = styled.rect`
   fill: currentColor;
 `
 
-const Icon = () => (
-  <svg
-    width="5"
-    height="5"
-    viewBox="0 0 5 5"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <Rect width="5" height="5" />
-  </svg>
-)
+const DefaultIcon = styled.div`
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  /* border: 1px solid currentColor; */
+  background-color: currentColor;
+`
+
+const FilledIcon = styled.div`
+  width: 5px;
+  height: 5px;
+  background-color: currentColor;
+  border-radius: 1px;
+`
 
 const DefaultOrStaticValueIndicator: React.FC<{hasStaticOverride: boolean}> = (
   props,
 ) => {
   return (
     <Container hasStaticOverride={props.hasStaticOverride}>
-      <Icon />
+      {props.hasStaticOverride ? (
+        <FilledIcon title="The default value is overridden" />
+      ) : (
+        <DefaultIcon title="This is the default value for this prop" />
+      )}
     </Container>
   )
 }
