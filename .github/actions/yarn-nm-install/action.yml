@@ -3,12 +3,6 @@ description: Installs deps via yarn and re-uses the cache
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-
     - name: Restore node_modules
       id: yarn-node-modules-cache
       uses: actions/cache@v3
