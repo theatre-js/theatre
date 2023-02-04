@@ -23,6 +23,7 @@ runs:
         key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
 
     - run: yarn install --immutable --inline-builds
+      if: steps.yarn-node-modules-cache.outputs.cache-hit != 'true'
       shell: bash
       env:
         YARN_NM_MODE: 'hardlinks-local'
