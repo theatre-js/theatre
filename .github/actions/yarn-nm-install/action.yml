@@ -28,3 +28,8 @@ runs:
       shell: bash
       env:
         YARN_NM_MODE: 'hardlinks-local'
+
+    - name: Download playwright
+      if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+      shell: bash
+      run: yarn workspace playground run playwright install --with-deps
