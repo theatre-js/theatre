@@ -1,0 +1,34 @@
+name: yarn-nm-install
+description: Installs deps via yarn and re-uses the cache
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Restore node_modules
+      id: yarn-node-modules-cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          **/node_modules
+          .yarn/cache
+        key:
+          ${{ runner.os }}-yarn-mono-nm-node-modules-${{ hashFiles('yarn.lock',
+          '.yarnrc.yml') }}
+
+    # Thanks to https://github.com/rafaelbiten for this step https://github.com/microsoft/playwright/issues/7249#issuecomment-1385567519
+    - name: Cache Playwright Browsers for Playwright's Version
+      id: cache-playwright-browsers
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+
+    - run: yarn install --immutable --inline-builds
+      shell: bash
+      env:
+        YARN_NM_MODE: 'hardlinks-local'
