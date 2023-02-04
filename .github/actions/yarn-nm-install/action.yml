@@ -1,0 +1,54 @@
+name: yarn-nm-install
+description: Installs deps via yarn and re-uses the cache
+runs:
+  using: composite
+  steps:
+    # A shared action to install dependencies via yarn and re-use the cache.
+    # This will skip the install step if the cache is hit.
+    - name: Restore node_modules
+      id: yarn-node-modules-cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          **/node_modules
+          .yarn/cache
+        key:
+          # Ideally we'd only have to list the lockfile, and `yarn install`
+          # would take care of the rest. But that's not the case, because
+          # `yarn install` would still build packages, even if they'd already
+          # been built before. Yarn's message is:
+          # `YN0007: │ esbuild@npm:0.16.7 must be built because it never has been before or the last one failed`
+          # I couldn't figure out how to make it not build packages, so I
+          # added the `package.json` files to the cache key (so in a later step, we can entirely skip the install step).
+          #
+          # However, this means that if we add a new workspace under any of the
+          # existing workspaces, run this action, and then change the package.json
+          # of that new workspace, then the cache will be hit, and the new package.json
+          # will be ignored.
+          ${{ runner.os }}-yarn-mono-nm-node-modules-${{ hashFiles('yarn.lock',
+          '.yarnrc.yml', 'package.json', '*/package.json', '*/*/package.json')
+          }}
+
+    # Thanks to https://github.com/rafaelbiten for this step https://github.com/microsoft/playwright/issues/7249#issuecomment-1385567519
+    - name: Cache Playwright Browsers for Playwright's Version
+      id: cache-playwright-browsers
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+
+    # This step is only needed if the cache was not hit.
+    - run: yarn install --immutable --inline-builds
+      if: steps.yarn-node-modules-cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        YARN_NM_MODE: 'hardlinks-local'
+
+    # This step is only needed if the job runs playwright tests. But we have
+    # to include it in all jobs. The reason is, both `yarn install` and `yarn run playwright install`
+    # modify the `~/.cache/ms-playwright` folder. If we don't include this step in all jobs,
+    # then the cache will change in some jobs and not in others, which would make the cache useless.
+    - name: Download playwright
+      if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+      shell: bash
+      run: yarn workspace playground run playwright install --with-deps
