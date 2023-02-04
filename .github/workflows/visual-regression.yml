@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Visual regression tests
 
 on:
   push:
@@ -21,11 +21,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - uses: ./.github/actions/yarn-nm-install
-
-      - run: yarn lint:all --max-warnings 0
-      - run: yarn test
-      - run: yarn typecheck
-      - run: yarn build
 
       - name: Download playwright
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
