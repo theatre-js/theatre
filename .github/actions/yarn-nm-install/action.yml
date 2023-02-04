@@ -12,7 +12,8 @@ runs:
           .yarn/cache
         key:
           ${{ runner.os }}-yarn-mono-nm-node-modules-${{ hashFiles('yarn.lock',
-          '.yarnrc.yml') }}
+          '.yarnrc.yml', 'package.json', '*/package.json', '*/*/package.json')
+          }}
 
     # Thanks to https://github.com/rafaelbiten for this step https://github.com/microsoft/playwright/issues/7249#issuecomment-1385567519
     - name: Cache Playwright Browsers for Playwright's Version
