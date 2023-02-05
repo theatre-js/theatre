@@ -516,3 +516,5 @@ export class Studio {
     }
   }
 }
+
+console.log('hello world')
