@@ -1,0 +1,157 @@
+name: Release insiders
+
+# This workflow is triggered when a comment is created on a PR that contains the string "/release insiders".
+# The comment must be created by a user with write access to the repo.
+on:
+  # only run when a comment is created under a pr
+  issue_comment:
+    types: [created]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  insiders:
+    # run if the comment contains "/release insiders" and if the comment is created under a PR
+    if:
+      ${{ github.event.issue.pull_request && contains(github.event.comment.body,
+      '/release insiders') }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+      # allow writing comments on the PR
+      contents: write
+      pull-requests: write
+
+    steps:
+      # check if the user is an owner of the repo
+      - name: Has write access
+        id: has-write-access
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const res = await github.rest.repos.getCollaboratorPermissionLevel({
+              ...context.repo,
+              username: context.payload.comment.user.login,
+            });
+
+            const hasPermission = ['admin', 'write', 'maintain'].includes(res.data.permission)
+
+            if (!hasPermission) {
+              // if the user doesn't have write access, comment on the PR
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `🚫 Cannot publish because user @${context.payload.comment.user.login} doesn't have write access.`
+              })
+            }
+
+            return hasPermission
+
+      # stop the workflow if the user doesn't have write access
+      - name: Stop if user doesn't have write access
+        if: ${{ !steps.has-write-access.outputs.result }}
+        run: |
+          echo "User doesn't have write access. Stopping the workflow."
+          exit 1
+
+      - name: Start the comment
+        id: start-comment
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const result = await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `
+              ⏳ Okay @${context.payload.comment.user.login}, I'm releasing an insiders build to npm. I will update this comment when done.
+              <details><summary>More detail</summary>
+
+              In case this fails, follow the workflow run [here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) to debug.
+
+              </details>
+              `
+            })
+
+            const commentId = result.data.id
+
+            return commentId
+
+      - name: Get the pull request's ref
+        id: pr-ref
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const {data: pullRequest} = await github.rest.pulls.get({
+              ...context.repo,
+              pull_number: context.issue.number
+            })
+
+            return pullRequest.head.sha
+
+      # checkout the repo at the latest commit of the PR
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.pr-ref.outputs.result }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - uses: ./.github/actions/yarn-nm-install
+      - name: Build the Theatre.js packages
+        run: yarn build
+      - name: Update .yarnrc.yml with the auth config for the npmPublishRegistry
+        run: cat .github/.yarnrc.publish.yml >> .yarnrc.yml
+      - name: Publish the Theatre.js packages
+        id: publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: yarn zx scripts/prerelease.mjs
+
+      - name: Update the comment
+        id: update-comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const published = JSON.parse(${{ toJSON( steps.publish.outputs.data ) }})
+
+            const result = await github.rest.issues.updateComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: "${{ steps.start-comment.outputs.result }}",
+              body: `
+              
+
+              <details>
+              <summary>🎉 Released an insiders' build to npm. Here is how to upgrade:</summary>
+
+              *  🚧 This is an insiders' build. It possibly **is not stable and _may_ corrupt your data**. Always **backup your work** before upgrading.
+              * If you do try this build, welcome aboard, insider 😉. If you're feeling generous, share some feedback here or on [\`#contributing\`](https://discord.com/channels/870988717190426644/940301611023073400) at Discord.
+              * 🔼 To upgrade, edit \`package.json\` and replace the versions of all \`@theatre\` or \`theatric\` packages with their new versions:
+              
+              \`\`\`diff
+              ${published.map((pkg) => {
+                return `--- ${pkg.packageName}: "old-version",\n+++ ${pkg.packageName}: "${pkg.version}",`
+              }).join('\n')}
+              \`\`\`
+
+              All published packages are on npm:
+
+              ${published.map((pkg) => {
+                return `* [\`${pkg.packageName}@${pkg.version}\`](https://www.npmjs.com/package/${pkg.packageName}/v/${pkg.version})`
+              }).join('\n')}
+
+
+              Published at the request of @${context.payload.comment.user.login}, on commit ${{ steps.pr-ref.outputs.result }}. Workflow log [here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) to debug.
+
+              </details>
+              `
+            })

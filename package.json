@@ -64,5 +64,8 @@
   "resolutions": {
     "@types/react": "^17.0.9",
     "@types/react-dom": "^17.0.9"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.0"
   }
 }
