@@ -162,7 +162,7 @@ async function writeVersionsToPackageJSONs(
     packagesToPublish.map(async (workspaceName) => {
       const npmTag = 'insiders'
       if (process.env.GITHUB_ACTIONS) {
-        await $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
+        // await $`yarn workspace ${workspaceName} npm publish --access public --tag ${npmTag}`
       }
     }),
   )
