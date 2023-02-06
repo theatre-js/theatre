@@ -1,7 +1,7 @@
 {
   "name": "theatre-monorepo",
   "license": "Apache-2.0",
-  "version": "0.6.0",
+  "version": "0.6.1-dev.3",
   "workspaces": [
     "packages/*",
     "examples/*",
@@ -64,5 +64,8 @@
   "resolutions": {
     "@types/react": "^17.0.9",
     "@types/react-dom": "^17.0.9"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.0"
   }
 }

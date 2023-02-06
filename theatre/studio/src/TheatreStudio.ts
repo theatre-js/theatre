@@ -15,6 +15,10 @@ import getStudio from './getStudio'
 import {debounce} from 'lodash-es'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {PaneInstanceId, ProjectId} from '@theatre/shared/utils/ids'
+import {
+  __experimental_disblePlayPauseKeyboardShortcut,
+  __experimental_enablePlayPauseKeyboardShortcut,
+} from './UIRoot/useKeyboardShortcuts'
 
 export interface ITransactionAPI {
   /**
@@ -390,6 +394,22 @@ export interface IStudio {
    * ```
    */
   createContentOfSaveFile(projectId: string): Record<string, unknown>
+
+  __experimental: {
+    /**
+     * Warning: This is an experimental API and will change in the future.
+     *
+     * Disables the play/pause keyboard shortcut (spacebar)
+     * Also see `__experimental_enablePlayPauseKeyboardShortcut()` to re-enable it.
+     */
+    __experimental_disblePlayPauseKeyboardShortcut(): void
+    /**
+     * Warning: This is an experimental API and will change in the future.
+     *
+     * Disables the play/pause keyboard shortcut (spacebar)
+     */
+    __experimental_enablePlayPauseKeyboardShortcut(): void
+  }
 }
 
 export default class TheatreStudio implements IStudio {
@@ -412,6 +432,21 @@ export default class TheatreStudio implements IStudio {
   }
 
   private readonly _cache = new SimpleCache()
+
+  __experimental = {
+    __experimental_disblePlayPauseKeyboardShortcut(): void {
+      // This is an experimental API to respond to this issue: https://discord.com/channels/870988717190426644/870988717190426647/1067906775602430062
+      // Ideally we need a coherent way for the user to control keyboard inputs, so we will remove this method in the future.
+      // Here is the procedure for removing it:
+      // 1. Replace this code with a `throw new Error("This is experimental method is now deprecated, and here is how to migrate: ...")`
+      // 2. Then keep it for a few months, and then remove it.
+      __experimental_disblePlayPauseKeyboardShortcut()
+    },
+    __experimental_enablePlayPauseKeyboardShortcut(): void {
+      // see __experimental_disblePlayPauseKeyboardShortcut()
+      __experimental_enablePlayPauseKeyboardShortcut()
+    },
+  }
 
   /**
    * @internal

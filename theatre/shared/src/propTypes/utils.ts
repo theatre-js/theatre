@@ -7,6 +7,7 @@ import type {
 } from '@theatre/core/propTypes'
 import type {PathToProp} from '@theatre/shared/utils/addresses'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import memoizeFn from '@theatre/shared/utils/memoizeFn'
 
 /**
  * Either compound or enum properties can be considered "composite"
@@ -70,53 +71,32 @@ export function isPropConfSequencable(
   return !isPropConfigComposite(conf) // now all non-compounds are sequencable
 }
 
-const compoundPropSequenceabilityCache = new WeakMap<
-  PropTypeConfig_Compound<{}> | PropTypeConfig_Enum,
-  boolean
->()
-
-/**
- * See {@link compoundHasSimpleDescendantsImpl}
- */
-export function compoundHasSimpleDescendants(
-  conf: PropTypeConfig_Compound<{}> | PropTypeConfig_Enum,
-): boolean {
-  if (!compoundPropSequenceabilityCache.has(conf)) {
-    compoundPropSequenceabilityCache.set(
-      conf,
-      compoundHasSimpleDescendantsImpl(conf),
-    )
-  }
-
-  return compoundPropSequenceabilityCache.get(conf)!
-}
-
 /**
  * This basically checks of the compound prop has at least one simple prop in its descendants.
  * In other words, if the compound props has no subs, or its subs are only compounds that eventually
  * don't have simple subs, this will return false.
  */
-function compoundHasSimpleDescendantsImpl(
-  conf: PropTypeConfig_Compound<{}> | PropTypeConfig_Enum,
-): boolean {
-  if (conf.type === 'enum') {
-    throw new Error(`Not implemented yet for enums`)
-  }
+export const compoundHasSimpleDescendants = memoizeFn(
+  (conf: PropTypeConfig_Compound<{}> | PropTypeConfig_Enum): boolean => {
+    if (conf.type === 'enum') {
+      throw new Error(`Not implemented yet for enums`)
+    }
 
-  for (const key in conf.props) {
-    const subConf = conf.props[
-      key as $IntentionalAny as keyof typeof conf.props
-    ] as PropTypeConfig
-    if (isPropConfigComposite(subConf)) {
-      if (compoundHasSimpleDescendants(subConf)) {
+    for (const key in conf.props) {
+      const subConf = conf.props[
+        key as $IntentionalAny as keyof typeof conf.props
+      ] as PropTypeConfig
+      if (isPropConfigComposite(subConf)) {
+        if (compoundHasSimpleDescendants(subConf)) {
+          return true
+        }
+      } else {
         return true
       }
-    } else {
-      return true
     }
-  }
-  return false
-}
+    return false
+  },
+)
 
 /**
  * Iterates recursively over the simple props of a compound prop. Returns a generator.

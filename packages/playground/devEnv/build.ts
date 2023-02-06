@@ -176,6 +176,7 @@ export async function start(options: {
       'window.__IS_VISUAL_REGRESSION_TESTING': JSON.stringify(
         options.isVisualRegressionTesting,
       ),
+      'process.env.BUILT_FOR_PLAYGROUND': JSON.stringify('true'),
     },
     banner: liveReload?.esbuildBanner,
     watch: liveReload?.esbuildWatch && {

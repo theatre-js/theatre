@@ -26,6 +26,7 @@ import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
+import {emptyObject} from '@theatre/shared/utils'
 
 interface CommonStuff {
   beingScrubbed: boolean
@@ -54,6 +55,8 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
   obj: SheetObject,
   propConfig: PropTypeConfig_Compound<{}>,
 ): Stuff {
+  const pathToProp = getPointerParts(pointerToProp).path
+
   return usePrism((): Stuff => {
     // if the compound has no simple descendants, then there isn't much the user can do with it
     if (!compoundHasSimpleDescendants(propConfig)) {
@@ -66,8 +69,6 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
         ),
       }
     }
-
-    const pathToProp = getPointerParts(pointerToProp).path
 
     /**
      * TODO This implementation is wrong because {@link stateEditors.studio.ephemeral.projects.stateByProjectId.stateBySheetId.stateByObjectKey.propsBeingScrubbed.flag}
@@ -106,9 +107,17 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
       Object.keys(possibleSequenceTrackIds).length !== 0 // check if object is empty or undefined
     const listOfDescendantTrackIds: SequenceTrackId[] = []
 
-    let hasOneOrMoreStatics = true
+    const allStaticOverrides = val(
+      obj.template.getStaticButNotSequencedOverrides(),
+    )
+    const staticOverrides = getDeep(
+      allStaticOverrides ?? emptyObject,
+      pathToProp,
+    )
+
+    let hasStatics = staticOverrides !== undefined
+
     if (hasOneOrMoreSequencedTracks) {
-      hasOneOrMoreStatics = false
       for (const descendant of iteratePropType(propConfig, [])) {
         if (isPropConfigComposite(descendant.conf)) continue
         const sequencedTrackIdBelongingToDescendant = getDeep(
@@ -116,46 +125,22 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
           descendant.path,
         ) as SequenceTrackId | undefined
         if (typeof sequencedTrackIdBelongingToDescendant !== 'string') {
-          hasOneOrMoreStatics = true
+          hasStatics = true
         } else {
           listOfDescendantTrackIds.push(sequencedTrackIdBelongingToDescendant)
         }
       }
     }
 
-    if (hasOneOrMoreStatics) {
-      contextMenuItems.push(
-        /**
-         * TODO This is surely confusing for the user if the descendants don't have overrides.
-         */
-        {
-          label: 'Reset all to default',
-          callback: () => {
-            getStudio()!.transaction(({unset}) => {
-              unset(pointerToProp)
-            })
-          },
+    if (hasStatics || hasOneOrMoreSequencedTracks) {
+      contextMenuItems.push({
+        label: 'Reset all to default',
+        callback: () => {
+          getStudio()!.transaction(({unset}) => {
+            unset(pointerToProp)
+          })
         },
-        {
-          label: 'Sequence all',
-          callback: () => {
-            getStudio()!.transaction(({stateEditors}) => {
-              for (const {path, conf} of iteratePropType(
-                propConfig,
-                pathToProp,
-              )) {
-                if (isPropConfigComposite(conf)) continue
-                const propAddress = {...obj.address, pathToProp: path}
-
-                stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
-                  propAddress,
-                  propConfig,
-                )
-              }
-            })
-          },
-        },
-      )
+      })
     }
 
     if (hasOneOrMoreSequencedTracks) {
@@ -179,6 +164,31 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
                   ...propAddress,
                   value: obj.getValueByPointer(pointerToSub as $IntentionalAny),
                 },
+              )
+            }
+          })
+        },
+      })
+    }
+
+    if (
+      !hasOneOrMoreSequencedTracks ||
+      (hasOneOrMoreSequencedTracks && hasStatics)
+    ) {
+      contextMenuItems.push({
+        label: 'Sequence all',
+        callback: () => {
+          getStudio()!.transaction(({stateEditors}) => {
+            for (const {path, conf} of iteratePropType(
+              propConfig,
+              pathToProp,
+            )) {
+              if (isPropConfigComposite(conf)) continue
+              const propAddress = {...obj.address, pathToProp: path}
+
+              stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
+                propAddress,
+                propConfig,
               )
             }
           })
@@ -214,7 +224,7 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
         ...common,
         type: 'AllStatic',
         controlIndicators: (
-          <DefaultOrStaticValueIndicator hasStaticOverride={false} />
+          <DefaultOrStaticValueIndicator hasStaticOverride={hasStatics} />
         ),
       }
     }

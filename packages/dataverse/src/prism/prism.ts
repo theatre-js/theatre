@@ -225,29 +225,50 @@ class PrismInstance<V> implements Prism<V> {
     listener: (v: V) => void,
     immediate: boolean = false,
   ): VoidFn {
+    // the prism will call this function every time it goes from fresh to stale
     const dependent = () => {
+      // schedule the listener to be called on the next tick, unless
+      // we're already on a tick, in which case it'll be called on the current tick.
       ticker.onThisOrNextTick(refresh)
     }
 
-    let lastValue = emptyObject
+    // let's cache the last value so we don't call the listener if the value hasn't changed
+    let lastValue =
+      // use an empty object as the initial value so that the listener is called on the first tick.
+      // if we were to use, say, undefined, and this.getValue() also returned undefined, the listener
+      // would never be called.
+      emptyObject
 
+    // this function will be _scheduled_ to be called on the currently running, or next tick,
+    // after the prism has gone from fresh to stale.
     const refresh = () => {
       const newValue = this.getValue()
+      // if the value hasn't changed, don't call the listener
       if (newValue === lastValue) return
 
+      // the value has changed - cache it
       lastValue = newValue
+
+      // and let the listener know
       listener(newValue)
     }
 
+    // add the dependent to the prism's list of dependents (which will make it go hot)
     this._addDependent(dependent)
 
+    // if the caller wants the listener to be called immediately, call it now
     if (immediate) {
       lastValue = this.getValue()
       listener(lastValue as $IntentionalAny as V)
     }
 
+    // the unsubscribe function
     const unsubscribe = () => {
+      // remove the dependent from the prism's list of dependents (and if it was the last dependent, the prism will go cold)
       this._removeDependent(dependent)
+      // in case we're scheduled for a tick, cancel that
+      ticker.offThisOrNextTick(refresh)
+      ticker.offNextTick(refresh)
     }
 
     return unsubscribe

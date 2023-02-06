@@ -4,6 +4,7 @@
 
 import os from 'os'
 import path from 'path'
+import * as core from '@actions/core'
 
 const packagesToPublish = [
   '@theatre/core',
@@ -166,10 +167,16 @@ async function writeVersionsToPackageJSONs(
     }),
   )
 
-  for (const packageName of packagesToPublish) {
-    if (process.env.GITHUB_ACTIONS) {
-      await $`echo ${`Published ${packageName}@${assignedVersionByPackageName[packageName]}`} >> $GITHUB_STEP_SUMMARY`
-    } else {
+  if (process.env.GITHUB_ACTIONS) {
+    const data = packagesToPublish.map((packageName) => ({
+      packageName,
+      version: assignedVersionByPackageName[packageName],
+    }))
+
+    // set the output for github actions.
+    core.setOutput('data', JSON.stringify(data))
+  } else {
+    for (const packageName of packagesToPublish) {
       await $`echo ${`Published ${packageName}@${assignedVersionByPackageName[packageName]}`}`
     }
   }

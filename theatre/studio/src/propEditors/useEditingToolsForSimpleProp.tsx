@@ -272,14 +272,20 @@ function createPrism<T extends SerializablePrimitive>(
       }
     }
 
-    contextMenuItems.push({
-      label: 'Reset to default',
-      callback: () => {
-        getStudio()!.transaction(({unset: unset}) => {
-          unset(pointerToProp)
-        })
-      },
-    })
+    const allStaticOverrides = val(obj.template.getStaticValues())
+
+    const staticOverride = getDeep(allStaticOverrides, pathToProp)
+
+    if (typeof staticOverride !== 'undefined') {
+      contextMenuItems.push({
+        label: 'Reset to default',
+        callback: () => {
+          getStudio()!.transaction(({unset: unset}) => {
+            unset(pointerToProp)
+          })
+        },
+      })
+    }
 
     if (isSequencable) {
       contextMenuItems.push({
@@ -297,9 +303,7 @@ function createPrism<T extends SerializablePrimitive>(
       })
     }
 
-    const statics = val(obj.template.getStaticValues())
-
-    if (typeof getDeep(statics, pathToProp) !== 'undefined') {
+    if (typeof staticOverride !== 'undefined') {
       const ret: EditingToolsStatic<T> = {
         ...common,
         type: 'Static',
