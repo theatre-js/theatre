@@ -46,6 +46,11 @@ export function createBundles(watch: boolean) {
       esbuildConfig.mainFields = ['browser', 'module', 'main']
       esbuildConfig.target = ['firefox57', 'chrome58']
       esbuildConfig.conditions = ['browser', 'node']
+    } else {
+      esbuildConfig.define!['process.env.NODE_ENV'] =
+        JSON.stringify('production')
+
+      esbuildConfig.minify = true
     }
 
     build({
