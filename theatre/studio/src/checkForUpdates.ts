@@ -28,6 +28,16 @@ async function waitTilUIIsVisible(): Promise<undefined> {
 }
 
 export default async function checkForUpdates() {
+  if (process.env.BUILT_FOR_PLAYGROUND === 'true') {
+    // Build for playground. Skipping update check
+    return
+  }
+
+  if (process.env.THEATRE_VERSION?.match(/COMPAT/)) {
+    // Built for compat tests. Skipping update check
+    return
+  }
+
   // let's wait a bit in case the user has called for the UI to be hidden.
   await wait(500)
   await waitTilUIIsVisible()
