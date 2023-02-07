@@ -331,9 +331,7 @@ start({
     // waitBeforeStartingServer: current?.stop(),
   },
 }).then(
-  () => {
-    process.exit(0)
-  },
+  () => {},
   (err) => {
     console.error(err)
     process.exit(1)
