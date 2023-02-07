@@ -228,7 +228,7 @@ async function start(options: {
   if (liveReload) {
     await ctx.watch()
   } else {
-    // await ctx.rebuild()
+    await ctx.rebuild()
   }
 
   // Read index.html template
@@ -236,6 +236,7 @@ async function start(options: {
     path.join(__dirname, 'index.html'),
     'utf8',
   ).catch(wrapCatch('reading index.html template'))
+
   await Promise.all([
     // Write home page
     writeFile(
@@ -329,4 +330,12 @@ start({
     openBrowser: !isCI,
     // waitBeforeStartingServer: current?.stop(),
   },
-})
+}).then(
+  () => {
+    process.exit(0)
+  },
+  (err) => {
+    console.error(err)
+    process.exit(1)
+  },
+)
