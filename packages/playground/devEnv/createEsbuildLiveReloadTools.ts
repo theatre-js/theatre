@@ -5,7 +5,6 @@ export function createEsbuildLiveReloadTools(): {
   handleRequest(req: IncomingMessage, res: ServerResponse): boolean
   hasOpenConnections(): boolean
   esbuildBanner: esbuild.BuildOptions['banner']
-  esbuildWatch: esbuild.WatchMode
 } {
   const openResponses = new Set<ServerResponse>()
   return {
@@ -66,20 +65,6 @@ export function createEsbuildLiveReloadTools(): {
         }
         attemptConnect()
       }.toString()})();`,
-    },
-    esbuildWatch: {
-      onRebuild(error, res) {
-        if (!error) {
-          if (openResponses.size > 0) {
-            console.error(`Reloading for ${openResponses.size} clients...`)
-            // Notify clients on rebuild
-            openResponses.forEach((res) => res.write('data: reload\n\n'))
-            openResponses.clear()
-          }
-        } else {
-          console.error('Rebuild had errors...')
-        }
-      },
     },
   }
 }
