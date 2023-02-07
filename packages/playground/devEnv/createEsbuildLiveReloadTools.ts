@@ -10,17 +10,17 @@ export function createEsbuildLiveReloadTools(): {
   return {
     handleRequest(req, res) {
       // If special /esbuild url requested, subscribe clients to changes
-      if (req.url === '/esbuild') {
-        res.writeHead(200, {
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          Connection: 'keep-alive',
-        })
-        res.write('data: open\n\n')
-        openResponses.add(res)
-        res.on('close', () => openResponses.delete(res))
-        return true // handled
-      }
+      // if (req.url === '/esbuild') {
+      //   res.writeHead(200, {
+      //     'Content-Type': 'text/event-stream',
+      //     'Cache-Control': 'no-cache',
+      //     Connection: 'keep-alive',
+      //   })
+      //   res.write('data: open\n\n')
+      //   openResponses.add(res)
+      //   res.on('close', () => openResponses.delete(res))
+      //   return true // handled
+      // }
       return false
     },
     hasOpenConnections() {
@@ -31,6 +31,7 @@ export function createEsbuildLiveReloadTools(): {
       // This is being used so we can at least get a few type completions, but please understand that
       // you cannot reference any non-global browser values from within the function.
       js: `;(${function liveReloadClientSetup() {
+        console.log('%cLive reload enabled', 'color: gray')
         // from packages/playground/devEnv/createEsbuildLiveReloadTools.ts
         function connect() {
           if (window.parent !== window) {
@@ -38,24 +39,13 @@ export function createEsbuildLiveReloadTools(): {
               '%cLive reload disabled for iframed content',
               'color: gray',
             )
-            return
           }
           try {
             const es = new EventSource('/esbuild')
-            es.onmessage = (evt) => {
-              switch (evt.data) {
-                case 'reload':
-                  location.reload()
-                  break
-                case 'open':
-                  console.log('%cLive reload ready', 'color: gray')
-                  break
-              }
-            }
-            es.onerror = () => {
-              es.close()
-              attemptConnect()
-            }
+            es.addEventListener('change', () => {
+              console.log('%cLive reload triggered', 'color: gray')
+              window.location.reload()
+            })
           } catch (err) {
             attemptConnect()
           }
