@@ -1,7 +1,7 @@
 {
   "name": "theatre-monorepo",
   "license": "Apache-2.0",
-  "version": "0.6.1-dev.3",
+  "version": "0.6.1-dev.4",
   "workspaces": [
     "packages/*",
     "examples/*",
@@ -18,7 +18,8 @@
     "clean": "zx scripts/clean.mjs",
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
-    "test:compat": "jest --config jest.compat-tests.config.js",
+    "test:compat:install": "yarn workspace @theatre/compatibility-tests run install-fixtures",
+    "test:compat:run": "jest --config jest.compat-tests.config.js",
     "postinstall": "husky install",
     "release": "zx scripts/release.mjs",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
