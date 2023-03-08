@@ -409,6 +409,14 @@ export interface IStudio {
      * Disables the play/pause keyboard shortcut (spacebar)
      */
     __experimental_enablePlayPauseKeyboardShortcut(): void
+    /**
+     * Clears persistent storage and ensures that the current state will not be
+     * saved on window unload. Further changes to state will continue writing to
+     * persistent storage, if enabled during initialization.
+     *
+     * @param persistenceKey - same persistencyKey as in `studio.initialize(opts)`, if any
+     */
+    __experimental_clearPersistentStorage(persistenceKey?: string): void
   }
 }
 
@@ -445,6 +453,9 @@ export default class TheatreStudio implements IStudio {
     __experimental_enablePlayPauseKeyboardShortcut(): void {
       // see __experimental_disblePlayPauseKeyboardShortcut()
       __experimental_enablePlayPauseKeyboardShortcut()
+    },
+    __experimental_clearPersistentStorage(persistenceKey?: string): void {
+      return getStudio().clearPersistentStorage(persistenceKey)
     },
   }
 
