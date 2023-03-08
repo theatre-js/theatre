@@ -119,7 +119,7 @@ const ErrorContainer = styled.div`
 const ErrorFallback: React.FC<{error: Error}> = (props) => {
   return (
     <ErrorContainer>
-      An Error occured rendering this pane. Open the console for more info.
+      An Error occurred rendering this pane. Open the console for more info.
       <pre>
         {JSON.stringify(
           {message: props.error.message, stack: props.error.stack},
