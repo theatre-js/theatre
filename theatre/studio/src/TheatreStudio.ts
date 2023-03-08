@@ -19,6 +19,8 @@ import {
   __experimental_disblePlayPauseKeyboardShortcut,
   __experimental_enablePlayPauseKeyboardShortcut,
 } from './UIRoot/useKeyboardShortcuts'
+import type TheatreSheetObject from '@theatre/core/sheetObjects/TheatreSheetObject'
+import type TheatreSheet from '@theatre/core/sheets/TheatreSheet'
 
 export interface ITransactionAPI {
   /**
@@ -60,6 +62,21 @@ export interface ITransactionAPI {
    * @param pointer - A pointer, like object.props
    */
   unset<V>(pointer: Pointer<V>): void
+
+  /**
+   * EXPERIMENTAL API - this api may be removed without notice.
+   *
+   * Makes Theatre forget about this object. This means all the prop overrides and sequenced props
+   * will be reset, and the object won't show up in the exported state.
+   */
+  __experimental_forgetObject(object: TheatreSheetObject): void
+
+  /**
+   * EXPERIMENTAL API - this api may be removed without notice.
+   *
+   * Makes Theatre forget about this sheet.
+   */
+  __experimental_forgetSheet(sheet: TheatreSheet): void
 }
 /**
  *
@@ -474,8 +491,37 @@ export default class TheatreStudio implements IStudio {
   }
 
   transaction(fn: (api: ITransactionAPI) => void): void {
-    return getStudio().transaction(({set, unset}) => {
-      return fn({set, unset})
+    return getStudio().transaction(({set, unset, stateEditors}) => {
+      const __experimental_forgetObject = (object: TheatreSheetObject) => {
+        if (!isSheetObjectPublicAPI(object)) {
+          throw new Error(
+            `object in transactionApi.__experimental_forgetObject(object) must be the return type of sheet.object(...)`,
+          )
+        }
+
+        stateEditors.coreByProject.historic.sheetsById.forgetObject(
+          object.address,
+        )
+      }
+
+      const __experimental_forgetSheet = (sheet: TheatreSheet) => {
+        if (!isSheetPublicAPI(sheet)) {
+          throw new Error(
+            `sheet in transactionApi.__experimental_forgetSheet(sheet) must be the return type of project.sheet()`,
+          )
+        }
+
+        stateEditors.coreByProject.historic.sheetsById.forgetSheet(
+          sheet.address,
+        )
+      }
+
+      return fn({
+        set,
+        unset,
+        __experimental_forgetObject,
+        __experimental_forgetSheet,
+      })
     })
   }
 

@@ -622,6 +622,29 @@ namespace stateEditors {
           return sheetsById[p.sheetId]!
         }
 
+        export function forgetObject(
+          p: WithoutSheetInstance<SheetObjectAddress>,
+        ) {
+          const sheetState =
+            drafts().historic.coreByProject[p.projectId].sheetsById[p.sheetId]
+          if (!sheetState) return
+          delete sheetState.staticOverrides.byObject[p.objectKey]
+
+          const sequence = sheetState.sequence
+          if (!sequence) return
+          delete sequence.tracksByObject[p.objectKey]
+        }
+
+        export function forgetSheet(p: WithoutSheetInstance<SheetAddress>) {
+          const sheetState =
+            drafts().historic.coreByProject[p.projectId].sheetsById[p.sheetId]
+          if (sheetState) {
+            delete drafts().historic.coreByProject[p.projectId].sheetsById[
+              p.sheetId
+            ]
+          }
+        }
+
         export namespace sequence {
           export function _ensure(
             p: WithoutSheetInstance<SheetAddress>,
