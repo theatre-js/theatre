@@ -19,7 +19,7 @@ export const persistStateOfStudio = (
     reduxStore.dispatch(studioActions.replacePersistentState(s))
   }
 
-  const storageKey = localStoragePrefix + '.persistent'
+  const storageKey = getStorageKey(localStoragePrefix)
   const getState = () => reduxStore.getState().$persistent
 
   loadFromPersistentStorage()
@@ -60,14 +60,21 @@ export const persistStateOfStudio = (
   }
 }
 
-export const clearPersistentStorage = (
+export const __experimental_clearPersistentStorage = (
   reduxStore: Store<FullStudioState>,
   localStoragePrefix: string,
 ) => {
-  const storageKey = localStoragePrefix + '.persistent'
+  // This removes the persisted state from localStorage,
+  // while also preventing the current state from being persisted on window unload.
+  // Once the new storage PR lands, this method won't be needed anymore.
+  const storageKey = getStorageKey(localStoragePrefix)
   const currentState = reduxStore.getState().$persistent
   localStorage.removeItem(storageKey)
   // prevent the current state from being persistent on window unload,
   // unless further state changes are made.
   lastStateByStore.set(reduxStore, currentState)
+}
+
+function getStorageKey(localStoragePrefix: string) {
+  return localStoragePrefix + '.persistent'
 }

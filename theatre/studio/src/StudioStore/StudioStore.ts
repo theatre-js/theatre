@@ -21,7 +21,7 @@ import type {Draft} from 'immer'
 import {createDraft, finishDraft} from 'immer'
 import type {Store} from 'redux'
 import {
-  clearPersistentStorage,
+  __experimental_clearPersistentStorage,
   persistStateOfStudio,
 } from './persistStateOfStudio'
 import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
@@ -92,8 +92,10 @@ export default class StudioStore {
     return this._reduxStore.getState()
   }
 
-  clearPersistentStorage(persistenceKey: string): FullStudioState {
-    clearPersistentStorage(this._reduxStore, persistenceKey)
+  __experimental_clearPersistentStorage(
+    persistenceKey: string,
+  ): FullStudioState {
+    __experimental_clearPersistentStorage(this._reduxStore, persistenceKey)
     return this.getState()
   }
 

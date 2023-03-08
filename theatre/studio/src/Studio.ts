@@ -519,6 +519,6 @@ export class Studio {
   }
 
   clearPersistentStorage(persistenceKey = DEFAULT_PERSISTENCE_KEY) {
-    this._store.clearPersistentStorage(persistenceKey)
+    this._store.__experimental_clearPersistentStorage(persistenceKey)
   }
 }
