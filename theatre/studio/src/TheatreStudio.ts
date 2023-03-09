@@ -21,6 +21,7 @@ import {
 } from './UIRoot/useKeyboardShortcuts'
 import type TheatreSheetObject from '@theatre/core/sheetObjects/TheatreSheetObject'
 import type TheatreSheet from '@theatre/core/sheets/TheatreSheet'
+import type {__UNSTABLE_Project_OnDiskState} from '@theatre/core'
 
 export interface ITransactionAPI {
   /**
@@ -434,6 +435,18 @@ export interface IStudio {
      * @param persistenceKey - same persistencyKey as in `studio.initialize(opts)`, if any
      */
     __experimental_clearPersistentStorage(persistenceKey?: string): void
+
+    /**
+     * Warning: This is an experimental API and will change in the future.
+     *
+     * This is functionally the same as `studio.createContentOfSaveFile()`, but
+     * returns a typed object instead of a JSON object.
+     *
+     * See {@link __UNSTABLE_Project_OnDiskState} for more information.
+     */
+    __experimental_createContentOfSaveFileTyped(
+      projectId: string,
+    ): __UNSTABLE_Project_OnDiskState
   }
 }
 
@@ -473,6 +486,11 @@ export default class TheatreStudio implements IStudio {
     },
     __experimental_clearPersistentStorage(persistenceKey?: string): void {
       return getStudio().clearPersistentStorage(persistenceKey)
+    },
+    __experimental_createContentOfSaveFileTyped(
+      projectId: string,
+    ): __UNSTABLE_Project_OnDiskState {
+      return getStudio().createContentOfSaveFile(projectId) as $IntentionalAny
     },
   }
 
