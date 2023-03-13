@@ -3,7 +3,7 @@ import Project from '@theatre/core/projects/Project'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 
 import type {ProjectAddress} from '@theatre/shared/utils/addresses'
-import type {Asset} from '@theatre/shared/utils/assets'
+import type {Asset, File} from '@theatre/shared/utils/assets'
 import type {
   ProjectId,
   SheetId,
@@ -80,7 +80,7 @@ export interface IProject {
    * @param asset - The asset to get the URL for
    * @returns The URL for the asset, or `undefined` if the asset is not found
    */
-  getAssetUrl(asset: Asset): string | undefined
+  getAssetUrl(asset: Asset | File): string | undefined
 }
 
 export default class TheatreProject implements IProject {

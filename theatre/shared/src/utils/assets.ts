@@ -48,3 +48,4 @@ export function getAllPossibleAssetIDs(project: Project, type?: string) {
 }
 
 export type Asset = {type: 'image'; id: string | undefined}
+export type File = {type: 'file'; id: string | undefined}
