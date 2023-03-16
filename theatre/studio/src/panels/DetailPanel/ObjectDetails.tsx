@@ -5,7 +5,6 @@ import type {$FixMe} from '@theatre/shared/utils/types'
 import DeterminePropEditorForDetail from './DeterminePropEditorForDetail'
 import {useVal} from '@theatre/react'
 import uniqueKeyForAnyObject from '@theatre/shared/utils/uniqueKeyForAnyObject'
-import getStudio from '@theatre/studio/getStudio'
 import styled from 'styled-components'
 
 const ActionButtonContainer = styled.div`
@@ -63,7 +62,7 @@ const ObjectDetails: React.FC<{
               <ActionButton
                 key={actionName}
                 onClick={() => {
-                  action(obj.publicApi, getStudio().publicApi)
+                  action(obj.publicApi)
                 }}
               >
                 {actionName}

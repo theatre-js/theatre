@@ -50,6 +50,7 @@ The quickest way to start tweaking things is to run the `playground` package.
 ```sh
 $ cd ./packages/playground
 $ yarn serve
+$ yarn build
 # or, shortcut:
 $ cd root
 $ yarn playground

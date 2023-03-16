@@ -19,6 +19,9 @@ import {
   __experimental_disblePlayPauseKeyboardShortcut,
   __experimental_enablePlayPauseKeyboardShortcut,
 } from './UIRoot/useKeyboardShortcuts'
+import type TheatreSheetObject from '@theatre/core/sheetObjects/TheatreSheetObject'
+import type TheatreSheet from '@theatre/core/sheets/TheatreSheet'
+import type {__UNSTABLE_Project_OnDiskState} from '@theatre/core'
 
 export interface ITransactionAPI {
   /**
@@ -60,6 +63,21 @@ export interface ITransactionAPI {
    * @param pointer - A pointer, like object.props
    */
   unset<V>(pointer: Pointer<V>): void
+
+  /**
+   * EXPERIMENTAL API - this api may be removed without notice.
+   *
+   * Makes Theatre forget about this object. This means all the prop overrides and sequenced props
+   * will be reset, and the object won't show up in the exported state.
+   */
+  __experimental_forgetObject(object: TheatreSheetObject): void
+
+  /**
+   * EXPERIMENTAL API - this api may be removed without notice.
+   *
+   * Makes Theatre forget about this sheet.
+   */
+  __experimental_forgetSheet(sheet: TheatreSheet): void
 }
 /**
  *
@@ -409,6 +427,26 @@ export interface IStudio {
      * Disables the play/pause keyboard shortcut (spacebar)
      */
     __experimental_enablePlayPauseKeyboardShortcut(): void
+    /**
+     * Clears persistent storage and ensures that the current state will not be
+     * saved on window unload. Further changes to state will continue writing to
+     * persistent storage, if enabled during initialization.
+     *
+     * @param persistenceKey - same persistencyKey as in `studio.initialize(opts)`, if any
+     */
+    __experimental_clearPersistentStorage(persistenceKey?: string): void
+
+    /**
+     * Warning: This is an experimental API and will change in the future.
+     *
+     * This is functionally the same as `studio.createContentOfSaveFile()`, but
+     * returns a typed object instead of a JSON object.
+     *
+     * See {@link __UNSTABLE_Project_OnDiskState} for more information.
+     */
+    __experimental_createContentOfSaveFileTyped(
+      projectId: string,
+    ): __UNSTABLE_Project_OnDiskState
   }
 }
 
@@ -446,6 +484,14 @@ export default class TheatreStudio implements IStudio {
       // see __experimental_disblePlayPauseKeyboardShortcut()
       __experimental_enablePlayPauseKeyboardShortcut()
     },
+    __experimental_clearPersistentStorage(persistenceKey?: string): void {
+      return getStudio().clearPersistentStorage(persistenceKey)
+    },
+    __experimental_createContentOfSaveFileTyped(
+      projectId: string,
+    ): __UNSTABLE_Project_OnDiskState {
+      return getStudio().createContentOfSaveFile(projectId) as $IntentionalAny
+    },
   }
 
   /**
@@ -463,8 +509,37 @@ export default class TheatreStudio implements IStudio {
   }
 
   transaction(fn: (api: ITransactionAPI) => void): void {
-    return getStudio().transaction(({set, unset}) => {
-      return fn({set, unset})
+    return getStudio().transaction(({set, unset, stateEditors}) => {
+      const __experimental_forgetObject = (object: TheatreSheetObject) => {
+        if (!isSheetObjectPublicAPI(object)) {
+          throw new Error(
+            `object in transactionApi.__experimental_forgetObject(object) must be the return type of sheet.object(...)`,
+          )
+        }
+
+        stateEditors.coreByProject.historic.sheetsById.forgetObject(
+          object.address,
+        )
+      }
+
+      const __experimental_forgetSheet = (sheet: TheatreSheet) => {
+        if (!isSheetPublicAPI(sheet)) {
+          throw new Error(
+            `sheet in transactionApi.__experimental_forgetSheet(sheet) must be the return type of project.sheet()`,
+          )
+        }
+
+        stateEditors.coreByProject.historic.sheetsById.forgetSheet(
+          sheet.address,
+        )
+      }
+
+      return fn({
+        set,
+        unset,
+        __experimental_forgetObject,
+        __experimental_forgetSheet,
+      })
     })
   }
 

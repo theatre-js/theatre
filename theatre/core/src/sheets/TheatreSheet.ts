@@ -19,12 +19,11 @@ import type {
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {ObjectAddressKey} from '@theatre/shared/utils/ids'
 import {notify} from '@theatre/shared/notify'
-import type {IStudio} from '@theatre/studio'
 
 export type SheetObjectPropTypeConfig =
   PropTypeConfig_Compound<UnknownValidCompoundProps>
 
-export type SheetObjectAction = (object: ISheetObject, studio: IStudio) => void
+export type SheetObjectAction = (object: ISheetObject) => void
 
 export type SheetObjectActionsConfig = Record<string, SheetObjectAction>
 

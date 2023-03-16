@@ -28,6 +28,8 @@ import {getAllPossibleAssetIDs} from '@theatre/shared/utils/assets'
 import {notify} from './notify'
 import type {RafDriverPrivateAPI} from '@theatre/core/rafDrivers'
 
+const DEFAULT_PERSISTENCE_KEY = 'theatre-0.4'
+
 export type CoreExports = typeof _coreExports
 
 const UIConstructorModule =
@@ -159,7 +161,7 @@ export class Studio {
     }
 
     const storeOpts: Parameters<typeof this._store['initialize']>[0] = {
-      persistenceKey: 'theatre-0.4',
+      persistenceKey: DEFAULT_PERSISTENCE_KEY,
       usePersistentStorage: true,
     }
 
@@ -514,5 +516,9 @@ export class Studio {
         return asset.name
       },
     }
+  }
+
+  clearPersistentStorage(persistenceKey = DEFAULT_PERSISTENCE_KEY) {
+    this._store.__experimental_clearPersistentStorage(persistenceKey)
   }
 }

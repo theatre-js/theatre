@@ -33,7 +33,7 @@ const PlayheadPositionPopover: React.FC<{
    * Called when user hits enter/escape
    */
   onRequestClose: (reason: string) => void
-}> = ({layoutP}) => {
+}> = ({layoutP, onRequestClose}) => {
   const sheet = val(layoutP.sheet)
   const sequence = sheet.getSequence()
 
@@ -53,6 +53,7 @@ const PlayheadPositionPopover: React.FC<{
         if (tempPosition) {
           tempPosition = undefined
           sequence.position = originalPosition
+          onRequestClose('discardTemporaryValue')
         }
       },
       permanentlySetValue(newPosition: number): void {
@@ -60,6 +61,7 @@ const PlayheadPositionPopover: React.FC<{
           tempPosition = undefined
         }
         sequence.position = clamp(newPosition, 0, sequence.length)
+        onRequestClose('permanentlySetValue')
       },
     }
   }, [layoutP, sequence])
@@ -72,11 +74,13 @@ const PlayheadPositionPopover: React.FC<{
   return usePrism(() => {
     const sequence = sheet.getSequence()
 
+    const value = Number(val(sequence.pointer.position).toFixed(3))
+
     return (
       <Container>
         <Label>Sequence position</Label>
         <BasicNumberInput
-          value={Number(sequence.position.toFixed(3))}
+          value={value}
           {...fns}
           isValid={greaterThanOrEqualToZero}
           inputRef={inputRef}
