@@ -42,6 +42,7 @@ function generateDataSVG(
               y={(1 - item.value) * dataH}
               width={item.duration * scale}
               height={item.value * dataH}
+              key={Math.random()}
             />
           )
         })}
@@ -70,7 +71,7 @@ function generateTimeSVG(
       <Polygon points={pts} />
       <g>
         {ptData.map((value: number[]) => {
-          return <Circle cx={value[0]} cy={value[1]} />
+          return <Circle cx={value[0]} cy={value[1]} key={Math.random()} />
         })}
       </g>
     </>
@@ -82,9 +83,42 @@ function generateTimeSVG(
 export const DataViewer: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
 }> = ({layoutP}) => {
-  const data = val(layoutP.data)
-  const dataType = val(layoutP.dataType)
-  if (data === undefined || dataType === undefined) return null
+  // const data = val(layoutP.data)
+  // const dataType = val(layoutP.dataType)
+  // if (data === undefined || dataType === undefined) return null
+  const data: Array<DataViewerInfo> = [
+    {
+      time: 0,
+      duration: 6.58159,
+      value: 1,
+    },
+    {
+      time: 6.58159,
+      duration: 25.00367,
+      value: 0.804,
+    },
+    {
+      time: 31.58526,
+      duration: 11.92991,
+      value: 0.555,
+    },
+    {
+      time: 43.51517,
+      duration: 23.06711,
+      value: 0.654,
+    },
+    {
+      time: 66.58228,
+      duration: 26.9593,
+      value: 0.771,
+    },
+    {
+      time: 93.54158,
+      duration: 9.16508,
+      value: 1,
+    },
+  ]
+  const dataType = 'Data'
 
   const sheet = val(layoutP.sheet)
   const sequence = sheet.getSequence()
@@ -96,6 +130,7 @@ export const DataViewer: React.FC<{
     dataType === 'Data'
       ? generateDataSVG(data as Array<DataViewerInfo>, scale, dataH)
       : generateTimeSVG(data as Array<DataViewerTime>, scale, dataW, dataH)
+  console.log('DataViewer')
   return (
     <DataViewerContainer
       style={{

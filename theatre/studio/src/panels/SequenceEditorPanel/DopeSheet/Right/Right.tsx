@@ -33,6 +33,8 @@ const Right: React.FC<{
         val(layoutP.dopeSheetDims.height),
       )
 
+    console.log('Right')
+
     return (
       <>
         <HorizontallyScrollableArea layoutP={layoutP} height={height}>
