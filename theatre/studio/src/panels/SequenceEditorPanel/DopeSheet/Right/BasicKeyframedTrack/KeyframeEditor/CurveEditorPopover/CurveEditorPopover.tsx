@@ -173,7 +173,8 @@ const CurveEditorPopover: React.VFC<ICurveEditorPopoverProps> = (props) => {
     cssCubicBezierArgsFromHandles(easing),
   )
 
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onInputChange = (e?: React.ChangeEvent<HTMLInputElement>) => {
+    if (e === undefined) return
     setTextInputMode(TextInputMode.user)
     setInputValue(e.target.value)
 
