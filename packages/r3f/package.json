@@ -28,11 +28,13 @@
   "exports": {
     ".": {
       "import": "./dist/index.esm.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./dist/extension": {
       "import": "./dist/extension/index.esm.js",
-      "require": "./dist/extension/index.js"
+      "require": "./dist/extension/index.js",
+      "types": "./dist/extension/index.d.ts"
     }
   },
   "scripts": {
