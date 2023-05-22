@@ -1,12 +1,12 @@
 import styled from 'styled-components'
-import type {MutableRefObject} from 'react';
-import { useEffect} from 'react'
+import type {MutableRefObject} from 'react'
+import {useEffect} from 'react'
 import React, {useMemo, useRef} from 'react'
 import mergeRefs from 'react-merge-refs'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
 
-const Input = styled.input.attrs({type: 'text'})`
+const Input = styled.input.attrs({type: 'text'})<{defaultValue: string}>`
   background: transparent;
   border: 1px solid transparent;
   color: rgba(255, 255, 255, 0.9);
@@ -20,6 +20,8 @@ const Input = styled.input.attrs({type: 'text'})`
   border-radius: 2px;
   border: 1px solid transparent;
   box-sizing: border-box;
+  font-weight: ${(props) =>
+    props.value === props.defaultValue ? 'normal' : 'bold'};
 
   &:hover {
     background-color: #10101042;
@@ -54,6 +56,7 @@ const alwaysValid = (v: string) => true
 
 const BasicStringInput: React.FC<{
   value: string
+  defaultValue: string
   temporarilySetValue: (v: string) => void
   discardTemporaryValue: () => void
   permanentlySetValue: (v: string) => void
@@ -192,6 +195,7 @@ const BasicStringInput: React.FC<{
       className={`${props.className ?? ''} ${!isValid(value) ? 'invalid' : ''}`}
       onChange={callbacks.inputChange}
       value={value}
+      defaultValue={props.defaultValue}
       onBlur={callbacks.onBlur}
       onKeyDown={callbacks.onInputKeyDown}
       onClick={callbacks.onClick}

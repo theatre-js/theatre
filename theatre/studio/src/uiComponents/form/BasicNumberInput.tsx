@@ -40,7 +40,7 @@ const Container = styled.div`
   }
 `
 
-const Input = styled.input`
+const Input = styled.input<{defaultValue: number}>`
   background: transparent;
   border: 1px solid transparent;
   color: rgba(255, 255, 255, 0.9);
@@ -52,6 +52,8 @@ const Input = styled.input`
   width: 100%;
   height: calc(100% - 4px);
   border-radius: 2px;
+  font-weight: ${(props) =>
+    props.value === props.defaultValue ? 'normal' : 'bold'};
 
   &:focus {
     cursor: text;
@@ -107,6 +109,7 @@ const BasicNumberInput: React.FC<{
   discardTemporaryValue: () => void
   permanentlySetValue: (v: number) => void
   className?: string
+  defaultValue: number
   range?: [min: number, max: number]
   isValid?: (v: number) => boolean
   inputRef?: MutableRefObject<HTMLInputElement | null>
@@ -308,6 +311,7 @@ const BasicNumberInput: React.FC<{
       type="text"
       onChange={callbacks.inputChange}
       value={value}
+      defaultValue={propsA.defaultValue}
       onBlur={callbacks.onBlur}
       onKeyDown={callbacks.onInputKeyDown}
       onClick={callbacks.onClick}

@@ -4,6 +4,7 @@ import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput
 import type {ISimplePropEditorReactProps} from './ISimplePropEditorReactProps'
 
 function StringPropEditor({
+  propConfig,
   editingTools,
   value,
   autoFocus,
@@ -14,6 +15,7 @@ function StringPropEditor({
       temporarilySetValue={editingTools.temporarilySetValue}
       discardTemporaryValue={editingTools.discardTemporaryValue}
       permanentlySetValue={editingTools.permanentlySetValue}
+      defaultValue={propConfig.default}
       autoFocus={autoFocus}
     />
   )

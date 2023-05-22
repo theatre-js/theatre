@@ -20,7 +20,7 @@ const IconContainer = styled.div`
   pointer-events: none;
 `
 
-const Select = styled.select`
+const Select = styled.select<{defaultValue: string}>`
   appearance: none;
   background-color: transparent;
   box-sizing: border-box;
@@ -37,6 +37,8 @@ const Select = styled.select`
   So we're hard-coding the height to 26px, unlike all other inputs that use a relative height.
   */
   height: 26px /* calc(100% - 4px); */;
+  font-weight: ${(props) =>
+    props.value === props.defaultValue ? 'normal' : 'bold'};
 
   @supports (-moz-appearance: none) {
     /* Ugly hack to remove the extra left padding that shows up only in Firefox */
@@ -52,12 +54,14 @@ const Select = styled.select`
 
 function BasicSelect<TLiteralOptions extends string>({
   value,
+  defaultValue,
   onChange,
   options,
   className,
   autoFocus,
 }: {
   value: TLiteralOptions
+  defaultValue: TLiteralOptions
   onChange: (val: TLiteralOptions) => void
   options: Record<TLiteralOptions, string>
   className?: string
@@ -75,6 +79,7 @@ function BasicSelect<TLiteralOptions extends string>({
       <Select
         className={className}
         value={value}
+        defaultValue={defaultValue}
         onChange={_onChange}
         autoFocus={autoFocus}
       >

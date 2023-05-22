@@ -20,6 +20,7 @@ function StringLiteralPropEditor<TLiteralOptions extends string>({
   return propConfig.as === 'menu' ? (
     <BasicSelect
       value={value}
+      defaultValue={propConfig.default}
       onChange={onChange}
       options={propConfig.valuesAndLabels}
       autoFocus={autoFocus}
@@ -27,6 +28,7 @@ function StringLiteralPropEditor<TLiteralOptions extends string>({
   ) : (
     <BasicSwitch
       value={value}
+      defaultValue={propConfig.default}
       onChange={onChange}
       options={propConfig.valuesAndLabels}
       autoFocus={autoFocus}
