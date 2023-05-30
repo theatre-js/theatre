@@ -346,11 +346,11 @@ function usePlayheadContextMenu(
             const prompStr = prompt('Sequence Data', '')
             if (prompStr !== null && prompStr.length > 0) {
               const data = JSON.parse(prompStr)
-              // Markers
-              if (data.markers !== undefined) {
-                getStudio().transaction(({stateEditors}) => {
-                  const sheet = val(options.layoutP.sheet)
-                  const sheetSequence = sheet.getSequence()
+              getStudio().transaction(({stateEditors}) => {
+                const sheet = val(options.layoutP.sheet)
+                const sheetSequence = sheet.getSequence()
+                // Markers
+                if (data.markers !== undefined) {
                   stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.replaceMarkers(
                     {
                       sheetAddress: sheet.address,
@@ -358,8 +358,8 @@ function usePlayheadContextMenu(
                       snappingFunction: sheetSequence.closestGridPosition,
                     },
                   )
-                })
-              }
+                }
+              })
             }
           },
         },
