@@ -48,6 +48,7 @@ import type {
   PanelPosition,
   StudioAhistoricState,
   StudioEphemeralState,
+  StudioHistoricStateSequenceEditorData,
   StudioHistoricStateSequenceEditorMarker,
 } from './types'
 import {clamp, uniq} from 'lodash-es'
@@ -192,6 +193,10 @@ namespace stateEditors {
                 projectState.stateBySheetId[p.sheetId] = {
                   selectedInstanceId: undefined,
                   sequenceEditor: {
+                    dataSet: {
+                      type: 'Time',
+                      data: [],
+                    },
                     markerSet: pointableSetUtil.create(),
                     selectedPropsByObject: {},
                   },
@@ -351,7 +356,31 @@ namespace stateEditors {
                 if (marker !== undefined) marker.label = options.label
               }
 
+              export function setData(options: {
+                sheetAddress: SheetAddress
+                dataSet: StudioHistoricStateSequenceEditorData
+              }) {
+                const sequenceEditor =
+                  stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId._ensure(
+                    options.sheetAddress,
+                  ).sequenceEditor
+                sequenceEditor.dataSet = {
+                  type: options.dataSet.type,
+                  data: options.dataSet.data,
+                }
+              }
+
               export function exportSequenceEditor(sheetAddress: SheetAddress) {
+                // Data
+                let data = {}
+                const sequenceEditor =
+                  stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId._ensure(
+                    sheetAddress,
+                  ).sequenceEditor
+                if (sequenceEditor.dataSet !== undefined) {
+                  data = sequenceEditor.dataSet
+                }
+
                 // Markers
                 const currentMarkerSet = _ensureMarkers(sheetAddress)
                 const markers: Array<any> = []
@@ -365,14 +394,14 @@ namespace stateEditors {
                 })
 
                 // Copy info to clipboard
-                const data = {
-                  markers: markers,
-                }
                 try {
-                  const content = JSON.stringify(data)
+                  const content = JSON.stringify({
+                    data,
+                    markers,
+                  })
                   navigator.clipboard.writeText(content)
                 } catch (e) {
-                  console.log(`Couldn't copy data to clipboard.`)
+                  console.warn(`Couldn't copy data to clipboard.`)
                 }
               }
             }
