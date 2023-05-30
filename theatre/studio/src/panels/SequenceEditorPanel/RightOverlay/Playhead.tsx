@@ -340,6 +340,41 @@ function usePlayheadContextMenu(
             })
           },
         },
+        {
+          label: 'Import Sequence Data',
+          callback: () => {
+            const prompStr = prompt('Sequence Data', '')
+            if (prompStr !== null && prompStr.length > 0) {
+              const data = JSON.parse(prompStr)
+              // Markers
+              if (data.markers !== undefined) {
+                getStudio().transaction(({stateEditors}) => {
+                  const sheet = val(options.layoutP.sheet)
+                  const sheetSequence = sheet.getSequence()
+                  stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.sequenceEditor.replaceMarkers(
+                    {
+                      sheetAddress: sheet.address,
+                      markers: data.markers,
+                      snappingFunction: sheetSequence.closestGridPosition,
+                    },
+                  )
+                })
+              }
+            }
+          },
+        },
+        {
+          label: 'Export Sequence Data',
+          callback: () => {
+            getStudio().transaction(({stateEditors}) => {
+              const sheet = val(options.layoutP.sheet)
+              const {sequenceEditor} =
+                stateEditors.studio.historic.projects.stateByProjectId
+                  .stateBySheetId
+              sequenceEditor.exportSequenceEditor(sheet.address)
+            })
+          },
+        },
       ]
     },
   })

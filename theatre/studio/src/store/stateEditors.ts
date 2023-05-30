@@ -350,6 +350,31 @@ namespace stateEditors {
                 const marker = currentMarkerSet.byId[options.markerId]
                 if (marker !== undefined) marker.label = options.label
               }
+
+              export function exportSequenceEditor(sheetAddress: SheetAddress) {
+                // Markers
+                const currentMarkerSet = _ensureMarkers(sheetAddress)
+                const markers: Array<any> = []
+                pointableSetUtil.filter(currentMarkerSet, (marker) => {
+                  markers.push({
+                    id: marker?.id,
+                    label: marker?.label,
+                    position: marker?.position,
+                  })
+                  return false
+                })
+
+                // Copy info to clipboard
+                const data = {
+                  markers: markers,
+                }
+                try {
+                  const content = JSON.stringify(data)
+                  navigator.clipboard.writeText(content)
+                } catch (e) {
+                  console.log(`Couldn't copy data to clipboard.`)
+                }
+              }
             }
           }
         }
