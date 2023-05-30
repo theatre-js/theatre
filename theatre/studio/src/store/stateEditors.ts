@@ -192,6 +192,7 @@ namespace stateEditors {
                 projectState.stateBySheetId[p.sheetId] = {
                   selectedInstanceId: undefined,
                   sequenceEditor: {
+                    markerSet: pointableSetUtil.create(),
                     selectedPropsByObject: {},
                   },
                 }
