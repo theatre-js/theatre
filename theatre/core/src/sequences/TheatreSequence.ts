@@ -2,6 +2,7 @@ import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import {defer} from '@theatre/shared/utils/defer'
 import type Sequence from './Sequence'
 import type {IPlaybackDirection, IPlaybackRange} from './Sequence'
+import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
 import AudioPlaybackController from './playbackControllers/AudioPlaybackController'
 import {getCoreTicker} from '@theatre/core/coreTicker'
 import type {Pointer} from '@theatre/dataverse'
@@ -132,6 +133,13 @@ export interface ISequence {
     length: number
     position: number
   }>
+
+  /**
+   * Given a property, returns a list of keyframes that affect that property.
+   *
+   * @returns A list of keyframe objects
+   */
+  getKeyframes(prop: Pointer<{}>): Keyframe[]
 
   /**
    * Attaches an audio source to the sequence. Playing the sequence automatically
@@ -289,6 +297,10 @@ export default class TheatreSequence implements ISequence {
 
   set position(position: number) {
     privateAPI(this).position = position
+  }
+
+  getKeyframes(prop: Pointer<any>): Keyframe[] {
+    return privateAPI(this).getKeyframes(prop)
   }
 
   async attachAudio(args: IAttachAudioArgs): Promise<{
