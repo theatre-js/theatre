@@ -309,7 +309,12 @@ function createPrism<T extends SerializablePrimitive>(
         type: 'Static',
         shade: common.beingScrubbed ? 'Static_BeingScrubbed' : 'Static',
         controlIndicators: (
-          <DefaultOrStaticValueIndicator hasStaticOverride={true} />
+          <DefaultOrStaticValueIndicator
+            hasStaticOverride={true}
+            obj={obj}
+            pathToProp={pathToProp}
+            propConfig={propConfig}
+          />
         ),
       }
       return ret
@@ -320,7 +325,12 @@ function createPrism<T extends SerializablePrimitive>(
       type: 'Default',
       shade: 'Default',
       controlIndicators: (
-        <DefaultOrStaticValueIndicator hasStaticOverride={false} />
+        <DefaultOrStaticValueIndicator
+          hasStaticOverride={true}
+          obj={obj}
+          pathToProp={pathToProp}
+          propConfig={propConfig}
+        />
       ),
     }
 
