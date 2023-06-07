@@ -6,6 +6,10 @@ import type {PathToProp} from '@theatre/shared/utils/addresses'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
 import {nextPrevCursorsTheme} from './NextPrevKeyframeCursors'
+import {
+  isPropConfigComposite,
+  iteratePropType,
+} from '@theatre/shared/propTypes/utils'
 
 const theme = {
   defaultState: {
@@ -18,7 +22,9 @@ const theme = {
   },
 }
 
-const Container = styled.div<{hasStaticOverride: boolean}>`
+const Container = styled.div<{
+  hasStaticOverride: boolean
+}>`
   width: 16px;
   margin: 0 0px 0 2px;
   display: flex;
@@ -65,12 +71,15 @@ const DefaultOrStaticValueIndicator: React.FC<{
   const {hasStaticOverride, obj, propConfig, pathToProp} = props
   const sequenceCb = () => {
     getStudio()!.transaction(({stateEditors}) => {
-      const propAddress = {...obj.address, pathToProp}
+      for (const {path, conf} of iteratePropType(propConfig, pathToProp)) {
+        if (isPropConfigComposite(conf)) continue
+        const propAddress = {...obj.address, pathToProp: path}
 
-      stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
-        propAddress,
-        propConfig,
-      )
+        stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
+          propAddress,
+          propConfig,
+        )
+      }
     })
   }
   return (
