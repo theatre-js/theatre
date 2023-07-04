@@ -15,5 +15,10 @@
     {"path": "../r3f"},
     {"path": "../theatric"}
   ],
-  "include": ["./src/**/*", "./src/**/*.json", "./devEnv/**/*"]
+  "include": [
+    "./src/**/*",
+    "./src/**/*.json",
+    "./devEnv/**/*",
+    "./vite.config.ts"
+  ]
 }

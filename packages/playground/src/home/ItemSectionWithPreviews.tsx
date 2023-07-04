@@ -11,7 +11,7 @@ export const ItemSectionWithPreviews = (props: {
       <SectionHeader>{groupName}</SectionHeader>
       <ItemListContainer>
         {modules.map((moduleName) => {
-          const href = `/${groupName}/${moduleName}`
+          const href = `/${groupName}/${moduleName}/`
           return (
             <ItemContainer key={`li-${moduleName}`}>
               <ItemLink href={href}>
