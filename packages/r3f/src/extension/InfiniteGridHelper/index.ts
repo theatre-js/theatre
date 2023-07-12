@@ -4,7 +4,7 @@ import {
   DoubleSide,
   GLSL3,
   Mesh,
-  PlaneBufferGeometry,
+  PlaneGeometry,
   ShaderMaterial,
 } from 'three'
 
@@ -17,7 +17,7 @@ export class InfiniteGridHelper extends Mesh {
     subgridOpacity = 0.05,
     gridOpacity = 0.15,
   } = {}) {
-    const geometry = new PlaneBufferGeometry(2, 2, 1, 1)
+    const geometry = new PlaneGeometry(2, 2, 1, 1)
 
     const material = new ShaderMaterial({
       // Needs to be set so threejs doesn't mess things up in glsl3 code by trying to make glsl1 forward compatible
