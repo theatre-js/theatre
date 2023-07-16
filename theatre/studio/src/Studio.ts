@@ -33,11 +33,7 @@ const DEFAULT_PERSISTENCE_KEY = 'theatre-0.4'
 export type CoreExports = typeof _coreExports
 
 const UIConstructorModule =
-  typeof window !== 'undefined' ? require('./UI') : null
-
-// this package has a reference to `window` that breaks SSR, so we require it conditionally
-const blobCompare =
-  typeof window !== 'undefined' ? require('blob-compare') : null
+  typeof window !== 'undefined' ? import('./UI').then((M) => M.default) : null
 
 const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
 \`\`\`
@@ -68,7 +64,16 @@ studio.initialize()
 `
 
 export class Studio {
-  readonly ui!: UI
+  protected _ui: UI | null = null
+  // this._uiInitDeferred.promise will resolve once this._ui is set
+  private _uiInitDeferred = defer()
+  get ui() {
+    if (!this._ui) {
+      debugger
+      throw new Error(`Studio.ui called before UI is initialized`)
+    }
+    return this._ui
+  }
   readonly publicApi: IStudio
   readonly address: {studioId: string}
   readonly _projectsProxy: PointerProxy<Record<ProjectId, Project>> =
@@ -127,7 +132,14 @@ export class Studio {
 
     // initialize UI if we're in the browser
     if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
-      this.ui = new UIConstructorModule.default(this)
+      UIConstructorModule!
+        .then((M) => {
+          this._ui = new M(this)
+          this._uiInitDeferred.resolve(null)
+        })
+        .catch((error) => {
+          console.error(`Failed initializing the UI at @theatre/studio.`, error)
+        })
     }
 
     this._attachToIncomingProjects()
@@ -205,9 +217,11 @@ export class Studio {
 
     this._initializedDeferred.resolve()
 
-    if (process.env.NODE_ENV !== 'test' && this.ui) {
-      this.ui.render()
-      checkForUpdates()
+    if (process.env.NODE_ENV !== 'test') {
+      this._uiInitDeferred.promise.then(() => {
+        this.ui.render()
+        checkForUpdates()
+      })
     }
   }
 
@@ -468,8 +482,10 @@ export class Studio {
           }
 
           if (existingAsset) {
+            const blobCompare = (await import('blob-compare')).default
+
             // @ts-ignore
-            sameSame = await blobCompare!.isEqual(asset, existingAsset)
+            sameSame = await blobCompare.isEqual(asset, existingAsset)
 
             // if same same, we do nothing
             if (sameSame) {

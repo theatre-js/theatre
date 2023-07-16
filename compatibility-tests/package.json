@@ -9,7 +9,7 @@
   "dependencies": {
     "@cspotcode/zx": "^6.1.2",
     "node-cleanup": "^2.1.2",
-    "playwright": "^1.28.1",
+    "playwright": "^1.29.1",
     "prettier": "^2.6.2",
     "verdaccio": "^5.10.2",
     "verdaccio-auth-memory": "^10.2.0",
