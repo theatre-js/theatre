@@ -55,7 +55,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: ./.github/actions/yarn-nm-install
 
-      - run: yarn test
+      - run: BROWSERSLIST_DISABLE_CACHE=1 yarn test
   Typecheck:
     runs-on: ubuntu-latest
 
