@@ -1,6 +1,6 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
-import type UI from '@theatre/studio/UI'
+import UI from '@theatre/studio/UI/UI'
 import type {Pointer, Ticker} from '@theatre/dataverse'
 import {Atom, PointerProxy, pointerToPrism} from '@theatre/dataverse'
 import type {
@@ -32,9 +32,6 @@ const DEFAULT_PERSISTENCE_KEY = 'theatre-0.4'
 
 export type CoreExports = typeof _coreExports
 
-const UIConstructorModule =
-  typeof window !== 'undefined' ? import('./UI').then((M) => M.default) : null
-
 const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
 \`\`\`
 import studio from '@theatre/studio'
@@ -64,16 +61,9 @@ studio.initialize()
 `
 
 export class Studio {
-  protected _ui: UI | null = null
+  readonly ui: UI
   // this._uiInitDeferred.promise will resolve once this._ui is set
-  private _uiInitDeferred = defer()
-  get ui() {
-    if (!this._ui) {
-      debugger
-      throw new Error(`Studio.ui called before UI is initialized`)
-    }
-    return this._ui
-  }
+
   readonly publicApi: IStudio
   readonly address: {studioId: string}
   readonly _projectsProxy: PointerProxy<Record<ProjectId, Project>> =
@@ -130,17 +120,7 @@ export class Studio {
     this.address = {studioId: nanoid(10)}
     this.publicApi = new TheatreStudio(this)
 
-    // initialize UI if we're in the browser
-    if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
-      UIConstructorModule!
-        .then((M) => {
-          this._ui = new M(this)
-          this._uiInitDeferred.resolve(null)
-        })
-        .catch((error) => {
-          console.error(`Failed initializing the UI at @theatre/studio.`, error)
-        })
-    }
+    this.ui = new UI(this)
 
     this._attachToIncomingProjects()
     this.paneManager = new PaneManager(this)
@@ -215,13 +195,15 @@ export class Studio {
       return
     }
 
+    if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
+      await this.ui.ready
+    }
+
     this._initializedDeferred.resolve()
 
     if (process.env.NODE_ENV !== 'test') {
-      this._uiInitDeferred.promise.then(() => {
-        this.ui.render()
-        checkForUpdates()
-      })
+      this.ui.render()
+      checkForUpdates()
     }
   }
 
