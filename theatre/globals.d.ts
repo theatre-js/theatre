@@ -68,3 +68,7 @@ declare module 'lodash-webpack-plugin'
 declare module 'webpack-bundle-analyzer'
 declare module 'merge-deep'
 declare module 'exec-loader!./commitHash'
+declare module 'blob-compare' {
+  const compare: (left: File | Blob, right: File | Blob) => Promise<boolean>
+  export default compare
+}

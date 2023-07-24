@@ -20,15 +20,21 @@ module.exports = {
   automock: false,
   transform: {
     '^.+\\.tsx?$': [
-      'esbuild-jest',
+      'jest-esbuild',
       {
         sourcemap: true,
+        supported: {
+          'dynamic-import': false,
+        },
       },
     ],
     '^.+\\.js$': [
-      'esbuild-jest',
+      'jest-esbuild',
       {
         sourcemap: true,
+        supported: {
+          'dynamic-import': false,
+        },
       },
     ],
   },

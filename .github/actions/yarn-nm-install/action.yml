@@ -52,3 +52,7 @@ runs:
       if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
       shell: bash
       run: yarn workspace playground run playwright install --with-deps
+
+    - name: Update browserlist
+      shell: bash
+      run: npx browserslist@latest --update-db

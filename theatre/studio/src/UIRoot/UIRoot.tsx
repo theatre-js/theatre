@@ -46,7 +46,9 @@ const INTERNAL_LOGGING = /Playground.+Theatre\.js/.test(
   (typeof document !== 'undefined' ? document?.title : null) ?? '',
 )
 
-export default function UIRoot() {
+export default function UIRoot(props: {
+  containerShadow: ShadowRoot & HTMLElement
+}) {
   const studio = getStudio()
   const [portalLayerRef, portalLayer] = useRefAndState<HTMLDivElement>(
     undefined as $IntentionalAny,
@@ -87,7 +89,7 @@ export default function UIRoot() {
                 target={
                   window.__IS_VISUAL_REGRESSION_TESTING === true
                     ? undefined
-                    : getStudio()!.ui.containerShadow
+                    : props.containerShadow
                 }
               >
                 <>

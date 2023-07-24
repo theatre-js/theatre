@@ -1,6 +1,6 @@
 import Scrub from '@theatre/studio/Scrub'
 import type {StudioHistoricState} from '@theatre/studio/store/types/historic'
-import type UI from '@theatre/studio/UI'
+import UI from '@theatre/studio/UI/UI'
 import type {Pointer, Ticker} from '@theatre/dataverse'
 import {Atom, PointerProxy, pointerToPrism} from '@theatre/dataverse'
 import type {
@@ -32,13 +32,6 @@ const DEFAULT_PERSISTENCE_KEY = 'theatre-0.4'
 
 export type CoreExports = typeof _coreExports
 
-const UIConstructorModule =
-  typeof window !== 'undefined' ? require('./UI') : null
-
-// this package has a reference to `window` that breaks SSR, so we require it conditionally
-const blobCompare =
-  typeof window !== 'undefined' ? require('blob-compare') : null
-
 const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
 \`\`\`
 import studio from '@theatre/studio'
@@ -68,7 +61,9 @@ studio.initialize()
 `
 
 export class Studio {
-  readonly ui!: UI
+  readonly ui: UI
+  // this._uiInitDeferred.promise will resolve once this._ui is set
+
   readonly publicApi: IStudio
   readonly address: {studioId: string}
   readonly _projectsProxy: PointerProxy<Record<ProjectId, Project>> =
@@ -125,10 +120,7 @@ export class Studio {
     this.address = {studioId: nanoid(10)}
     this.publicApi = new TheatreStudio(this)
 
-    // initialize UI if we're in the browser
-    if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
-      this.ui = new UIConstructorModule.default(this)
-    }
+    this.ui = new UI(this)
 
     this._attachToIncomingProjects()
     this.paneManager = new PaneManager(this)
@@ -203,9 +195,13 @@ export class Studio {
       return
     }
 
+    if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
+      await this.ui.ready
+    }
+
     this._initializedDeferred.resolve()
 
-    if (process.env.NODE_ENV !== 'test' && this.ui) {
+    if (process.env.NODE_ENV !== 'test') {
       this.ui.render()
       checkForUpdates()
     }
@@ -468,8 +464,10 @@ export class Studio {
           }
 
           if (existingAsset) {
+            const blobCompare = (await import('blob-compare')).default
+
             // @ts-ignore
-            sameSame = await blobCompare!.isEqual(asset, existingAsset)
+            sameSame = await blobCompare.isEqual(asset, existingAsset)
 
             // if same same, we do nothing
             if (sameSame) {

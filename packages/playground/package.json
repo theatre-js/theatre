@@ -8,9 +8,9 @@
     "dist/**/*"
   ],
   "scripts": {
-    "serve": "node -r esbuild-register devEnv/build.ts --serve --dev",
-    "serve:ci": "node -r esbuild-register devEnv/build.ts --serve",
-    "build": "node -r esbuild-register devEnv/build.ts",
+    "serve": "vite",
+    "serve:ci": "vite build && vite preview",
+    "build": "vite build --force",
     "build:static": "echo 'building for vercel' && yarn run build",
     "typecheck": "tsc --noEmit",
     "test": "playwright test --config=devEnv/playwright.config.ts",
@@ -22,6 +22,7 @@
     "@playwright/test": "^1.29.1",
     "@react-three/drei": "^7.2.2",
     "@react-three/fiber": "^7.0.6",
+    "@rollup/plugin-virtual": "^3.0.1",
     "@theatre/core": "workspace:*",
     "@theatre/r3f": "workspace:*",
     "@theatre/studio": "workspace:*",
@@ -29,9 +30,19 @@
     "@types/lodash-es": "^4.17.4",
     "@types/node": "^15.6.2",
     "@types/react": "^17.0.9",
+    "@vitejs/plugin-react": "^4.0.0",
+    "@vitejs/plugin-react-swc": "^3.3.2",
     "esbuild": "^0.17.6",
     "esbuild-register": "^3.4.2",
+    "parcel": "^2.9.3",
     "three": "^0.130.1",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.2",
+    "vite": "^4.3.9",
+    "vite-plugin-commonjs": "^0.8.0",
+    "vite-plugin-html-template": "^1.2.0",
+    "vite-plugin-mpa": "^1.2.0"
+  },
+  "dependencies": {
+    "@originjs/vite-plugin-commonjs": "^1.0.3"
   }
 }

@@ -2,20 +2,17 @@ import UIRoot from '@theatre/studio/UIRoot/UIRoot'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import type {Studio} from './Studio'
-import {val} from '@theatre/dataverse'
-import {getMounter} from './utils/renderInPortalInContext'
-import {withStyledShadow} from './css'
-import ExtensionToolbar from './toolbars/ExtensionToolbar/ExtensionToolbar'
+import {getMounter} from '@theatre/studio/utils/renderInPortalInContext'
+import {withStyledShadow} from '@theatre/studio/css'
+import ExtensionToolbar from '@theatre/studio/toolbars/ExtensionToolbar/ExtensionToolbar'
 
-export default class UI {
+export default class UINonSSRBits {
   readonly containerEl = document.createElement('div')
-  private _rendered = false
   private _renderTimeout: NodeJS.Timer | undefined = undefined
   private _documentBodyUIIsRenderedIn: HTMLElement | undefined = undefined
   readonly containerShadow: ShadowRoot & HTMLElement
 
-  constructor(readonly studio: Studio) {
+  constructor() {
     // @todo we can't bootstrap Theatre.js (as in, to design Theatre.js using theatre), if we rely on IDed elements
     this.containerEl.id = 'theatrejs-studio-root'
 
@@ -49,15 +46,6 @@ export default class UI {
   }
 
   render() {
-    if (this._rendered) {
-      return
-    }
-    this._rendered = true
-
-    this._render()
-  }
-
-  protected _render() {
     const renderCallback = () => {
       if (!document.body) {
         this._renderTimeout = setTimeout(renderCallback, 5)
@@ -66,28 +54,12 @@ export default class UI {
       this._renderTimeout = undefined
       this._documentBodyUIIsRenderedIn = document.body
       this._documentBodyUIIsRenderedIn.appendChild(this.containerEl)
-      ReactDOM.render(React.createElement(UIRoot), this.containerShadow)
+      ReactDOM.render(
+        React.createElement(UIRoot, {containerShadow: this.containerShadow}),
+        this.containerShadow,
+      )
     }
     this._renderTimeout = setTimeout(renderCallback, 10)
-  }
-
-  hide() {
-    this.studio.transaction(({drafts}) => {
-      drafts.ahistoric.visibilityState = 'everythingIsHidden'
-    })
-  }
-
-  restore() {
-    this.render()
-    this.studio.transaction(({drafts}) => {
-      drafts.ahistoric.visibilityState = 'everythingIsVisible'
-    })
-  }
-
-  get isHidden() {
-    return (
-      val(this.studio.atomP.ahistoric.visibilityState) === 'everythingIsHidden'
-    )
   }
 
   renderToolset(toolsetId: string, htmlNode: HTMLElement) {

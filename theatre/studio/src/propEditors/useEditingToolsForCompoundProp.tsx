@@ -65,7 +65,12 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
         beingScrubbed: false,
         contextMenuItems: [],
         controlIndicators: (
-          <DefaultOrStaticValueIndicator hasStaticOverride={false} />
+          <DefaultOrStaticValueIndicator
+            hasStaticOverride={false}
+            obj={obj}
+            pathToProp={pathToProp}
+            propConfig={propConfig}
+          />
         ),
       }
     }
@@ -224,7 +229,12 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
         ...common,
         type: 'AllStatic',
         controlIndicators: (
-          <DefaultOrStaticValueIndicator hasStaticOverride={hasStatics} />
+          <DefaultOrStaticValueIndicator
+            hasStaticOverride={hasStatics}
+            obj={obj}
+            pathToProp={pathToProp}
+            propConfig={propConfig}
+          />
         ),
       }
     }
