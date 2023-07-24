@@ -137,9 +137,15 @@ export interface ISequence {
   /**
    * Given a property, returns a list of keyframes that affect that property.
    *
-   * @returns A list of keyframe objects
+   * @example
+   * Usage:
+   * ```ts
+   * // let's assume `sheet` is a sheet and obj is one of its objects
+   * const keyframes = sheet.sequence.__experimental_getKeyframes(obj.pointer.x)
+   * console.log(keyframes) // an array of keyframes
+   * ```
    */
-  getKeyframes(prop: Pointer<{}>): Keyframe[]
+  __experimental_getKeyframes(prop: Pointer<{}>): Keyframe[]
 
   /**
    * Attaches an audio source to the sequence. Playing the sequence automatically
@@ -299,8 +305,8 @@ export default class TheatreSequence implements ISequence {
     privateAPI(this).position = position
   }
 
-  getKeyframes(prop: Pointer<any>): Keyframe[] {
-    return privateAPI(this).getKeyframes(prop)
+  __experimental_getKeyframes(prop: Pointer<any>): Keyframe[] {
+    return privateAPI(this).getKeyframesOfSimpleProp(prop)
   }
 
   async attachAudio(args: IAttachAudioArgs): Promise<{

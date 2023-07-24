@@ -117,7 +117,12 @@ export default class Sequence implements PointerToPrismProvider {
     }
   }
 
-  getKeyframes<V>(prop: Pointer<any>): Keyframe[] {
+  /**
+   * Takes a pointer to a property of a SheetObject and returns the keyframes of that property.
+   *
+   * Theoretically, this method can be called from inside a prism so it can be reactive.
+   */
+  getKeyframesOfSimpleProp<V>(prop: Pointer<any>): Keyframe[] {
     const {path, root} = getPointerParts(prop)
 
     if (!isSheetObject(root)) {
