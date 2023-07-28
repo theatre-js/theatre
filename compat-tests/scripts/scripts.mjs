@@ -324,7 +324,7 @@ async function releaseToVerdaccio() {
 }
 
 /**
- * Get all the setups from `./compatibility-tests/`
+ * Get all the setups from `./compat-tests/`
  *
  * @returns {Promise<Array<string>>} An array containing the absolute paths to the compatibility test setups
  */

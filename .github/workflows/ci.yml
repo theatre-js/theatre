@@ -111,9 +111,7 @@ jobs:
       - uses: ./.github/actions/yarn-nm-install
       # re-enable the following line if we start to get EINTEGRITY errors again
       # - run: npm cache clean || npm cache verify
-      # This will test whether `npm install`/`yarn install` can actually run on each compatibility test fixture. See `compatibility-tests/README.md` for more info.
-      - run:
-          yarn workspace @theatre/compatibility-tests run install-fixtures
-          --verbose
+      # This will test whether `npm install`/`yarn install` can actually run on each compatibility test fixture. See `compat-tests/README.md` for more info.
+      - run: yarn workspace @theatre/compat-tests run install-fixtures --verbose
       # after that, we run the jest tests for each fixture
       - run: yarn test:compat:run
