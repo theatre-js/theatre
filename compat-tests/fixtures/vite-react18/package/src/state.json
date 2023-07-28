@@ -1,0 +1,26 @@
+{
+  "sheetsById": {
+    "R3F-Canvas": {
+      "staticOverrides": {
+        "byObject": {
+          "Camera": {
+            "position": {
+              "x": -1.9718646329873923,
+              "y": 0,
+              "z": 5.6728262108991725
+            }
+          },
+          "plane3": {
+            "rotation": {
+              "x": -1.5707963267948966,
+              "y": -1.6653345369377348e-16,
+              "z": -0.9115259508891379
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitionVersion": "0.4.0",
+  "revisionHistory": ["-NXkC2GceSVBoVqa", "Bw7ng1kdcWmMO5DN"]
+}
