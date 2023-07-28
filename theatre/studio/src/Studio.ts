@@ -275,20 +275,23 @@ export class Studio {
       throw new Error(`extension.id must be a string`)
     }
 
-    this.transaction(({drafts}) => {
-      if (drafts.ephemeral.extensions.byId[extension.id]) {
-        const prevExtension = drafts.ephemeral.extensions.byId[extension.id]
-        if (
-          extension === prevExtension ||
-          shallowEqual(extension, prevExtension)
-        ) {
-          // probably running studio.extend() several times because of hot reload.
-          // as long as it's the same extension, we can safely ignore.
-          return
-        }
-        throw new Error(`Extension id "${extension.id}" is already defined`)
-      }
+    const extensionId = extension.id
 
+    const prevExtension =
+      this._store.getState().ephemeral.extensions.byId[extensionId]
+    if (prevExtension) {
+      if (
+        extension === prevExtension ||
+        shallowEqual(extension, prevExtension)
+      ) {
+        // probably running studio.extend() several times because of hot reload.
+        // as long as it's the same extension, we can safely ignore.
+        return
+      }
+      throw new Error(`Extension id "${extension.id}" is already defined`)
+    }
+
+    this.transaction(({drafts}) => {
       drafts.ephemeral.extensions.byId[extension.id] = extension
 
       const allPaneClasses = drafts.ephemeral.extensions.paneClasses
