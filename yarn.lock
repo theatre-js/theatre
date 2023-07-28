@@ -9862,9 +9862,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@theatre/compatibility-tests@workspace:compatibility-tests":
+"@theatre/compat-tests@workspace:compat-tests":
   version: 0.0.0-use.local
-  resolution: "@theatre/compatibility-tests@workspace:compatibility-tests"
+  resolution: "@theatre/compat-tests@workspace:compat-tests"
   dependencies:
     "@cspotcode/zx": ^6.1.2
     node-cleanup: ^2.1.2

@@ -1,5 +1,5 @@
 {
-  "name": "@theatre/compatibility-tests",
+  "name": "@theatre/compat-tests",
   "private": true,
   "type": "module",
   "scripts": {

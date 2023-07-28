@@ -1,6 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  testMatch: ['<rootDir>/compatibility-tests/fixtures/*/*.compat-test.ts'],
+  testMatch: ['<rootDir>/compat-tests/fixtures/*/*.compat-test.ts'],
   moduleNameMapper: {},
   // setupFiles: ['./theatre/shared/src/setupTestEnv.ts'],
   automock: false,
