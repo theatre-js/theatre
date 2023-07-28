@@ -96,6 +96,16 @@ async function createBundles() {
       outfile: path.join(__dirname, '../dist/extension/index.js'),
       format: 'cjs',
       metafile: true,
+
+      /**
+       * Don't minify the extension bundle because it'll eventually get minified by the bundler of the user's project.
+       * However, we do want to tree shake the bundle and minify the syntax, so at least all the `if (false) {...}` blocks
+       * are removed. This also removes React's error that says "react is running in production mode but dead code elimination has not been applied...".
+       */
+      minifyIdentifiers: false,
+      minifySyntax: true,
+      minifyWhitespace: false,
+      treeShaking: true,
     }
 
     const result = await Promise.all([
