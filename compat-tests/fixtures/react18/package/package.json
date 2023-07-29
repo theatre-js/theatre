@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "dev": "parcel serve ./index.html",
+    "build": "parcel build ./index.html",
+    "start": "serve dist"
+  },
+  "dependencies": {
+    "@theatre/core": "0.0.1-COMPAT.1",
+    "@theatre/r3f": "0.0.1-COMPAT.1",
+    "@theatre/studio": "0.0.1-COMPAT.1",
+    "parcel": "^2.5.0",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "serve": "14.2.0"
+  }
+}

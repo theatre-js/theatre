@@ -1,0 +1,19 @@
+{
+  "sheetsById": {
+    "R3F-Canvas": {
+      "staticOverrides": {
+        "byObject": {
+          "Light 2": {
+            "intensity": 3
+          }
+        }
+      }
+    }
+  },
+  "definitionVersion": "0.4.0",
+  "revisionHistory": [
+    "jVNB3VWU34BIQK7M",
+    "-NXkC2GceSVBoVqa",
+    "Bw7ng1kdcWmMO5DN"
+  ]
+}
