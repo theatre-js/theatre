@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "dev": "parcel serve ./index.html"
+  },
+  "dependencies": {
+    "@react-three/drei": "^7.3.1",
+    "@react-three/fiber": "^7.0.6",
+    "@theatre/core": "0.0.1-COMPAT.1",
+    "@theatre/r3f": "0.0.1-COMPAT.1",
+    "@theatre/studio": "0.0.1-COMPAT.1",
+    "parcel-bundler": "^1.12.5",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "three": "^0.137.0"
+  }
+}
