@@ -5,6 +5,9 @@
     "start": "serve dist"
   },
   "dependencies": {
+    "@react-three/drei": "^9.11.3",
+    "@react-three/fiber": "^8.0.19",
+    "three": "^0.141.0",
     "@theatre/core": "0.0.1-COMPAT.1",
     "@theatre/r3f": "0.0.1-COMPAT.1",
     "@theatre/studio": "0.0.1-COMPAT.1",
