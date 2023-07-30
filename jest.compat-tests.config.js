@@ -25,4 +25,24 @@ module.exports = {
   // these tests take a long time to run, because each of them either runs a full build of a package,
   // or tests the build on a browser using playwright
   testTimeout: 1000 * 60 * 2,
+  transform: {
+    '^.+\\.tsx?$': [
+      'jest-esbuild',
+      {
+        sourcemap: true,
+        supported: {
+          'dynamic-import': false,
+        },
+      },
+    ],
+    '^.+\\.js$': [
+      'jest-esbuild',
+      {
+        sourcemap: true,
+        supported: {
+          'dynamic-import': false,
+        },
+      },
+    ],
+  },
 }
