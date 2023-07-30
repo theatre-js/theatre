@@ -1,13 +1,16 @@
 {
   "scripts": {
-    "dev": "parcel serve ./index.html"
+    "dev": "parcel serve ./index.html",
+    "build": "NODE_ENV=production parcel build ./index.html --no-minify",
+    "start": "serve dist"
   },
   "dependencies": {
     "@theatre/core": "0.0.1-COMPAT.1",
     "@theatre/r3f": "0.0.1-COMPAT.1",
     "@theatre/studio": "0.0.1-COMPAT.1",
     "parcel-bundler": "^1.12.5",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "serve": "14.2.0"
   }
 }

@@ -1,5 +1,5 @@
 import {getProject} from '@theatre/core'
-import React, {useEffect} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {Canvas} from '@react-three/fiber'
 import {editable as e, SheetProvider, PerspectiveCamera} from '@theatre/r3f'
 import state from './state.json'
@@ -16,19 +16,24 @@ function Plane({color, theatreKey, ...props}: any) {
 }
 
 export default function App() {
-  const [light2, setLight2] = React.useState<any>(null)
+  const light2Ref = useRef<any>()
 
   useEffect(() => {
-    if (!light2) return
+    const interval = setInterval(() => {
+      if (!light2Ref.current) return
+
+      clearInterval(interval)
+
+      const intensityInStateJson = 3
+      const currentIntensity = light2Ref.current.intensity
+      if (currentIntensity !== intensityInStateJson) {
+        console.error(`Test failed: light2.intensity is ${currentIntensity}`)
+      } else {
+        console.log(`Test passed: light2.intensity is ${intensityInStateJson}`)
+      }
+    }, 50)
     // see the note on <e.pointLight theatreKey="Light 2" /> below to understand why we're doing this
-    const intensityInStateJson = 3
-    const currentIntensity = light2.intensity
-    if (currentIntensity !== intensityInStateJson) {
-      console.error(`Test failed: light2.intensity is ${currentIntensity}`)
-    } else {
-      console.log(`Test passed: light2.intensity is ${intensityInStateJson}`)
-    }
-  }, [light2])
+  }, [])
 
   return (
     <Canvas
@@ -58,7 +63,7 @@ export default function App() {
           intensity={2}
           color="#e4be00"
           theatreKey="Light 2"
-          ref={setLight2}
+          ref={light2Ref}
         />
 
         <group position={[0, -0.9, -3]}>
