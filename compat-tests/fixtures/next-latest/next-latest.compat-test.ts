@@ -2,8 +2,6 @@
 import {$, cd, path, ProcessPromise} from '@cspotcode/zx'
 import {testServerAndPage} from '../../utils/testUtils'
 
-$.verbose = false
-
 const PATH_TO_PACKAGE = path.join(__dirname, `./package`)
 
 describe(`next`, () => {
@@ -22,21 +20,9 @@ describe(`next`, () => {
 
           return $`npm run start -- --port ${port}`
         },
-        waitTilServerIsReady: async (
-          process: ProcessPromise<unknown>,
-          port: number,
-        ) => {
-          for await (const chunk of process.stdout) {
-            const chunkString = chunk.toString()
 
-            if (chunkString.includes(`started server`)) {
-              // next's server is running now
-              break
-            }
-          }
-
-          return {url: `http://localhost:${port}`}
-        },
+        checkServerStdoutToSeeIfItsReady: (chunk) =>
+          chunk.includes('started server'),
       })
     })
   })
@@ -49,21 +35,8 @@ describe(`next`, () => {
 
         return $`npm run dev -- --port ${port}`
       },
-      waitTilServerIsReady: async (
-        process: ProcessPromise<unknown>,
-        port: number,
-      ) => {
-        for await (const chunk of process.stdout) {
-          const chunkString = chunk.toString()
-
-          if (chunkString.includes(`compiled client and server successfully`)) {
-            // next's server is running now
-            break
-          }
-        }
-
-        return {url: `http://localhost:${port}`}
-      },
+      checkServerStdoutToSeeIfItsReady: (chunk) =>
+        chunk.includes('compiled client and server successfully'),
     })
   })
 })

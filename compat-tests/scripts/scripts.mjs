@@ -78,7 +78,7 @@ export async function installFixtures() {
 
   console.log('Running `$ npm install` on test packages')
   await runNpmInstallOnTestPackages()
-  console.log('All tests installed successfully')
+  console.log('All fixtures installed successfully')
   await verdaccioServer.close()
   restoreTestPackageJsons()
   console.log('Done')

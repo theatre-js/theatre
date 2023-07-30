@@ -3,14 +3,38 @@ import {ProcessPromise} from '@cspotcode/zx'
 
 export function testServerAndPage({
   startServerOnPort,
-  waitTilServerIsReady,
+  checkServerStdoutToSeeIfItsReady,
 }: {
   startServerOnPort: (port: number) => ProcessPromise<unknown>
-  waitTilServerIsReady: (
-    process: ProcessPromise<unknown>,
-    port: number,
-  ) => Promise<{url: string}>
+
+  checkServerStdoutToSeeIfItsReady: (chunk: string) => boolean
 }) {
+  if (checkServerStdoutToSeeIfItsReady('') !== false) {
+    throw new Error(
+      `Incorrect test setup. checkServerStdoutToSeeIfItsReady should return false for an empty string.`,
+    )
+  }
+  const waitTilServerIsReady = async (
+    process: ProcessPromise<unknown>,
+  ): Promise<void> => {
+    const d = defer<void>()
+
+    process.stdout.on('data', (chunk) => {
+      if (checkServerStdoutToSeeIfItsReady(chunk.toString())) {
+        //  server is ready
+        d.resolve()
+      }
+    })
+
+    await Promise.race([
+      d.promise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject(`Server wasn't ready after 30 seconds`), 30000),
+      ),
+    ])
+
+    return d.promise
+  }
   let browser: Browser, page: Page
   beforeAll(async () => {
     browser = await chromium.launch()
@@ -37,8 +61,10 @@ export function testServerAndPage({
       throw new Error(`Failed to start server: ${err}`)
     }
 
+    const url = `http://localhost:${port}`
+
     try {
-      const {url} = await waitTilServerIsReady(process, port)
+      await waitTilServerIsReady(process)
 
       await testTheatreOnPage(page, {url})
     } finally {
@@ -77,7 +103,7 @@ async function testTheatreOnPage(page: Page, {url}: {url: string}) {
   try {
     await page.goto(url, {
       waitUntil: 'domcontentloaded',
-      timeout: 3000,
+      timeout: 30000,
     })
 
     // give the console listener 3 seconds to resolve, otherwise fail the test

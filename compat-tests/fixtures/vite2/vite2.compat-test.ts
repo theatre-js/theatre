@@ -2,8 +2,6 @@
 import {$, cd, path, ProcessPromise} from '@cspotcode/zx'
 import {testServerAndPage} from '../../utils/testUtils'
 
-$.verbose = false
-
 const PATH_TO_PACKAGE = path.join(__dirname, `./package`)
 
 describe(`vite2`, () => {
@@ -21,22 +19,22 @@ describe(`vite2`, () => {
       return $`npm run preview -- --port ${port}`
     }
 
-    async function waitTilServerIsReady(
-      process: ProcessPromise<unknown>,
-      port: number,
-    ): Promise<{
-      url: string
-    }> {
-      for await (const chunk of process.stdout) {
-        if (chunk.toString().includes('--host')) {
-          // vite's server is running now
-          break
-        }
-      }
+    testServerAndPage({
+      startServerOnPort,
+      checkServerStdoutToSeeIfItsReady: (chunk) => chunk.includes('--host'),
+    })
+  })
 
-      return {url: `http://localhost:${port}`}
+  describe(`vite dev`, () => {
+    function startServerOnPort(port: number): ProcessPromise<unknown> {
+      cd(PATH_TO_PACKAGE)
+
+      return $`npm run dev -- --port ${port}`
     }
 
-    testServerAndPage({startServerOnPort, waitTilServerIsReady})
+    testServerAndPage({
+      startServerOnPort,
+      checkServerStdoutToSeeIfItsReady: (chunk) => chunk.includes('--host'),
+    })
   })
 })

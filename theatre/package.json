@@ -51,7 +51,7 @@
     "blob-compare": "1.1.0",
     "circular-dependency-plugin": "^5.2.2",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.12.15",
+    "esbuild": "^0.18.17",
     "esbuild-loader": "^2.13.1",
     "esbuild-register": "^2.5.0",
     "exec-loader": "^4.0.0",
