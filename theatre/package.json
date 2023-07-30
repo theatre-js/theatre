@@ -20,9 +20,6 @@
     "clean": "rm -rf ./.temp && rm -rf ./core/dist && rm -rf ./studio/dist"
   },
   "devDependencies": {
-    "@babel/cli": "^7.14.3",
-    "@babel/core": "^7.14.3",
-    "@babel/runtime": "^7.14.0",
     "@microsoft/api-extractor": "^7.18.11",
     "@rollup/plugin-alias": "^3.1.5",
     "@rollup/plugin-multi-entry": "^4.1.0",
@@ -45,9 +42,6 @@
     "@types/styled-components": "^5.1.9",
     "@types/three": "^0.129.0",
     "@types/uuid": "^8.3.0",
-    "babel-loader": "^8.2.2",
-    "babel-polyfill": "^6.26.0",
-    "babel-register": "^6.26.0",
     "blob-compare": "1.1.0",
     "circular-dependency-plugin": "^5.2.2",
     "cross-env": "^7.0.3",
