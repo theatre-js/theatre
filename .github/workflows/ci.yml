@@ -114,4 +114,4 @@ jobs:
       # This will test whether `npm install`/`yarn install` can actually run on each compatibility test fixture. See `compat-tests/README.md` for more info.
       - run: yarn workspace @theatre/compat-tests run install-fixtures --verbose
       # after that, we run the jest tests for each fixture
-      - run: yarn test:compat:run
+      - run: yarn test:compat:run --verbose

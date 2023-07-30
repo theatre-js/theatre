@@ -103,13 +103,18 @@ async function testTheatreOnPage(page: Page, {url}: {url: string}) {
   try {
     await page.goto(url, {
       waitUntil: 'domcontentloaded',
-      timeout: 30000,
+      timeout: 1000 * 60 * 2,
     })
 
     // give the console listener 3 seconds to resolve, otherwise fail the test
     await Promise.race([
       d.promise,
-      new Promise((_, reject) => setTimeout(() => reject('Timed out'), 30000)),
+      new Promise((_, reject) =>
+        setTimeout(
+          () => reject('Did not intercept any test-related console logs'),
+          30000,
+        ),
+      ),
     ])
   } finally {
     page.off('console', processConsoleEvents)
