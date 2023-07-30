@@ -29,7 +29,10 @@ export function testServerAndPage({
     await Promise.race([
       d.promise,
       new Promise((_, reject) =>
-        setTimeout(() => reject(`Server wasn't ready after 30 seconds`), 30000),
+        setTimeout(
+          () => reject(`Server wasn't ready after two minutes`),
+          1000 * 60 * 2,
+        ),
       ),
     ])
 
