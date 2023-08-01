@@ -15,5 +15,8 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "serve": "14.2.0"
+  },
+  "devDependencies": {
+    "buffer": "^5.7.1"
   }
 }

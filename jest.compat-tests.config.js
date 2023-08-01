@@ -5,6 +5,7 @@ module.exports = {
     '<rootDir>/compat-tests/*.compat-test.ts',
   ],
   moduleNameMapper: {},
+  modulePathIgnorePatterns: ['<rootDir>/compat-tests/verdaccio'],
   // setupFiles: ['./theatre/shared/src/setupTestEnv.ts'],
   automock: false,
   // transform: {

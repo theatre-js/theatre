@@ -50,8 +50,10 @@ process.env.NPM_CONFIG_REGISTRY = config.VERDACCIO_URL
 
 const tempVersion =
   '0.0.1-COMPAT.' +
-  // a random integer between 1 and 50000
-  (Math.floor(Math.random() * 50000) + 1).toString()
+  (typeof argv['version'] === 'number'
+    ? argv['version'].toString()
+    : // a random integer between 1 and 50000
+      (Math.floor(Math.random() * 50000) + 1).toString())
 
 /**
  * This script starts verdaccio and publishes all the packages in the monorepo to it, then
@@ -65,7 +67,9 @@ export async function installFixtures() {
     return false
   })
 
-  console.log('Using temporary version: ' + tempVersion)
+  console.log(
+    `Using temporary version: ${tempVersion} . Use --version=[NUMBER] to change.`,
+  )
   console.log('Patching package.json files in ./test-*')
   const restoreTestPackageJsons = await patchTestPackageJsons()
 
@@ -348,7 +352,7 @@ export async function getCompatibilityTestSetups() {
  */
 export async function clean() {
   const toDelete = await globby(
-    './fixtures/*/package/(node_modules|yarn.lock|package-lock.json)',
+    './fixtures/*/package/(node_modules|yarn.lock|package-lock.json|.parcel-cache)',
     {
       cwd: config.PATH_TO_COMPAT_TESTS_ROOT,
       // node_modules et al are gitignored, but we still want to clean them
