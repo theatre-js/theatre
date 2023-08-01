@@ -1,6 +1,6 @@
 store:
   memory:
-    limit: 1000
+    limit: 10000
 auth:
   auth-memory:
     users:

@@ -11,12 +11,9 @@
     "@theatre/core": "0.0.1-COMPAT.1",
     "@theatre/r3f": "0.0.1-COMPAT.1",
     "@theatre/studio": "0.0.1-COMPAT.1",
-    "parcel": "^2.5.0",
+    "parcel": "^2.9.3",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "serve": "14.2.0"
-  },
-  "devDependencies": {
-    "buffer": "^5.7.1"
   }
 }
