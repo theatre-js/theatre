@@ -7,7 +7,6 @@ import path from 'path'
 import {globby, argv, YAML, $, fs, cd, os, within} from 'zx'
 import onCleanup from 'node-cleanup'
 import * as verdaccioPackage from 'verdaccio'
-import {chromium, devices} from 'playwright'
 
 /**
  * @param {string} pkg
@@ -55,6 +54,8 @@ const tempVersion =
     : // a random integer between 1 and 50000
       (Math.floor(Math.random() * 50000) + 1).toString())
 
+const keepAlive = !!argv['keep-alive']
+
 /**
  * This script starts verdaccio and publishes all the packages in the monorepo to it, then
  * it runs `npm install` on all the test packages, and finally it closes verdaccio.
@@ -83,8 +84,15 @@ export async function installFixtures() {
   console.log('Running `$ npm install` on test packages')
   await runNpmInstallOnTestPackages()
   console.log('All fixtures installed successfully')
-  await verdaccioServer.close()
-  restoreTestPackageJsons()
+  if (keepAlive) {
+    console.log('Keeping verdaccio alive. Press Ctrl+C to exit.')
+    // wait for ctrl+c
+    await new Promise((resolve) => {})
+  } else {
+    console.log('Closing verdaccio. Use --keep-alive to keep it running.')
+    restoreTestPackageJsons()
+    await verdaccioServer.close()
+  }
   console.log('Done')
 }
 
@@ -92,18 +100,39 @@ async function runNpmInstallOnTestPackages() {
   const packagePaths = await getCompatibilityTestSetups()
 
   for (const pathToPackageDir of packagePaths) {
-    cd(pathToPackageDir)
+    await fs.remove(path.join(pathToPackageDir, 'node_modules'))
+    await fs.remove(path.join(pathToPackageDir, 'package-lock.json'))
+    cd(path.join(pathToPackageDir, '../'))
+    const tempPath = fs.mkdtempSync(
+      path.join(os.tmpdir(), 'theatre-compat-test-'),
+    )
+    await fs.copy(pathToPackageDir, tempPath)
+
+    cd(path.join(tempPath))
     try {
       console.log('Running npm install on ' + pathToPackageDir + '...')
       await $`npm install --registry ${config.VERDACCIO_URL} --loglevel ${
         verbose ? 'warn' : 'error'
       } --fund false`
+
+      console.log('npm install finished successfully in' + tempPath)
+
+      await fs.move(
+        path.join(tempPath, 'node_modules'),
+        path.join(pathToPackageDir, 'node_modules'),
+      )
+      await fs.move(
+        path.join(tempPath, 'package-lock.json'),
+        path.join(pathToPackageDir, 'package-lock.json'),
+      )
     } catch (error) {
       console.error(`Failed to install dependencies for ${pathToPackageDir}
 Try running \`npm install\` in that directory manually via:
 cd ${pathToPackageDir}
 npm install --registry ${config.VERDACCIO_URL}
 Original error: ${error}`)
+    } finally {
+      await fs.remove(tempPath)
     }
   }
 }
@@ -187,6 +216,10 @@ const startVerdaccio = (port) => {
         config.logs.level = 'warn'
       }
 
+      const cache = path.join(__dirname, '../.verdaccio-cache')
+
+      config.self_path = cache
+
       const onReady = (webServer) => {
         webServer.listen(port, () => {
           resolved = true
@@ -194,14 +227,7 @@ const startVerdaccio = (port) => {
         })
       }
 
-      startVerdaccioServer(
-        config,
-        6000,
-        undefined,
-        '1.0.0',
-        'verdaccio',
-        onReady,
-      )
+      startVerdaccioServer(config, 6000, cache, '1.0.0', 'verdaccio', onReady)
     }),
     new Promise((_, rej) => {
       setTimeout(() => {
