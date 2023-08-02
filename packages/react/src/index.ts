@@ -240,9 +240,9 @@ function queueIfNeeded() {
           item.runUpdate()
         }
       }
-    }, 1)
 
-    microtaskIsQueued = false
+      microtaskIsQueued = false
+    }, 1)
   })
 }
 /**
