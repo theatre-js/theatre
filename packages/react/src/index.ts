@@ -65,16 +65,16 @@ export function usePrism<T>(
     atomRef.current.set(fnAsCallback)
   }
 
-  const prsm = useMemo(
-    () =>
-      prism(() => {
-        const fn = atomRef.current.prism.getValue()
-        return fn()
-      }),
-    [],
-  )
+  const prismRef = useRef<Prism<T> | null>(null)
 
-  return usePrismInstance(prsm, debugLabel)
+  if (!prismRef.current) {
+    prismRef.current = prism(() => {
+      const fn = atomRef.current.prism.getValue()
+      return fn()
+    })
+  }
+
+  return usePrismInstance(prismRef.current, debugLabel)
 }
 
 export const useVal: typeof val = (p: $IntentionalAny, debugLabel?: string) => {
@@ -346,6 +346,7 @@ export function usePrismInstance<T>(der: Prism<T>, debugLabel?: string): T {
 
   if (process.env.NODE_ENV !== 'production') {
     if (der !== ref.current.der) {
+      debugger
       console.error(
         'Argument `der` in `usePrismInstance(der)` should not change between renders.',
       )
