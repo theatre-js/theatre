@@ -5,15 +5,13 @@ test.describe('hot-reload-extension-pane', () => {
     await page.goto('./tests/hot-reload-extension-pane/')
 
     const toolbar = page.locator(
-      '[data-test-id="theatre-extensionToolbar-global"]',
+      '[data-testid="theatre-extensionToolbar-global"]',
     )
 
     const forwardButton = toolbar.getByRole('button', {name: '>'})
     await forwardButton.click()
 
-    const pane = page.locator(
-      '[data-test-id="theatre-pane-content-pane1 \\#1"]',
-    )
+    const pane = page.locator('[data-testid="theatre-pane-content-pane1 \\#1"]')
 
     expect(await pane.textContent()).toEqual('pane1-config1')
     await forwardButton.click()

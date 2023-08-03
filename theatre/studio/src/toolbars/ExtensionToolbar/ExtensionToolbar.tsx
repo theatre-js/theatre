@@ -71,7 +71,7 @@ export const ExtensionToolbar: React.FC<{
   if (groups.length === 0) return null
 
   return (
-    <Container data-test-id={`theatre-extensionToolbar-${toolbarId}`}>
+    <Container data-testid={`theatre-extensionToolbar-${toolbarId}`}>
       {showLeftDivider ? <GroupDivider></GroupDivider> : undefined}
       {groups}
     </Container>

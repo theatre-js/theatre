@@ -51,6 +51,10 @@ const config: PlaywrightTestConfig = {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        launchOptions: {
+          // args: ["--headless","--no-sandbox","--use-angle=gl"]
+          args: ['--no-sandbox'],
+        },
       },
     },
 

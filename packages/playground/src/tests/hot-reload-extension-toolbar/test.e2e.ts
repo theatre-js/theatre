@@ -5,7 +5,7 @@ test.describe('hot-reload-extension-toolbar', () => {
     await page.goto('./tests/hot-reload-extension-toolbar/')
 
     const toolbar = page.locator(
-      '[data-test-id="theatre-extensionToolbar-global"]',
+      '[data-testid="theatre-extensionToolbar-global"]',
     )
 
     const forwardButton = toolbar.getByRole('button', {name: '>'})

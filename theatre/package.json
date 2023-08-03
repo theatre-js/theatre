@@ -40,7 +40,6 @@
     "@types/redux-actions": "^2.6.1",
     "@types/shallowequal": "^1.1.1",
     "@types/styled-components": "^5.1.9",
-    "@types/three": "^0.129.0",
     "@types/uuid": "^8.3.0",
     "blob-compare": "1.1.0",
     "circular-dependency-plugin": "^5.2.2",
