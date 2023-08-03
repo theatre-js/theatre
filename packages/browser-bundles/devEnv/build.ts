@@ -35,14 +35,14 @@ function createBundles(watch: boolean) {
   //   format: 'iife',
   // })
 
-  build({
+  void build({
     ...esbuildConfig,
     entryPoints: [path.join(pathToPackage, 'src/core-and-studio.ts')],
     outfile: path.join(pathToPackage, 'dist/core-and-studio.js'),
     format: 'iife',
   })
 
-  build({
+  void build({
     ...esbuildConfig,
     entryPoints: [path.join(pathToPackage, 'src/core-only.ts')],
     outfile: path.join(pathToPackage, 'dist/core-only.min.js'),

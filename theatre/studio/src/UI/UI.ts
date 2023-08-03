@@ -24,9 +24,14 @@ export default class UI {
     }
     this._rendered = true
 
-    this._nonSSRBits.then((b) => {
-      b.render()
-    })
+    this._nonSSRBits
+      .then((b) => {
+        b.render()
+      })
+      .catch((err) => {
+        console.error(err)
+        throw err
+      })
   }
 
   hide() {
@@ -53,10 +58,14 @@ export default class UI {
 
     let unmount: null | (() => void) = null
 
-    this._nonSSRBits.then((nonSSRBits) => {
-      if (shouldUnmount) return // unmount requested before the toolset is mounted, so, abort
-      unmount = nonSSRBits.renderToolset(toolsetId, htmlNode)
-    })
+    this._nonSSRBits
+      .then((nonSSRBits) => {
+        if (shouldUnmount) return // unmount requested before the toolset is mounted, so, abort
+        unmount = nonSSRBits.renderToolset(toolsetId, htmlNode)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
 
     return () => {
       if (unmount) {

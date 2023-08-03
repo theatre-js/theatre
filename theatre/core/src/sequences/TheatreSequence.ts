@@ -354,7 +354,9 @@ async function resolveAudioBuffer(args: IAttachAudioArgs): Promise<{
     }
     return new Promise<AudioContext>((resolve) => {
       const listener = () => {
-        ctx.resume()
+        ctx.resume().catch((err) => {
+          console.error(err)
+        })
       }
 
       const eventsToHookInto: Array<keyof WindowEventMap> = [
@@ -412,6 +414,7 @@ async function resolveAudioBuffer(args: IAttachAudioArgs): Promise<{
 
     const audioContext = await audioContextPromise
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     audioContext.decodeAudioData(
       arrayBuffer,
       decodedBufferDeferred.resolve,

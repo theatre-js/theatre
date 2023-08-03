@@ -7,7 +7,7 @@ import {Scene} from './Scene'
 studio.initialize()
 
 // trigger warning notification
-getProject('Sample project').sheet('Scene').sequence.play()
+void getProject('Sample project').sheet('Scene').sequence.play()
 
 // fire an info notification
 notify.info(
@@ -16,7 +16,7 @@ notify.info(
     '(and all others) at the start of index.tsx. You can also see examples of success and warnign notifications.',
 )
 
-getProject('Sample project').ready.then(() => {
+void getProject('Sample project').ready.then(() => {
   // fire a success notification on project load
   notify.success(
     'Project loaded!',

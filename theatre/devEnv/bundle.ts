@@ -1,3 +1,3 @@
 import {createBundles} from './createBundles'
 
-createBundles(false)
+void createBundles(false)

@@ -106,6 +106,6 @@ async function test1() {
   iterateOnSequence()
 }
 
-test1().then(() => {
+void test1().then(() => {
   console.log('test1 done')
 })

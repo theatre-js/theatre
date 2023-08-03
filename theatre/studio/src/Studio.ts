@@ -203,7 +203,9 @@ export class Studio {
 
     if (process.env.NODE_ENV !== 'test') {
       this.ui.render()
-      checkForUpdates()
+      checkForUpdates().catch((err) => {
+        console.error(err)
+      })
     }
   }
 
@@ -266,7 +268,7 @@ export class Studio {
     return this._coreAtom.pointer.core
   }
 
-  extend(extension: IExtension) {
+  extend(extension: IExtension, opts?: {__experimental_reconfigure?: boolean}) {
     if (!extension || typeof extension !== 'object') {
       throw new Error(`Extensions must be JS objects`)
     }
@@ -275,20 +277,27 @@ export class Studio {
       throw new Error(`extension.id must be a string`)
     }
 
+    const reconfigure = opts?.__experimental_reconfigure === true
+
     const extensionId = extension.id
 
     const prevExtension =
       this._store.getState().ephemeral.extensions.byId[extensionId]
     if (prevExtension) {
-      if (
-        extension === prevExtension ||
-        shallowEqual(extension, prevExtension)
-      ) {
-        // probably running studio.extend() several times because of hot reload.
-        // as long as it's the same extension, we can safely ignore.
-        return
+      if (reconfigure) {
+      } else {
+        if (
+          extension === prevExtension ||
+          shallowEqual(extension, prevExtension)
+        ) {
+          // probably running studio.extend() several times because of hot reload.
+          // as long as it's the same extension, we can safely ignore.
+          return
+        }
+        throw new Error(
+          `Extension id "${extension.id}" is already defined. If you mean to re-configure the extension, do it like this: studio.extend(extension, {__experimental_reconfigure: true})})`,
+        )
       }
-      throw new Error(`Extension id "${extension.id}" is already defined`)
     }
 
     this.transaction(({drafts}) => {
@@ -296,6 +305,14 @@ export class Studio {
 
       const allPaneClasses = drafts.ephemeral.extensions.paneClasses
 
+      if (reconfigure && prevExtension) {
+        // remove all pane classes that were set by the previous version of the extension
+        prevExtension.panes?.forEach((classDefinition) => {
+          delete allPaneClasses[classDefinition.class]
+        })
+      }
+
+      // if the extension defines pane classes, add them to the list of all pane classes
       extension.panes?.forEach((classDefinition) => {
         if (typeof classDefinition.class !== 'string') {
           throw new Error(`pane.class must be a string`)
@@ -309,9 +326,16 @@ export class Studio {
 
         const existing = allPaneClasses[classDefinition.class]
         if (existing) {
-          throw new Error(
-            `Pane class "${classDefinition.class}" already exists and is supplied by extension ${existing}`,
-          )
+          if (reconfigure && existing.extensionId === extension.id) {
+            // well this should never happen because we already deleted the pane class above
+            console.warn(
+              `Pane class "${classDefinition.class}" already exists. This is a bug in Theatre.js. Please report it at https://github.com/theatre-js/theatre/issues/new`,
+            )
+          } else {
+            throw new Error(
+              `Pane class "${classDefinition.class}" already exists and is supplied by extension ${existing}`,
+            )
+          }
         }
 
         allPaneClasses[classDefinition.class] = {

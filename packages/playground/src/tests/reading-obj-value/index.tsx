@@ -39,13 +39,13 @@ const elements = new Array(TOTAL_ELEMENTS).fill(0).map((_, idx) => {
   return {el, sheet, obj}
 })
 
-project.ready.then(() => {
+void project.ready.then(() => {
   // select the playback controls obj so it shows as a tweakable control
   studio.setSelection([playbackControlObj])
   for (let i = 0; i < elements.length; i++) {
     const sheet = elements[i].sheet
     sheet.sequence.position = i * TOTAL_ELEMENTS_R * 5
-    sheet.sequence.play({
+    void sheet.sequence.play({
       iterationCount: Infinity,
     })
   }

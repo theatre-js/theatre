@@ -53,7 +53,7 @@ const ImageTypeExample: React.FC<{}> = (props) => {
       onClick={() => {
         if (sheet.sequence.position === 0) {
           sheet.sequence.position = 0
-          sheet.sequence.play()
+          void sheet.sequence.play()
         } else {
           sheet.sequence.position = 0
         }
@@ -64,6 +64,10 @@ const ImageTypeExample: React.FC<{}> = (props) => {
   )
 }
 
-project.ready.then(() => {
-  render(<ImageTypeExample />, document.getElementById('root'))
-})
+project.ready
+  .then(() => {
+    render(<ImageTypeExample />, document.getElementById('root'))
+  })
+  .catch((err) => {
+    console.error(err)
+  })

@@ -8,11 +8,10 @@ const definedGlobals = {
   'process.env.NODE_ENV': JSON.stringify('production'),
 }
 
-createBundles()
+void createBundles()
 
 async function createBundles() {
-  createMainBundle()
-  createExtensionBundle()
+  await Promise.all([createMainBundle(), createExtensionBundle()])
 
   async function createMainBundle() {
     const pathToEntry = path.join(__dirname, '../src/index.ts')

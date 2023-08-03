@@ -196,29 +196,34 @@ export default class Project {
     }
     this._studio = studio
 
-    studio.initialized.then(async () => {
-      await initialiseProjectState(studio, this, this.config.state)
+    studio.initialized
+      .then(async () => {
+        await initialiseProjectState(studio, this, this.config.state)
 
-      this._pointerProxies.historic.setPointer(
-        studio.atomP.historic.coreByProject[this.address.projectId],
-      )
-      this._pointerProxies.ahistoric.setPointer(
-        studio.atomP.ahistoric.coreByProject[this.address.projectId],
-      )
-      this._pointerProxies.ephemeral.setPointer(
-        studio.atomP.ephemeral.coreByProject[this.address.projectId],
-      )
+        this._pointerProxies.historic.setPointer(
+          studio.atomP.historic.coreByProject[this.address.projectId],
+        )
+        this._pointerProxies.ahistoric.setPointer(
+          studio.atomP.ahistoric.coreByProject[this.address.projectId],
+        )
+        this._pointerProxies.ephemeral.setPointer(
+          studio.atomP.ephemeral.coreByProject[this.address.projectId],
+        )
 
-      // asset storage has to be initialized after the pointers are set
-      studio
-        .createAssetStorage(this, this.config.assets?.baseUrl)
-        .then((assetStorage) => {
-          this.assetStorage = assetStorage
-          this._assetStorageReadyDeferred.resolve(undefined)
-        })
+        // asset storage has to be initialized after the pointers are set
+        await studio
+          .createAssetStorage(this, this.config.assets?.baseUrl)
+          .then((assetStorage) => {
+            this.assetStorage = assetStorage
+            this._assetStorageReadyDeferred.resolve(undefined)
+          })
 
-      this._studioReadyDeferred.resolve(undefined)
-    })
+        this._studioReadyDeferred.resolve(undefined)
+      })
+      .catch((err) => {
+        console.error(err)
+        throw err
+      })
   }
 
   get isAttachedToStudio() {

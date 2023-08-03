@@ -17,7 +17,7 @@ function createBundles(watch: boolean) {
     conditions: ['browser', 'node'],
   }
 
-  build({
+  void build({
     ...esbuildConfig,
     outfile: path.join(pathToPackage, 'dist/index.js'),
     format: 'cjs',

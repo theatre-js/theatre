@@ -24,7 +24,7 @@ const definedGlobals = {
   global: 'window',
 }
 
-function createBundles(watch: boolean) {
+async function createBundles(watch: boolean) {
   const pathToPackage = path.join(__dirname, '../')
   const pkgJson = require(path.join(pathToPackage, 'package.json'))
   const listOfDependencies = Object.keys(pkgJson.dependencies || {})
@@ -52,7 +52,7 @@ function createBundles(watch: boolean) {
     ],
   }
 
-  build({
+  await build({
     ...esbuildConfig,
     outfile: path.join(pathToPackage, 'dist/index.js'),
     format: 'cjs',
@@ -65,4 +65,4 @@ function createBundles(watch: boolean) {
   // })
 }
 
-createBundles(false)
+void createBundles(false)
