@@ -5,7 +5,7 @@
 import {getProject, types} from '@theatre/core'
 import studio from '@theatre/studio'
 import React, {useEffect, useState} from 'react'
-import {render} from 'react-dom/client'
+import ReactDom from 'react-dom/client'
 import styled from 'styled-components'
 
 const project = getProject('Image type playground', {
@@ -66,7 +66,9 @@ const ImageTypeExample: React.FC<{}> = (props) => {
 
 project.ready
   .then(() => {
-    render(<ImageTypeExample />, document.getElementById('root'))
+    ReactDom.createRoot(document.getElementById('root')!).render(
+      <ImageTypeExample />,
+    )
   })
   .catch((err) => {
     console.error(err)

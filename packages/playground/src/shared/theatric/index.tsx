@@ -1,5 +1,5 @@
 import {button, initialize, types, useControls} from 'theatric'
-import {render} from 'react-dom/client'
+import ReactDom from 'react-dom/client'
 import React, {useState} from 'react'
 import state from './state.json'
 
@@ -79,4 +79,4 @@ function App() {
   )
 }
 
-render(<App />, document.getElementById('root'))
+ReactDom.createRoot(document.getElementById('root')!).render(<App />)

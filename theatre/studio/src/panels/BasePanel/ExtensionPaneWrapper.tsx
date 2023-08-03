@@ -27,8 +27,6 @@ const minDims = {width: 300, height: 300}
 const ExtensionPaneWrapper: React.FC<{
   paneInstance: PaneInstance<$FixMe>
 }> = ({paneInstance}) => {
-  console.log(paneInstance)
-
   return (
     <BasePanel
       panelId={`pane-${paneInstance.instanceId}` as UIPanelId}

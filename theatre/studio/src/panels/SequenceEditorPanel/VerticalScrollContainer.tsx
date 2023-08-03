@@ -38,7 +38,9 @@ export const useReceiveVerticalWheelEvent = (): ReceiveVerticalWheelEventFn =>
  * the code that traps the wheel events to pass them to the vertical scroller root, which
  * we then use to manually dispatch scroll events.
  */
-const VerticalScrollContainer: React.FC<{}> = (props) => {
+const VerticalScrollContainer: React.FC<{
+  children: React.ReactNode
+}> = (props) => {
   const ref = useRef<HTMLDivElement | null>(null)
   const receiveVerticalWheelEvent = useCallback<ReceiveVerticalWheelEventFn>(
     (event) => {

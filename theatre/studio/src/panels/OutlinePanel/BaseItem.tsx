@@ -138,6 +138,7 @@ const BaseItem: React.FC<{
   depth: number
   selectionStatus: SelectionStatus
   labelDecoration?: React.ReactNode
+  children?: React.ReactNode | undefined
   collapsed?: boolean
   setIsCollapsed?: (v: boolean) => void
 }> = ({

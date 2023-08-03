@@ -34,6 +34,7 @@ const Container = styled.div`
 const BasicPopover: React.FC<{
   className?: string
   showPopoverEdgeTriangle?: boolean
+  children: React.ReactNode
 }> = React.forwardRef(
   (
     {

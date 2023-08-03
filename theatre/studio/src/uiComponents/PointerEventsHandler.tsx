@@ -48,6 +48,7 @@ const context = createContext<Context>({} as $IntentionalAny)
 
 const PointerEventsHandler: React.FC<{
   className?: string
+  children?: React.ReactNode
 }> = (props) => {
   const [locks, setLocks] = useState<Lock[]>([])
   const contextValue = useMemo<Context>(() => {

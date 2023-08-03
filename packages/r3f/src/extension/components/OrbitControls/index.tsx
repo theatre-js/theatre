@@ -65,7 +65,7 @@ export const OrbitControls = forwardRef<OrbitControlsImpl, OrbitControlsProps>(
         if (onChange) onChange(e)
       }
 
-      controls.connect(explDomElement)
+      controls.connect(explDomElement!)
       controls.addEventListener('change', callback)
 
       if (onStart) controls.addEventListener('start', onStart)

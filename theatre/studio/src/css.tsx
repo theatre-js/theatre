@@ -81,9 +81,10 @@ export const PortalLayer = styled.div`
   pointer-events: none;
 `
 
-export const ProvideStyles: React.FC<{target: undefined | HTMLElement}> = (
-  props,
-) => {
+export const ProvideStyles: React.FC<{
+  target: undefined | HTMLElement
+  children: React.ReactNode
+}> = (props) => {
   return (
     <StyleSheetManager disableVendorPrefixes target={props.target}>
       <>
@@ -104,7 +105,9 @@ export function withStyledShadow<Props>(
   )
 }
 
-const ProvideStyledShadow: React.FC<{}> = (props) => {
+const ProvideStyledShadow: React.FC<{
+  children: React.ReactNode
+}> = (props) => {
   const [template, ref] = useState<null | HTMLTemplateElement>(null)
   const [shadowRoot, setShadowRoot] = useState<null | ShadowRoot>(null)
 

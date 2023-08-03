@@ -87,6 +87,7 @@ const AnyCompositeRow: React.FC<{
   isSelected?: boolean
   isSelectable?: boolean
   isCollapsed: boolean
+  children?: React.ReactNode
 }> = ({
   leaf,
   label,

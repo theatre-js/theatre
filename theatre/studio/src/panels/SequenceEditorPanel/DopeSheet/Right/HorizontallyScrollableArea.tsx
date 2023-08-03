@@ -34,6 +34,7 @@ const Container = styled.div`
 const HorizontallyScrollableArea: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
   height: number
+  children: React.ReactNode
 }> = React.memo(({layoutP, children, height}) => {
   const {width, unitSpaceToScaledSpaceMultiplier} = usePrism(
     () => ({
