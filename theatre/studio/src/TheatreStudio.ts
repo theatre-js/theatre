@@ -374,6 +374,21 @@ export interface IStudio {
      * The extension's definition
      */
     extension: IExtension,
+    opts?: {
+      /**
+       * Whether to reconfigure the extension. This is useful if you're
+       * hot-reloading the extension.
+       *
+       * Mind you, that if the old version of the extension defines a pane,
+       * and the new version doesn't, all instances of that pane will disappear, as expected.
+       * _However_, if you again reconfigure the extension with the old version, the instances
+       * of the pane that pane will re-appear.
+       *
+       * We're not sure about whether this behavior makes sense or not. If not, let us know
+       * in the discord server or open an issue on github.
+       */
+      __experimental_reconfigure?: boolean
+    },
   ): void
 
   /**
@@ -504,8 +519,11 @@ export default class TheatreStudio implements IStudio {
     return studio.initialize(opts)
   }
 
-  extend(extension: IExtension): void {
-    getStudio().extend(extension)
+  extend(
+    extension: IExtension,
+    opts?: {__experimental_reconfigure?: boolean},
+  ): void {
+    getStudio().extend(extension, opts)
   }
 
   transaction(fn: (api: ITransactionAPI) => void): void {
