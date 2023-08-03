@@ -28,7 +28,7 @@ const ext1: IExtension = {
   panes: [],
 }
 
-studio.initialize()
+studio.initialize({usePersistentStorage: false})
 
 let currentStep = -1
 

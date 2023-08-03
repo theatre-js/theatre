@@ -1,8 +1,8 @@
 import {test, expect} from '@playwright/test'
 
-test.describe('reconfigure-extension', () => {
+test.describe('hot-reload-extension-toolbar', () => {
   test('works', async ({page}) => {
-    await page.goto('./tests/reconfigure-extension/')
+    await page.goto('./tests/hot-reload-extension-toolbar/')
 
     const toolbar = page.locator(
       '[data-test-id="theatre-extensionToolbar-global"]',

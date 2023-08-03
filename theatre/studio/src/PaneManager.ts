@@ -1,5 +1,4 @@
 import {prism, val} from '@theatre/dataverse'
-import {emptyArray} from '@theatre/shared/utils'
 import type {PaneInstanceId} from '@theatre/shared/utils/ids'
 import SimpleCache from '@theatre/shared/utils/SimpleCache'
 import type {$IntentionalAny, StrictRecord} from '@theatre/shared/utils/types'
@@ -50,7 +49,7 @@ export default class PaneManager {
               }
               return inst
             },
-            emptyArray,
+            [definition],
           )
 
           instances[instanceId] = instance

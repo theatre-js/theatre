@@ -27,6 +27,8 @@ const minDims = {width: 300, height: 300}
 const ExtensionPaneWrapper: React.FC<{
   paneInstance: PaneInstance<$FixMe>
 }> = ({paneInstance}) => {
+  console.log(paneInstance)
+
   return (
     <BasePanel
       panelId={`pane-${paneInstance.instanceId}` as UIPanelId}
@@ -156,7 +158,7 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
   }, [paneInstance])
 
   return (
-    <Container>
+    <Container data-test-id={`theatre-pane-wrapper-${paneInstance.instanceId}`}>
       <PanelDragZone>
         <TitleBar>
           <PaneTools>
@@ -168,7 +170,10 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
         </TitleBar>
       </PanelDragZone>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <F2 ref={setMountingPoint} />
+        <F2
+          data-test-id={`theatre-pane-content-${paneInstance.instanceId}`}
+          ref={setMountingPoint}
+        />
       </ErrorBoundary>
     </Container>
   )
