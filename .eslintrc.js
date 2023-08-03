@@ -28,6 +28,8 @@ module.exports = {
   rules: {
     'unused-imports/no-unused-imports': 'warn',
     'tsdoc/syntax': 'warn',
+    'no-debugger': 'error',
+
     'no-restricted-imports': [
       'error',
       {

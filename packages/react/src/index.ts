@@ -346,7 +346,6 @@ export function usePrismInstance<T>(der: Prism<T>, debugLabel?: string): T {
 
   if (process.env.NODE_ENV !== 'production') {
     if (der !== ref.current.der) {
-      debugger
       console.error(
         'Argument `der` in `usePrismInstance(der)` should not change between renders.',
       )
