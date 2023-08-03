@@ -5,7 +5,7 @@
 import {getProject, types} from '@theatre/core'
 import studio from '@theatre/studio'
 import React, {useEffect, useState} from 'react'
-import {render} from 'react-dom'
+import {render} from 'react-dom/client'
 import styled from 'styled-components'
 
 const project = getProject('Image type playground', {

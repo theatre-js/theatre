@@ -1,5 +1,5 @@
 import {button, initialize, types, useControls} from 'theatric'
-import {render} from 'react-dom'
+import {render} from 'react-dom/client'
 import React, {useState} from 'react'
 import state from './state.json'
 

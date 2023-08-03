@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom/client'
 import App from './App'
 import studio from '@theatre/studio'
 import extension from '@theatre/r3f/dist/extension'
@@ -15,4 +15,6 @@ studio.initialize({
   __experimental_rafDriver: rafDriver,
 })
 
-ReactDOM.render(<App rafDriver={rafDriver} />, document.getElementById('root'))
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <App rafDriver={rafDriver} />,
+)

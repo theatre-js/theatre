@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom/client'
 import studio from '@theatre/studio'
 import {getProject, notify} from '@theatre/core'
 import {Scene} from './Scene'
@@ -24,7 +24,7 @@ void getProject('Sample project').ready.then(() => {
   )
 })
 
-ReactDOM.render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <Scene
     project={getProject('Sample project', {
       // experiments: {
@@ -36,5 +36,4 @@ ReactDOM.render(
       // },
     })}
   />,
-  document.getElementById('root'),
 )

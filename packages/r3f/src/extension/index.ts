@@ -146,11 +146,11 @@ const r3fExtension: IExtension = {
     {
       class: 'snapshot',
       mount: ({paneId, node}) => {
-        ReactDOM.createRoot(node).render(
-          React.createElement(SnapshotEditor, {paneId}),
-        )
+        const root = ReactDOM.createRoot(node)
+
+        root.render(React.createElement(SnapshotEditor, {paneId}))
         function unmount() {
-          ReactDOM.unmountComponentAtNode(node)
+          root.unmount()
         }
         return unmount
       },

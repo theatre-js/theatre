@@ -12,7 +12,7 @@ import {Scene} from './Scene'
 
 studio.initialize()
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <Scene
     project={getProject('Sample project', {
       // experiments: {

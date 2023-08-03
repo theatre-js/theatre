@@ -7,4 +7,4 @@ import extension from '@theatre/r3f/dist/extension'
 studio.extend(extension)
 studio.initialize()
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />)
+ReactDOM.createRoot(document.getElementById('root')!).render(<App />)

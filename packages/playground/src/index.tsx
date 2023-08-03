@@ -1,5 +1,5 @@
 import {PlaygroundPage} from './home/PlaygroundPage'
-import ReactDom from 'react-dom'
+import ReactDom from 'react-dom/client'
 import React from 'react'
 
 // like [{'./shared/hello/index.html': () => import('./shared/hello/index.html')}]
@@ -16,7 +16,6 @@ const groups = (Object.keys(modules) as string[]).reduce((acc, path) => {
   return acc
 }, {} as {[groupName: string]: string[]})
 
-ReactDom.render(
+ReactDom.createRoot(document.getElementById('root')!).render(
   <PlaygroundPage groups={groups} />,
-  document.getElementById('root'),
 )

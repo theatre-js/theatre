@@ -3,7 +3,7 @@
  * can be tweaked and animated.
  */
 import React, {useMemo, useState} from 'react'
-import {render} from 'react-dom'
+import {render} from 'react-dom/client'
 import {getProject} from '@theatre/core'
 import type {ITurtle} from './turtle'
 import TurtleRenderer from './TurtleRenderer'

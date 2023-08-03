@@ -23,13 +23,18 @@
  */
 module.exports = {
   root: true,
-  plugins: ['unused-imports', 'eslint-plugin-tsdoc', 'import'],
-  settings: {},
+  plugins: ['unused-imports', 'eslint-plugin-tsdoc', 'import', 'react'],
+  settings: {
+    react: {
+      version: '18.2',
+    },
+  },
   extends: [],
   rules: {
     'unused-imports/no-unused-imports': 'warn',
     'tsdoc/syntax': 'warn',
     'no-debugger': 'error',
+    'react/no-deprecated': 'error',
 
     'no-restricted-imports': [
       'error',
