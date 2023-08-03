@@ -1,4 +1,5 @@
 import type {Pointer, Prism} from '@theatre/dataverse'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   isPointer,
   isPrism,
@@ -10,8 +11,7 @@ import {
   Ticker,
   val,
 } from '@theatre/dataverse'
-// eslint-disable-next-line no-restricted-imports
-import {set as lodashSet} from 'lodash'
+import {set as lodashSet} from 'lodash-es'
 import {isPointerToPrismProvider} from './pointerToPrism'
 
 describe(`The exhaustive guide to dataverse`, () => {

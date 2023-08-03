@@ -2,6 +2,7 @@ import {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import React from 'react'
 import {Canvas, useThree} from '@react-three/fiber'
 import type {BaseSheetObjectType} from '../../main/store'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {__private_allRegisteredObjects as allRegisteredObjects} from '@theatre/r3f'
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'

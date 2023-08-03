@@ -57,17 +57,8 @@ declare module 'timing-function/lib/UnitBezier' {
     solveSimple(progression: number)
   }
 }
-declare module 'clean-webpack-plugin'
-declare module 'webpack-notifier'
-declare module 'case-sensitive-paths-webpack-plugin'
-declare module 'tsconfig-paths-webpack-plugin'
-declare module 'webpack-deep-scope-plugin'
-declare module 'error-overlay-webpack-plugin'
 declare module 'circular-dependency-plugin'
-declare module 'lodash-webpack-plugin'
-declare module 'webpack-bundle-analyzer'
 declare module 'merge-deep'
-declare module 'exec-loader!./commitHash'
 declare module 'blob-compare' {
   const compare: (left: File | Blob, right: File | Blob) => Promise<boolean>
   export default compare

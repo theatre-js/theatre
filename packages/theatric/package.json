@@ -29,10 +29,10 @@
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.18.11",
+    "@theatre/dataverse": "workspace:*",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.6.2",
-    "@types/react": "^17.0.9",
-    "@types/react-dom": "^17.0.6",
+    "@types/react": "^18.2.18",
     "esbuild": "^0.12.15",
     "esbuild-register": "^2.5.0",
     "lodash-es": "^4.17.21",
@@ -45,7 +45,6 @@
     "@theatre/studio": "workspace:*"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-dom": "*"
+    "react": "*"
   }
 }

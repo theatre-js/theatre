@@ -2,7 +2,7 @@ import SnapshotEditor from './components/SnapshotEditor'
 import type {IExtension} from '@theatre/studio'
 import {prism, val} from '@theatre/dataverse'
 import {getEditorSheetObject} from './editorStuff'
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom/client'
 import React from 'react'
 import type {ToolsetConfig} from '@theatre/studio'
 import useExtensionStore from './useExtensionStore'
@@ -146,7 +146,9 @@ const r3fExtension: IExtension = {
     {
       class: 'snapshot',
       mount: ({paneId, node}) => {
-        ReactDOM.render(React.createElement(SnapshotEditor, {paneId}), node)
+        ReactDOM.createRoot(node).render(
+          React.createElement(SnapshotEditor, {paneId}),
+        )
         function unmount() {
           ReactDOM.unmountComponentAtNode(node)
         }

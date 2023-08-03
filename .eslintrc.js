@@ -23,7 +23,8 @@
  */
 module.exports = {
   root: true,
-  plugins: ['unused-imports', 'eslint-plugin-tsdoc'],
+  plugins: ['unused-imports', 'eslint-plugin-tsdoc', 'import'],
+  settings: {},
   extends: [],
   rules: {
     'unused-imports/no-unused-imports': 'warn',
@@ -86,6 +87,19 @@ module.exports = {
         ecmaFeatures: {
           jsx: true,
         },
+      },
+    },
+    {
+      files: [
+        `packages/*/**/*.ts`,
+        `packages/*/**/*.tsx`,
+        `packages/*/**/*.js`,
+      ],
+      rules: {
+        'import/no-extraneous-dependencies': [
+          'error',
+          // {optionalDependencies: false, peerDependencies: false},
+        ],
       },
     },
   ],
