@@ -1,8 +1,6 @@
-/* eslint-disable */
+import type {Matrix4} from 'three'
 import {
-  Camera,
   EventDispatcher,
-  Matrix4,
   MOUSE,
   OrthographicCamera,
   PerspectiveCamera,
@@ -12,6 +10,9 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+
+// Almost an exact copy of https://github.com/pmndrs/three-stdlib/blob/4c04593ee49bb0b022025718844f3ce2b21f67bf/src/controls/OrbitControls.ts
+// The only change is that we added `(if (altKey)` at line 866 to only rotate if alt key is pressed
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
@@ -23,8 +24,8 @@ import {
 const moduloWrapAround = (offset: number, capacity: number) =>
   ((offset % capacity) + capacity) % capacity
 
-class OrbitControlsImpl extends EventDispatcher {
-  object: Camera
+class OrbitControls extends EventDispatcher {
+  object: PerspectiveCamera | OrthographicCamera
   domElement: HTMLElement | undefined
   // Set to false to disable this control
   enabled = true
@@ -73,13 +74,20 @@ class OrbitControlsImpl extends EventDispatcher {
     BOTTOM: 'ArrowDown',
   }
   // Mouse buttons
-  mouseButtons = {
+  mouseButtons: Partial<{
+    LEFT: MOUSE
+    MIDDLE: MOUSE
+    RIGHT: MOUSE
+  }> = {
     LEFT: MOUSE.ROTATE,
     MIDDLE: MOUSE.DOLLY,
     RIGHT: MOUSE.PAN,
   }
   // Touch fingers
-  touches = {ONE: TOUCH.ROTATE, TWO: TOUCH.DOLLY_PAN}
+  touches: Partial<{
+    ONE: TOUCH
+    TWO: TOUCH
+  }> = {ONE: TOUCH.ROTATE, TWO: TOUCH.DOLLY_PAN}
   target0: Vector3
   position0: Vector3
   zoom0: number
@@ -93,13 +101,17 @@ class OrbitControlsImpl extends EventDispatcher {
   getDistance: () => number
 
   listenToKeyEvents: (domElement: HTMLElement) => void
+  stopListenToKeyEvents: () => void
   saveState: () => void
   reset: () => void
   update: () => void
   connect: (domElement: HTMLElement) => void
   dispose: () => void
 
-  constructor(object: Camera, domElement?: HTMLElement) {
+  constructor(
+    object: PerspectiveCamera | OrthographicCamera,
+    domElement?: HTMLElement,
+  ) {
     super()
 
     this.object = object
@@ -108,7 +120,7 @@ class OrbitControlsImpl extends EventDispatcher {
     // for reset
     this.target0 = this.target.clone()
     this.position0 = this.object.position.clone()
-    this.zoom0 = this.object instanceof PerspectiveCamera ? this.object.zoom : 1
+    this.zoom0 = this.object.zoom
 
     //
     // public methods
@@ -166,20 +178,22 @@ class OrbitControlsImpl extends EventDispatcher {
       this._domElementKeyEvents = domElement
     }
 
+    this.stopListenToKeyEvents = (): void => {
+      this._domElementKeyEvents.removeEventListener('keydown', onKeyDown)
+      this._domElementKeyEvents = null
+    }
+
     this.saveState = (): void => {
       scope.target0.copy(scope.target)
       scope.position0.copy(scope.object.position)
-      scope.zoom0 =
-        scope.object instanceof PerspectiveCamera ? scope.object.zoom : 1
+      scope.zoom0 = scope.object.zoom
     }
 
     this.reset = (): void => {
       scope.target.copy(scope.target0)
       scope.object.position.copy(scope.position0)
-      if (scope.object instanceof PerspectiveCamera) {
-        scope.object.zoom = scope.zoom0
-        scope.object.updateProjectionMatrix()
-      }
+      scope.object.zoom = scope.zoom0
+      scope.object.updateProjectionMatrix()
 
       scope.dispatchEvent(changeEvent)
 
@@ -191,12 +205,10 @@ class OrbitControlsImpl extends EventDispatcher {
     // this method is exposed, but perhaps it would be better if we can make it private...
     this.update = ((): (() => void) => {
       const offset = new Vector3()
+      const up = new Vector3(0, 1, 0)
 
       // so camera.up is the orbit axis
-      const quat = new Quaternion().setFromUnitVectors(
-        object.up,
-        new Vector3(0, 1, 0),
-      )
+      const quat = new Quaternion().setFromUnitVectors(object.up, up)
       const quatInverse = quat.clone().invert()
 
       const lastPosition = new Vector3()
@@ -206,6 +218,10 @@ class OrbitControlsImpl extends EventDispatcher {
 
       return function update(): boolean {
         const position = scope.object.position
+
+        // update new up direction
+        quat.setFromUnitVectors(object.up, up)
+        quatInverse.copy(quat).invert()
 
         offset.copy(position).sub(scope.target)
 
@@ -1059,8 +1075,11 @@ class OrbitControlsImpl extends EventDispatcher {
 //    Zoom - middle mouse, or mousewheel / touch: two-finger spread or squish
 //    Pan - left mouse, or arrow keys / touch: one-finger move
 
-class MapControls extends OrbitControlsImpl {
-  constructor(object: Camera, domElement?: HTMLElement) {
+class MapControls extends OrbitControls {
+  constructor(
+    object: PerspectiveCamera | OrthographicCamera,
+    domElement?: HTMLElement,
+  ) {
     super(object, domElement)
 
     this.screenSpacePanning = false // pan orthogonal to world-space direction camera.up
@@ -1073,4 +1092,4 @@ class MapControls extends OrbitControlsImpl {
   }
 }
 
-export {OrbitControlsImpl, MapControls}
+export {OrbitControls as OrbitControlsImpl, MapControls}

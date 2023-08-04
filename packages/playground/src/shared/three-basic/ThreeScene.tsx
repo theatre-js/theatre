@@ -10,7 +10,7 @@ import {
   RawShaderMaterial,
   Scene,
   ShaderMaterial,
-  SphereBufferGeometry,
+  SphereGeometry,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -190,7 +190,7 @@ export default function ThreeScene(props: ThreeSceneProps) {
     light.position.set(1, 5, 4)
     scene.add(light)
 
-    mesh = new Mesh(new SphereBufferGeometry(3), new MeshPhongMaterial())
+    mesh = new Mesh(new SphereGeometry(3), new MeshPhongMaterial())
     scene.add(mesh)
 
     // RAF

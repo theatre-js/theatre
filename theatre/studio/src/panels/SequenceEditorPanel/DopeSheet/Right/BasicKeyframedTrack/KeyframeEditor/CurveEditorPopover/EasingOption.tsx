@@ -3,7 +3,7 @@ import React from 'react'
 import styled, {css} from 'styled-components'
 import {handlesFromCssCubicBezierArgs} from './shared'
 import SVGCurveSegment from './SVGCurveSegment'
-import mergeRefs from 'react-merge-refs'
+import {mergeRefs} from 'react-merge-refs'
 import {COLOR_BASE} from './colors'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 
