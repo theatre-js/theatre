@@ -113,14 +113,24 @@ const ProvideStyledShadow: React.FC<{
 
   useLayoutEffect(() => {
     if (!template) return
-    const shadowRoot = (template.parentNode as HTMLElement).attachShadow({
-      mode: 'open',
-    })
+    const {parentNode} = template
+    if (!parentNode) return
+
+    const hadShadowRoot =
+      // @ts-ignore
+      !!parentNode.shadowRoot
+
+    const shadowRoot = hadShadowRoot
+      ? // @ts-ignore
+        parent.shadowRoot
+      : (parentNode as HTMLElement).attachShadow({
+          mode: 'open',
+        })
+
     setShadowRoot(shadowRoot)
 
-    return () => {
-      template.parentNode?.removeChild(shadowRoot)
-    }
+    // no need to cleanup. The parent will be removed anyway if cleanup
+    // is needed.
   }, [template])
 
   const [portalLayerRef, portalLayer] = useRefAndState<HTMLDivElement>(
