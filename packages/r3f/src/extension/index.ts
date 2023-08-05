@@ -150,7 +150,10 @@ const r3fExtension: IExtension = {
 
         root.render(React.createElement(SnapshotEditor, {paneId}))
         function unmount() {
-          root.unmount()
+          // gotta unmount in the next tick, otherwise react will complain https://github.com/facebook/react/issues/25675
+          setTimeout(() => {
+            root.unmount()
+          }, 0)
         }
         return unmount
       },
