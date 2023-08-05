@@ -69,7 +69,7 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
 
       <primitive object={helpersRoot}></primitive>
       <ProxyManager orbitControlsRef={orbitControlsRef} />
-      <color attach="background" args={[0.24, 0.24, 0.24]} />
+      <color attach="background" args={[0.1, 0.1, 0.1]} />
     </DragDetectorProvider>
   )
 }
