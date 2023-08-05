@@ -54,16 +54,6 @@ const EditorScene: React.FC<{snapshotEditorSheet: ISheet; paneId: string}> = ({
 
   const editorObject = getEditorSheetObject()
 
-  const viewportLighting =
-    useVal(editorObject?.props.viewport.lighting) ?? 'physical'
-
-  useEffect(() => {
-    if (gl && scene && camera) {
-      gl.physicallyCorrectLights = viewportLighting === 'physical'
-      gl.compile(scene, camera)
-    }
-  }, [gl, viewportLighting, scene, camera])
-
   const helpersRoot = useExtensionStore((state) => state.helpersRoot, shallow)
 
   const showGrid = useVal(editorObject?.props.viewport.showGrid) ?? true

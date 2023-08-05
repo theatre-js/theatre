@@ -1,7 +1,7 @@
 import type {FC} from 'react'
 import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import type {Editable} from '../../main/store'
-import {createPortal} from '@react-three/fiber'
+import {createPortal, invalidate} from '@react-three/fiber'
 import EditableProxy from './EditableProxy'
 import type {OrbitControls} from 'three-stdlib'
 import TransformControls from './TransformControls'
@@ -186,6 +186,7 @@ const ProxyManager: FC<ProxyManagerProps> = ({orbitControlsRef}) => {
             mesh.material = renderMaterials[mesh.id]
         }
       }
+      invalidate()
     })
   }, [viewportShading, renderMaterials, sceneProxy])
 
