@@ -61,6 +61,8 @@ module.exports = {
           './packages/*/devEnv/tsconfig.json',
           './examples/*/tsconfig.json',
           './devEnv/tsconfig.json',
+          './compat-tests/tsconfig.json',
+          './scripts/tsconfig.json',
         ],
       },
       rules: {

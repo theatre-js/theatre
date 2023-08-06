@@ -12,6 +12,7 @@
     {"path": "../../packages/benchmarks"},
     {"path": "../../packages/r3f"},
     {"path": "../../examples/basic-dom"},
-    {"path": "../../compat-tests"}
+    {"path": "../../compat-tests"},
+    {"path": "../../scripts"}
   ]
 }

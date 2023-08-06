@@ -2,9 +2,10 @@
  * This script publishes the insider packages from the CI. You can't run it locally unless you have a a valid npm access token and you store its value in the `NPM_TOKEN` environmental variable.
  */
 
-import os from 'os'
-import path from 'path'
+import * as os from 'os'
+import * as path from 'path'
 import * as core from '@actions/core'
+import {$} from '@cspotcode/zx'
 
 const packagesToPublish = [
   '@theatre/core',
@@ -19,7 +20,7 @@ const packagesToPublish = [
 /**
  * Receives a version number and returns it without the tags, if there are any
  *
- * @param {string} version - Version number
+ * @param version - Version number
  * @returns Version number without the tags
  *
  * @example
@@ -30,7 +31,7 @@ const packagesToPublish = [
  * stripTag(version_1) === stripTag(version_2) === '0.4.8' // returns `true`
  * ```
  */
-function stripTag(version) {
+function stripTag(version: string) {
   const regExp = /^[0-9]+\.[0-9]+\.[0-9]+/g
   const matches = version.match(regExp)
   if (!matches) {
@@ -43,10 +44,10 @@ function stripTag(version) {
 /**
  * Creates a version number like `0.4.8-insiders.ec175817`
  *
- * @param {string} packageName - Name of the package
- * @param {string} commitHash - A commit hash
+ * @param packageName - Name of the package
+ * @param commitHash - A commit hash
  */
-function getNewVersionName(packageName, commitHash) {
+function getNewVersionName(packageName: string, commitHash: string) {
   // The `r3f` package has its own release schedule, so its version numbers
   // are almost always different from the rest of the packages.
   const pathToPackageJson =
@@ -65,16 +66,15 @@ function getNewVersionName(packageName, commitHash) {
 /**
  * Assigns the latest version names ({@link getNewVersionName}) to the packages' `package.json`s
  *
- * @param {{name: string, location: string}[]} workspacesListObjects - An Array of objects containing information about the workspaces
- * @param {string} latestCommitHash - Hash of the latest commit
- * @returns {Promise<Record<string, string>>} - A record of {[packageId]: assignedVersion}
+ * @param workspacesListObjects - An Array of objects containing information about the workspaces
+ * @param latestCommitHash - Hash of the latest commit
+ * @returns - A record of `{[packageId]: assignedVersion}`
  */
 async function writeVersionsToPackageJSONs(
-  workspacesListObjects,
-  latestCommitHash,
-) {
-  /** @type {Record<string, string>} */
-  const assignedVersionByPackageName = {}
+  workspacesListObjects: {name: string; location: string}[],
+  latestCommitHash: string,
+): Promise<Record<string, string>> {
+  const assignedVersionByPackageName: Record<string, string> = {}
   for (const workspaceData of workspacesListObjects) {
     const pathToPackage = path.resolve(
       __dirname,
@@ -124,7 +124,7 @@ async function writeVersionsToPackageJSONs(
   return assignedVersionByPackageName
 }
 
-;(async function () {
+async function prerelease() {
   // @ts-ignore ignore
   process.env.THEATRE_IS_PUBLISHING = true
   // In the CI `git log -1` points to a fake merge commit,
@@ -180,4 +180,6 @@ async function writeVersionsToPackageJSONs(
       await $`echo ${`Published ${packageName}@${assignedVersionByPackageName[packageName]}`}`
     }
   }
-})()
+}
+
+void prerelease()

@@ -1,8 +1,9 @@
+import {$} from '@cspotcode/zx'
 /**
- * cleans the build artifacts of all packages
+ * Builds all the packages for production
  */
 
-const packages = [
+const packagesToBuild = [
   'theatre',
   '@theatre/dataverse',
   '@theatre/react',
@@ -10,8 +11,7 @@ const packages = [
   '@theatre/r3f',
   'theatric',
 ]
-
-;(async function () {
+async function build() {
   // better quote function from https://github.com/google/zx/pull/167
   $.quote = function quote(arg) {
     if (/^[a-z0-9/_.-]+$/i.test(arg)) {
@@ -33,6 +33,11 @@ const packages = [
   }
 
   await Promise.all([
-    ...packages.map((workspace) => $`yarn workspace ${workspace} run clean`),
+    $`yarn run build:ts`,
+    ...packagesToBuild.map(
+      (workspace) => $`yarn workspace ${workspace} run build`,
+    ),
   ])
-})()
+}
+
+void build()

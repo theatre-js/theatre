@@ -14,18 +14,18 @@
     "test:e2e": "yarn workspace playground run test",
     "test:e2e:ci": "yarn workspace playground run test:ci",
     "typecheck": "yarn run build:ts",
-    "build": "zx scripts/build.mjs",
-    "clean": "zx scripts/clean.mjs",
+    "build": "node -r esbuild-register scripts/build.ts",
+    "clean": "node -r esbuild-register scripts/clean.ts",
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
     "test:compat:install": "yarn workspace @theatre/compat-tests run install-fixtures",
     "test:compat:run": "jest --config jest.compat-tests.config.js",
     "postinstall": "husky install",
-    "release": "zx scripts/release.mjs",
+    "release": "node -r esbuild-register scripts/release.ts",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {
-    "(theatre|packages)/**/*.(t|j)s?(x)": [
+    "(theatre|packages|scripts|compat-tests)/**/*.(t|j)s?(x)": [
       "eslint --rulesdir ./devEnv/eslint/rules --fix"
     ],
     "**/*.(t|j)s?(x)": [
@@ -33,12 +33,14 @@
     ]
   },
   "devDependencies": {
+    "@cspotcode/zx": "^6.1.2",
     "@microsoft/api-documenter": "^7.19.0",
     "@microsoft/api-extractor": "^7.28.6",
     "@types/eslint": "^8.44.1",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
     "@typescript-eslint/parser": "^5.30.7",
-    "esbuild": "^0.18.13",
+    "esbuild": "^0.18.18",
+    "esbuild-register": "^3.4.2",
     "eslint": "^8.20.0",
     "eslint-plugin-import": "2.28.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",
@@ -54,8 +56,7 @@
     "lint-staged": "^13.0.3",
     "node-gyp": "^9.1.0",
     "prettier": "^2.3.2",
-    "typescript": "4.6.4",
-    "zx": "^2.0.0"
+    "typescript": "4.6.4"
   },
   "packageManager": "yarn@3.2.0",
   "dependencies": {

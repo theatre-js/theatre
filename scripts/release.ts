@@ -6,15 +6,15 @@
  * $ yarn run release 0.4.2
  * ```
  */
-import path from 'path'
+import * as path from 'path'
 import {readFileSync, writeFileSync} from 'fs'
+import {$} from '@cspotcode/zx'
 
 /**
  * This script publishes all packages to npm.
  *
  * It assigns the same version number to all packages (like lerna's fixed mode).
  **/
-// It's written in .mjs because I kept running into issues with zx+typescript
 const packagesToBuild = [
   'theatre',
   '@theatre/dataverse',
@@ -49,32 +49,32 @@ const packagesWhoseVersionsShouldBump = [
   'packages/theatric',
 ]
 
-;(async function () {
-  // our packages will check for this env variable to make sure their
-  // prepublish script is only called from the `$ cd /path/to/monorepo; yarn run release`
-  // @ts-ignore ignore
-  process.env.THEATRE_IS_PUBLISHING = true
+// our packages will check for this env variable to make sure their
+// prepublish script is only called from the `$ cd /path/to/monorepo; yarn run release`
+// @ts-ignore ignore
+process.env.THEATRE_IS_PUBLISHING = true
 
-  // better quote function from https://github.com/google/zx/pull/167
-  $.quote = function quote(arg) {
-    if (/^[a-z0-9/_.-]+$/i.test(arg)) {
-      return arg
-    }
-    return (
-      `$'` +
-      arg
-        .replace(/\\/g, '\\\\')
-        .replace(/'/g, "\\'")
-        .replace(/\f/g, '\\f')
-        .replace(/\n/g, '\\n')
-        .replace(/\r/g, '\\r')
-        .replace(/\t/g, '\\t')
-        .replace(/\v/g, '\\v')
-        .replace(/\0/g, '\\0') +
-      `'`
-    )
+// better quote function from https://github.com/google/zx/pull/167
+$.quote = function quote(arg) {
+  if (/^[a-z0-9/_.-]+$/i.test(arg)) {
+    return arg
   }
+  return (
+    `$'` +
+    arg
+      .replace(/\\/g, '\\\\')
+      .replace(/'/g, "\\'")
+      .replace(/\f/g, '\\f')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t')
+      .replace(/\v/g, '\\v')
+      .replace(/\0/g, '\\0') +
+    `'`
+  )
+}
 
+async function release() {
   $.verbose = false
   const gitTags = (await $`git tag --list`).toString().split('\n')
 
@@ -188,10 +188,11 @@ const packagesWhoseVersionsShouldBump = [
         $`yarn workspace ${workspace} npm publish --access public --tag ${npmTag}`,
     ),
   )
-})()
+}
 
-/** @param {string} monorepoVersion */
-async function writeVersionsToPackageJSONs(monorepoVersion) {
+void release()
+
+async function writeVersionsToPackageJSONs(monorepoVersion: string) {
   for (const packagePathRelativeFromRoot of packagesWhoseVersionsShouldBump) {
     const pathToPackage = path.resolve(
       __dirname,
