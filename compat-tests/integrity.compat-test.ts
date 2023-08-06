@@ -2,8 +2,11 @@ import * as path from 'path'
 import * as fs from 'fs'
 
 describe(`Compat tests`, () => {
-  test(`all fixtures should have an App/ directory identical to that of vite4's`, async () => {
-    const vite4AppDir = path.join(__dirname, './fixtures/vite4/package/src/App')
+  test(`all fixtures prefixed with 'r3f-' should have an App/ directory identical to that of vite4's`, async () => {
+    const vite4AppDir = path.join(
+      __dirname,
+      './fixtures/r3f-vite4/package/src/App',
+    )
 
     const vite4FilesContents = fs
       .readdirSync(vite4AppDir)
@@ -16,7 +19,8 @@ describe(`Compat tests`, () => {
       .readdirSync(path.join(__dirname, './fixtures'))
       .filter(
         (fixture) =>
-          fixture !== 'vite4' &&
+          fixture !== 'r3f-vite4' &&
+          fixture.startsWith('r3f-') &&
           // item is a folder
           fs
             .lstatSync(path.join(__dirname, './fixtures', fixture))
