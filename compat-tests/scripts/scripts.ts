@@ -2,11 +2,12 @@
  * Utility functions for the compatibility tests
  */
 
-import prettier from 'prettier'
-import path from 'path'
-import {globby, argv, YAML, $, fs, cd, os, within} from 'zx'
+import * as prettier from 'prettier'
+import * as path from 'path'
+import {globby, argv, YAML, $, fs, cd, os} from '@cspotcode/zx'
 import onCleanup from 'node-cleanup'
-import * as verdaccioPackage from 'verdaccio'
+import startVerdaccioServer from 'verdaccio'
+import {defer} from '../utils/testUtils'
 
 /**
  * @param {string} pkg
@@ -23,10 +24,6 @@ if (!verbose) {
     'Running in quiet mode. Add --verbose to see the output of all commands.',
   )
 }
-
-// 'verdaccio' is not an es module so we have to do this:
-// @ts-ignore
-const startVerdaccioServer = verdaccioPackage.default.default
 
 const config = {
   VERDACCIO_PORT: 4823,
@@ -60,7 +57,7 @@ const keepAlive = !!argv['keep-alive']
  * This script starts verdaccio and publishes all the packages in the monorepo to it, then
  * it runs `npm install` on all the test packages, and finally it closes verdaccio.
  */
-export async function installFixtures() {
+export async function installFixtures(): Promise<void> {
   onCleanup((exitCode, signal) => {
     onCleanup.uninstall()
     restoreTestPackageJsons()
@@ -197,7 +194,7 @@ async function patchTheatreDependencies(pathToPackageJson, version) {
   fs.writeFileSync(pathToPackageJson, jsonStringPrettified, {encoding: 'utf-8'})
 }
 
-async function patchTestPackageJsons() {
+async function patchTestPackageJsons(): Promise<() => void> {
   const packagePaths = (await getCompatibilityTestSetups()).map(
     (pathToPackageDir) => path.join(pathToPackageDir, 'package.json'),
   )
@@ -220,42 +217,49 @@ async function patchTestPackageJsons() {
  *
  * Credit: https://github.com/storybookjs/storybook/blob/92b23c080d03433765cbc7a60553d036a612a501/scripts/run-registry.ts
  */
-const startVerdaccio = (port) => {
+async function startVerdaccio(port: number): Promise<{close: () => void}> {
   let resolved = false
-  return Promise.race([
-    new Promise((resolve) => {
-      const config = {
-        ...YAML.parse(
-          fs.readFileSync(path.join(__dirname, '../verdaccio.yml'), 'utf8'),
-        ),
-      }
 
-      if (verbose) {
-        config.logs.level = 'warn'
-      }
+  const deferred = defer<{close: () => void}>()
 
-      const cache = path.join(__dirname, '../.verdaccio-cache')
+  const config = {
+    ...YAML.parse(
+      fs.readFileSync(path.join(__dirname, '../verdaccio.yml'), 'utf8'),
+    ),
+  }
 
-      config.self_path = cache
+  if (verbose) {
+    config.logs.level = 'warn'
+  }
 
-      const onReady = (webServer) => {
-        webServer.listen(port, () => {
-          resolved = true
-          resolve(webServer)
-        })
-      }
+  const cache = path.join(__dirname, '../.verdaccio-cache')
 
-      startVerdaccioServer(config, 6000, cache, '1.0.0', 'verdaccio', onReady)
-    }),
+  config.self_path = cache
+
+  startVerdaccioServer(
+    config,
+    '6000',
+    cache,
+    '1.0.0',
+    'verdaccio',
+    (webServer) => {
+      webServer.listen(port, () => {
+        resolved = true
+        deferred.resolve(webServer)
+      })
+    },
+  )
+
+  await Promise.race([
+    deferred.promise,
     new Promise((_, rej) => {
       setTimeout(() => {
-        if (!resolved) {
-          resolved = true
-          rej(new Error(`TIMEOUT - verdaccio didn't start within 10s`))
-        }
+        rej(new Error(`TIMEOUT - verdaccio didn't start within 10s`))
       }, 10000)
     }),
   ])
+
+  return deferred.promise
 }
 
 const packagesToPublish = [
@@ -272,11 +276,14 @@ const packagesToPublish = [
  * Assigns a new version to each of @theatre/* packages. If there a package depends on another package in this monorepo,
  * this function makes sure the dependency version is fixed at "version"
  *
- * @param {{name: string, location: string}[]} workspacesListObjects - An Array of objects containing information about the workspaces
- * @param {string} version - Version of the latest commit (or any other string)
- * @returns {Promise<() => void>} - An async function that restores the package.json files to their original version
+ * @param workspacesListObjects - An Array of objects containing information about the workspaces
+ * @param version - Version of the latest commit (or any other string)
+ * @returns - An async function that restores the package.json files to their original version
  */
-async function writeVersionsToPackageJSONs(workspacesListObjects, version) {
+async function writeVersionsToPackageJSONs(
+  workspacesListObjects: Array<{name: string; location: string}>,
+  version: string,
+): Promise<() => void> {
   /**
    * An array of functions each of which restores a certain package.json to its original state
    * @type {Array<() => void>}
@@ -374,9 +381,9 @@ async function releaseToVerdaccio() {
 /**
  * Get all the setups from `./compat-tests/`
  *
- * @returns {Promise<Array<string>>} An array containing the absolute paths to the compatibility test setups
+ * @returns An array containing the absolute paths to the compatibility test setups
  */
-export async function getCompatibilityTestSetups() {
+export async function getCompatibilityTestSetups(): Promise<Array<string>> {
   const fixturePackageJsonFiles = await globby(
     './fixtures/*/package/package.json',
     {

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "lib": ["ESNext", "DOM"],
+    "rootDir": ".",
+    "types": ["jest", "node"],
+    "target": "es6",
+    "noEmit": true,
+    "composite": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true
+  },
+  "include": [
+    "./scripts/*.ts",
+    "./*.compat-test.ts",
+    "./**/*.compat-test.ts",
+    "./utils/**/*.ts"
+  ]
+}

@@ -1,20 +1,21 @@
 {
   "name": "@theatre/compat-tests",
   "private": true,
-  "type": "module",
   "scripts": {
-    "install-fixtures": "zx ./scripts/install-fixtures.mjs",
-    "clean": "zx ./scripts/clean.mjs"
+    "install-fixtures": "node -r esbuild-register ./scripts/install-fixtures.ts",
+    "clean": "node -r esbuild-register ./scripts/clean.ts"
   },
   "dependencies": {
     "@cspotcode/zx": "^6.1.2",
+    "@verdaccio/types": "^10.8.0",
+    "esbuild": "^0.18.18",
+    "esbuild-register": "^3.4.2",
     "node-cleanup": "^2.1.2",
     "playwright": "^1.29.1",
     "prettier": "^2.6.2",
     "verdaccio": "^5.26.1",
     "verdaccio-auth-memory": "^10.2.2",
-    "verdaccio-memory": "^10.3.2",
-    "zx": "^7.1.1"
+    "verdaccio-memory": "^10.3.2"
   },
   "version": "0.0.1-COMPAT.1"
 }

@@ -11,6 +11,7 @@
     {"path": "../../packages/playground"},
     {"path": "../../packages/benchmarks"},
     {"path": "../../packages/r3f"},
-    {"path": "../../examples/basic-dom"}
+    {"path": "../../examples/basic-dom"},
+    {"path": "../../compat-tests"}
   ]
 }

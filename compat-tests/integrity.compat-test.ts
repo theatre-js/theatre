@@ -1,5 +1,5 @@
-import path from 'path'
-import fs from 'fs'
+import * as path from 'path'
+import * as fs from 'fs'
 
 describe(`Compat tests`, () => {
   test(`all fixtures should have an App/ directory identical to that of vite4's`, async () => {
