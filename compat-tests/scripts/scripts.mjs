@@ -83,14 +83,15 @@ export async function installFixtures() {
 
   console.log('Running `$ npm install` on test packages')
   await runNpmInstallOnTestPackages()
-  console.log('All fixtures installed successfully')
+
+  restoreTestPackageJsons()
+
   if (keepAlive) {
     console.log('Keeping verdaccio alive. Press Ctrl+C to exit.')
     // wait for ctrl+c
     await new Promise((resolve) => {})
   } else {
     console.log('Closing verdaccio. Use --keep-alive to keep it running.')
-    restoreTestPackageJsons()
     await verdaccioServer.close()
   }
   console.log('Done')
@@ -99,7 +100,7 @@ export async function installFixtures() {
 async function runNpmInstallOnTestPackages() {
   const packagePaths = await getCompatibilityTestSetups()
 
-  for (const pathToPackageDir of packagePaths) {
+  const promises = packagePaths.map(async (pathToPackageDir) => {
     await fs.remove(path.join(pathToPackageDir, 'node_modules'))
     await fs.remove(path.join(pathToPackageDir, 'package-lock.json'))
     cd(path.join(pathToPackageDir, '../'))
@@ -131,9 +132,26 @@ Try running \`npm install\` in that directory manually via:
 cd ${pathToPackageDir}
 npm install --registry ${config.VERDACCIO_URL}
 Original error: ${error}`)
+      throw new Error(`Failed to install dependencies for ${pathToPackageDir}`)
     } finally {
       await fs.remove(tempPath)
     }
+  })
+
+  const result = await Promise.allSettled(promises)
+  const failed = result.filter((x) => x.status === 'rejected')
+  if (failed.length > 0) {
+    console.error(
+      `Failed to install dependencies for the following packages:`,
+      result
+        .map((result, i) => [packagePaths[i], result])
+        .filter(
+          ([p, result]) =>
+            // @ts-ignore
+            result.status === 'rejected',
+        )
+        .map(([path]) => path),
+    )
   }
 }
 
