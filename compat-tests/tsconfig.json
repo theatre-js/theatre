@@ -13,7 +13,7 @@
   "include": [
     "./scripts/*.ts",
     "./*.compat-test.ts",
-    "./**/*.compat-test.ts",
+    "./fixtures/*/*.compat-test.ts",
     "./utils/**/*.ts"
   ]
 }
