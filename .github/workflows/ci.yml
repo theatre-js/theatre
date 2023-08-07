@@ -88,12 +88,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: ./.github/actions/yarn-nm-install
 
-      - name: Run e2e tests with percy
-        uses: percy/exec-action@v0.3.1
-        with:
-          custom-command: 'yarn test:e2e:ci'
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      - name: Run e2e tests
+        run: yarn test:e2e:ci
 
   Compatibility-Tests:
     runs-on: ubuntu-latest

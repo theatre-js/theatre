@@ -17,8 +17,6 @@
     "test:ci": "playwright test --reporter=dot --config=devEnv/playwright.config.ts --project=chromium"
   },
   "devDependencies": {
-    "@percy/cli": "^1.16.0",
-    "@percy/playwright": "^1.0.4",
     "@playwright/test": "^1.36.2",
     "@react-three/drei": "^9.80.1",
     "@react-three/fiber": "^8.13.6",
