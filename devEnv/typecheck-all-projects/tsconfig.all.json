@@ -13,6 +13,6 @@
     {"path": "../../packages/r3f"},
     {"path": "../../examples/basic-dom"},
     {"path": "../../compat-tests"},
-    {"path": "../../scripts"}
+    {"path": "../../devEnv"}
   ]
 }

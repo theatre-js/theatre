@@ -3,6 +3,8 @@ module.exports = {
   testMatch: [
     '<rootDir>/packages/*/src/**/*.test.ts',
     '<rootDir>/theatre/*/src/**/*.test.ts',
+    '<rootDir>/theatre/*/src/**/*.test.ts',
+    '<rootDir>/devEnv/**/*.test.ts',
   ],
   moduleNameMapper: {
     ...require('./devEnv/getAliasesFromTsConfig').getAliasesFromTsConfigForJest(),
@@ -15,6 +17,7 @@ module.exports = {
     nanoid: '<rootDir>/node_modules/nanoid/index.cjs',
     'nanoid/non-secure': '<rootDir>/node_modules/nanoid/non-secure/index.cjs',
     'react-icons/(.*)': 'identity-obj-proxy',
+    'react-merge-refs': 'identity-obj-proxy',
   },
   setupFiles: ['./theatre/shared/src/setupTestEnv.ts'],
   automock: false,
