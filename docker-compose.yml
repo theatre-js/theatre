@@ -1,0 +1,40 @@
+# The docker-compose file is only used to *test* the repo on a local linux vm. You don't have
+# to use docker or know docker to develop the repo.
+version: '3.8'
+name: theatre-monorepo
+services:
+  node:
+    image: mcr.microsoft.com/playwright:v1.36.0-jammy
+    volumes:
+      - .:/app
+      # This ignores all node_modules folders/sub-folders so that we can have a separate installation
+      # of node_modules in host and in the container.
+      # If a folder is missing, the test at devEnv/verify-docker-compose.test.ts will fail, and it'll
+      # tell you which folder(s) are missing.
+      - /app/node_modules
+      - /app/compat-tests/fixtures/basic-react17/package/node_modules
+      - /app/compat-tests/fixtures/r3f-cra/package/node_modules
+      - /app/compat-tests/fixtures/r3f-next-latest/package/.next/node_modules
+      - /app/compat-tests/fixtures/r3f-next-latest/package/.next/types/node_modules
+      - /app/compat-tests/fixtures/r3f-next-latest/package/node_modules
+      - /app/compat-tests/fixtures/r3f-parcel1/package/node_modules
+      - /app/compat-tests/fixtures/r3f-react18/package/node_modules
+      - /app/compat-tests/fixtures/r3f-vite2/package/node_modules
+      - /app/compat-tests/fixtures/r3f-vite4/package/node_modules
+      - /app/compat-tests/node_modules
+      - /app/examples/basic-dom/node_modules
+      - /app/examples/dom-cra/node_modules
+      - /app/examples/r3f-cra/node_modules
+      - /app/packages/benchmarks/node_modules
+      - /app/packages/browser-bundles/node_modules
+      - /app/packages/dataverse/node_modules
+      - /app/packages/dataverse-experiments/node_modules
+      - /app/packages/playground/node_modules
+      - /app/packages/r3f/node_modules
+      - /app/packages/react/node_modules
+      - /app/packages/theatric/node_modules
+      - /app/theatre/core/node_modules
+      - /app/theatre/node_modules
+      - /app/theatre/shared/node_modules
+      - /app/theatre/studio/node_modules
+    command: ['bash', '-c', 'while true; do sleep 1; done']

@@ -31440,6 +31440,7 @@ fsevents@^1.2.7:
     "@microsoft/api-documenter": ^7.19.0
     "@microsoft/api-extractor": ^7.28.6
     "@types/eslint": ^8.44.1
+    "@types/jest": ^26.0.23
     "@typescript-eslint/eslint-plugin": ^5.30.7
     "@typescript-eslint/parser": ^5.30.7
     esbuild: ^0.18.18
@@ -31460,6 +31461,7 @@ fsevents@^1.2.7:
     node-gyp: ^9.1.0
     prettier: ^2.3.2
     typescript: 4.6.4
+    yaml: ^2.3.1
   languageName: unknown
   linkType: soft
 
@@ -34207,6 +34209,13 @@ fsevents@^1.2.7:
   version: 2.1.1
   resolution: "yaml@npm:2.1.1"
   checksum: f48bb209918aa57cfaf78ef6448d1a1f8187f45c746f933268b7023dc59e5456004611879126c9bb5ea55b0a2b1c2b392dfde436931ece0c703a3d754562bb96
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "yaml@npm:2.3.1"
+  checksum: 2c7bc9a7cd4c9f40d3b0b0a98e370781b68b8b7c4515720869aced2b00d92f5da1762b4ffa947f9e795d6cd6b19f410bd4d15fdd38aca7bd96df59bd9486fb54
   languageName: node
   linkType: hard
 
