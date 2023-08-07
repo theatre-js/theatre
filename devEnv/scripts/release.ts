@@ -8,7 +8,7 @@
  */
 import * as path from 'path'
 import {readFileSync, writeFileSync} from 'fs'
-import {$} from '@cspotcode/zx'
+import {$, argv} from '@cspotcode/zx'
 
 /**
  * This script publishes all packages to npm.
@@ -89,7 +89,7 @@ async function release() {
     process.exit(1)
   }
 
-  const previousVersion = require('../package.json').version
+  const previousVersion = require('../../package.json').version
 
   if (version === previousVersion) {
     console.error(`Version ${version} is already assigned to root/package.json`)
@@ -196,7 +196,7 @@ async function writeVersionsToPackageJSONs(monorepoVersion: string) {
   for (const packagePathRelativeFromRoot of packagesWhoseVersionsShouldBump) {
     const pathToPackage = path.resolve(
       __dirname,
-      '../',
+      '../..',
       packagePathRelativeFromRoot,
       './package.json',
     )

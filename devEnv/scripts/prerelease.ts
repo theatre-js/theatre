@@ -52,8 +52,8 @@ function getNewVersionName(packageName: string, commitHash: string) {
   // are almost always different from the rest of the packages.
   const pathToPackageJson =
     packageName === '@theatre/r3f'
-      ? path.resolve(__dirname, '..', 'packages', 'r3f', 'package.json')
-      : path.resolve(__dirname, '../', './package.json')
+      ? path.resolve(__dirname, '../..', 'packages', 'r3f', 'package.json')
+      : path.resolve(__dirname, '../../', './package.json')
 
   const jsonData = JSON.parse(
     fs.readFileSync(pathToPackageJson, {encoding: 'utf-8'}),
@@ -78,7 +78,7 @@ async function writeVersionsToPackageJSONs(
   for (const workspaceData of workspacesListObjects) {
     const pathToPackage = path.resolve(
       __dirname,
-      '../',
+      '../..',
       workspaceData.location,
       './package.json',
     )
