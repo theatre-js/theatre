@@ -95,7 +95,7 @@ export const ProvideStyles: React.FC<{
   )
 }
 
-export function withStyledShadow<Props>(
+export function withStyledShadow<Props extends {}>(
   Comp: React.ComponentType<Props>,
 ): React.ComponentType<Props> {
   return (props) => (

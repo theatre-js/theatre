@@ -60,7 +60,7 @@ function typeOfValue(v: unknown): ValueType {
  * })
  * ```
  */
-export default function minimalOverride<T>(base: T, override: T): T {
+export default function minimalOverride<T extends {}>(base: T, override: T): T {
   const typeofOverride = typeOfValue(override)
   if (typeofOverride === ValueType.Opaque) {
     return override

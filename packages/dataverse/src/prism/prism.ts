@@ -233,7 +233,7 @@ class PrismInstance<V> implements Prism<V> {
     }
 
     // let's cache the last value so we don't call the listener if the value hasn't changed
-    let lastValue =
+    let lastValue: V | typeof emptyObject =
       // use an empty object as the initial value so that the listener is called on the first tick.
       // if we were to use, say, undefined, and this.getValue() also returned undefined, the listener
       // would never be called.

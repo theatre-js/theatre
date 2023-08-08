@@ -129,7 +129,7 @@ function expectLastCalledWith(
   }
 }
 
-function objMap<T, U>(
+function objMap<T extends {}, U>(
   template: T,
   eachEntry: <P extends keyof T>(entry: [name: P, value: T[P]]) => U,
 ): {[P in keyof T]: U} {

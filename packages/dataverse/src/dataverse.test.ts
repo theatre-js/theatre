@@ -696,7 +696,7 @@ describe(`The exhaustive guide to dataverse`, () => {
 
       // Let's create a function that will set a property of an object by a pointer, similar to `lodash.set()`.
       // The function will take the root object, the pointer, and the new value.
-      function setByPointer<Root, Value>(
+      function setByPointer<Root extends {}, Value>(
         root: Root,
         getPointer: (ptr: Pointer<Root>) => Pointer<Value>,
         newValue: Value,

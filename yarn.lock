@@ -5672,7 +5672,7 @@ __metadata:
     parcel-bundler: ^1.12.5
     react: ^17.0.2
     react-dom: ^17.0.2
-    typescript: 4.6.4
+    typescript: 5.1.6
   languageName: unknown
   linkType: soft
 
@@ -7670,7 +7670,7 @@ __metadata:
     esbuild: ^0.12.15
     esbuild-register: ^2.5.0
     npm-run-all: ^4.1.5
-    typescript: 4.6.4
+    typescript: 5.1.6
   peerDependencies:
     "@theatre/core": "*"
     "@theatre/studio": "*"
@@ -7729,7 +7729,7 @@ __metadata:
     "@types/node": ^15.6.2
     "@types/react": ^17.0.9
     lodash-es: ^4.17.21
-    typescript: 4.6.4
+    typescript: 5.1.6
   languageName: unknown
   linkType: soft
 
@@ -7745,7 +7745,7 @@ __metadata:
     esbuild-register: ^2.5.0
     lodash-es: ^4.17.21
     npm-run-all: ^4.1.5
-    typescript: 4.6.4
+    typescript: 5.1.6
   languageName: unknown
   linkType: soft
 
@@ -7779,7 +7779,7 @@ __metadata:
     styled-components: ^5.3.11
     three: 0.155.0
     three-stdlib: ^2.24.1
-    typescript: 4.6.4
+    typescript: 5.1.6
     zustand: ^3.5.1
   peerDependencies:
     "@react-three/fiber": ^8.13.6
@@ -7807,7 +7807,7 @@ __metadata:
     lodash-es: ^4.17.21
     npm-run-all: ^4.1.5
     queue-microtask: ^1.2.3
-    typescript: 4.6.4
+    typescript: 5.1.6
   peerDependencies:
     react: "*"
     react-dom: "*"
@@ -11438,7 +11438,7 @@ __metadata:
     "@types/react": ^18.0.25
     esbuild: ^0.15.15
     esbuild-register: ^3.4.1
-    typescript: 4.6.4
+    typescript: 5.1.6
   languageName: unknown
   linkType: soft
 
@@ -25055,7 +25055,7 @@ fsevents@^1.2.7:
     styled-components: ^5.3.11
     theatric: "workspace:*"
     three: ^0.155.0
-    typescript: 4.6.4
+    typescript: 5.1.6
     vite: ^4.3.9
   languageName: unknown
   linkType: soft
@@ -31180,7 +31180,7 @@ fsevents@^1.2.7:
     lint-staged: ^13.0.3
     node-gyp: ^9.1.0
     prettier: ^2.3.2
-    typescript: 4.6.4
+    typescript: 5.1.6
     yaml: ^2.3.1
   languageName: unknown
   linkType: soft
@@ -31253,7 +31253,7 @@ fsevents@^1.2.7:
     shallowequal: ^1.1.0
     styled-components: ^5.3.11
     timing-function: ^0.2.3
-    typescript: 4.6.4
+    typescript: 5.1.6
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
@@ -31274,7 +31274,7 @@ fsevents@^1.2.7:
     esbuild-register: ^2.5.0
     lodash-es: ^4.17.21
     npm-run-all: ^4.1.5
-    typescript: 4.6.4
+    typescript: 5.1.6
   peerDependencies:
     react: "*"
   languageName: unknown
@@ -31973,13 +31973,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"typescript@npm:4.6.4, typescript@npm:~4.6.3":
-  version: 4.6.4
-  resolution: "typescript@npm:4.6.4"
+"typescript@npm:5.1.6":
+  version: 5.1.6
+  resolution: "typescript@npm:5.1.6"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: e7bfcc39cd4571a63a54e5ea21f16b8445268b9900bf55aee0e02ad981be576acc140eba24f1af5e3c1457767c96cea6d12861768fb386cf3ffb34013718631a
+  checksum: b2f2c35096035fe1f5facd1e38922ccb8558996331405eb00a5111cc948b2e733163cc22fab5db46992aba7dd520fff637f2c1df4996ff0e134e77d3249a7350
   languageName: node
   linkType: hard
 
@@ -31990,6 +31990,16 @@ fsevents@^1.2.7:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 05823f21796d450531a7e4ab299715d38fd9ded0e4ce7400876053f4b5166ca3dde7a68cecfe72d9086039f03c0b6edba36516fb10ed83c5837d9600532ea4c2
+  languageName: node
+  linkType: hard
+
+"typescript@npm:~4.6.3":
+  version: 4.6.4
+  resolution: "typescript@npm:4.6.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: e7bfcc39cd4571a63a54e5ea21f16b8445268b9900bf55aee0e02ad981be576acc140eba24f1af5e3c1457767c96cea6d12861768fb386cf3ffb34013718631a
   languageName: node
   linkType: hard
 
