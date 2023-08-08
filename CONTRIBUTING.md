@@ -50,7 +50,7 @@ The quickest way to start tweaking things is to run the `playground` package.
 ```sh
 $ cd ./packages/playground
 $ yarn serve
-$ yarn build
+$ yarn cli build
 # or, shortcut:
 $ cd root
 $ yarn playground
@@ -73,7 +73,7 @@ examples.
 You can do that by running the `build` command at the root of the repo:
 
 ```sh
-$ yarn build
+$ yarn cli build
 ```
 
 Then build any of the examples:
@@ -148,9 +148,9 @@ same version number. In order to publish to npm, you can run the `release`
 script from the root of the repo:
 
 ```sh
-$ yarn release x.y.z # npm publish version x.y.z
-$ yarn release x.y.z-dev.w # npm publish version x.y.z-dev.w and tag it as "dev"
-$ yarn release x.y.z-rc.w # npm publish version x.y.z-rc.w and tag it as "rc"
+$ yarn cli release x.y.z # npm publish version x.y.z
+$ yarn cli release x.y.z-dev.w # npm publish version x.y.z-dev.w and tag it as "dev"
+$ yarn cli release x.y.z-rc.w # npm publish version x.y.z-rc.w and tag it as "rc"
 ```
 
 
@@ -203,7 +203,7 @@ $ yarn lint:all
 $ yarn lint:all --fix
 
 # Build all the packages
-$ yarn build
+$ yarn cli build
 
 ```
 

@@ -364,8 +364,8 @@ async function releaseToVerdaccio() {
   })
 
   try {
-    await $`yarn clean`
-    await $`yarn build`
+    await $`yarn cli clean`
+    await $`yarn cli build`
 
     await Promise.all(
       packagesToPublish.map(async (workspaceName) => {

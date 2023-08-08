@@ -9,19 +9,17 @@
     "compat-tests"
   ],
   "scripts": {
+    "cli": "node -r esbuild-register devEnv/cli.ts",
     "playground": "yarn workspace playground run serve",
     "benchmarks": "yarn workspace benchmarks run serve",
     "test:e2e": "yarn workspace playground run test",
     "test:e2e:ci": "yarn workspace playground run test:ci",
     "typecheck": "yarn run build:ts",
-    "build": "node -r esbuild-register devEnv/scripts/build.ts",
-    "clean": "node -r esbuild-register devEnv/scripts/clean.ts",
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
     "test:compat:install": "yarn workspace @theatre/compat-tests run install-fixtures",
     "test:compat:run": "jest --config jest.compat-tests.config.js",
     "postinstall": "husky install",
-    "release": "node -r esbuild-register devEnv/scripts/release.ts",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {
@@ -62,6 +60,7 @@
   },
   "packageManager": "yarn@3.2.0",
   "dependencies": {
-    "@actions/core": "^1.10.0"
+    "@actions/core": "^1.10.0",
+    "sade": "^1.8.1"
   }
 }

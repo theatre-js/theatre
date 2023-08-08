@@ -106,7 +106,7 @@ jobs:
 
       - uses: ./.github/actions/yarn-nm-install
       - name: Build the Theatre.js packages
-        run: yarn build
+        run: yarn cli build
       - name: Update .yarnrc.yml with the auth config for the npmPublishRegistry
         run: cat .github/.yarnrc.publish.yml >> .yarnrc.yml
       - name: Publish the Theatre.js packages

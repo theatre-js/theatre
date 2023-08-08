@@ -23463,6 +23463,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"mri@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "mri@npm:1.2.0"
+  checksum: 83f515abbcff60150873e424894a2f65d68037e5a7fcde8a9e2b285ee9c13ac581b63cfc1e6826c4732de3aeb84902f7c1e16b7aff46cd3f897a0f757a894e85
+  languageName: node
+  linkType: hard
+
 "ms@npm:2.0.0":
   version: 2.0.0
   resolution: "ms@npm:2.0.0"
@@ -29135,6 +29142,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"sade@npm:^1.8.1":
+  version: 1.8.1
+  resolution: "sade@npm:1.8.1"
+  dependencies:
+    mri: ^1.1.0
+  checksum: 0756e5b04c51ccdc8221ebffd1548d0ce5a783a44a0fa9017a026659b97d632913e78f7dca59f2496aa996a0be0b0c322afd87ca72ccd909406f49dbffa0f45d
+  languageName: node
+  linkType: hard
+
 "safari-14-idb-fix@npm:^3.0.0":
   version: 3.0.0
   resolution: "safari-14-idb-fix@npm:3.0.0"
@@ -31361,6 +31377,7 @@ fsevents@^1.2.7:
     lint-staged: ^13.0.3
     node-gyp: ^9.1.0
     prettier: ^2.3.2
+    sade: ^1.8.1
     typescript: 5.1.6
     yaml: ^2.3.1
   languageName: unknown
