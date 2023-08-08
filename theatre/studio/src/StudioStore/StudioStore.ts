@@ -114,7 +114,7 @@ export default class StudioStore {
 
   tempTransaction(fn: (api: ITransactionPrivateApi) => void): CommitOrDiscard {
     const group = tempActionGroup()
-    let errorDuringTransaction: unknown
+    let errorDuringTransaction: Error | undefined = undefined
 
     const action = group.push(
       studioActions.reduceParts((wholeState) => {
@@ -151,7 +151,7 @@ export default class StudioStore {
             ephemeral: finishDraft(drafts.ephemeral),
           }
         } catch (err: unknown) {
-          errorDuringTransaction = err
+          errorDuringTransaction = err as Error
           return wholeState
         } finally {
           setDrafts__onlyMeantToBeCalledByTransaction(undefined)
@@ -163,6 +163,7 @@ export default class StudioStore {
 
     if (errorDuringTransaction) {
       this._reduxStore.dispatch(group.discard())
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw errorDuringTransaction
     }
 
