@@ -1,4 +1,5 @@
 import {useLayoutEffect, useRef, useState} from 'react'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   __private_allRegisteredObjects as allRegisteredObjects,
   __private_makeStoreKey as makeStoreKey,

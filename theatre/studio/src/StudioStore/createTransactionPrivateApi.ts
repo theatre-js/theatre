@@ -35,7 +35,7 @@ function cloneDeepSerializableAndPrune<T>(v: T): T | undefined {
   } else if (isPlainObject(v)) {
     const cloned: $IntentionalAny = {}
     let clonedAtLeastOneProp = false
-    for (const [key, val] of Object.entries(v)) {
+    for (const [key, val] of Object.entries(v as {})) {
       const clonedVal = cloneDeepSerializableAndPrune(val)
       if (clonedVal !== undefined) {
         cloned[key] = val
@@ -169,7 +169,7 @@ export default function createTransactionPrivateApi(
               const pathToPropInProvidedValue =
                 pathToProp.slice(lengthOfTopPointer)
 
-              const v = getDeep(_value, pathToPropInProvidedValue)
+              const v = getDeep(_value as {}, pathToPropInProvidedValue)
               if (typeof v !== 'undefined') {
                 setStaticOrKeyframeProp(v, primitivePropConfig, pathToProp)
               } else {

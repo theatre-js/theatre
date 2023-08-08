@@ -15,10 +15,12 @@ const Container = styled(ToolbarIconButton)`
 
 const IconButton: React.FC<{
   config: ToolConfigIcon
-}> = ({config}) => {
+  testId?: string
+}> = ({config, testId}) => {
   return (
     <Container
       onClick={config.onClick}
+      data-testid={testId}
       title={config.title}
       dangerouslySetInnerHTML={{__html: config['svgSource'] ?? ''}}
     />

@@ -38,7 +38,9 @@ const BasicSelect: React.FC<{
 
   return (
     <Container>
-      <Label>{props.label}</Label>
+      <Label>
+        <>{props.label}</>
+      </Label>
       <SelectedValueLabel>
         {selectedLabel}
         {/* <select

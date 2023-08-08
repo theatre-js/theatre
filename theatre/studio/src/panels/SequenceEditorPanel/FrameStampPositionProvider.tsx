@@ -48,6 +48,7 @@ let lastLockId = 0
  */
 const FrameStampPositionProvider: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
+  children: React.ReactNode
 }> = ({children, layoutP}) => {
   const locksAtom = useMemo(() => new Atom<LockItem[]>([]), [])
   const currentD = useMemo(

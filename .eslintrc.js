@@ -23,11 +23,19 @@
  */
 module.exports = {
   root: true,
-  plugins: ['unused-imports', 'eslint-plugin-tsdoc'],
+  plugins: ['unused-imports', 'eslint-plugin-tsdoc', 'import', 'react'],
+  settings: {
+    react: {
+      version: '18.2',
+    },
+  },
   extends: [],
   rules: {
     'unused-imports/no-unused-imports': 'warn',
     'tsdoc/syntax': 'warn',
+    'no-debugger': 'error',
+    'react/no-deprecated': 'error',
+
     'no-restricted-imports': [
       'error',
       {
@@ -40,7 +48,7 @@ module.exports = {
       },
     ],
   },
-  ignorePatterns: ['*.d.ts', '*.ignore.ts', 'compatibility-tests/*'],
+  ignorePatterns: ['*.d.ts', '*.ignore.ts', 'compat-tests/*'],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
@@ -53,6 +61,7 @@ module.exports = {
           './packages/*/devEnv/tsconfig.json',
           './examples/*/tsconfig.json',
           './devEnv/tsconfig.json',
+          './compat-tests/tsconfig.json',
         ],
       },
       rules: {
@@ -66,6 +75,7 @@ module.exports = {
           },
         ],
         '@typescript-eslint/no-unused-vars': 'off',
+        '@typescript-eslint/no-floating-promises': 'warn',
       },
     },
     {
@@ -83,6 +93,19 @@ module.exports = {
         ecmaFeatures: {
           jsx: true,
         },
+      },
+    },
+    {
+      files: [
+        `packages/*/**/*.ts`,
+        `packages/*/**/*.tsx`,
+        `packages/*/**/*.js`,
+      ],
+      rules: {
+        'import/no-extraneous-dependencies': [
+          'error',
+          // {optionalDependencies: false, peerDependencies: false},
+        ],
       },
     },
   ],

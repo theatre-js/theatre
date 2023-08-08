@@ -1,6 +1,9 @@
 import type {PlaywrightTestConfig} from '@playwright/test'
 import {devices} from '@playwright/test'
 
+const port = 8082
+const url = `http://localhost:${port}`
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -14,12 +17,9 @@ const config: PlaywrightTestConfig = {
   testDir: '../src',
   testMatch: /.*\.e2e\.ts/,
   /* Maximum time one test can run for. */
-  timeout: 100000,
+  timeout: 4000,
   expect: {
-    /**
-     * Maximum time expect() should wait for the condition to be met.
-     * For example in `await expect(locator).toHaveText();`
-     */
+    // maximum timeout for expect assertions. If longer than the test timeout above, it'll still fail.
     timeout: 10000,
   },
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -39,6 +39,7 @@ const config: PlaywrightTestConfig = {
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    baseURL: url,
   },
 
   /* Configure projects for major browsers */
@@ -47,15 +48,19 @@ const config: PlaywrightTestConfig = {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        launchOptions: {
+          // args: ["--headless","--no-sandbox","--use-angle=gl"]
+          args: ['--no-sandbox'],
+        },
       },
     },
 
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-      },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //   },
+    // },
   ],
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
@@ -68,9 +73,9 @@ const config: PlaywrightTestConfig = {
   TODO 👆
   */
   webServer: {
-    command: 'yarn run serve:ci --port 8080',
-    port: 8080,
+    command: `yarn run serve:ci --port ${port}`,
     reuseExistingServer: !process.env.CI,
+    url: url,
   },
 }
 

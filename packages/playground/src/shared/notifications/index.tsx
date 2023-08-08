@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom/client'
 import studio from '@theatre/studio'
 import {getProject, notify} from '@theatre/core'
 import {Scene} from './Scene'
@@ -7,7 +7,7 @@ import {Scene} from './Scene'
 studio.initialize()
 
 // trigger warning notification
-getProject('Sample project').sheet('Scene').sequence.play()
+void getProject('Sample project').sheet('Scene').sequence.play()
 
 // fire an info notification
 notify.info(
@@ -16,7 +16,7 @@ notify.info(
     '(and all others) at the start of index.tsx. You can also see examples of success and warnign notifications.',
 )
 
-getProject('Sample project').ready.then(() => {
+void getProject('Sample project').ready.then(() => {
   // fire a success notification on project load
   notify.success(
     'Project loaded!',
@@ -24,7 +24,7 @@ getProject('Sample project').ready.then(() => {
   )
 })
 
-ReactDOM.render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <Scene
     project={getProject('Sample project', {
       // experiments: {
@@ -36,5 +36,4 @@ ReactDOM.render(
       // },
     })}
   />,
-  document.getElementById('root'),
 )

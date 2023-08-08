@@ -11,7 +11,9 @@ const editingContext = createContext<{
  * stateful and disregard controlling props, while not editing, it should behave
  * in a controlled manner.
  */
-export const EditingProvider: FC = ({children}) => {
+export const EditingProvider: FC<{children: React.ReactNode}> = ({
+  children,
+}) => {
   const [editing, setEditing] = useState(false)
 
   return (

@@ -38,7 +38,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: ./.github/actions/yarn-nm-install
 
-      - run: yarn lint:all --max-warnings 0
+      - run: |
+          export NODE_OPTIONS="--max_old_space_size=4096"
+          yarn lint:all --max-warnings 0
 
   Test:
     runs-on: ubuntu-latest
@@ -88,12 +90,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: ./.github/actions/yarn-nm-install
 
-      - name: Run e2e tests with percy
-        uses: percy/exec-action@v0.3.1
-        with:
-          custom-command: 'yarn test:e2e:ci'
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      - name: Run e2e tests
+        run: yarn test:e2e:ci
 
   Compatibility-Tests:
     runs-on: ubuntu-latest
@@ -111,9 +109,7 @@ jobs:
       - uses: ./.github/actions/yarn-nm-install
       # re-enable the following line if we start to get EINTEGRITY errors again
       # - run: npm cache clean || npm cache verify
-      # This will test whether `npm install`/`yarn install` can actually run on each compatibility test fixture. See `compatibility-tests/README.md` for more info.
-      - run:
-          yarn workspace @theatre/compatibility-tests run install-fixtures
-          --verbose
+      # This will test whether `npm install`/`yarn install` can actually run on each compatibility test fixture. See `compat-tests/README.md` for more info.
+      - run: yarn workspace @theatre/compat-tests run install-fixtures --verbose
       # after that, we run the jest tests for each fixture
-      - run: yarn test:compat:run
+      - run: yarn test:compat:run --verbose

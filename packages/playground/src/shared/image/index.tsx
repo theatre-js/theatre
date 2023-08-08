@@ -5,7 +5,7 @@
 import {getProject, types} from '@theatre/core'
 import studio from '@theatre/studio'
 import React, {useEffect, useState} from 'react'
-import {render} from 'react-dom'
+import ReactDom from 'react-dom/client'
 import styled from 'styled-components'
 
 const project = getProject('Image type playground', {
@@ -53,7 +53,7 @@ const ImageTypeExample: React.FC<{}> = (props) => {
       onClick={() => {
         if (sheet.sequence.position === 0) {
           sheet.sequence.position = 0
-          sheet.sequence.play()
+          void sheet.sequence.play()
         } else {
           sheet.sequence.position = 0
         }
@@ -64,6 +64,12 @@ const ImageTypeExample: React.FC<{}> = (props) => {
   )
 }
 
-project.ready.then(() => {
-  render(<ImageTypeExample />, document.getElementById('root'))
-})
+project.ready
+  .then(() => {
+    ReactDom.createRoot(document.getElementById('root')!).render(
+      <ImageTypeExample />,
+    )
+  })
+  .catch((err) => {
+    console.error(err)
+  })

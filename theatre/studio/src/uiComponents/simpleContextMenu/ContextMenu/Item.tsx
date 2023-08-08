@@ -46,7 +46,9 @@ const Item: React.FC<{
       enabled={props.enabled}
       title={props.enabled ? undefined : 'Disabled'}
     >
-      <ItemLabel>{props.label}</ItemLabel>
+      <ItemLabel>
+        <>{props.label}</>
+      </ItemLabel>
     </ItemContainer>
   )
 }

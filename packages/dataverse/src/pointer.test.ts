@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {pointer, getPointerParts, Atom} from '@theatre/dataverse'
 
 describe(`pointer`, () => {

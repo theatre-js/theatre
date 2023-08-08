@@ -81,9 +81,10 @@ export const PortalLayer = styled.div`
   pointer-events: none;
 `
 
-export const ProvideStyles: React.FC<{target: undefined | HTMLElement}> = (
-  props,
-) => {
+export const ProvideStyles: React.FC<{
+  target: undefined | HTMLElement
+  children: React.ReactNode
+}> = (props) => {
   return (
     <StyleSheetManager disableVendorPrefixes target={props.target}>
       <>
@@ -94,7 +95,7 @@ export const ProvideStyles: React.FC<{target: undefined | HTMLElement}> = (
   )
 }
 
-export function withStyledShadow<Props>(
+export function withStyledShadow<Props extends {}>(
   Comp: React.ComponentType<Props>,
 ): React.ComponentType<Props> {
   return (props) => (
@@ -104,20 +105,32 @@ export function withStyledShadow<Props>(
   )
 }
 
-const ProvideStyledShadow: React.FC<{}> = (props) => {
+const ProvideStyledShadow: React.FC<{
+  children: React.ReactNode
+}> = (props) => {
   const [template, ref] = useState<null | HTMLTemplateElement>(null)
   const [shadowRoot, setShadowRoot] = useState<null | ShadowRoot>(null)
 
   useLayoutEffect(() => {
     if (!template) return
-    const shadowRoot = (template.parentNode as HTMLElement).attachShadow({
-      mode: 'open',
-    })
+    const {parentNode} = template
+    if (!parentNode) return
+
+    const hadShadowRoot =
+      // @ts-ignore
+      !!parentNode.shadowRoot
+
+    const shadowRoot = hadShadowRoot
+      ? // @ts-ignore
+        parent.shadowRoot
+      : (parentNode as HTMLElement).attachShadow({
+          mode: 'open',
+        })
+
     setShadowRoot(shadowRoot)
 
-    return () => {
-      template.parentNode?.removeChild(shadowRoot)
-    }
+    // no need to cleanup. The parent will be removed anyway if cleanup
+    // is needed.
   }, [template])
 
   const [portalLayerRef, portalLayer] = useRefAndState<HTMLDivElement>(

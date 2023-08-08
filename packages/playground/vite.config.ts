@@ -1,19 +1,11 @@
 import {defineConfig} from 'vite'
-// import react from '@vitejs/plugin-react'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
-// import {mapValues} from 'lodash-es'
-// import {PlaygroundPage} from './devEnv/home/PlaygroundPage'
 import fg from 'fast-glob'
 import {getAliasesFromTsConfigForRollup} from '../../devEnv/getAliasesFromTsConfig'
 import {definedGlobals} from '../../theatre/devEnv/definedGlobals'
-import devCommonJS from 'vite-plugin-commonjs'
-// import {viteCommonjs as productionCommonJS} from '@originjs/vite-plugin-commonjs'
-// import mpa from 'vite-plugin-mpa'
-// import htmlTemplatePlugin from 'vite-plugin-html-template'
 
 const fromPlaygroundDir = (folder: string) => path.resolve(__dirname, folder)
-// const buildDir = playgroundDir('build')
 const srcDir = fromPlaygroundDir('src')
 const sharedDir = fromPlaygroundDir('src/shared')
 const personalDir = fromPlaygroundDir('src/personal')
@@ -48,12 +40,10 @@ const config = defineConfig(async ({command}) => {
 
   return {
     root: srcDir,
-    plugins: [
-      react(),
-      dev ? devCommonJS() : /*productionCommonJS()*/ undefined,
-    ],
+    plugins: [react()],
     appType: 'mpa',
     server: {
+      port: 8082,
       // base: '/playground/',
     },
 

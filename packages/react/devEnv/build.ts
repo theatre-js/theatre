@@ -24,7 +24,7 @@ const definedGlobals = {
   global: 'window',
 }
 
-function createBundles(watch: boolean) {
+async function createBundles(watch: boolean) {
   const pathToPackage = path.join(__dirname, '../')
   const esbuildConfig: Parameters<typeof build>[0] = {
     entryPoints: [path.join(pathToPackage, 'src/index.ts')],
@@ -39,7 +39,7 @@ function createBundles(watch: boolean) {
     plugins: [externalPlugin([/^[\@a-zA-Z]+/])],
   }
 
-  build({
+  await build({
     ...esbuildConfig,
     outfile: path.join(pathToPackage, 'dist/index.js'),
     format: 'cjs',
@@ -52,4 +52,4 @@ function createBundles(watch: boolean) {
   // })
 }
 
-createBundles(false)
+void createBundles(false)

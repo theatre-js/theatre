@@ -68,6 +68,7 @@ const BasePanel: React.FC<{
   panelId: UIPanelId
   defaultPosition: PanelPosition
   minDims: {width: number; height: number}
+  children: React.ReactNode
 }> = ({panelId, children, defaultPosition, minDims}) => {
   const windowSize = useWindowSize(800, 200)
   const [boundsHighlighted, addBoundsHighlightLock] = useLockSet()

@@ -1,5 +1,4 @@
 import {test, expect} from '@playwright/test'
-import percySnapshot from '@percy/playwright'
 
 const isMac = process.platform === 'darwin'
 
@@ -7,25 +6,8 @@ const delay = (dur: number) =>
   new Promise((resolve) => setTimeout(resolve, dur))
 
 test.describe('setting-static-props', () => {
-  test.beforeEach(async ({page}) => {
-    // TODO This is a temporary hack that re-tries navigating to the url in case the server isn't ready yet.
-    // Ideally we should wait running the e2e tests until the server has signalled that it's ready to serve.
-    // For now, let's use this hack, otherwise, the e2e test may _randomly_ break on the CI with "ERRConnectionRefused"
-    const maxRetries = 3
-    for (let i = 1; i <= maxRetries; i++) {
-      try {
-        await page.goto('http://localhost:8080/tests/setting-static-props')
-      } catch (error) {
-        if (i === maxRetries) {
-          throw error
-        } else {
-          await delay(1000)
-        }
-      }
-    }
-  })
-
   test('Undo/redo', async ({page}) => {
+    await page.goto('./tests/setting-static-props/')
     // https://github.com/microsoft/playwright/issues/12298
     // The div does in fact intercept pointer events, but it is meant to 🤦‍
     await page
@@ -60,8 +42,6 @@ test.describe('setting-static-props', () => {
     await expect(firstInput).toHaveAttribute('value', '1')
     await expect(secondInput).toHaveAttribute('value', '2')
 
-    // Our first visual regression test
-    // @ts-ignore - probably percy uses a different version of playwright
-    await percySnapshot(page, test.info().titlePath.join('/') + '/After redo')
+    await expect(page).toHaveScreenshot()
   })
 })

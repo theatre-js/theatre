@@ -72,7 +72,11 @@ export default function deepMergeWithCache<T extends SerializableMap>(
     // @ts-ignore @todo
     merged[key] =
       typeof valueInOverride === 'object' && typeof valueInBase === 'object'
-        ? deepMergeWithCache(valueInBase, valueInOverride, cache)
+        ? deepMergeWithCache(
+            valueInBase as SerializableMap,
+            valueInOverride,
+            cache,
+          )
         : valueInOverride === undefined
         ? valueInBase
         : valueInOverride

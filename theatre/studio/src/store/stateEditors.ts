@@ -32,6 +32,7 @@ import type {
   IRange,
   SerializableMap,
   SerializablePrimitive,
+  SerializableValue,
 } from '@theatre/shared/utils/types'
 import {current} from 'immer'
 import findLastIndex from 'lodash-es/findLastIndex'
@@ -773,7 +774,7 @@ namespace stateEditors {
            * Sets a keyframe at the exact specified position.
            * Any position snapping should be done by the caller.
            */
-          export function setKeyframeAtPosition<T>(
+          export function setKeyframeAtPosition<T extends SerializableValue>(
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: SequenceTrackId
               position: number

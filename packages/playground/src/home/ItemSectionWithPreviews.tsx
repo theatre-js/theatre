@@ -4,34 +4,49 @@ import styled from 'styled-components'
 export const ItemSectionWithPreviews = (props: {
   groupName: string
   modules: string[]
+  collapsedByDefault: boolean
+  collapsible: boolean
 }) => {
-  let {groupName, modules} = props
+  const {groupName, modules, collapsedByDefault, collapsible} = props
+  console.log(groupName)
+
+  const [collapsed, setCollapsed] = React.useState(
+    collapsible && collapsedByDefault,
+  )
+
+  const toggleCollapse = () => {
+    if (!collapsible) return
+    setCollapsed(!collapsed)
+  }
+
   return (
     <section>
-      <SectionHeader>{groupName}</SectionHeader>
-      <ItemListContainer>
-        {modules.map((moduleName) => {
-          const href = `/${groupName}/${moduleName}/`
-          return (
-            <ItemContainer key={`li-${moduleName}`}>
-              <ItemLink href={href}>
-                {/* <PreviewContainer>
-                  <iframe src={href} frameBorder="0" tabIndex={-1} />
-                </PreviewContainer> */}
-                <ItemDesc>
-                  <h3>{moduleName}</h3>
-                  <p>{href}</p>
-                </ItemDesc>
-              </ItemLink>
-            </ItemContainer>
-          )
-        })}
-      </ItemListContainer>
+      <SectionHeader collapsible={collapsible} onClick={toggleCollapse}>
+        {groupName}
+      </SectionHeader>
+
+      {!collapsed && (
+        <ItemListContainer>
+          {modules.map((moduleName) => {
+            const href = `/${groupName}/${moduleName}/`
+            return (
+              <ItemContainer key={`li-${moduleName}`}>
+                <ItemLink href={href}>
+                  <ItemDesc>
+                    <h3>{moduleName}</h3>
+                    <p>{href}</p>
+                  </ItemDesc>
+                </ItemLink>
+              </ItemContainer>
+            )
+          })}
+        </ItemListContainer>
+      )}
     </section>
   )
 }
 
-const SectionHeader = styled.h3`
+const SectionHeader = styled.h3<{collapsible: boolean}>`
   font-family: 'Inter', sans-serif;
   font-style: normal;
   font-weight: 400;
@@ -42,6 +57,10 @@ const SectionHeader = styled.h3`
 
   /* White/White50 */
   color: rgba(255, 255, 255, 0.5);
+
+  text-decoration: ${({collapsible}) => (collapsible ? 'underline' : 'none')};
+  cursor: ${({collapsible}) => (collapsible ? 'pointer' : 'default')};
+  user-select: none;
 `
 
 const ItemDesc = styled.div`

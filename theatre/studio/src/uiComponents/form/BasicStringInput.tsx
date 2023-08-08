@@ -1,8 +1,8 @@
 import styled from 'styled-components'
-import type {MutableRefObject} from 'react';
-import { useEffect} from 'react'
+import type {MutableRefObject} from 'react'
+import {useEffect} from 'react'
 import React, {useMemo, useRef} from 'react'
-import mergeRefs from 'react-merge-refs'
+import {mergeRefs} from 'react-merge-refs'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
 

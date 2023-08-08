@@ -1,7 +1,7 @@
-import type {VFC} from 'react'
+import type {FC} from 'react'
 import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
 import type {Editable} from '../../main/store'
-import {createPortal} from '@react-three/fiber'
+import {createPortal, invalidate} from '@react-three/fiber'
 import EditableProxy from './EditableProxy'
 import type {OrbitControls} from 'three-stdlib'
 import TransformControls from './TransformControls'
@@ -25,7 +25,7 @@ type IEditableProxy<T> = {
   editable: Editable<T>
 }
 
-const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
+const ProxyManager: FC<ProxyManagerProps> = ({orbitControlsRef}) => {
   const isBeingEdited = useRef(false)
   const editorObject = getEditorSheetObject()
   const [sceneSnapshot, editables] = useExtensionStore(
@@ -69,9 +69,18 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
           object.parent!.remove(object)
         } else {
           editableProxies[theatreKey] = {
-            portal: createPortal(
-              <EditableProxy storeKey={theatreKey} object={object} />,
-              object.parent!,
+            portal: (
+              // we gotta wrap the portal because as of [this commit](https://github.com/pmndrs/react-three-fiber/commit/5d1652ce5b63397ad79c39d3dd100b26a465c41f)
+              // in react-three-fiber, portals use the uuid of their parent object as their own key. Since many of these objects are nested
+              // inside the same parent, they end up having the same react key. We avoid this issue by wrapping the portal in a component
+              // so that its react key is unique within its parent component.
+              <PortalWrapper
+                portal={createPortal(
+                  <EditableProxy storeKey={theatreKey} object={object} />,
+                  object.parent!,
+                )}
+                key={`portal-wrapper-${theatreKey}`}
+              />
             ),
             object: object,
             editable: editables[theatreKey]!,
@@ -177,6 +186,7 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
             mesh.material = renderMaterials[mesh.id]
         }
       }
+      invalidate()
     })
   }, [viewportShading, renderMaterials, sceneProxy])
 
@@ -244,6 +254,10 @@ const ProxyManager: VFC<ProxyManagerProps> = ({orbitControlsRef}) => {
       )}
     </>
   )
+}
+
+const PortalWrapper: React.FC<{portal: React.ReactNode}> = ({portal}) => {
+  return <>{portal}</>
 }
 
 export default ProxyManager

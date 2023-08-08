@@ -55,6 +55,8 @@ export const PlaygroundPage = ({
               key={`group-${groupName}`}
               groupName={groupName}
               modules={modules}
+              collapsedByDefault={groupName === 'tests'}
+              collapsible={groupName === 'tests'}
             />
           ))}
         </ContentContainer>

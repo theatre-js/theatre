@@ -65,16 +65,16 @@ export function usePrism<T>(
     atomRef.current.set(fnAsCallback)
   }
 
-  const prsm = useMemo(
-    () =>
-      prism(() => {
-        const fn = atomRef.current.prism.getValue()
-        return fn()
-      }),
-    [],
-  )
+  const prismRef = useRef<Prism<T> | null>(null)
 
-  return usePrismInstance(prsm, debugLabel)
+  if (!prismRef.current) {
+    prismRef.current = prism(() => {
+      const fn = atomRef.current.prism.getValue()
+      return fn()
+    })
+  }
+
+  return usePrismInstance(prismRef.current, debugLabel)
 }
 
 export const useVal: typeof val = (p: $IntentionalAny, debugLabel?: string) => {
@@ -240,9 +240,9 @@ function queueIfNeeded() {
           item.runUpdate()
         }
       }
-    }, 1)
 
-    microtaskIsQueued = false
+      microtaskIsQueued = false
+    }, 1)
   })
 }
 /**

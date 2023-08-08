@@ -156,7 +156,7 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
   }, [paneInstance])
 
   return (
-    <Container>
+    <Container data-testid={`theatre-pane-wrapper-${paneInstance.instanceId}`}>
       <PanelDragZone>
         <TitleBar>
           <PaneTools>
@@ -168,7 +168,10 @@ const Content: React.FC<{paneInstance: PaneInstance<$FixMe>}> = ({
         </TitleBar>
       </PanelDragZone>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <F2 ref={setMountingPoint} />
+        <F2
+          data-testid={`theatre-pane-content-${paneInstance.instanceId}`}
+          ref={setMountingPoint}
+        />
       </ErrorBoundary>
     </Container>
   )

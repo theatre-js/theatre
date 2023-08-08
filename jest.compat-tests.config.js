@@ -1,7 +1,11 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  testMatch: ['<rootDir>/compatibility-tests/fixtures/*/*.compat-test.ts'],
+  testMatch: [
+    '<rootDir>/compat-tests/fixtures/*/*.compat-test.ts',
+    '<rootDir>/compat-tests/*.compat-test.ts',
+  ],
   moduleNameMapper: {},
+  modulePathIgnorePatterns: ['<rootDir>/compat-tests/verdaccio'],
   // setupFiles: ['./theatre/shared/src/setupTestEnv.ts'],
   automock: false,
   // transform: {
@@ -19,5 +23,27 @@ module.exports = {
   //   ],
   // },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testTimeout: 1000 * 60,
+  // these tests take a long time to run, because each of them either runs a full build of a package,
+  // or tests the build on a browser using playwright
+  testTimeout: 1000 * 60 * 2,
+  transform: {
+    '^.+\\.tsx?$': [
+      'jest-esbuild',
+      {
+        sourcemap: true,
+        supported: {
+          'dynamic-import': false,
+        },
+      },
+    ],
+    '^.+\\.js$': [
+      'jest-esbuild',
+      {
+        sourcemap: true,
+        supported: {
+          'dynamic-import': false,
+        },
+      },
+    ],
+  },
 }

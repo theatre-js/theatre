@@ -28,7 +28,7 @@ const defaultProps = {
 let lastProjectN = 0
 
 const studio = getStudio()!
-studio.initialize({usePersistentStorage: false})
+void studio.initialize({usePersistentStorage: false})
 
 export async function setupTestSheet(sheetState: SheetState_Historic) {
   const projectState: ProjectState_Historic = {

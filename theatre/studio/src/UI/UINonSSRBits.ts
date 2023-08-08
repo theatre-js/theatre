@@ -1,7 +1,7 @@
 import UIRoot from '@theatre/studio/UIRoot/UIRoot'
 import type {$IntentionalAny} from '@theatre/shared/utils/types'
 import React from 'react'
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom/client'
 import {getMounter} from '@theatre/studio/utils/renderInPortalInContext'
 import {withStyledShadow} from '@theatre/studio/css'
 import ExtensionToolbar from '@theatre/studio/toolbars/ExtensionToolbar/ExtensionToolbar'
@@ -54,9 +54,8 @@ export default class UINonSSRBits {
       this._renderTimeout = undefined
       this._documentBodyUIIsRenderedIn = document.body
       this._documentBodyUIIsRenderedIn.appendChild(this.containerEl)
-      ReactDOM.render(
+      ReactDOM.createRoot(this.containerShadow).render(
         React.createElement(UIRoot, {containerShadow: this.containerShadow}),
-        this.containerShadow,
       )
     }
     this._renderTimeout = setTimeout(renderCallback, 10)

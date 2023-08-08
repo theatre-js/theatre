@@ -1,9 +1,9 @@
 import {button, initialize, types, useControls} from 'theatric'
-import {render} from 'react-dom'
+import ReactDom from 'react-dom/client'
 import React, {useState} from 'react'
 import state from './state.json'
 
-initialize({state})
+void initialize({state})
 
 function SomeComponent({id}: {id: string}) {
   const {foo, $get, $set} = useControls(
@@ -79,4 +79,4 @@ function App() {
   )
 }
 
-render(<App />, document.getElementById('root'))
+ReactDom.createRoot(document.getElementById('root')!).render(<App />)

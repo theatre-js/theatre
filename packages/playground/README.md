@@ -53,6 +53,16 @@ $ yarn playwright codegen http://localhost:8080/tests/[playground-name] # run th
 
 ## Visual regression testing
 
-We're currently using [percy](https://percy.io) for visual regression testing. These tests run only the the [CI](../../.github/workflows/main.yml) using [Github actions](https://github.com/theatre-js/theatre/actions). Look at the example at [`src/tests/setting-static-props/test.e2e.ts`](src/tests/setting-static-props/test.e2e.ts) for an example of recording and diffing a screenshot.
+Some `.e2e.ts` files also contain visual regression tetst. These tests run only the the [CI](../../.github/workflows/main.yml) using [Github actions](https://github.com/theatre-js/theatre/actions). Look at the example at [`src/tests/setting-static-props/test.e2e.ts`](src/tests/setting-static-props/test.e2e.ts) for an example of recording and diffing a screenshot.
 
-Please note that we haven't figured out the best practices for visual regression testing yet, so if the setup isn't optimal, please let us know.
+Note that CI runs the visual regression tests in a linux VM, which is bound to produce a slightly different screenshot than a browser on Mac/Windows. Because of that, we have a `docker-compose.yml` file at the root of the repo which you can use to produce a screenshot in a linux vm. Here is how you can use it:
+
+```bash
+$ cd repo
+$ docker-compose up -d # start the linux vm
+$ docker-compose exec -it node bash # ssh into the vm
+$ yarn
+$ yarn test:e2e:ci
+```
+
+If you're submitting a PR that breaks the visual regression tests and you're not familiar with Docker, simply ask the mainainers to update the screenshots for you.

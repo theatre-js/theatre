@@ -1,9 +1,12 @@
 import type {EventManager, ReactThreeFiber} from '@react-three/fiber'
 import {useFrame, useThree} from '@react-three/fiber'
 import * as React from 'react'
-import {forwardRef, useEffect, useMemo} from 'react'
 import type {Camera, Event} from 'three'
-import {OrbitControlsImpl as OrbitControlsImpl} from './OrbitControlsImpl'
+import {OrbitControlsImpl} from './OrbitControlsImpl'
+
+export type OrbitControlsChangeEvent = Event & {
+  target: EventTarget & {object: Camera}
+}
 
 export type OrbitControlsProps = Omit<
   ReactThreeFiber.Overwrite<
@@ -13,17 +16,21 @@ export type OrbitControlsProps = Omit<
       domElement?: HTMLElement
       enableDamping?: boolean
       makeDefault?: boolean
-      onChange?: (e?: Event) => void
+      onChange?: (e?: OrbitControlsChangeEvent) => void
       onEnd?: (e?: Event) => void
       onStart?: (e?: Event) => void
       regress?: boolean
       target?: ReactThreeFiber.Vector3
+      keyEvents?: boolean | HTMLElement
     }
   >,
   'ref'
 >
 
-export const OrbitControls = forwardRef<OrbitControlsImpl, OrbitControlsProps>(
+export const OrbitControls = React.forwardRef<
+  OrbitControlsImpl,
+  OrbitControlsProps
+>(
   (
     {
       makeDefault,
@@ -31,6 +38,7 @@ export const OrbitControls = forwardRef<OrbitControlsImpl, OrbitControlsProps>(
       regress,
       domElement,
       enableDamping = true,
+      keyEvents = false,
       onChange,
       onStart,
       onEnd,
@@ -38,56 +46,67 @@ export const OrbitControls = forwardRef<OrbitControlsImpl, OrbitControlsProps>(
     },
     ref,
   ) => {
-    const invalidate = useThree(({invalidate}) => invalidate)
-    const defaultCamera = useThree(({camera}) => camera)
-    const gl = useThree(({gl}) => gl)
-    const events = useThree(({events}) => events) as EventManager<HTMLElement>
-    const set = useThree(({set}) => set)
-    const get = useThree(({get}) => get)
-    const performance = useThree(({performance}) => performance)
-    const explCamera = camera || defaultCamera
-    const explDomElement =
-      domElement ||
-      (typeof events.connected !== 'boolean' ? events.connected : gl.domElement)
-    const controls = useMemo(
+    const invalidate = useThree((state) => state.invalidate)
+    const defaultCamera = useThree((state) => state.camera)
+    const gl = useThree((state) => state.gl)
+    const events = useThree(
+      (state) => state.events,
+    ) as EventManager<HTMLElement>
+    const setEvents = useThree((state) => state.setEvents)
+    const set = useThree((state) => state.set)
+    const get = useThree((state) => state.get)
+    const performance = useThree((state) => state.performance)
+    const explCamera = (camera || defaultCamera) as
+      | THREE.OrthographicCamera
+      | THREE.PerspectiveCamera
+    const explDomElement = (domElement ||
+      events.connected ||
+      gl.domElement) as HTMLElement
+    const controls = React.useMemo(
       () => new OrbitControlsImpl(explCamera),
       [explCamera],
     )
 
     useFrame(() => {
       if (controls.enabled) controls.update()
-    })
+    }, -1)
 
-    useEffect(() => {
-      const callback = (e: Event) => {
+    React.useEffect(() => {
+      if (keyEvents) {
+        controls.connect(keyEvents === true ? explDomElement : keyEvents)
+      }
+
+      controls.connect(explDomElement)
+      return () => void controls.dispose()
+    }, [keyEvents, explDomElement, regress, controls, invalidate])
+
+    React.useEffect(() => {
+      const callback = (e: OrbitControlsChangeEvent) => {
         invalidate()
         if (regress) performance.regress()
         if (onChange) onChange(e)
       }
 
-      controls.connect(explDomElement)
-      controls.addEventListener('change', callback)
+      const onStartCb = (e: Event) => {
+        if (onStart) onStart(e)
+      }
 
-      if (onStart) controls.addEventListener('start', onStart)
-      if (onEnd) controls.addEventListener('end', onEnd)
+      const onEndCb = (e: Event) => {
+        if (onEnd) onEnd(e)
+      }
+
+      controls.addEventListener('change', callback)
+      controls.addEventListener('start', onStartCb)
+      controls.addEventListener('end', onEndCb)
 
       return () => {
+        controls.removeEventListener('start', onStartCb)
+        controls.removeEventListener('end', onEndCb)
         controls.removeEventListener('change', callback)
-        if (onStart) controls.removeEventListener('start', onStart)
-        if (onEnd) controls.removeEventListener('end', onEnd)
-        controls.dispose()
       }
-    }, [
-      explDomElement,
-      onChange,
-      onStart,
-      onEnd,
-      regress,
-      controls,
-      invalidate,
-    ])
+    }, [onChange, onStart, onEnd, controls, invalidate, setEvents])
 
-    useEffect(() => {
+    React.useEffect(() => {
       if (makeDefault) {
         const old = get().controls
         set({controls})
@@ -105,5 +124,4 @@ export const OrbitControls = forwardRef<OrbitControlsImpl, OrbitControlsProps>(
     )
   },
 )
-
 export {OrbitControlsImpl}

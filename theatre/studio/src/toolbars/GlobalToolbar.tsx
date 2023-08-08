@@ -98,7 +98,9 @@ const GlobalToolbar: React.FC = () => {
             : `There are ${conflicts.length} projects that have state conflicts. They are highlighted in the outline below. `}
         </ErrorTooltip>
       ) : (
-        <BasicTooltip>Outline</BasicTooltip>
+        <BasicTooltip>
+          <>Outline</>
+        </BasicTooltip>
       ),
   )
 

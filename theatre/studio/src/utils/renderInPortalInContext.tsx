@@ -22,7 +22,7 @@ let lastId = 1
 
 export const getMounter = () => {
   const id = lastId++
-  function mountOrRender<Props>(
+  function mountOrRender<Props extends {}>(
     comp: React.ComponentType<Props>,
     props: Props,
     portalNode: HTMLElement,

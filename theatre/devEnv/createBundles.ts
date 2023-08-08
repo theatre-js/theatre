@@ -1,21 +1,24 @@
 import path from 'path'
-import {build} from 'esbuild'
+import * as esbuild from 'esbuild'
 import {definedGlobals} from './definedGlobals'
 
-export function createBundles(watch: boolean) {
+export async function createBundles(watch: boolean) {
   for (const which of ['core', 'studio']) {
     const pathToPackage = path.join(__dirname, '../', which)
-    const esbuildConfig: Parameters<typeof build>[0] = {
+    const esbuildConfig: Parameters<typeof esbuild.context>[0] = {
       entryPoints: [path.join(pathToPackage, 'src/index.ts')],
       target: ['es6'],
       loader: {'.png': 'file', '.svg': 'dataurl'},
       bundle: true,
       sourcemap: true,
+      supported: {
+        // 'unicode-escapes': false,
+        'template-literal': false,
+      },
       define: {
         ...definedGlobals,
         __IS_VISUAL_REGRESSION_TESTING: 'false',
       },
-      watch,
       external: [
         '@theatre/dataverse',
         /**
@@ -53,11 +56,18 @@ export function createBundles(watch: boolean) {
       esbuildConfig.minify = true
     }
 
-    build({
+    const ctx = await esbuild.context({
       ...esbuildConfig,
       outfile: path.join(pathToPackage, 'dist/index.js'),
       format: 'cjs',
     })
+
+    if (watch) {
+      await ctx.watch()
+    } else {
+      await ctx.rebuild()
+      await ctx.dispose()
+    }
 
     /**
      * @remarks

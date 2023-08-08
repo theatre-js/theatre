@@ -35,6 +35,7 @@ const Container = styled.div<{isShiftDown: boolean}>`
 const DopeSheetSelectionView: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
   height: number
+  children: React.ReactNode
 }> = ({layoutP, children, height}) => {
   const [containerRef, containerNode] = useRefAndState<HTMLDivElement | null>(
     null,

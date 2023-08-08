@@ -1,4 +1,5 @@
 import type {Pointer, Prism} from '@theatre/dataverse'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   isPointer,
   isPrism,
@@ -10,8 +11,7 @@ import {
   Ticker,
   val,
 } from '@theatre/dataverse'
-// eslint-disable-next-line no-restricted-imports
-import {set as lodashSet} from 'lodash'
+import {set as lodashSet} from 'lodash-es'
 import {isPointerToPrismProvider} from './pointerToPrism'
 
 describe(`The exhaustive guide to dataverse`, () => {
@@ -696,7 +696,7 @@ describe(`The exhaustive guide to dataverse`, () => {
 
       // Let's create a function that will set a property of an object by a pointer, similar to `lodash.set()`.
       // The function will take the root object, the pointer, and the new value.
-      function setByPointer<Root, Value>(
+      function setByPointer<Root extends {}, Value>(
         root: Root,
         getPointer: (ptr: Pointer<Root>) => Pointer<Value>,
         newValue: Value,

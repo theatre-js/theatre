@@ -51,9 +51,13 @@ const cube1Config3 = cube1Config2
 function Scene() {
   const [state, setState] = useState(1)
 
-  useExtensionButton('Step forward', () => {
-    setState((s) => s + 1)
-  })
+  useExtensionButton(
+    'Step forward',
+    () => {
+      setState((s) => s + 1)
+    },
+    '>',
+  )
 
   useEffect(() => {}, [])
 

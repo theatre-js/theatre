@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {____private_editorStore} from '@theatre/r3f'
 import create from 'zustand'
 

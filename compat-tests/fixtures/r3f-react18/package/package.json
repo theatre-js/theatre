@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "dev": "parcel serve ./index.html",
+    "build": "parcel build ./index.html",
+    "start": "serve dist"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.80.1",
+    "@react-three/fiber": "^8.13.6",
+    "three": "^0.155.0",
+    "@theatre/core": "0.0.1-COMPAT.1",
+    "@theatre/r3f": "0.0.1-COMPAT.1",
+    "@theatre/studio": "0.0.1-COMPAT.1",
+    "parcel": "^2.9.3",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "serve": "14.2.0"
+  }
+}

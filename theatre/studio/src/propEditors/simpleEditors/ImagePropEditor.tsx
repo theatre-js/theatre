@@ -1,4 +1,5 @@
 import type {PropTypeConfig_Image} from '@theatre/core/propTypes'
+import type {$FixMe} from '@theatre/shared/utils/types'
 import {Trash} from '@theatre/studio/uiComponents/icons'
 import React, {useCallback, useEffect} from 'react'
 import styled, {css} from 'styled-components'
@@ -114,7 +115,7 @@ function ImagePropEditor({
   }, [value])
 
   const onChange = useCallback(
-    async (event) => {
+    async (event: React.ChangeEvent<$FixMe>) => {
       const file = event.target.files[0]
       editingTools.permanentlySetValue({type: 'image', id: undefined})
       const imageId = await editingTools.createAsset(file)

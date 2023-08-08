@@ -223,7 +223,7 @@ export default class DefaultPlaybackController implements IPlaybackController {
     // causing unnecessary recalculations
     const untapFromRangeD = rangeD.keepHot()
     // We'll release our subscription once this promise resolves/rejects, for whatever reason
-    deferred.promise.then(untapFromRangeD, untapFromRangeD)
+    void deferred.promise.then(untapFromRangeD, untapFromRangeD)
 
     let lastTickerTime = ticker.time
 

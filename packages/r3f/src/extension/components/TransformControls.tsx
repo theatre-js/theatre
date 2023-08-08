@@ -49,8 +49,8 @@ const TransformControls = forwardRef(
     }, [object, controls])
 
     useEffect(() => {
-      controls?.addEventListener?.('change', invalidate)
-      return () => controls?.removeEventListener?.('change', invalidate)
+      controls?.addEventListener?.('change', () => invalidate())
+      return () => controls?.removeEventListener?.('change', () => invalidate())
     }, [controls, invalidate])
 
     useEffect(() => {

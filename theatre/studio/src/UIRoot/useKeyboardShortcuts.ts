@@ -125,7 +125,7 @@ export default function useKeyboardShortcuts() {
 
             const playbackStateBox = getPlaybackStateBox(seq)
 
-            playbackPromise.finally(() => {
+            void playbackPromise.finally(() => {
               playbackStateBox.set(undefined)
             })
 

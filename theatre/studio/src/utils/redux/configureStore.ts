@@ -7,12 +7,14 @@ import identity from 'lodash-es/identity'
 import type {Store} from 'redux'
 import {compose, createStore} from 'redux'
 
-interface Conf<State> {
+interface Conf<State extends {}> {
   rootReducer: ReduxReducer<State>
   devtoolsOptions?: $FixMe
 }
 
-export default function configureStore<State>(conf: Conf<State>): Store<State> {
+export default function configureStore<State extends {}>(
+  conf: Conf<State>,
+): Store<State> {
   // const middlewares: $FixMe[] = []
   const enhancers = []
 

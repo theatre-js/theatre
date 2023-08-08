@@ -4,7 +4,7 @@
     "outDir": "dist",
     "lib": ["ESNext", "DOM"],
     "rootDir": ".",
-    "types": ["node"],
+    "types": ["node", "jest"],
     "noEmit": true,
     "target": "es6",
     "composite": true
