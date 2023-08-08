@@ -10,6 +10,7 @@
     {"path": "../../packages/dataverse"},
     {"path": "../../packages/playground"},
     {"path": "../../packages/benchmarks"},
+    {"path": "../../packages/react"},
     {"path": "../../packages/r3f"},
     {"path": "../../examples/basic-dom"},
     {"path": "../../compat-tests"},

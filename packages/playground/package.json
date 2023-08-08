@@ -23,6 +23,7 @@
     "@theatre/core": "workspace:*",
     "@theatre/dataverse": "workspace:*",
     "@theatre/r3f": "workspace:*",
+    "@theatre/react": "workspace:*",
     "@theatre/studio": "workspace:*",
     "@types/jest": "^26.0.23",
     "@types/lodash-es": "^4.17.4",
