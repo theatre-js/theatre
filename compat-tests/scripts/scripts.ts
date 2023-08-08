@@ -364,7 +364,7 @@ async function releaseToVerdaccio() {
   })
 
   try {
-    await $`yarn cli clean`
+    await $`yarn cli build clean`
     await $`yarn cli build`
 
     await Promise.all(
