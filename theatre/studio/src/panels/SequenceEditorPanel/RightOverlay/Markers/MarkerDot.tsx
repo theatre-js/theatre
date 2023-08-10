@@ -12,12 +12,11 @@ import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {SequenceMarkerId} from '@theatre/shared/utils/ids'
-import type {SheetAddress} from '@theatre/shared/utils/addresses'
+import type {SheetAddress} from '@theatre/sync-server/state/types'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
-import type {StudioHistoricStateSequenceEditorMarker} from '@theatre/studio/store/types'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
+import type {StudioHistoricStateSequenceEditorMarker} from '@theatre/sync-server/state/types'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import {absoluteDims} from '@theatre/studio/utils/absoluteDims'
@@ -29,6 +28,7 @@ import {
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import MarkerEditorPopover from './MarkerEditorPopover'
+import type {SequenceMarkerId} from '@theatre/sync-server/state/types'
 
 const MARKER_SIZE_W_PX = 12
 const MARKER_SIZE_H_PX = 12
@@ -247,7 +247,7 @@ function useDragMarker(
       onDragStart(_event) {
         const markerAtStartOfDrag = propsRef.current.marker
         const toUnitSpace = val(props.layoutP.scaledSpace.toUnitSpace)
-        let tempTransaction: CommitOrDiscard | undefined
+        let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
         snapToAll()
 

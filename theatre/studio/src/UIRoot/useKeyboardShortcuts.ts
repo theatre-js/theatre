@@ -1,13 +1,13 @@
 import {useEffect} from 'react'
 import getStudio from '@theatre/studio/getStudio'
-import {cmdIsDown} from '@theatre/studio/utils/keyboardUtils'
+import {cmdIsDown} from '@theatre/utils/keyboardUtils'
 import {getSelectedSequence} from '@theatre/studio/selectors'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import type {Prism} from '@theatre/dataverse'
 import {Atom, prism, val} from '@theatre/dataverse'
 import type {IPlaybackRange} from '@theatre/core/sequences/Sequence'
 import type Sequence from '@theatre/core/sequences/Sequence'
-import memoizeFn from '@theatre/shared/utils/memoizeFn'
+import memoizeFn from '@theatre/utils/memoizeFn'
 
 let playPauseKeyboardShortcutIsEnabled = true
 export function __experimental_disblePlayPauseKeyboardShortcut() {
@@ -140,9 +140,10 @@ export default function useKeyboardShortcuts() {
         e.altKey &&
         (e.key === '\\' || e.code === 'Backslash' || e.code === 'IntlBackslash')
       ) {
-        studio.transaction(({stateEditors, drafts}) => {
+        const prev = val(studio.atomP.ahistoric.visibilityState)
+        studio.transaction(({stateEditors}) => {
           stateEditors.studio.ahistoric.setVisibilityState(
-            drafts.ahistoric.visibilityState === 'everythingIsHidden'
+            prev === 'everythingIsHidden'
               ? 'everythingIsVisible'
               : 'everythingIsHidden',
           )

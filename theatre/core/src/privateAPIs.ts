@@ -7,7 +7,7 @@ import type {ISheetObject} from '@theatre/core/sheetObjects/TheatreSheetObject'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 import type {UnknownShorthandCompoundProps} from './propTypes/internals'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import type {IRafDriver, RafDriverPrivateAPI} from './rafDrivers'
 
 const publicAPIToPrivateAPIMap = new WeakMap()

@@ -1,6 +1,6 @@
-import {InvalidArgumentError} from '@theatre/shared/utils/errors'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
+import {InvalidArgumentError} from '@theatre/utils/errors'
+import type {$IntentionalAny} from '@theatre/utils/types'
+import userReadableTypeOfValue from '@theatre/utils/userReadableTypeOfValue'
 import {isPlainObject} from 'lodash-es'
 import type {
   PropTypeConfig,

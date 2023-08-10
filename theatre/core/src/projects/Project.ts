@@ -1,23 +1,26 @@
-import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
+import type {
+  OnDiskState,
+  ProjectEphemeralState,
+} from '@theatre/sync-server/state/types/core'
 import type TheatreProject from '@theatre/core/projects/TheatreProject'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import SheetTemplate from '@theatre/core/sheets/SheetTemplate'
 import type {Studio} from '@theatre/studio/Studio'
-import type {ProjectAddress} from '@theatre/shared/utils/addresses'
+import type {ProjectAddress} from '@theatre/sync-server/state/types'
 import type {Pointer} from '@theatre/dataverse'
 import {PointerProxy} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import initialiseProjectState from './initialiseProjectState'
 import projectsSingleton from './projectsSingleton'
-import type {ProjectState} from './store/storeTypes'
-import type {Deferred} from '@theatre/shared/utils/defer'
-import {defer} from '@theatre/shared/utils/defer'
+import type {ProjectState} from '@theatre/sync-server/state/types'
+import type {Deferred} from '@theatre/utils/defer'
+import {defer} from '@theatre/utils/defer'
 import globals from '@theatre/shared/globals'
 import type {
   ProjectId,
   SheetId,
   SheetInstanceId,
-} from '@theatre/shared/utils/ids'
+} from '@theatre/sync-server/state/types/core'
 import type {
   ILogger,
   ITheatreLoggerConfig,
@@ -60,15 +63,13 @@ export type ExperimentsConf = Partial<{
 
 export default class Project {
   readonly pointers: {
-    historic: Pointer<ProjectState['historic']>
-    ahistoric: Pointer<ProjectState['ahistoric']>
-    ephemeral: Pointer<ProjectState['ephemeral']>
+    historic: Pointer<ProjectState['historic'] | undefined>
+    ephemeral: Pointer<ProjectEphemeralState>
   }
 
   private readonly _pointerProxies: {
     historic: PointerProxy<ProjectState['historic']>
-    ahistoric: PointerProxy<ProjectState['ahistoric']>
-    ephemeral: PointerProxy<ProjectState['ephemeral']>
+    ephemeral: PointerProxy<ProjectEphemeralState>
   }
 
   readonly address: ProjectAddress
@@ -96,20 +97,18 @@ export default class Project {
     this._logger.traceDev('creating project')
     this.address = {projectId: id}
 
-    const onDiskStateAtom = new Atom<ProjectState>({
-      ahistoric: {
-        ahistoricStuff: '',
+    const onDiskEphemeralAtom = new Atom<ProjectEphemeralState>({
+      loadingState: {
+        type: 'loaded',
       },
+      lastExportedObject: null,
+    })
+
+    const onDiskStateAtom = new Atom<ProjectState>({
       historic: config.state ?? {
         sheetsById: {},
         definitionVersion: globals.currentProjectStateDefinitionVersion,
         revisionHistory: [],
-      },
-      ephemeral: {
-        loadingState: {
-          type: 'loaded',
-        },
-        lastExportedObject: null,
       },
     })
 
@@ -125,13 +124,11 @@ export default class Project {
 
     this._pointerProxies = {
       historic: new PointerProxy(onDiskStateAtom.pointer.historic),
-      ahistoric: new PointerProxy(onDiskStateAtom.pointer.ahistoric),
-      ephemeral: new PointerProxy(onDiskStateAtom.pointer.ephemeral),
+      ephemeral: new PointerProxy(onDiskEphemeralAtom.pointer),
     }
 
     this.pointers = {
       historic: this._pointerProxies.historic.pointer,
-      ahistoric: this._pointerProxies.ahistoric.pointer,
       ephemeral: this._pointerProxies.ephemeral.pointer,
     }
 
@@ -203,11 +200,9 @@ export default class Project {
         this._pointerProxies.historic.setPointer(
           studio.atomP.historic.coreByProject[this.address.projectId],
         )
-        this._pointerProxies.ahistoric.setPointer(
-          studio.atomP.ahistoric.coreByProject[this.address.projectId],
-        )
+
         this._pointerProxies.ephemeral.setPointer(
-          studio.atomP.ephemeral.coreByProject[this.address.projectId],
+          studio.ephemeralAtom.pointer.coreByProject[this.address.projectId],
         )
 
         // asset storage has to be initialized after the pointers are set

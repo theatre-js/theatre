@@ -1,15 +1,13 @@
 import {isPrism, prism, val} from '@theatre/dataverse'
 import type {Prism, Pointer} from '@theatre/dataverse'
 import {usePrismInstance} from '@theatre/react'
-import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
+import type {$FixMe, $IntentionalAny} from '@theatre/utils/types'
 import React, {useMemo, useRef} from 'react'
 import {invariant} from './invariant'
 
-type DeriveAll<T> = Prism<
-  {
-    [P in keyof T]: T[P] extends $<infer R> ? R : never
-  }
->
+type DeriveAll<T> = Prism<{
+  [P in keyof T]: T[P] extends $<infer R> ? R : never
+}>
 
 export type $<T> = Prism<T> | Pointer<T>
 
@@ -38,13 +36,11 @@ function deriveAllD<T extends Record<string, $<any>> | $<any>[]>(
 /** This is only used for type checking to make sure the APIs are used properly */
 interface TSErrors<M> extends Error {}
 
-type ReactDeriver<Props extends {}> = (
-  props: {
-    [P in keyof Props]: Props[P] extends Prism<infer _>
-      ? TSErrors<"Can't both use Derivation properties while wrapping with deriver">
-      : Props[P] | Prism<Props[P]>
-  },
-) => React.ReactElement | null
+type ReactDeriver<Props extends {}> = (props: {
+  [P in keyof Props]: Props[P] extends Prism<infer _>
+    ? TSErrors<"Can't both use Derivation properties while wrapping with deriver">
+    : Props[P] | Prism<Props[P]>
+}) => React.ReactElement | null
 
 /**
  * Wrap up the component to enable it to take derivable properties.

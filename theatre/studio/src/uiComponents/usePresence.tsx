@@ -1,5 +1,4 @@
-import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
-import type {StrictRecord} from '@theatre/shared/utils/types'
+import type {StrictRecord} from '@theatre/utils/types'
 import React, {useMemo} from 'react'
 import {useEffect} from 'react'
 import {useLogger} from './useLogger'
@@ -7,7 +6,8 @@ import {prism, pointerToPrism} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import {usePrismInstance} from '@theatre/react'
 import {selectClosestHTMLAncestor} from '@theatre/studio/utils/selectClosestHTMLAncestor'
-import pointerDeep from '@theatre/shared/utils/pointerDeep'
+import pointerDeep from '@theatre/utils/pointerDeep'
+import type {StudioSheetItemKey} from '@theatre/sync-server/state/types'
 
 /** To mean the presence value */
 export enum PresenceFlag {

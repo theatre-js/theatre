@@ -10,7 +10,7 @@ import React, {
 import styled from 'styled-components'
 import fuzzy from 'fuzzy'
 import getStudio from '@theatre/studio/getStudio'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import CurveSegmentEditor from './CurveSegmentEditor'
 import EasingOption from './EasingOption'
 import type {CSSCubicBezierArgsString, CubicBezierHandles} from './shared'
@@ -22,7 +22,7 @@ import {
 } from './shared'
 import {COLOR_BASE, COLOR_POPOVER_BACK} from './colors'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {Keyframe} from '@theatre/sync-server/state/types/core'
 import {useUIOptionGrid, Outcome} from './useUIOptionGrid'
 import type {KeyframeConnectionWithAddress} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
@@ -141,7 +141,7 @@ const CurveEditorPopover: React.VFC<ICurveEditorPopoverProps> = (props) => {
    * is discared if the user presses escape, otherwise it is committed when the
    * popover closes.
    */
-  const tempTransaction = useRef<CommitOrDiscard | null>(null)
+  const tempTransaction = useRef<CommitOrDiscardOrRecapture | null>(null)
   useEffect(() => {
     const unlock = getLock(allConnections)
     // Clean-up function, called when this React component unmounts.
@@ -297,11 +297,14 @@ const CurveEditorPopover: React.VFC<ICurveEditorPopoverProps> = (props) => {
 
   // A map to store all html elements corresponding to easing options
   const optionsRef = useRef(
-    EASING_PRESETS.reduce((acc, curr) => {
-      acc[curr.label] = {current: null}
+    EASING_PRESETS.reduce(
+      (acc, curr) => {
+        acc[curr.label] = {current: null}
 
-      return acc
-    }, {} as {[key: string]: {current: HTMLDivElement | null}}),
+        return acc
+      },
+      {} as {[key: string]: {current: HTMLDivElement | null}},
+    ),
   )
 
   const [optionsContainerRef, optionsContainer] =
@@ -409,7 +412,7 @@ const CurveEditorPopover: React.VFC<ICurveEditorPopoverProps> = (props) => {
 export default CurveEditorPopover
 
 function setTempValue(
-  tempTransaction: React.MutableRefObject<CommitOrDiscard | null>,
+  tempTransaction: React.MutableRefObject<CommitOrDiscardOrRecapture | null>,
   keyframeConnections: Array<KeyframeConnectionWithAddress>,
   newCurveCssCubicBezier: string,
 ): void {
@@ -428,7 +431,7 @@ function setTempValue(
 }
 
 function discardTempValue(
-  tempTransaction: React.MutableRefObject<CommitOrDiscard | null>,
+  tempTransaction: React.MutableRefObject<CommitOrDiscardOrRecapture | null>,
 ): void {
   tempTransaction.current?.discard()
   tempTransaction.current = null
@@ -437,7 +440,7 @@ function discardTempValue(
 function transactionSetCubicBezier(
   keyframeConnections: Array<KeyframeConnectionWithAddress>,
   handles: CubicBezierHandles,
-): CommitOrDiscard {
+): CommitOrDiscardOrRecapture {
   return getStudio().tempTransaction(({stateEditors}) => {
     const {setHandlesForKeyframe, setKeyframeType: setKeyframeType} =
       stateEditors.coreByProject.historic.sheetsById.sequence
@@ -480,7 +483,7 @@ function transactionSetCubicBezier(
 
 function transactionSetHold(
   keyframeConnections: Array<KeyframeConnectionWithAddress>,
-): CommitOrDiscard {
+): CommitOrDiscardOrRecapture {
   return getStudio().tempTransaction(({stateEditors}) => {
     const {setKeyframeType: setKeyframeType} =
       stateEditors.coreByProject.historic.sheetsById.sequence

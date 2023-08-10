@@ -1,6 +1,6 @@
 import {getOutlineSelection} from '@theatre/studio/selectors'
 import {usePrism} from '@theatre/react'
-import {valToAtom} from '@theatre/shared/utils/valToAtom'
+import {valToAtom} from '@theatre/utils/valToAtom'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import React, {useState} from 'react'
@@ -12,7 +12,7 @@ import type {PanelDims, SequenceEditorPanelLayout} from './layout/layout'
 import {sequenceEditorPanelLayout} from './layout/layout'
 import RightOverlay from './RightOverlay/RightOverlay'
 import BasePanel, {usePanel} from '@theatre/studio/panels/BasePanel/BasePanel'
-import type {PanelPosition} from '@theatre/studio/store/types'
+import type {PanelPosition} from '@theatre/sync-server/state/types'
 import PanelDragZone from '@theatre/studio/panels/BasePanel/PanelDragZone'
 import PanelWrapper from '@theatre/studio/panels/BasePanel/PanelWrapper'
 import FrameStampPositionProvider from './FrameStampPositionProvider'
@@ -27,8 +27,8 @@ import {
   TitleBar_Piece,
   TitleBar_Punctuation,
 } from '@theatre/studio/panels/BasePanel/common'
-import type {UIPanelId} from '@theatre/shared/utils/ids'
 import {usePresenceListenersOnRootElement} from '@theatre/studio/uiComponents/usePresence'
+import type {UIPanelId} from '@theatre/sync-server/state/types'
 
 const Container = styled(PanelWrapper)`
   z-index: ${panelZIndexes.sequenceEditorPanel};

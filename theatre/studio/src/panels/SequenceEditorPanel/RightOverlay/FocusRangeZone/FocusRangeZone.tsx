@@ -1,7 +1,7 @@
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import {usePrism} from '@theatre/react'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import {
   panelDimsToPanelPosition,
@@ -9,7 +9,7 @@ import {
 } from '@theatre/studio/panels/BasePanel/BasePanel'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useHoverWithoutDescendants from '@theatre/studio/uiComponents/useHoverWithoutDescendants'
@@ -104,7 +104,7 @@ function usePanelDragZoneGestureHandlers(
       return {
         debugName: 'FocusRangeZone/focusRangeCreationGestureHandlers',
         onDragStart(event) {
-          let tempTransaction: CommitOrDiscard | undefined
+          let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
           const clippedSpaceToUnitSpace = val(layoutP.clippedSpace.toUnitSpace)
           const scaledSpaceToUnitSpace = val(layoutP.scaledSpace.toUnitSpace)
@@ -178,14 +178,14 @@ function usePanelDragZoneGestureHandlers(
       return {
         debugName: 'FocusRangeZone/panelMoveGestureHandlers',
         onDragStart() {
-          let tempTransaction: CommitOrDiscard | undefined
+          let tempTransaction: CommitOrDiscardOrRecapture | undefined
           const stuffBeforeDrag = panelStuffRef.current
 
           const unlock = panelStuffRef.current.addBoundsHighlightLock()
 
           return {
             onDrag(dx, dy) {
-              const newDims: typeof panelStuffRef.current['dims'] = {
+              const newDims: (typeof panelStuffRef.current)['dims'] = {
                 ...stuffBeforeDrag.dims,
                 top: clamp(
                   stuffBeforeDrag.dims.top + dy,

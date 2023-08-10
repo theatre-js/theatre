@@ -10,7 +10,7 @@ import styled from 'styled-components'
 import {useReceiveVerticalWheelEvent} from '@theatre/studio/panels/SequenceEditorPanel/VerticalScrollContainer'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {useCssCursorLock} from '@theatre/studio/uiComponents/PointerEventsHandler'
-import type {IRange} from '@theatre/shared/utils/types'
+import type {IRange} from '@theatre/utils/types'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import {snapToAll, snapToNone} from './KeyframeSnapTarget'
 

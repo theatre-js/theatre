@@ -3,7 +3,7 @@ import type {
   PropTypeConfig_Number,
 } from '@theatre/core/propTypes'
 import {isPropConfigComposite} from '@theatre/shared/propTypes/utils'
-import type {$FixMe} from '@theatre/shared/utils/types'
+import type {$FixMe} from '@theatre/utils/types'
 import {Atom, getPointerParts} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import last from 'lodash-es/last'
@@ -28,7 +28,7 @@ import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEd
 import {usePrism} from '@theatre/react'
 import {val} from '@theatre/dataverse'
 import {HiOutlineChevronRight} from 'react-icons/all'
-import memoizeFn from '@theatre/shared/utils/memoizeFn'
+import memoizeFn from '@theatre/utils/memoizeFn'
 
 const Container = styled.div`
   --step: 15px;
@@ -81,7 +81,9 @@ const CollapseIcon = styled.span<{isCollapsed: boolean; isVector: boolean}>`
   align-items: center;
   justify-content: center;
 
-  transition: transform 0.05s ease-out, color 0.1s ease-out;
+  transition:
+    transform 0.05s ease-out,
+    color 0.1s ease-out;
   transform: rotateZ(${(props) => (props.isCollapsed ? 0 : 90)}deg);
   color: #66686a;
 

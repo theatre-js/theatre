@@ -2,7 +2,7 @@ import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
 
 import getStudio from '@theatre/studio/getStudio'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
@@ -310,7 +310,7 @@ function useDragForSingleKeyframeDot(
           propsAtStartOfDrag.layoutP.scaledSpace.toUnitSpace,
         )
 
-        let tempTransaction: CommitOrDiscard | undefined
+        let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
         return {
           onDrag(dx, dy, event) {

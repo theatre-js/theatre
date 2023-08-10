@@ -1,7 +1,7 @@
-import type {VoidFn} from '@theatre/shared/utils/types'
+import type {VoidFn} from '@theatre/utils/types'
 import React from 'react'
 import styled, {css} from 'styled-components'
-import noop from '@theatre/shared/utils/noop'
+import noop from '@theatre/utils/noop'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {ChevronDown, Package} from '@theatre/studio/uiComponents/icons'
 

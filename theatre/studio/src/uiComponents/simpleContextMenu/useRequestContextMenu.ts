@@ -1,4 +1,4 @@
-import type {$FixMe} from '@theatre/shared/utils/types'
+import type {$FixMe} from '@theatre/utils/types'
 import {useCallback, useEffect, useState} from 'react'
 
 type IState = {isOpen: true; event: MouseEvent} | {isOpen: false}

@@ -1,4 +1,4 @@
-import noop from '@theatre/shared/utils/noop'
+import noop from '@theatre/utils/noop'
 import type {ElementType} from 'react'
 import React from 'react'
 import styled from 'styled-components'

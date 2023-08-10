@@ -6,18 +6,16 @@ import type {
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {IPropPathToTrackIdTree} from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type Sheet from '@theatre/core/sheets/Sheet'
-import type {PathToProp} from '@theatre/shared/utils/addresses'
-import type {
-  SequenceTrackId,
-  StudioSheetItemKey,
-} from '@theatre/shared/utils/ids'
+import type {PathToProp} from '@theatre/utils/pathToProp'
+import type {StudioSheetItemKey} from '@theatre/sync-server/state/types'
 import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
-import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
+import type {$FixMe, $IntentionalAny} from '@theatre/utils/types'
 import {prism, val, pointerToPrism} from '@theatre/dataverse'
 import logger from '@theatre/shared/logger'
 import {titleBarHeight} from '@theatre/studio/panels/BasePanel/common'
 import type {Studio} from '@theatre/studio/Studio'
 import type {UnknownValidCompoundProps} from '@theatre/core/propTypes/internals'
+import type {SequenceTrackId} from '@theatre/sync-server/state/types/core'
 
 /**
  * Base "view model" for each row with common

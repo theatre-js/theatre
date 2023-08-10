@@ -1,21 +1,21 @@
 import type {Pointer} from '@theatre/dataverse'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
-import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
+import type {$FixMe, $IntentionalAny} from '@theatre/utils/types'
 import get from 'lodash-es/get'
 import type {ITransactionPrivateApi} from './StudioStore'
 import forEachPropDeep from '@theatre/shared/utils/forEachDeep'
-import getDeep from '@theatre/shared/utils/getDeep'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import getDeep from '@theatre/utils/getDeep'
+import type {SequenceTrackId} from '@theatre/sync-server/state/types/core'
 import {getPointerParts} from '@theatre/dataverse'
 import type {
   PropTypeConfig,
   PropTypeConfig_AllSimples,
   PropTypeConfig_Compound,
 } from '@theatre/core/propTypes'
-import type {PathToProp} from '@theatre/shared/src/utils/addresses'
+import type {PathToProp} from '@theatre/utils/pathToProp'
 import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 import {isPlainObject} from 'lodash-es'
-import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
+import userReadableTypeOfValue from '@theatre/utils/userReadableTypeOfValue'
 
 /**
  * Deep-clones a plain JS object or a `string | number | boolean`. In case of a plain
@@ -75,7 +75,6 @@ function forEachDeepSimplePropOfCompoundProp(
 export default function createTransactionPrivateApi(
   ensureRunning: () => void,
   stateEditors: ITransactionPrivateApi['stateEditors'],
-  drafts: ITransactionPrivateApi['drafts'],
 ): ITransactionPrivateApi {
   return {
     set: (pointer, value) => {
@@ -248,10 +247,6 @@ export default function createTransactionPrivateApi(
           'Only setting props of SheetObject-s is supported in a transaction so far',
         )
       }
-    },
-    get drafts() {
-      ensureRunning()
-      return drafts
     },
     get stateEditors() {
       return stateEditors

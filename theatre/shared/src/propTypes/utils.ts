@@ -5,9 +5,9 @@ import type {
   PropTypeConfig_Compound,
   PropTypeConfig_Enum,
 } from '@theatre/core/propTypes'
-import type {PathToProp} from '@theatre/shared/utils/addresses'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
-import memoizeFn from '@theatre/shared/utils/memoizeFn'
+import type {PathToProp} from '@theatre/utils/pathToProp'
+import type {$IntentionalAny} from '@theatre/utils/types'
+import memoizeFn from '@theatre/utils/memoizeFn'
 
 /**
  * Either compound or enum properties can be considered "composite"

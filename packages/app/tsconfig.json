@@ -1,0 +1,38 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "composite": true,
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@prisma/client": ["./prisma/client-generated"]
+    },
+    "noEmit": false
+  },
+  "include": [
+    "next-env.d.ts",
+    "src/**/*",
+    "devEnv/**/*",
+    ".next/types/**/*.ts",
+    "prisma/seed.ts"
+  ],
+  "exclude": ["node_modules"]
+}

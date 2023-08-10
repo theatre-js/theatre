@@ -2,9 +2,9 @@ import type {
   IPlaybackDirection,
   IPlaybackRange,
 } from '@theatre/core/sequences/Sequence'
-import {defer} from '@theatre/shared/utils/defer'
-import {InvalidArgumentError} from '@theatre/shared/utils/errors'
-import noop from '@theatre/shared/utils/noop'
+import {defer} from '@theatre/utils/defer'
+import {InvalidArgumentError} from '@theatre/utils/errors'
+import noop from '@theatre/utils/noop'
 import type {Prism, Pointer, Ticker} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import type {

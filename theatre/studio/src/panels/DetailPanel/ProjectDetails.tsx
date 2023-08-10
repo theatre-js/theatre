@@ -8,7 +8,7 @@ import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
 import StateConflictRow from './ProjectDetails/StateConflictRow'
 import JSZip from 'jszip'
 import {notify} from '@theatre/studio/notify'
-import {getAllPossibleAssetIDs} from '@theatre/shared/utils/assets'
+import {getAllPossibleAssetIDs} from '@theatre/studio/utils/assets'
 
 const Container = styled.div``
 
@@ -20,7 +20,7 @@ const TheExportRow = styled.div`
 `
 
 const ExportTooltip = styled(BasicPopover)`
-  display flex;
+  display: flex;
   flex-direction: column;
   gap: 1em;
   width: 280px;

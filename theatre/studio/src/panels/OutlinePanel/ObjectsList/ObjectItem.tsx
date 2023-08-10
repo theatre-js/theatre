@@ -12,7 +12,9 @@ export const ObjectItem: React.VFC<{
 }> = ({sheetObject, depth, overrideLabel}) => {
   const select = () => {
     getStudio()!.transaction(({stateEditors}) => {
-      stateEditors.studio.historic.panels.outline.selection.set([sheetObject])
+      stateEditors.studio.historic.panels.outline.selection.set([
+        {...sheetObject.address, type: 'SheetObject'},
+      ])
     })
   }
 

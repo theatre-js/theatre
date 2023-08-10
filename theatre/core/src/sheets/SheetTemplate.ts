@@ -3,7 +3,7 @@ import SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type {
   SheetAddress,
   WithoutSheetInstance,
-} from '@theatre/shared/utils/addresses'
+} from '@theatre/sync-server/state/types'
 import {Atom} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import Sheet from './Sheet'
@@ -16,8 +16,8 @@ import type {
   ObjectAddressKey,
   SheetId,
   SheetInstanceId,
-} from '@theatre/shared/utils/ids'
-import type {StrictRecord} from '@theatre/shared/utils/types'
+} from '@theatre/sync-server/state/types/core'
+import type {StrictRecord} from '@theatre/utils/types'
 
 type SheetTemplateObjectTemplateMap = StrictRecord<
   ObjectAddressKey,
@@ -34,7 +34,10 @@ export default class SheetTemplate {
   private _objectTemplates = new Atom<SheetTemplateObjectTemplateMap>({})
   readonly objectTemplatesP = this._objectTemplates.pointer
 
-  constructor(readonly project: Project, sheetId: SheetId) {
+  constructor(
+    readonly project: Project,
+    sheetId: SheetId,
+  ) {
     this.address = {...project.address, sheetId}
   }
 

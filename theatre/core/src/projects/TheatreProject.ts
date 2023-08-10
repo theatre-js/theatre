@@ -2,16 +2,17 @@ import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import Project from '@theatre/core/projects/Project'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 
-import type {ProjectAddress} from '@theatre/shared/utils/addresses'
-import type {Asset, File} from '@theatre/shared/utils/assets'
+import type {ProjectAddress} from '@theatre/sync-server/state/types'
+import type {Asset, File} from '@theatre/utils/types'
 import type {
   ProjectId,
   SheetId,
   SheetInstanceId,
-} from '@theatre/shared/utils/ids'
-import {validateInstanceId} from '@theatre/shared/utils/sanitizers'
-import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/shared/utils/slashedPaths'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+} from '@theatre/sync-server/state/types/core'
+import {validateInstanceId} from '@theatre/utils/sanitizers'
+import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/utils/slashedPaths'
+import type {$IntentionalAny} from '@theatre/utils/types'
+import {notify} from '@theatre/core/coreExports'
 
 /**
  * A project's config object (currently the only point of configuration is the project's state)
@@ -125,6 +126,7 @@ export default class TheatreProject implements IProject {
     const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
       sheetId,
       'project.sheet',
+      notify.warning,
     )
 
     if (process.env.NODE_ENV !== 'production') {

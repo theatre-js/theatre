@@ -1,9 +1,9 @@
 import type {Studio} from '@theatre/studio/Studio'
-import delay from '@theatre/shared/utils/delay'
-import {original} from 'immer'
+import delay from '@theatre/utils/delay'
 import type Project from './Project'
-import type {OnDiskState} from './store/storeTypes'
+import type {OnDiskState} from '@theatre/sync-server/state/types'
 import globals from '@theatre/shared/globals'
+import {val} from '@theatre/dataverse'
 
 /**
  * @remarks
@@ -23,75 +23,87 @@ export default async function initialiseProjectState(
    */
   await delay(0)
 
-  studio.transaction(({drafts}) => {
-    const projectId = project.address.projectId
+  const projectId = project.address.projectId
 
-    drafts.ephemeral.coreByProject[projectId] = {
-      lastExportedObject: null,
-      loadingState: {type: 'loading'},
+  studio.ephemeralAtom.setByPointer((p) => p.coreByProject[projectId], {
+    lastExportedObject: null,
+    loadingState: {type: 'loading'},
+  })
+
+  const browserState = val(studio.atomP.historic.coreByProject[projectId])
+
+  if (!browserState) {
+    if (!onDiskState) {
+      useInitialState()
+    } else {
+      useOnDiskState(onDiskState)
     }
-
-    drafts.ahistoric.coreByProject[projectId] = {
-      ahistoricStuff: '',
+  } else {
+    if (!onDiskState) {
+      useBrowserState()
+    } else {
+      if (
+        browserState.revisionHistory.indexOf(onDiskState.revisionHistory[0]) ==
+        -1
+      ) {
+        browserStateIsNotBasedOnDiskState(onDiskState)
+      } else {
+        useBrowserState()
+      }
     }
+  }
 
-    function useInitialState() {
-      drafts.ephemeral.coreByProject[projectId].loadingState = {
+  function useInitialState() {
+    studio.transaction(({stateEditors}) => {
+      stateEditors.coreByProject.historic.setProjectState({
+        projectId,
+        state: {
+          sheetsById: {},
+          definitionVersion: globals.currentProjectStateDefinitionVersion,
+          revisionHistory: [],
+        },
+      })
+    })
+    studio.ephemeralAtom.setByPointer(
+      (p) => p.coreByProject[projectId].loadingState,
+      {
         type: 'loaded',
-      }
+      },
+    )
+  }
 
-      drafts.historic.coreByProject[projectId] = {
-        sheetsById: {},
-        definitionVersion: globals.currentProjectStateDefinitionVersion,
-        revisionHistory: [],
-      }
-    }
+  function useOnDiskState(state: OnDiskState) {
+    studio.transaction(({stateEditors}) => {
+      stateEditors.coreByProject.historic.setProjectState({
+        projectId,
+        state,
+      })
+    })
 
-    function useOnDiskState(state: OnDiskState) {
-      drafts.ephemeral.coreByProject[projectId].loadingState = {
+    studio.ephemeralAtom.setByPointer(
+      (p) => p.coreByProject[projectId].loadingState,
+      {
         type: 'loaded',
-      }
+      },
+    )
+  }
 
-      drafts.historic.coreByProject[projectId] = state
-    }
-
-    function useBrowserState() {
-      drafts.ephemeral.coreByProject[projectId].loadingState = {
+  function useBrowserState() {
+    studio.ephemeralAtom.setByPointer(
+      (p) => p.coreByProject[projectId].loadingState,
+      {
         type: 'loaded',
-      }
-    }
+      },
+    )
+  }
 
-    function browserStateIsNotBasedOnDiskState(onDiskState: OnDiskState) {
-      drafts.ephemeral.coreByProject[projectId].loadingState = {
+  function browserStateIsNotBasedOnDiskState(onDiskState: OnDiskState) {
+    studio.ephemeralAtom.setByPointer(
+      (p) => p.coreByProject[projectId].loadingState,
+      {
         type: 'browserStateIsNotBasedOnDiskState',
         onDiskState,
-      }
-    }
-
-    const browserState = original(drafts.historic)?.coreByProject[
-      project.address.projectId
-    ]
-
-    if (!browserState) {
-      if (!onDiskState) {
-        useInitialState()
-      } else {
-        useOnDiskState(onDiskState)
-      }
-    } else {
-      if (!onDiskState) {
-        useBrowserState()
-      } else {
-        if (
-          browserState.revisionHistory.indexOf(
-            onDiskState.revisionHistory[0],
-          ) == -1
-        ) {
-          browserStateIsNotBasedOnDiskState(onDiskState)
-        } else {
-          useBrowserState()
-        }
-      }
-    }
-  })
+      },
+    )
+  }
 }

@@ -1,12 +1,12 @@
 import getStudio from '@theatre/studio/getStudio'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useKeyDown from '@theatre/studio/uiComponents/useKeyDown'
 import useValToAtom from '@theatre/studio/uiComponents/useValToAtom'
-import mutableSetDeep from '@theatre/shared/utils/mutableSetDeep'
+import mutableSetDeep from '@theatre/utils/mutableSetDeep'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {usePrism} from '@theatre/react'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useMemo, useRef} from 'react'
@@ -348,7 +348,7 @@ namespace utils {
         return {
           debugName: 'DopeSheetSelectionView/boundsToSelection',
           onDragStart() {
-            let tempTransaction: CommitOrDiscard | undefined
+            let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
             const toUnitSpace = layout.scaledSpace.toUnitSpace
 

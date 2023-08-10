@@ -79,7 +79,7 @@ let showedVisualTestingWarning = false
 const GlobalToolbar: React.FC = () => {
   const conflicts = usePrism(() => {
     const ephemeralStateOfAllProjects = val(
-      getStudio().atomP.ephemeral.coreByProject,
+      getStudio().ephemeralAtom.pointer.coreByProject,
     )
     return Object.entries(ephemeralStateOfAllProjects)
       .map(([projectId, state]) => ({projectId, state}))
@@ -107,7 +107,9 @@ const GlobalToolbar: React.FC = () => {
   const outlinePinned = useVal(getStudio().atomP.ahistoric.pinOutline) ?? true
   const detailsPinned = useVal(getStudio().atomP.ahistoric.pinDetails) ?? true
   const hasUpdates =
-    useVal(getStudio().atomP.ahistoric.updateChecker.result.hasUpdates) === true
+    useVal(
+      getStudio().ahistoricAtom.pointer.updateChecker.result.hasUpdates,
+    ) === true
 
   const moreMenu = usePopover(
     () => {
@@ -165,10 +167,9 @@ const GlobalToolbar: React.FC = () => {
           ref={triggerButtonRef as $IntentionalAny}
           data-testid="OutlinePanel-TriggerButton"
           onClick={() => {
-            getStudio().transaction(({stateEditors, drafts}) => {
-              stateEditors.studio.ahistoric.setPinOutline(
-                !(drafts.ahistoric.pinOutline ?? true),
-              )
+            const prev = val(getStudio().atomP.ahistoric.pinOutline)
+            getStudio().transaction(({stateEditors}) => {
+              stateEditors.studio.ahistoric.setPinOutline(!(prev ?? true))
             })
           }}
           icon={<Outline />}
@@ -188,9 +189,10 @@ const GlobalToolbar: React.FC = () => {
         <PinButton
           ref={notificationsTriggerRef as $IntentionalAny}
           onClick={() => {
-            getStudio().transaction(({stateEditors, drafts}) => {
+            const prev = val(getStudio().atomP.ahistoric.pinNotifications)
+            getStudio().transaction(({stateEditors}) => {
               stateEditors.studio.ahistoric.setPinNotifications(
-                !(drafts.ahistoric.pinNotifications ?? false),
+                !(prev ?? false),
               )
             })
           }}
@@ -214,10 +216,9 @@ const GlobalToolbar: React.FC = () => {
         <PinButton
           ref={triggerButtonRef as $IntentionalAny}
           onClick={() => {
-            getStudio().transaction(({stateEditors, drafts}) => {
-              stateEditors.studio.ahistoric.setPinDetails(
-                !(drafts.ahistoric.pinDetails ?? true),
-              )
+            const prev = val(getStudio().atomP.ahistoric.pinDetails)
+            getStudio().transaction(({stateEditors}) => {
+              stateEditors.studio.ahistoric.setPinDetails(!(prev ?? true))
             })
           }}
           icon={<Details />}

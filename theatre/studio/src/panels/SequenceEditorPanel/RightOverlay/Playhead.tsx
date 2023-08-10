@@ -3,7 +3,7 @@ import RoomToClick from '@theatre/studio/uiComponents/RoomToClick'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {usePrism, useVal} from '@theatre/react'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import clamp from 'lodash-es/clamp'
@@ -25,12 +25,12 @@ import {
 } from '@theatre/studio/uiComponents/PointerEventsHandler'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getStudio from '@theatre/studio/getStudio'
-import {generateSequenceMarkerId} from '@theatre/shared/utils/ids'
 import DopeSnap from './DopeSnap'
 import {
   snapToAll,
   snapToNone,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
+import {generateSequenceMarkerId} from '@theatre/shared/utils/ids'
 
 const Container = styled.div<{isVisible: boolean}>`
   --thumbColor: #00e0ff;

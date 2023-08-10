@@ -7,7 +7,7 @@ import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEdi
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
 import {topStripHeight} from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/TopStrip'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import getStudio from '@theatre/studio/getStudio'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
@@ -226,7 +226,7 @@ function useDragBulge(
       debugName: 'LengthIndicator/useDragBulge',
       lockCSSCursorTo: 'ew-resize',
       onDragStart(event) {
-        let tempTransaction: CommitOrDiscard | undefined
+        let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
         const propsAtStartOfDrag = propsRef.current
         const sheet = val(propsRef.current.layoutP.sheet)

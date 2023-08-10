@@ -1,7 +1,7 @@
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import getStudio from '@theatre/studio/getStudio'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import {lighten} from 'polished'
 import React, {useMemo, useRef} from 'react'
@@ -151,14 +151,14 @@ const PanelResizeHandle: React.FC<{
       debugName: 'PanelResizeHandle',
       lockCursorTo: cursors[which],
       onDragStart() {
-        let tempTransaction: CommitOrDiscard | undefined
+        let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
         const stuffBeforeDrag = panelStuffRef.current
         const unlock = panelStuff.addBoundsHighlightLock()
 
         return {
           onDrag(dx, dy) {
-            const newDims: typeof panelStuff['dims'] = {
+            const newDims: (typeof panelStuff)['dims'] = {
               ...stuffBeforeDrag.dims,
             }
 

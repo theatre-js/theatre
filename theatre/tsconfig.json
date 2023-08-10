@@ -6,6 +6,7 @@
     "rootDir": ".",
     "composite": true,
     "types": ["jest", "node"],
+    "emitDeclarationOnly": true,
     "plugins": [
       {
         "name": "typescript-styled-plugin",
@@ -16,8 +17,12 @@
     ]
   },
   "references": [
+    {"path": "../packages/utils"},
     {"path": "../packages/dataverse"},
-    {"path": "../packages/react"}
+    {"path": "../packages/react"},
+    {"path": "../packages/app"},
+    {"path": "../packages/sync-server"},
+    {"path": "../packages/saaz"}
   ],
   "include": ["./globals.d.ts", "./*/src/**/*", "./devEnv/**/*"],
   "exclude": ["**/node_modules", "**/.*", "**/xeno", "**/dist", "**/.temp"]

@@ -2,7 +2,7 @@ import {transparentize} from 'polished'
 import React from 'react'
 import styled from 'styled-components'
 import getStudio from '@theatre/studio/getStudio'
-import type {PathToProp} from '@theatre/shared/utils/addresses'
+import type {PathToProp} from '@theatre/utils/pathToProp'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {PropTypeConfig} from '@theatre/core/propTypes'
 import {nextPrevCursorsTheme} from './NextPrevKeyframeCursors'
@@ -77,7 +77,6 @@ const DefaultOrStaticValueIndicator: React.FC<{
 
         stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
           propAddress,
-          propConfig,
         )
       }
     })

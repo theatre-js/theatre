@@ -1,5 +1,5 @@
 import getStudio from '@theatre/studio/getStudio'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -127,7 +127,7 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
       debugName: 'CurveHandler/useOurDrags',
       lockCSSCursorTo: 'move',
       onDragStart() {
-        let tempTransaction: CommitOrDiscard | undefined
+        let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
         const propsAtStartOfDrag = propsRef.current
 

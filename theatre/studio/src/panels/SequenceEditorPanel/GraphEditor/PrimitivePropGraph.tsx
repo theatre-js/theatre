@@ -1,21 +1,21 @@
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
-import type {PathToProp} from '@theatre/shared/utils/addresses'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import type {PathToProp} from '@theatre/utils/pathToProp'
+import type {SequenceTrackId} from '@theatre/sync-server/state/types/core'
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React from 'react'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import BasicKeyframedTrack from './BasicKeyframedTrack/BasicKeyframedTrack'
-import type {graphEditorColors} from './GraphEditor'
+import type {GraphEditorColors} from '@theatre/sync-server/state/types'
 
 const PrimitivePropGraph: React.FC<{
   layoutP: Pointer<SequenceEditorPanelLayout>
   sheetObject: SheetObject
   pathToProp: PathToProp
   trackId: SequenceTrackId
-  color: keyof typeof graphEditorColors
+  color: keyof GraphEditorColors
 }> = (props) => {
   return usePrism(() => {
     const {sheetObject, trackId} = props

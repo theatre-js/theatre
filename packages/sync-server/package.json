@@ -1,0 +1,34 @@
+{
+  "name": "@theatre/sync-server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "cli": "node -r esbuild-register devEnv/cli.ts",
+    "prebuild": "yarn cli prebuild",
+    "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.12.0",
+    "@theatre/saaz": "workspace:*",
+    "@theatre/utils": "workspace:*",
+    "@trpc/client": "^10.38.0",
+    "@trpc/server": "^10.38.0",
+    "@types/node": "20.4.9",
+    "@types/ws": "^8.5.5",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.17.15",
+    "jose": "^4.14.4",
+    "npm-run-all": "^4.1.5",
+    "prisma": "^4.12.0",
+    "sade": "^1.8.1",
+    "superjson": "^1.13.1",
+    "tsx": "^3.12.7",
+    "typescript": "5.1.6",
+    "ws": "^8.13.0",
+    "zod": "^3.21.4"
+  }
+}

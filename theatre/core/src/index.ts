@@ -13,7 +13,7 @@ export type {UnknownShorthandCompoundProps} from './propTypes'
 import * as globalVariableNames from '@theatre/shared/globalVariableNames'
 import type StudioBundle from '@theatre/studio/StudioBundle'
 import CoreBundle from './CoreBundle'
-import type {OnDiskState} from './projects/store/storeTypes'
+import type {OnDiskState} from '@theatre/sync-server/state/types'
 
 /**
  * NOTE: **INTERNAL and UNSTABLE** - This _WILL_ break between minor versions.
@@ -36,13 +36,19 @@ registerCoreBundle()
  */
 function registerCoreBundle() {
   // This only works in a browser environment
-  if (typeof window == 'undefined') return
+  if (
+    typeof window == 'undefined' &&
+    global.__THEATREJS__FORCE_CONNECT_CORE_AND_STUDIO !== true
+  )
+    return
+
+  const globalContext = typeof window !== 'undefined' ? window : global
 
   // another core bundle may already be registered
 
   const existingBundle: CoreBundle | undefined =
     // @ts-ignore ignore
-    window[globalVariableNames.coreBundle]
+    globalContext[globalVariableNames.coreBundle]
 
   if (typeof existingBundle !== 'undefined') {
     if (
@@ -103,11 +109,11 @@ function registerCoreBundle() {
   const coreBundle = new CoreBundle()
 
   // @ts-ignore ignore
-  window[globalVariableNames.coreBundle] = coreBundle
+  globalContext[globalVariableNames.coreBundle] = coreBundle
 
   const possibleExistingStudioBundle: undefined | StudioBundle =
     // @ts-ignore ignore
-    window[globalVariableNames.studioBundle]
+    globalContext[globalVariableNames.studioBundle]
 
   if (
     possibleExistingStudioBundle &&

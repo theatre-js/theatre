@@ -1,6 +1,19 @@
-interface Window {
-  __REDUX_DEVTOOLS_EXTENSION__?: $IntentionalAny
-  __IS_VISUAL_REGRESSION_TESTING?: boolean
+declare namespace NodeJS {
+  interface Global {
+    /**
+     * This is set to true when running the tests, so that `@theatre/core` will try to conenct to `@theatre/studio`,
+     * even if `typeof window === 'undefined'`.
+     */
+    __THEATREJS__FORCE_CONNECT_CORE_AND_STUDIO?: boolean
+  }
+
+  interface ProcessEnv {
+    NODE_ENV: 'development' | 'production' | 'test'
+    // The version of the package, as defined in package.json
+    THEATRE_VERSION: string
+    // This is set to 'true' when building the playground
+    BUILT_FOR_PLAYGROUND: 'true' | 'false'
+  }
 }
 
 interface NodeModule {
@@ -9,12 +22,9 @@ interface NodeModule {
   }
 }
 
-interface ProcessEnv {
-  NODE_ENV: 'development' | 'production' | 'test'
-  // The version of the package, as defined in package.json
-  THEATRE_VERSION: string
-  // This is set to 'true' when building the playground
-  BUILT_FOR_PLAYGROUND: 'true' | 'false'
+interface Window {
+  __REDUX_DEVTOOLS_EXTENSION__?: $IntentionalAny
+  __IS_VISUAL_REGRESSION_TESTING?: boolean
 }
 
 declare module '*.svg' {
@@ -35,15 +45,6 @@ declare module 'json-touch-patch' {
 
 declare module 'jiff'
 declare module '*.json'
-
-declare module 'propose' {
-  const propose: (
-    str: string,
-    dictionary: string[],
-    options?: {threshold?: number; ignoreCase?: boolean},
-  ) => string | null
-  export default propose
-}
 
 // declare module 'inspect.macro' {
 //   const inspect: (...vals: $IntentionalAny[]) => void

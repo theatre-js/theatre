@@ -1,5 +1,5 @@
 import UIRoot from '@theatre/studio/UIRoot/UIRoot'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import {getMounter} from '@theatre/studio/utils/renderInPortalInContext'

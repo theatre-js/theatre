@@ -1,17 +1,10 @@
-import type {
-  Keyframe,
-  TrackData,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {Keyframe, TrackData} from '@theatre/sync-server/state/types/core'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {
-  SequenceTrackId,
-  StudioSheetItemKey,
-} from '@theatre/shared/utils/ids'
+import type {SequenceTrackId} from '@theatre/sync-server/state/types/core'
 import type {Pointer} from '@theatre/dataverse'
 import React from 'react'
 import styled from 'styled-components'
-import type {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import type {ExtremumSpace} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/BasicKeyframedTrack/BasicKeyframedTrack'
 import Curve from './Curve'
 import CurveHandle from './CurveHandle'
@@ -19,7 +12,11 @@ import GraphEditorDotScalar from './GraphEditorDotScalar'
 import GraphEditorDotNonScalar from './GraphEditorDotNonScalar'
 import GraphEditorNonScalarDash from './GraphEditorNonScalarDash'
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
-import type {PathToProp} from '@theatre/shared/utils/addresses'
+import type {PathToProp} from '@theatre/utils/pathToProp'
+import type {
+  GraphEditorColors,
+  StudioSheetItemKey,
+} from '@theatre/sync-server/state/types'
 
 const Container = styled.g`
   /* position: absolute; */
@@ -38,7 +35,7 @@ type IKeyframeEditorProps = {
   pathToProp: PathToProp
   extremumSpace: ExtremumSpace
   isScalar: boolean
-  color: keyof typeof graphEditorColors
+  color: keyof GraphEditorColors
   propConfig: PropTypeConfig_AllSimples
 }
 

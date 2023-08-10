@@ -8,5 +8,6 @@
     "noEmit": true,
     "target": "es6",
     "composite": true
-  }
+  },
+  "references": [{"path": "../packages/app"}]
 }

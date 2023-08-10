@@ -1,19 +1,20 @@
 import type {SequenceEditorTree_PrimitiveProp} from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import getStudio from '@theatre/studio/getStudio'
-import {encodePathToProp} from '@theatre/shared/utils/addresses'
-import pointerDeep from '@theatre/shared/utils/pointerDeep'
+import {encodePathToProp} from '@theatre/utils/pathToProp'
+import pointerDeep from '@theatre/utils/pointerDeep'
 import {usePrism} from '@theatre/react'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
 import React, {useCallback, useRef} from 'react'
 import styled from 'styled-components'
 import {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
 import {nextPrevCursorsTheme} from '@theatre/studio/propEditors/NextPrevKeyframeCursors'
-import {graphEditorColors} from '@theatre/studio/panels/SequenceEditorPanel/GraphEditor/GraphEditor'
 import {BaseHeader, LeftRowContainer as BaseContainer} from './AnyCompositeRow'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {usePropHighlightMouseEnter} from './usePropHighlightMouseEnter'
+import type {GraphEditorColors} from '@theatre/sync-server/state/types'
+import {graphEditorColors} from '@theatre/sync-server/state/schema'
 
 const theme = {
   label: {
@@ -37,7 +38,7 @@ const PrimitivePropRowHead = styled(BaseHeader)<{
 
 const PrimitivePropRowIconContainer = styled.button<{
   isSelected: boolean
-  graphEditorColor: keyof typeof graphEditorColors
+  graphEditorColor: keyof GraphEditorColors
 }>`
   background: none;
   border: none;

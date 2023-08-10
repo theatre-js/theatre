@@ -6,7 +6,7 @@ import {usePrism, useVal} from '@theatre/react'
 import getStudio from '@theatre/studio/getStudio'
 import type {BasicNumberInputNudgeFn} from '@theatre/studio/uiComponents/form/BasicNumberInput'
 import BasicNumberInput from '@theatre/studio/uiComponents/form/BasicNumberInput'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 
 const greaterThanZero = (v: number) => isFinite(v) && v > 0
@@ -36,7 +36,7 @@ const LengthEditorPopover: React.FC<{
   const sheet = useVal(layoutP.sheet)
 
   const fns = useMemo(() => {
-    let tempTransaction: CommitOrDiscard | undefined
+    let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
     return {
       temporarilySetValue(newLength: number): void {

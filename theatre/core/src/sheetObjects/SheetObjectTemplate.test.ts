@@ -1,12 +1,12 @@
-/*
- * @jest-environment jsdom
- */
 import {setupTestSheet} from '@theatre/shared/testUtils'
-import {encodePathToProp} from '@theatre/shared/utils/addresses'
-import {asSequenceTrackId} from '@theatre/shared/utils/ids'
-import type {ObjectAddressKey, SequenceTrackId} from '@theatre/shared/utils/ids'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import {encodePathToProp} from '@theatre/utils/pathToProp'
+import type {
+  ObjectAddressKey,
+  SequenceTrackId,
+} from '@theatre/sync-server/state/types/core'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import {iterateOver} from '@theatre/dataverse'
+import {asSequenceTrackId} from '@theatre/shared/utils/ids'
 
 describe(`SheetObjectTemplate`, () => {
   describe(`getArrayOfValidSequenceTracks()`, () => {

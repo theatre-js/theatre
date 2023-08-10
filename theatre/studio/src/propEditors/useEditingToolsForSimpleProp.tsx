@@ -6,21 +6,21 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import type Scrub from '@theatre/studio/Scrub'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import getDeep from '@theatre/shared/utils/getDeep'
+import getDeep from '@theatre/utils/getDeep'
 import {usePrismInstance} from '@theatre/react'
 import type {
   $IntentionalAny,
   SerializablePrimitive as SerializablePrimitive,
-} from '@theatre/shared/utils/types'
+} from '@theatre/utils/types'
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import {isPropConfSequencable} from '@theatre/shared/propTypes/utils'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import type {SequenceTrackId} from '@theatre/sync-server/state/types/core'
 import DefaultOrStaticValueIndicator from './DefaultValueIndicator'
 import type {NearbyKeyframes} from './getNearbyKeyframesOfTrack'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
-import type {Asset, File as AssetFile} from '@theatre/shared/utils/assets'
+import type {Asset, File as AssetFile} from '@theatre/utils/types'
 
 interface EditingToolsCommon<T> {
   value: T
@@ -296,7 +296,6 @@ function createPrism<T extends SerializablePrimitive>(
 
             stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
               propAddress,
-              propConfig,
             )
           })
         },

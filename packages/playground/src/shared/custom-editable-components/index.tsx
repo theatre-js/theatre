@@ -5,6 +5,6 @@ import studio from '@theatre/studio'
 import extension from '@theatre/r3f/dist/extension'
 
 studio.extend(extension)
-studio.initialize()
+studio.initialize({serverUrl: 'http://localhost:3000'})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(<App />)

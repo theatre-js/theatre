@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "lib": ["ESNext", "DOM"],
+    "rootDir": "src",
+    "types": ["jest", "node"],
+    "target": "es6",
+    "composite": true
+  },
+  "include": ["./src/**/*", "./src/globals.d.ts"],
+  "references": [
+    {
+      "path": "../dataverse"
+    }
+  ]
+}

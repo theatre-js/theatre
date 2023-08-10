@@ -1,13 +1,13 @@
 import getStudio from '@theatre/studio/getStudio'
-import type {SerializableValue} from '@theatre/shared/utils/types'
+import type {SerializableValue} from '@theatre/utils/types'
 import type {
-  CommitOrDiscard,
+  CommitOrDiscardOrRecapture,
   ITransactionPrivateApi,
 } from '@theatre/studio/StudioStore/StudioStore'
 import type {IEditingTools} from '@theatre/studio/propEditors/utils/IEditingTools'
 import {useMemo} from 'react'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import type {Asset} from '@theatre/shared/utils/assets'
+import type {Asset} from '@theatre/utils/types'
 
 /**
  * This function takes a function `writeTx` that sets a value in the private Studio API and
@@ -32,7 +32,7 @@ function createTempTransactionEditingTools<T>(
   writeTx: (api: ITransactionPrivateApi, value: T) => void,
   obj: SheetObject,
 ) {
-  let currentTransaction: CommitOrDiscard | null = null
+  let currentTransaction: CommitOrDiscardOrRecapture | null = null
   const createTempTx = (value: T) =>
     getStudio().tempTransaction((api) => writeTx(api, value))
 

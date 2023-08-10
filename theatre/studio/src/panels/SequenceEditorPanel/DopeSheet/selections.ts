@@ -6,16 +6,16 @@ import type {
   ProjectId,
   SequenceTrackId,
   SheetId,
-} from '@theatre/shared/utils/ids'
+} from '@theatre/sync-server/state/types/core'
 import getStudio from '@theatre/studio/getStudio'
 import type {DopeSheetSelection} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {Keyframe} from '@theatre/sync-server/state/types/core'
 import {
   commonRootOfPathsToProps,
   decodePathToProp,
-} from '@theatre/shared/utils/addresses'
-import type {StrictRecord} from '@theatre/shared/utils/types'
-import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
+} from '@theatre/utils/pathToProp'
+import type {StrictRecord} from '@theatre/utils/types'
+import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/sync-server/state/types'
 
 /**
  * Keyframe connections are considered to be selected if the first

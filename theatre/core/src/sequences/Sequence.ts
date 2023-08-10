@@ -1,9 +1,9 @@
 import type Project from '@theatre/core/projects/Project'
 import type Sheet from '@theatre/core/sheets/Sheet'
-import {encodePathToProp} from '@theatre/shared/utils/addresses'
-import type {SequenceAddress} from '@theatre/shared/utils/addresses'
-import didYouMean from '@theatre/shared/utils/didYouMean'
-import {InvalidArgumentError} from '@theatre/shared/utils/errors'
+import {encodePathToProp} from '@theatre/utils/pathToProp'
+import type {SequenceAddress} from '@theatre/sync-server/state/types'
+import didYouMean from '@theatre/utils/didYouMean'
+import {InvalidArgumentError} from '@theatre/utils/errors'
 import type {
   Prism,
   Pointer,
@@ -21,7 +21,7 @@ import type {
 } from './playbackControllers/DefaultPlaybackController'
 import DefaultPlaybackController from './playbackControllers/DefaultPlaybackController'
 import TheatreSequence from './TheatreSequence'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {Keyframe} from '@theatre/sync-server/state/types/core'
 import type {ILogger} from '@theatre/shared/logger'
 import type {ISequence} from '..'
 import {notify} from '@theatre/shared/notify'

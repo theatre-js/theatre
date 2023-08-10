@@ -26,7 +26,9 @@ export const SheetInstanceItem: React.FC<{
 
   const setSelectedSheet = useCallback(() => {
     getStudio()!.transaction(({stateEditors}) => {
-      stateEditors.studio.historic.panels.outline.selection.set([sheet])
+      stateEditors.studio.historic.panels.outline.selection.set([
+        {...sheet.address, type: 'Sheet'},
+      ])
     })
   }, [sheet])
 

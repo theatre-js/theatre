@@ -1,10 +1,10 @@
 import React from 'react'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type {Pointer} from '@theatre/dataverse'
-import type {$FixMe} from '@theatre/shared/utils/types'
+import type {$FixMe} from '@theatre/utils/types'
 import DeterminePropEditorForDetail from './DeterminePropEditorForDetail'
 import {useVal} from '@theatre/react'
-import uniqueKeyForAnyObject from '@theatre/shared/utils/uniqueKeyForAnyObject'
+import uniqueKeyForAnyObject from '@theatre/utils/uniqueKeyForAnyObject'
 import styled from 'styled-components'
 
 const ActionButtonContainer = styled.div`

@@ -1,13 +1,13 @@
 import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import type {IProject} from '@theatre/core/projects/TheatreProject'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
-import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
-import SimpleCache from '@theatre/shared/utils/SimpleCache'
+import type {SheetObjectAddress} from '@theatre/sync-server/state/types'
+import SimpleCache from '@theatre/utils/SimpleCache'
 import type {
   $FixMe,
   DeepPartialOfSerializableValue,
   VoidFn,
-} from '@theatre/shared/utils/types'
+} from '@theatre/utils/types'
 import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import type SheetObject from './SheetObject'

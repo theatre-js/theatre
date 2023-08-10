@@ -101,12 +101,12 @@ module.exports = {
         `packages/*/**/*.tsx`,
         `packages/*/**/*.js`,
       ],
-      rules: {
-        'import/no-extraneous-dependencies': [
-          'error',
-          // {optionalDependencies: false, peerDependencies: false},
-        ],
-      },
+      // rules: {
+      //   'import/no-extraneous-dependencies': [
+      //     'error',
+      //     // {optionalDependencies: false, peerDependencies: false},
+      //   ],
+      // },
     },
   ],
 }

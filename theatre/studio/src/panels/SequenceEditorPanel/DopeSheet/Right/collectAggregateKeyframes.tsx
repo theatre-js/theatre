@@ -6,18 +6,13 @@ import type {
   SequenceEditorTree_Sheet,
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import type {
-  SequenceTrackId,
-  StudioSheetItemKey,
-} from '@theatre/shared/utils/ids'
-import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
-import type {
-  Keyframe,
-  TrackData,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
-import {encodePathToProp} from '@theatre/shared/utils/addresses'
+import type {SequenceTrackId} from '@theatre/sync-server/state/types/core'
+import type {Keyframe, TrackData} from '@theatre/sync-server/state/types/core'
+import {encodePathToProp} from '@theatre/utils/pathToProp'
 import {uniq} from 'lodash-es'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
+import type {StudioSheetItemKey} from '@theatre/sync-server/state/types'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 
 /**
  * An index over a series of keyframes that have been collected from different tracks.
