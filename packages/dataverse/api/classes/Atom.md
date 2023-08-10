@@ -22,17 +22,11 @@ Wraps an object whose (sub)properties can be individually tracked.
 
 ### Properties
 
-- [\_currentState](Atom.md#_currentstate)
-- [\_rootScope](Atom.md#_rootscope)
 - [pointer](Atom.md#pointer)
 - [prism](Atom.md#prism)
 
 ### Methods
 
-- [\_checkUpdates](Atom.md#_checkupdates)
-- [\_getIn](Atom.md#_getin)
-- [\_getOrCreateScopeForPath](Atom.md#_getorcreatescopeforpath)
-- [\_onPointerValueChange](Atom.md#_onpointervaluechange)
 - [get](Atom.md#get)
 - [getByPointer](Atom.md#getbypointer)
 - [pointerToPrism](Atom.md#pointertoprism)
@@ -61,29 +55,9 @@ Wraps an object whose (sub)properties can be individually tracked.
 
 #### Defined in
 
-[Atom.ts:119](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L119)
+[Atom.ts:119](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L119)
 
 ## Properties
-
-### \_currentState
-
-• `Private` **\_currentState**: `State`
-
-#### Defined in
-
-[Atom.ts:101](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L101)
-
-___
-
-### \_rootScope
-
-• `Private` `Readonly` **\_rootScope**: `Scope`
-
-#### Defined in
-
-[Atom.ts:106](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L106)
-
-___
 
 ### pointer
 
@@ -91,13 +65,9 @@ ___
 
 Convenience property that gives you a pointer to the root of the atom.
 
-**`Remarks`**
-
-Equivalent to `pointer({ root: thisAtom, path: [] })`.
-
 #### Defined in
 
-[Atom.ts:113](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L113)
+[Atom.ts:113](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L113)
 
 ___
 
@@ -107,106 +77,9 @@ ___
 
 #### Defined in
 
-[Atom.ts:115](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L115)
+[Atom.ts:115](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L115)
 
 ## Methods
-
-### \_checkUpdates
-
-▸ `Private` **_checkUpdates**(`scope`, `oldState`, `newState`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `scope` | `Scope` |
-| `oldState` | `unknown` |
-| `newState` | `unknown` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[Atom.ts:218](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L218)
-
-___
-
-### \_getIn
-
-▸ `Private` **_getIn**(`path`): `unknown`
-
-Gets the state of the atom at `path`.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `path` | (`string` \| `number`)[] |
-
-#### Returns
-
-`unknown`
-
-#### Defined in
-
-[Atom.ts:166](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L166)
-
-___
-
-### \_getOrCreateScopeForPath
-
-▸ `Private` **_getOrCreateScopeForPath**(`path`): `Scope`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `path` | (`string` \| `number`)[] |
-
-#### Returns
-
-`Scope`
-
-#### Defined in
-
-[Atom.ts:240](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L240)
-
-___
-
-### \_onPointerValueChange
-
-▸ `Private` **_onPointerValueChange**<`P`\>(`pointer`, `cb`): () => `void`
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `P` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `pointer` | [`Pointer`](../README.md#pointer)<`P`\> |
-| `cb` | (`v`: `P`) => `void` |
-
-#### Returns
-
-`fn`
-
-▸ (): `void`
-
-##### Returns
-
-`void`
-
-#### Defined in
-
-[Atom.ts:248](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L248)
-
-___
 
 ### get
 
@@ -218,7 +91,7 @@ ___
 
 #### Defined in
 
-[Atom.ts:136](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L136)
+[Atom.ts:136](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L136)
 
 ___
 
@@ -246,7 +119,7 @@ Returns the value at the given pointer
 
 #### Defined in
 
-[Atom.ts:152](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L152)
+[Atom.ts:152](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L152)
 
 ___
 
@@ -278,7 +151,7 @@ Returns a new prism of the value at the provided path.
 
 #### Defined in
 
-[Atom.ts:271](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L271)
+[Atom.ts:271](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L271)
 
 ___
 
@@ -298,7 +171,7 @@ ___
 
 #### Defined in
 
-[Atom.ts:170](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L170)
+[Atom.ts:170](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L170)
 
 ___
 
@@ -327,7 +200,7 @@ Reduces the value at the given pointer
 
 #### Defined in
 
-[Atom.ts:186](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L186)
+[Atom.ts:186](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L186)
 
 ___
 
@@ -349,7 +222,7 @@ Sets the state of the atom.
 
 #### Defined in
 
-[Atom.ts:129](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L129)
+[Atom.ts:129](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L129)
 
 ___
 
@@ -378,4 +251,4 @@ Sets the value at the given pointer
 
 #### Defined in
 
-[Atom.ts:211](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Atom.ts#L211)
+[Atom.ts:211](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L211)

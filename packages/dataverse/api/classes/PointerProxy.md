@@ -4,11 +4,6 @@
 
 Allows creating pointer-prisms where the pointer can be switched out.
 
-**`Remarks`**
-
-This allows reacting not just to value changes at a certain pointer, but changes
-to the proxied pointer too.
-
 ## Type parameters
 
 | Name | Type |
@@ -27,7 +22,6 @@ to the proxied pointer too.
 
 ### Properties
 
-- [\_currentPointerBox](PointerProxy.md#_currentpointerbox)
 - [pointer](PointerProxy.md#pointer)
 
 ### Methods
@@ -55,19 +49,9 @@ to the proxied pointer too.
 
 #### Defined in
 
-[PointerProxy.ts:34](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/PointerProxy.ts#L34)
+[PointerProxy.ts:34](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/PointerProxy.ts#L34)
 
 ## Properties
-
-### \_currentPointerBox
-
-• `Private` `Readonly` **\_currentPointerBox**: [`Atom`](Atom.md)<[`Pointer`](../README.md#pointer)<`O`\>\>
-
-#### Defined in
-
-[PointerProxy.ts:25](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/PointerProxy.ts#L25)
-
-___
 
 ### pointer
 
@@ -75,13 +59,9 @@ ___
 
 Convenience pointer pointing to the root of this PointerProxy.
 
-**`Remarks`**
-
-Allows convenient use of [pointerToPrism](PointerProxy.md#pointertoprism) and [val](../README.md#val).
-
 #### Defined in
 
-[PointerProxy.ts:32](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/PointerProxy.ts#L32)
+[PointerProxy.ts:32](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/PointerProxy.ts#L32)
 
 ## Methods
 
@@ -113,7 +93,7 @@ Returns a prism of the value at the provided sub-path of the proxied pointer.
 
 #### Defined in
 
-[PointerProxy.ts:52](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/PointerProxy.ts#L52)
+[PointerProxy.ts:52](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/PointerProxy.ts#L52)
 
 ___
 
@@ -135,4 +115,4 @@ Sets the underlying pointer.
 
 #### Defined in
 
-[PointerProxy.ts:43](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/PointerProxy.ts#L43)
+[PointerProxy.ts:43](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/PointerProxy.ts#L43)

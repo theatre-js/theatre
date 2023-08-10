@@ -41,4 +41,4 @@ Returns a prism of the value at the provided pointer.
 
 #### Defined in
 
-[pointerToPrism.ts:21](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/pointerToPrism.ts#L21)
+[pointerToPrism.ts:21](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/pointerToPrism.ts#L21)

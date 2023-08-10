@@ -630,7 +630,7 @@ unsub()
 unsub = sum.onStale(() => {})
 // there is now a subscription to `sum`, so it goes 🔥 hot, and so do its dependencies
 //    a    |    b    |   sum    |
-//    🔥🪵  |    🔥🪵  |    🔥🪵 |
+//    🔥🪵  |    🔥🪵  |    🔥🪵  |
 
 val(sum)
 // reading the value of `sum` will cause it to recalculate, and make it 🌲 fresh.

@@ -52,21 +52,6 @@ explanation of pointers.
 
 Atom
 
-**`Remarks`**
-
-The Pointer type is quite tricky because it doesn't play well with `any` and other inexact types.
-Here is an example that one would expect to work, but currently doesn't:
-```ts
-declare function expectAnyPointer(pointer: Pointer<any>): void
-
-expectAnyPointer(null as Pointer<{}>) // this shows as a type error because Pointer<{}> is not assignable to Pointer<any>, even though it should
-```
-
-The current solution is to just avoid using `any` with pointer-related code (or type-test it well).
-But if you enjoy solving typescript puzzles, consider fixing this :)
-Potentially, [TypeScript variance annotations in 4.7+](https://devblogs.microsoft.com/typescript/announcing-typescript-4-7-beta/#optional-variance-annotations-for-type-parameters)
-might be able to help us.
-
 #### Type parameters
 
 | Name |
@@ -75,7 +60,7 @@ might be able to help us.
 
 #### Defined in
 
-[pointer.ts:64](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/pointer.ts#L64)
+[pointer.ts:64](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/pointer.ts#L64)
 
 ___
 
@@ -92,7 +77,7 @@ ___
 
 #### Defined in
 
-[pointer.ts:5](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/pointer.ts#L5)
+[pointer.ts:5](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/pointer.ts#L5)
 
 ___
 
@@ -116,7 +101,7 @@ A wrapper type for the type a `Pointer` points to.
 
 #### Defined in
 
-[pointer.ts:35](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/pointer.ts#L35)
+[pointer.ts:35](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/pointer.ts#L35)
 
 ## Functions
 
@@ -157,7 +142,7 @@ const {root, path} = getPointerParts(pointer)
 
 #### Defined in
 
-[pointer.ts:136](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/pointer.ts#L136)
+[pointer.ts:136](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/pointer.ts#L136)
 
 ___
 
@@ -179,7 +164,7 @@ p is Pointer<unknown\>
 
 #### Defined in
 
-[pointer.ts:187](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/pointer.ts#L187)
+[pointer.ts:187](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/pointer.ts#L187)
 
 ___
 
@@ -201,7 +186,7 @@ d is Prism<unknown\>
 
 #### Defined in
 
-[prism/Interface.ts:66](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/prism/Interface.ts#L66)
+[prism/Interface.ts:66](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/Interface.ts#L66)
 
 ___
 
@@ -227,7 +212,7 @@ ___
 
 #### Defined in
 
-[prism/iterateAndCountTicks.ts:7](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/prism/iterateAndCountTicks.ts#L7)
+[prism/iterateAndCountTicks.ts:7](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/iterateAndCountTicks.ts#L7)
 
 ___
 
@@ -253,7 +238,7 @@ ___
 
 #### Defined in
 
-[prism/iterateOver.ts:8](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/prism/iterateOver.ts#L8)
+[prism/iterateOver.ts:8](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/iterateOver.ts#L8)
 
 ___
 
@@ -281,15 +266,6 @@ Creates a pointer to a (nested) property of an [Atom](classes/Atom.md).
 
 [`Pointer`](README.md#pointer)<`O`\>
 
-**`Remarks`**
-
-Pointers are used to make prisms of properties or nested properties of
-Atom|Atoms.
-
-Pointers also allow easy construction of new pointers pointing to nested members
-of the root object, by simply using property chaining. E.g. `somePointer.a.b` will
-create a new pointer that has `'a'` and `'b'` added to the path of `somePointer`.
-
 **`Example`**
 
 ```ts
@@ -307,7 +283,7 @@ const sum = prism(() => {
 
 #### Defined in
 
-[pointer.ts:172](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/pointer.ts#L172)
+[pointer.ts:172](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/pointer.ts#L172)
 
 ___
 
@@ -336,7 +312,7 @@ cached per pointer.
 
 #### Defined in
 
-[pointerToPrism.ts:41](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/pointerToPrism.ts#L41)
+[pointerToPrism.ts:41](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/pointerToPrism.ts#L41)
 
 ___
 
@@ -365,7 +341,7 @@ in it as dependencies, and reruns the function when these change.
 
 #### Defined in
 
-[prism/prism.ts:817](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/prism/prism.ts#L817)
+[prism/prism.ts:817](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/prism.ts#L817)
 
 ___
 
@@ -392,11 +368,6 @@ is a pointer, a prism or a plain value itself.
 
 `P` extends [`PointerType`](README.md#pointertype)<`T`\> ? `T` : `P` extends [`Prism`](interfaces/Prism-1.md)<`T`\> ? `T` : `P` extends `undefined` \| ``null`` ? `P` : `unknown`
 
-**`Remarks`**
-
-For pointers, the value is returned by first creating a prism, so it is
-reactive e.g. when used in a `prism`.
-
 #### Defined in
 
-[val.ts:19](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/val.ts#L19)
+[val.ts:19](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/val.ts#L19)

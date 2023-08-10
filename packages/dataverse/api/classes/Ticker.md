@@ -14,13 +14,6 @@ external scheduling strategy, e.g. a raf.
 ### Properties
 
 - [\_\_ticks](Ticker.md#__ticks)
-- [\_conf](Ticker.md#_conf)
-- [\_dormant](Ticker.md#_dormant)
-- [\_numberOfDormantTicks](Ticker.md#_numberofdormantticks)
-- [\_scheduledForNextTick](Ticker.md#_scheduledfornexttick)
-- [\_scheduledForThisOrNextTick](Ticker.md#_scheduledforthisornexttick)
-- [\_ticking](Ticker.md#_ticking)
-- [\_timeAtCurrentTick](Ticker.md#_timeatcurrenttick)
 
 ### Accessors
 
@@ -29,9 +22,6 @@ external scheduling strategy, e.g. a raf.
 
 ### Methods
 
-- [\_goActive](Ticker.md#_goactive)
-- [\_goDormant](Ticker.md#_godormant)
-- [\_tick](Ticker.md#_tick)
 - [offNextTick](Ticker.md#offnexttick)
 - [offThisOrNextTick](Ticker.md#offthisornexttick)
 - [onNextTick](Ticker.md#onnexttick)
@@ -54,7 +44,7 @@ external scheduling strategy, e.g. a raf.
 
 #### Defined in
 
-[Ticker.ts:43](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L43)
+[Ticker.ts:43](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Ticker.ts#L43)
 
 ## Properties
 
@@ -70,86 +60,7 @@ Consider this as experimental, and do not rely on it always being here in future
 
 #### Defined in
 
-[Ticker.ts:41](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L41)
-
-___
-
-### \_conf
-
-• `Private` `Optional` **\_conf**: `Object`
-
-#### Type declaration
-
-| Name | Type |
-| :------ | :------ |
-| `onActive?` | () => `void` |
-| `onDormant?` | () => `void` |
-
-#### Defined in
-
-[Ticker.ts:44](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L44)
-
-___
-
-### \_dormant
-
-• `Private` **\_dormant**: `boolean` = `true`
-
-Whether the Ticker is dormant
-
-#### Defined in
-
-[Ticker.ts:24](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L24)
-
-___
-
-### \_numberOfDormantTicks
-
-• `Private` **\_numberOfDormantTicks**: `number` = `0`
-
-#### Defined in
-
-[Ticker.ts:26](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L26)
-
-___
-
-### \_scheduledForNextTick
-
-• `Private` **\_scheduledForNextTick**: `Set`<`ICallback`\>
-
-#### Defined in
-
-[Ticker.ts:17](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L17)
-
-___
-
-### \_scheduledForThisOrNextTick
-
-• `Private` **\_scheduledForThisOrNextTick**: `Set`<`ICallback`\>
-
-#### Defined in
-
-[Ticker.ts:16](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L16)
-
-___
-
-### \_ticking
-
-• `Private` **\_ticking**: `boolean` = `false`
-
-#### Defined in
-
-[Ticker.ts:19](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L19)
-
-___
-
-### \_timeAtCurrentTick
-
-• `Private` **\_timeAtCurrentTick**: `number`
-
-#### Defined in
-
-[Ticker.ts:18](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L18)
+[Ticker.ts:41](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Ticker.ts#L41)
 
 ## Accessors
 
@@ -165,7 +76,7 @@ Whether the Ticker is dormant
 
 #### Defined in
 
-[Ticker.ts:31](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L31)
+[Ticker.ts:31](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Ticker.ts#L31)
 
 ___
 
@@ -182,57 +93,9 @@ The time at the start of the current tick if there is a tick in progress, otherw
 
 #### Defined in
 
-[Ticker.ts:122](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L122)
+[Ticker.ts:122](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Ticker.ts#L122)
 
 ## Methods
-
-### \_goActive
-
-▸ `Private` **_goActive**(): `void`
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[Ticker.ts:128](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L128)
-
-___
-
-### \_goDormant
-
-▸ `Private` **_goDormant**(): `void`
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[Ticker.ts:134](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L134)
-
-___
-
-### \_tick
-
-▸ `Private` **_tick**(`iterationNumber`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `iterationNumber` | `number` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[Ticker.ts:184](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L184)
-
-___
 
 ### offNextTick
 
@@ -256,7 +119,7 @@ onNextTick
 
 #### Defined in
 
-[Ticker.ts:114](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L114)
+[Ticker.ts:114](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Ticker.ts#L114)
 
 ___
 
@@ -282,7 +145,7 @@ onThisOrNextTick
 
 #### Defined in
 
-[Ticker.ts:103](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L103)
+[Ticker.ts:103](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Ticker.ts#L103)
 
 ___
 
@@ -309,7 +172,7 @@ Registers a side effect to be called on the next tick.
 
 #### Defined in
 
-[Ticker.ts:89](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L89)
+[Ticker.ts:89](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Ticker.ts#L89)
 
 ___
 
@@ -342,7 +205,7 @@ offThisOrNextTick
 
 #### Defined in
 
-[Ticker.ts:74](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L74)
+[Ticker.ts:74](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Ticker.ts#L74)
 
 ___
 
@@ -369,4 +232,4 @@ Triggers a tick which starts executing the callbacks scheduled for this tick.
 
 #### Defined in
 
-[Ticker.ts:149](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/Ticker.ts#L149)
+[Ticker.ts:149](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Ticker.ts#L149)

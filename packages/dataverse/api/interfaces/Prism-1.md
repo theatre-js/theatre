@@ -34,7 +34,7 @@ Whether the prism is hot.
 
 #### Defined in
 
-[prism/Interface.ts:18](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/prism/Interface.ts#L18)
+[prism/Interface.ts:18](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/Interface.ts#L18)
 
 ___
 
@@ -46,7 +46,7 @@ Whether the object is a prism.
 
 #### Defined in
 
-[prism/Interface.ts:13](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/prism/Interface.ts#L13)
+[prism/Interface.ts:13](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/Interface.ts#L13)
 
 ## Methods
 
@@ -62,7 +62,7 @@ Gets the current value of the prism. If the value is stale, it causes the prism 
 
 #### Defined in
 
-[prism/Interface.ts:60](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/prism/Interface.ts#L60)
+[prism/Interface.ts:60](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/Interface.ts#L60)
 
 ___
 
@@ -78,7 +78,7 @@ Keep the prism hot, even if there are no tappers (subscribers).
 
 #### Defined in
 
-[prism/Interface.ts:34](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/prism/Interface.ts#L34)
+[prism/Interface.ts:34](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/Interface.ts#L34)
 
 ___
 
@@ -102,7 +102,7 @@ Calls `listener` with a fresh value every time the prism _has_ a new value, thro
 
 #### Defined in
 
-[prism/Interface.ts:23](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/prism/Interface.ts#L23)
+[prism/Interface.ts:23](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/Interface.ts#L23)
 
 ___
 
@@ -122,4 +122,4 @@ ___
 
 #### Defined in
 
-[prism/Interface.ts:29](https://github.com/theatre-js/theatre/blob/327b859ed/packages/dataverse/src/prism/Interface.ts#L29)
+[prism/Interface.ts:29](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/Interface.ts#L29)
