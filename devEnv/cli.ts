@@ -70,6 +70,7 @@ prog.command('build', 'Builds all the main packages').action(async () => {
 
 prog
   .command('release <version>', 'Releases all the main packages to npm')
+  .option('--skip-ts', 'Skip emitting typescript declarations')
   .option('--skip-lint', 'Skip typecheck and lint')
   .action(async (version, opts) => {
     /**
@@ -181,7 +182,7 @@ prog
         console.log('Skipping typecheck and lint')
       }
 
-      const skipTypescriptEmit = argv['skip-ts'] === true
+      const skipTypescriptEmit = opts['skip-ts'] === true
 
       console.log('Assigning versions')
       await writeVersionsToPackageJSONs(version)
