@@ -1,7 +1,3 @@
-/**
- * A super basic Turtle geometry renderer hooked up to Theatre, so the parameters
- * can be tweaked and animated.
- */
 import {getProject, types} from '@theatre/core'
 import studio from '@theatre/studio'
 import React, {useEffect, useState} from 'react'
