@@ -5,18 +5,10 @@
  */
 
 import type {Prism} from '@theatre/dataverse'
-import {Atom} from '@theatre/dataverse'
-import {prism, val} from '@theatre/dataverse'
+import {prism, val, Atom} from '@theatre/dataverse'
 import {findIndex} from 'lodash-es'
 import queueMicrotask from 'queue-microtask'
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {useCallback, useLayoutEffect, useRef, useState} from 'react'
 import {unstable_batchedUpdates} from 'react-dom'
 
 type $IntentionalAny = any
@@ -374,38 +366,44 @@ export function usePrismInstance<T>(der: Prism<T>, debugLabel?: string): T {
 }
 
 /**
- * This makes sure the prism prism remains hot as long as the
- * component calling the hook is alive, but it does not
- * return the value of the prism, and it does not
- * re-render the component if the value of the prism changes.
+ * Creates a new Atom, similar to useState(), but the component
+ * won't re-render if the value of the atom changes.
  *
- * Use this hook if you plan to read a prism in a
- * useEffect() call, without the prism causing your
- * element to re-render.
+ * @param initialState - Initial state
+ * @returns The Atom
+ *
+ * @example
+ *
+ * Usage
+ * ```tsx
+ * import {useAtom, useVal} from '@theatre/react'
+ * import {useEffect} from 'react'
+ *
+ * function MyComponent() {
+ *   const atom = useAtom({count: 0, ready: false})
+ *
+ *   const onClick = () =>
+ *     atom.setByPointer(
+ *       (p) => p.count,
+ *       (count) => count + 1,
+ *     )
+ *
+ *   useEffect(() => {
+ *     setTimeout(() => {
+ *       atom.setByPointer((p) => p.ready, true)
+ *     }, 1000)
+ *   }, [])
+ *
+ *   const ready = useVal(atom.pointer.ready)
+ *   if (!ready) return <div>Loading...</div>
+ *   return <button onClick={onClick}>Click me</button>
+ * }
+ * ```
  */
-export function usePrismWithoutReRender<T>(
-  fn: () => T,
-  deps: unknown[],
-): Prism<T> {
-  const pr = useMemo(() => prism(fn), deps)
-
-  return usePrismInstanceWithoutReRender(pr)
-}
-
-/**
- * This makes sure the prism remains hot as long as the
- * component calling the hook is alive, but it does not
- * return the value of the prism, and it does not
- * re-render the component if the value of the prism changes.
- */
-export function usePrismInstanceWithoutReRender<T>(der: Prism<T>): Prism<T> {
-  useEffect(() => {
-    const untap = der.keepHot()
-
-    return () => {
-      untap()
-    }
-  }, [der])
-
-  return der
+export function useAtom<T>(initialState: T): Atom<T> {
+  const ref = useRef<Atom<T>>(undefined as $IntentionalAny)
+  if (!ref.current) {
+    ref.current = new Atom(initialState)
+  }
+  return ref.current
 }
