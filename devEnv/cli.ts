@@ -230,13 +230,12 @@ prog
       // }
 
       console.log('Publishing to npm')
-      // await Promise.all(
-      //   packagesToPublish.map(
-      //     (workspace) =>
-      //       $`yarn workspace ${workspace} npm publish --access public --tag ${npmTag}`,
-      //   ),
-      // )
-      console.log('NOT!!')
+      await Promise.all(
+        packagesToPublish.map(
+          (workspace) =>
+            $`yarn workspace ${workspace} npm publish --access public --tag ${npmTag}`,
+        ),
+      )
     }
 
     void release()
