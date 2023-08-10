@@ -22,7 +22,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: ./.github/actions/yarn-nm-install
 
-      - run: yarn build
+      - run: yarn cli build
   Lint:
     runs-on: ubuntu-latest
 

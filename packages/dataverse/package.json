@@ -1,6 +1,6 @@
 {
   "name": "@theatre/dataverse",
-  "version": "0.7.0-dev.1",
+  "version": "0.7.0",
   "license": "Apache-2.0",
   "author": {
     "name": "Aria Minaei",
@@ -25,16 +25,20 @@
     "build:js": "node -r esbuild-register ./devEnv/build.ts",
     "build:api-json": "api-extractor run --local --config devEnv/api-extractor.json",
     "prepublish": "node ../../devEnv/ensurePublishing.js",
-    "clean": "rm -rf ./dist && rm -f tsconfig.tsbuildinfo"
+    "clean": "rm -rf ./dist && rm -f tsconfig.tsbuildinfo",
+    "docs": "typedoc src/index.ts --out api --plugin typedoc-plugin-markdown --readme none",
+    "precommit": "yarn run docs"
   },
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.18.11",
+    "@microsoft/api-extractor": "^7.36.4",
     "@types/jest": "^26.0.23",
     "@types/lodash-es": "^4.17.4",
     "@types/node": "^15.6.2",
     "esbuild": "^0.12.15",
     "esbuild-register": "^2.5.0",
     "npm-run-all": "^4.1.5",
+    "typedoc": "^0.24.8",
+    "typedoc-plugin-markdown": "^3.15.4",
     "typescript": "5.1.6"
   },
   "dependencies": {

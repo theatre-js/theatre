@@ -20,7 +20,7 @@ import type {NearbyKeyframes} from './getNearbyKeyframesOfTrack'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
-import type {Asset} from '@theatre/shared/utils/assets'
+import type {Asset, File as AssetFile} from '@theatre/shared/utils/assets'
 
 interface EditingToolsCommon<T> {
   value: T
@@ -33,7 +33,7 @@ interface EditingToolsCommon<T> {
   discardTemporaryValue(): void
   permanentlySetValue(v: T): void
 
-  getAssetUrl: (asset: Asset) => string | undefined
+  getAssetUrl: (asset: Asset | AssetFile) => string | undefined
   createAsset(asset: File): Promise<string | null>
 }
 
@@ -116,7 +116,7 @@ function createPrism<T extends SerializablePrimitive>(
     const editAssets = {
       createAsset: (asset: File): Promise<string | null> =>
         obj.sheet.project.assetStorage.createAsset(asset),
-      getAssetUrl: (asset: Asset) =>
+      getAssetUrl: (asset: Asset | AssetFile) =>
         asset.id
           ? obj.sheet.project.assetStorage.getAssetUrl(asset.id)
           : undefined,

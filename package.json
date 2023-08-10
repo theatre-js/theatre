@@ -1,7 +1,7 @@
 {
   "name": "theatre-monorepo",
   "license": "Apache-2.0",
-  "version": "0.7.0-dev.1",
+  "version": "0.7.0",
   "workspaces": [
     "packages/*",
     "examples/*",
@@ -9,19 +9,17 @@
     "compat-tests"
   ],
   "scripts": {
+    "cli": "node -r esbuild-register devEnv/cli.ts",
     "playground": "yarn workspace playground run serve",
     "benchmarks": "yarn workspace benchmarks run serve",
     "test:e2e": "yarn workspace playground run test",
     "test:e2e:ci": "yarn workspace playground run test:ci",
     "typecheck": "yarn run build:ts",
-    "build": "node -r esbuild-register devEnv/scripts/build.ts",
-    "clean": "node -r esbuild-register devEnv/scripts/clean.ts",
     "build:ts": "tsc --build ./devEnv/typecheck-all-projects/tsconfig.all.json",
     "test": "jest",
     "test:compat:install": "yarn workspace @theatre/compat-tests run install-fixtures",
     "test:compat:run": "jest --config jest.compat-tests.config.js",
     "postinstall": "husky install",
-    "release": "node -r esbuild-register devEnv/scripts/release.ts",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {
@@ -57,6 +55,7 @@
     "lint-staged": "^13.0.3",
     "node-gyp": "^9.1.0",
     "prettier": "^2.3.2",
+    "sade": "^1.8.1",
     "typescript": "5.1.6",
     "yaml": "^2.3.1"
   },

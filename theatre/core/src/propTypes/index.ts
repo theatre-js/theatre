@@ -17,7 +17,7 @@ import type {
 import {propTypeSymbol, sanitizeCompoundProps} from './internals'
 // eslint-disable-next-line unused-imports/no-unused-imports
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import type {Asset} from '@theatre/shared/utils/assets'
+import type {Asset, File} from '@theatre/shared/utils/assets'
 
 // Notes on naming:
 // As of now, prop types are either `simple` or `composite`.
@@ -136,6 +136,74 @@ export const compound = <Props extends UnknownShorthandCompoundProps>(
     },
   }
   return config
+}
+
+/**
+ * A file prop type
+ *
+ * @example
+ * Usage:
+ * ```ts
+ *
+ * // with a label:
+ * const obj = sheet.object('key', {
+ *   url: t.file('My file.glb', {
+ *     label: 'Model'
+ *   })
+ * })
+ * ```
+ *
+ * @param opts - Options (See usage examples)
+ */
+export const file = (
+  // The defaultValue parameter is a string for convenience, but it will be converted to an Asset object
+  defaultValue: File['id'],
+  opts: {
+    label?: string
+    interpolate?: Interpolator<File['id']>
+  } = {},
+): PropTypeConfig_File => {
+  if (process.env.NODE_ENV !== 'production') {
+    validateCommonOpts('t.file(defaultValue, opts)', opts)
+  }
+
+  const interpolate: Interpolator<File> = (left, right, progression) => {
+    const stringInterpolate = opts.interpolate ?? leftInterpolate
+
+    return {
+      type: 'file',
+      id: stringInterpolate(left.id, right.id, progression),
+    }
+  }
+
+  return {
+    type: 'file',
+    default: {type: 'file', id: defaultValue},
+    valueType: null as $IntentionalAny,
+    [propTypeSymbol]: 'TheatrePropType',
+    label: opts.label,
+    interpolate,
+    deserializeAndSanitize: _ensureFile,
+  }
+}
+
+const _ensureFile = (val: unknown): File | undefined => {
+  if (!val) return undefined
+
+  let valid = true
+
+  if (
+    typeof (val as $IntentionalAny).id !== 'string' &&
+    ![null, undefined].includes((val as $IntentionalAny).id)
+  ) {
+    valid = false
+  }
+
+  if ((val as $IntentionalAny).type !== 'file') valid = false
+
+  if (!valid) return undefined
+
+  return val as File
 }
 
 /**
@@ -778,6 +846,7 @@ export interface PropTypeConfig_StringLiteral<T extends string>
 export interface PropTypeConfig_Rgba extends ISimplePropType<'rgba', Rgba> {}
 
 export interface PropTypeConfig_Image extends ISimplePropType<'image', Asset> {}
+export interface PropTypeConfig_File extends ISimplePropType<'file', File> {}
 
 type DeepPartialCompound<Props extends UnknownValidCompoundProps> = {
   [K in keyof Props]?: DeepPartial<Props[K]>
@@ -812,6 +881,7 @@ export type PropTypeConfig_AllSimples =
   | PropTypeConfig_StringLiteral<$IntentionalAny>
   | PropTypeConfig_Rgba
   | PropTypeConfig_Image
+  | PropTypeConfig_File
 
 export type PropTypeConfig =
   | PropTypeConfig_AllSimples

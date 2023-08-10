@@ -28,8 +28,8 @@ describe(`The exhaustive guide to dataverse`, () => {
   describe(`0 - Concepts`, () => {
     // There 4 main concepts in dataverse:
     // - Atoms, hold the state of your application.
-    // - Pointers are a type-safe way to get/set/react-to changes in Atoms.
-    // - Prisms are functions that react to changes in atoms and other prisms.
+    // - Pointers are a type-safe way to refer to specific properties of atoms.
+    // - Prisms are functions that derive values from atoms or from other prisms.
     // - Tickers are a way to schedule and synchronise computations.
 
     // before we dive into the concepts, let me show you how a simple dataverse setup looks like.

@@ -59,7 +59,7 @@ export function initialize(config: IProjectConfig): Promise<void> {
 }
 
 export function getAssetUrl(asset: {
-  type: 'image'
+  type: 'image' | 'file'
   id: string | undefined
 }): string | undefined {
   if (!_project) {
