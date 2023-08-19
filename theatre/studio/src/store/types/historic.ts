@@ -21,6 +21,10 @@ import type {
   SheetInstanceId,
   UIPanelId,
 } from '@theatre/shared/utils/ids'
+import type {
+  SequenceDataItem,
+  SequenceDataType,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/DataViewer/types'
 
 export type PanelPosition = {
   edges: {
@@ -89,12 +93,23 @@ export type StudioHistoricStateSequenceEditorMarker = {
 }
 
 /**
+ * Allows you to sync data to animation in your sequence.
+ *
+ * See root {@link StudioHistoricState}
+ */
+export type StudioHistoricStateSequenceEditorData = {
+  type?: SequenceDataType
+  data?: SequenceDataItem[]
+}
+
+/**
  * See parent {@link StudioHistoricStateProject}.
  * See root {@link StudioHistoricState}
  */
 export type StudioHistoricStateProjectSheet = {
   selectedInstanceId: undefined | SheetInstanceId
   sequenceEditor: {
+    dataSet?: StudioHistoricStateSequenceEditorData
     markerSet?: PointableSet<
       SequenceMarkerId,
       StudioHistoricStateSequenceEditorMarker

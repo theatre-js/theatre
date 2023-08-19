@@ -340,6 +340,72 @@ function usePlayheadContextMenu(
             })
           },
         },
+        {
+          label: 'Add Data',
+          callback: () => {
+            const prompStr = prompt('Sequence Data', '')
+            if (prompStr !== null && prompStr.length > 0) {
+              const value = JSON.parse(prompStr)
+              getStudio().transaction(({stateEditors}) => {
+                const sheet = val(options.layoutP.sheet)
+                const {sequenceEditor} =
+                  stateEditors.studio.historic.projects.stateByProjectId
+                    .stateBySheetId
+                // Data
+                if (value !== undefined) {
+                  sequenceEditor.setData({
+                    sheetAddress: sheet.address,
+                    dataSet: value,
+                  })
+                }
+              })
+            }
+          },
+        },
+        {
+          label: 'Import Sequence Data',
+          callback: () => {
+            const prompStr = prompt('Sequence Data', '')
+            if (prompStr !== null && prompStr.length > 0) {
+              const value = JSON.parse(prompStr)
+              getStudio().transaction(({stateEditors}) => {
+                const sheet = val(options.layoutP.sheet)
+                const sheetSequence = sheet.getSequence()
+                const {sequenceEditor} =
+                  stateEditors.studio.historic.projects.stateByProjectId
+                    .stateBySheetId
+
+                // Data
+                if (value.data !== undefined) {
+                  sequenceEditor.setData({
+                    sheetAddress: sheet.address,
+                    dataSet: value.data,
+                  })
+                }
+                // Markers
+                if (value.markers !== undefined) {
+                  sequenceEditor.replaceMarkers({
+                    sheetAddress: sheet.address,
+                    markers: value.markers,
+                    snappingFunction: sheetSequence.closestGridPosition,
+                  })
+                }
+              })
+            }
+          },
+        },
+        {
+          label: 'Export Sequence Data',
+          callback: () => {
+            getStudio().transaction(({stateEditors}) => {
+              const sheet = val(options.layoutP.sheet)
+              const {sequenceEditor} =
+                stateEditors.studio.historic.projects.stateByProjectId
+                  .stateBySheetId
+              sequenceEditor.exportSequenceEditor(sheet.address)
+            })
+          },
+        },
       ]
     },
   })

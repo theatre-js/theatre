@@ -48,6 +48,7 @@ import type {
   PanelPosition,
   StudioAhistoricState,
   StudioEphemeralState,
+  StudioHistoricStateSequenceEditorData,
   StudioHistoricStateSequenceEditorMarker,
 } from './types'
 import {clamp, uniq} from 'lodash-es'
@@ -192,6 +193,8 @@ namespace stateEditors {
                 projectState.stateBySheetId[p.sheetId] = {
                   selectedInstanceId: undefined,
                   sequenceEditor: {
+                    dataSet: {},
+                    markerSet: pointableSetUtil.create(),
                     selectedPropsByObject: {},
                   },
                 }
@@ -348,6 +351,57 @@ namespace stateEditors {
                 const currentMarkerSet = _ensureMarkers(options.sheetAddress)
                 const marker = currentMarkerSet.byId[options.markerId]
                 if (marker !== undefined) marker.label = options.label
+              }
+
+              export function setData(options: {
+                sheetAddress: SheetAddress
+                dataSet: StudioHistoricStateSequenceEditorData
+              }) {
+                const sequenceEditor =
+                  stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId._ensure(
+                    options.sheetAddress,
+                  ).sequenceEditor
+                sequenceEditor.dataSet = {
+                  type: options.dataSet.type,
+                  data: options.dataSet.data,
+                }
+              }
+
+              export function exportSequenceEditor(sheetAddress: SheetAddress) {
+                const projects = stateEditors.studio.historic.projects
+                // Data
+                let data = {}
+                const sequenceEditor =
+                  stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId._ensure(
+                    sheetAddress,
+                  ).sequenceEditor
+                if (sequenceEditor.dataSet !== undefined) {
+                  data = sequenceEditor.dataSet
+                }
+
+                // Markers
+                const currentMarkerSet = _ensureMarkers(sheetAddress)
+                const markers: Array<any> = []
+                pointableSetUtil.filter(currentMarkerSet, (marker) => {
+                  markers.push({
+                    id: marker?.id,
+                    label: marker?.label,
+                    position: marker?.position,
+                  })
+                  return false
+                })
+
+                // Copy info to clipboard
+                try {
+                  const content = JSON.stringify({
+                    sheet: sheetAddress.sheetId,
+                    data,
+                    markers,
+                  })
+                  navigator.clipboard.writeText(content)
+                } catch (e) {
+                  console.warn(`Couldn't copy data to clipboard.`)
+                }
               }
             }
           }
