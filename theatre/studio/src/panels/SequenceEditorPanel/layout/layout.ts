@@ -19,6 +19,11 @@ import type {
   ObjectAddressKey,
   SequenceTrackId,
 } from '@theatre/shared/utils/ids'
+import type {
+  DataViewerInfo,
+  DataViewerTime,
+  DataViewerType,
+} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/DataViewer'
 
 // A Side is either the left side of the panel or the right side
 type DimsOfPanelPart = {
@@ -160,6 +165,9 @@ export type SequenceEditorPanelLayout = {
   }
 
   selectionAtom: Atom<{current?: DopeSheetSelection}>
+
+  data?: Array<DataViewerInfo | DataViewerTime>
+  dataType?: DataViewerType
 }
 
 // type UnitSpaceProression = number

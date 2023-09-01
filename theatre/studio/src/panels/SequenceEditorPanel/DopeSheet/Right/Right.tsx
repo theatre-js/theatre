@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import DopeSheetSelectionView from './DopeSheetSelectionView'
 import HorizontallyScrollableArea from './HorizontallyScrollableArea'
 import SheetRow from './SheetRow'
+import {DataViewer} from './DataViewer'
 
 export const contentWidth = 1000000
 
@@ -32,10 +33,13 @@ const Right: React.FC<{
         val(layoutP.dopeSheetDims.height),
       )
 
+    console.log('Right')
+
     return (
       <>
         <HorizontallyScrollableArea layoutP={layoutP} height={height}>
           <DopeSheetSelectionView layoutP={layoutP} height={height}>
+            <DataViewer layoutP={layoutP} />
             <ListContainer style={{top: tree.top + 'px'}}>
               <SheetRow leaf={tree} layoutP={layoutP} />
             </ListContainer>
