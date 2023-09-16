@@ -1,6 +1,6 @@
 import type {IProject, IRafDriver, ISheet, ISheetObject} from '@theatre/core'
 import type {Prism, Pointer} from '@theatre/dataverse'
-import {prism} from '@theatre/dataverse'
+import {getPointerParts, prism} from '@theatre/dataverse'
 import SimpleCache from '@theatre/utils/SimpleCache'
 import type {$IntentionalAny, VoidFn} from '@theatre/utils/types'
 import type {IScrub} from '@theatre/studio/Scrub'
@@ -88,6 +88,13 @@ export interface ITransactionAPI {
    * Makes Theatre forget about this sheet.
    */
   __experimental_forgetSheet(sheet: TheatreSheet): void
+
+  /**
+   * EXPERIMENTAL API - this api may be removed without notice.
+   *
+   * Sequences a track for the
+   */
+  __experimental_sequenceProp<V>(pointer: Pointer<V>): void
 }
 /**
  *
@@ -571,11 +578,28 @@ export default class TheatreStudio implements IStudio {
         )
       }
 
+      const __experimental_sequenceProp = <V>(prop: Pointer<V>) => {
+        const {path, root} = getPointerParts(prop)
+
+        if (!isSheetObject(root)) {
+          throw new Error(
+            'Argument prop must be a pointer to a SheetObject property',
+          )
+        }
+
+        const propAdress = {...root.address, pathToProp: path}
+
+        stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
+          propAdress,
+        )
+      }
+
       return fn({
         set,
         unset,
         __experimental_forgetObject,
         __experimental_forgetSheet,
+        __experimental_sequenceProp,
       })
     })
   }
