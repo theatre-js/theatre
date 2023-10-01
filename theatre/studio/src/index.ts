@@ -8,7 +8,7 @@ import {setStudio} from '@theatre/studio/getStudio'
 import {Studio} from '@theatre/studio/Studio'
 
 import * as globalVariableNames from '@theatre/shared/globalVariableNames'
-import type {$FixMe} from '@theatre/shared/utils/types'
+import type {$FixMe} from '@theatre/utils/types'
 import StudioBundle from './StudioBundle'
 import type CoreBundle from '@theatre/core/CoreBundle'
 import type {IStudio} from '@theatre/studio/TheatreStudio'
@@ -26,9 +26,15 @@ export default studio
 registerStudioBundle()
 
 function registerStudioBundle() {
-  if (typeof window == 'undefined') return
+  if (
+    typeof window == 'undefined' &&
+    global.__THEATREJS__FORCE_CONNECT_CORE_AND_STUDIO !== true
+  )
+    return
 
-  const existingStudioBundle = (window as $FixMe)[
+  const globalContext = typeof window !== 'undefined' ? window : global
+
+  const existingStudioBundle = (globalContext as $FixMe)[
     globalVariableNames.studioBundle
   ]
 
@@ -54,11 +60,11 @@ function registerStudioBundle() {
   const studioBundle = new StudioBundle(studioPrivateAPI)
 
   // @ts-ignore ignore
-  window[globalVariableNames.studioBundle] = studioBundle
+  globalContext[globalVariableNames.studioBundle] = studioBundle
 
   const possibleCoreBundle: undefined | CoreBundle =
     // @ts-ignore ignore
-    window[globalVariableNames.coreBundle]
+    globalContext[globalVariableNames.coreBundle]
 
   if (
     possibleCoreBundle &&

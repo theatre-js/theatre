@@ -1,34 +1,28 @@
-import type {FullStudioState} from '@theatre/studio/store'
-import {
-  studioActions,
-  studioReducer,
-  tempActionGroup,
-} from '@theatre/studio/store'
-import type {IStateEditors} from '@theatre/studio/store/stateEditors'
-import {setDrafts__onlyMeantToBeCalledByTransaction} from '@theatre/studio/store/stateEditors'
 import type {
   StudioAhistoricState,
   StudioEphemeralState,
   StudioHistoricState,
-} from '@theatre/studio/store/types'
-import type {Deferred} from '@theatre/shared/utils/defer'
-import {defer} from '@theatre/shared/utils/defer'
-import atomFromReduxStore from '@theatre/studio/utils/redux/atomFromReduxStore'
-import configureStore from '@theatre/studio/utils/redux/configureStore'
-import type {VoidFn} from '@theatre/shared/utils/types'
-import type {Atom, Pointer} from '@theatre/dataverse'
+  StudioState,
+} from '@theatre/sync-server/state/types'
+import {defer} from '@theatre/utils/defer'
+import type {$FixMe, $IntentionalAny, VoidFn} from '@theatre/utils/types'
+import {Atom} from '@theatre/dataverse'
+import type {Pointer} from '@theatre/dataverse'
 import type {Draft} from 'immer'
-import {createDraft, finishDraft} from 'immer'
-import type {Store} from 'redux'
-import {
-  __experimental_clearPersistentStorage,
-  persistStateOfStudio,
-} from './persistStateOfStudio'
-import type {OnDiskState} from '@theatre/core/projects/store/storeTypes'
-import {generateDiskStateRevision} from './generateDiskStateRevision'
-
+import type {OnDiskState} from '@theatre/sync-server/state/types/core'
+import * as Saaz from '@theatre/saaz'
+import type {ProjectId} from '@theatre/sync-server/state/types/core'
+import AppLink from '@theatre/studio/SyncStore/AppLink'
+import SyncStoreAuth from '@theatre/studio/SyncStore/SyncStoreAuth'
+import SyncServerLink from '@theatre/studio/SyncStore/SyncServerLink'
+import {schema} from '@theatre/sync-server/state/schema'
+import type {
+  IInvokableStateEditors,
+  IStateEditors,
+  StateEditorsAPI,
+} from '@theatre/sync-server/state/schema'
 import createTransactionPrivateApi from './createTransactionPrivateApi'
-import type {ProjectId} from '@theatre/shared/utils/ids'
+import {SaazBack} from '@theatre/saaz'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
@@ -36,66 +30,129 @@ export type Drafts = {
   ephemeral: Draft<StudioEphemeralState>
 }
 
+export type StudioStoreOptions = {
+  serverUrl: string
+  persistenceKey: string
+  usePersistentStorage: boolean
+}
+
 export interface ITransactionPrivateApi {
   set<T>(pointer: Pointer<T>, value: T): void
   unset<T>(pointer: Pointer<T>): void
-  drafts: Drafts
-  stateEditors: IStateEditors
+  stateEditors: IInvokableStateEditors
 }
 
-export type CommitOrDiscard = {
+export type CommitOrDiscardOrRecapture = {
   commit: VoidFn
   discard: VoidFn
+  recapture: (fn: (api: ITransactionPrivateApi) => void) => void
+  reset: VoidFn
 }
 
 export default class StudioStore {
-  private readonly _reduxStore: Store<FullStudioState>
-  private readonly _atom: Atom<FullStudioState>
-  readonly atomP: Pointer<FullStudioState>
+  private readonly _atom: Atom<StudioState>
+  readonly atomP: Pointer<StudioState>
+
+  private _appLink: Promise<AppLink>
+  private _syncServerLink: Promise<SyncServerLink>
+  private _auth: SyncStoreAuth
+
+  private _state = new Atom<{
+    ready: boolean
+  }>({ready: false})
+
+  private _optionsDeferred = defer<StudioStoreOptions>()
+  private _saaz: Saaz.SaazFront<StudioState, IStateEditors, StateEditorsAPI>
 
   constructor() {
-    this._reduxStore = configureStore({
-      rootReducer: studioReducer,
-      devtoolsOptions: {name: 'Theatre.js Studio'},
+    const syncServerLinkDeferred = defer<SyncServerLink>()
+    this._syncServerLink = syncServerLinkDeferred.promise
+    this._appLink = this._optionsDeferred.promise.then(({serverUrl}) =>
+      typeof window === 'undefined'
+        ? (null as $IntentionalAny)
+        : new AppLink(serverUrl),
+    )
+
+    if (typeof window !== 'undefined') {
+      void this._appLink
+        .then((appLink) => {
+          return appLink.api.syncServerUrl.query().then((url) => {
+            syncServerLinkDeferred.resolve(new SyncServerLink(url))
+          })
+        })
+        .catch((err) => {
+          syncServerLinkDeferred.reject(err)
+          console.error(err)
+        })
+    } else {
+      syncServerLinkDeferred.resolve(null as $IntentionalAny)
+    }
+
+    this._auth =
+      typeof window !== 'undefined'
+        ? new SyncStoreAuth(
+            this._optionsDeferred.promise,
+            this._appLink,
+            this._syncServerLink,
+          )
+        : (null as $IntentionalAny)
+
+    if (typeof window !== 'undefined') {
+      void this._auth.ready.then(() => {
+        this._state.setByPointer((p) => p.ready, true)
+      })
+    } else {
+      this._state.setByPointer((p) => p.ready, true)
+    }
+
+    const backend =
+      typeof window === 'undefined'
+        ? new SaazBack({
+            storageAdapter: new Saaz.BackMemoryAdapter(),
+            dbName: 'test',
+            schema,
+          })
+        : createTrpcBackend(
+            this._optionsDeferred.promise.then((opts) => opts.persistenceKey),
+            this.syncServerApi,
+          )
+
+    const peerId = 'peer#' + Math.random()
+
+    const saaz = new Saaz.SaazFront({
+      schema,
+      dbName: 'test',
+      peerId: peerId,
+      storageAdapter: new Saaz.FrontMemoryAdapter(),
+      backend,
     })
-    this._atom = atomFromReduxStore(this._reduxStore)
+    this._saaz = saaz as $IntentionalAny
+
+    this._atom = new Atom({} as StudioState)
+    this._atom.set(saaz.state)
+
+    saaz.subscribe((state) => {
+      this._atom.set(state as $IntentionalAny)
+    })
     this.atomP = this._atom.pointer
   }
 
-  initialize(opts: {
+  async initialize(opts: {
+    serverUrl: string
     persistenceKey: string
     usePersistentStorage: boolean
   }): Promise<void> {
-    const d: Deferred<void> = defer<void>()
-    if (opts.usePersistentStorage === true) {
-      persistStateOfStudio(
-        this._reduxStore,
-        () => {
-          this.tempTransaction(({drafts}) => {
-            drafts.ephemeral.initialised = true
-          }).commit()
-          d.resolve()
-        },
-        opts.persistenceKey,
-      )
-    } else {
-      this.tempTransaction(({drafts}) => {
-        drafts.ephemeral.initialised = true
-      }).commit()
-
-      d.resolve()
-    }
-    return d.promise
+    this._optionsDeferred.resolve(opts)
   }
 
-  getState(): FullStudioState {
-    return this._reduxStore.getState()
+  getState(): StudioState {
+    return this._atom.get()
+    // return this._reduxStore.getState()
   }
 
-  __experimental_clearPersistentStorage(
-    persistenceKey: string,
-  ): FullStudioState {
-    __experimental_clearPersistentStorage(this._reduxStore, persistenceKey)
+  __experimental_clearPersistentStorage(persistenceKey: string): StudioState {
+    throw new Error(`Implement me?`)
+    // __experimental_clearPersistentStorage(this._reduxStore, persistenceKey)
     return this.getState()
   }
 
@@ -105,114 +162,194 @@ export default class StudioStore {
    * store.
    */
   __dev_startHistoryFromScratch(newHistoricPart: StudioHistoricState) {
-    this._reduxStore.dispatch(
-      studioActions.historic.startHistoryFromScratch(
-        studioActions.reduceParts((s) => ({...s, historic: newHistoricPart})),
-      ),
-    )
+    throw new Error(`Implement me?`)
+    // this._reduxStore.dispatch(
+    //   studioActions.historic.startHistoryFromScratch(
+    //     studioActions.reduceParts((s) => ({...s, historic: newHistoricPart})),
+    //   ),
+    // )
   }
 
-  tempTransaction(fn: (api: ITransactionPrivateApi) => void): CommitOrDiscard {
-    const group = tempActionGroup()
-    let errorDuringTransaction: Error | undefined = undefined
+  transaction(fn: (api: ITransactionPrivateApi) => void) {
+    this._saaz.tx((editors) => {
+      let running = true
 
-    const action = group.push(
-      studioActions.reduceParts((wholeState) => {
-        const drafts = {
-          historic: createDraft(wholeState.historic),
-          ahistoric: createDraft(wholeState.ahistoric),
-          ephemeral: createDraft(wholeState.ephemeral),
+      let ensureRunning = () => {
+        if (!running) {
+          throw new Error(
+            `You seem to have called the transaction api after studio.transaction() has finished running`,
+          )
         }
+      }
+      const transactionApi = createTransactionPrivateApi(ensureRunning, editors)
+      const ret = fn(transactionApi)
+      running = false
+      return ret
+    })
+    return
+  }
 
-        let running = true
-
-        let ensureRunning = () => {
-          if (!running) {
-            throw new Error(
-              `You seem to have called the transaction api after studio.transaction() has finished running`,
-            )
-          }
-        }
-
-        const stateEditors = setDrafts__onlyMeantToBeCalledByTransaction(drafts)
-
-        const api: ITransactionPrivateApi = createTransactionPrivateApi(
-          ensureRunning,
-          stateEditors,
-          drafts,
-        )
-
-        try {
-          fn(api)
-          running = false
-          return {
-            historic: finishDraft(drafts.historic),
-            ahistoric: finishDraft(drafts.ahistoric),
-            ephemeral: finishDraft(drafts.ephemeral),
-          }
-        } catch (err: unknown) {
-          errorDuringTransaction = err as Error
-          return wholeState
-        } finally {
-          setDrafts__onlyMeantToBeCalledByTransaction(undefined)
-        }
-      }),
-    )
-
-    this._reduxStore.dispatch(action)
-
-    if (errorDuringTransaction) {
-      this._reduxStore.dispatch(group.discard())
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw errorDuringTransaction
+  tempTransaction(
+    fn: (api: ITransactionPrivateApi) => void,
+    existingTransaction: CommitOrDiscardOrRecapture | undefined = undefined,
+  ): CommitOrDiscardOrRecapture {
+    if (existingTransaction) {
+      existingTransaction.recapture(fn)
+      return existingTransaction
     }
 
+    const t = this._saaz.tempTx((editors) => {
+      let running = true
+
+      let ensureRunning = () => {
+        if (!running) {
+          throw new Error(
+            `You seem to have called the transaction api after studio.transaction() has finished running`,
+          )
+        }
+      }
+      const transactionApi = createTransactionPrivateApi(ensureRunning, editors)
+      const ret = fn(transactionApi)
+      running = false
+      return ret
+    })
+
     return {
-      commit: () => {
-        this._reduxStore.dispatch(group.commit())
-      },
-      discard: () => {
-        this._reduxStore.dispatch(group.discard())
+      commit: t.commit,
+      discard: t.discard,
+      reset: t.reset,
+      recapture: (fn: (api: ITransactionPrivateApi) => void): void => {
+        t.recapture((editors) => {
+          let running = true
+
+          let ensureRunning = () => {
+            if (!running) {
+              throw new Error(
+                `You seem to have called the transaction api after studio.transaction() has finished running`,
+              )
+            }
+          }
+          const transactionApi = createTransactionPrivateApi(
+            ensureRunning,
+            editors,
+          )
+          const ret = fn(transactionApi)
+          running = false
+        })
       },
     }
   }
 
   undo() {
-    this._reduxStore.dispatch(studioActions.historic.undo())
+    throw new Error(`Implement me`)
+    // this._reduxStore.dispatch(studioActions.historic.undo())
   }
 
   redo() {
-    this._reduxStore.dispatch(studioActions.historic.redo())
+    throw new Error(`Implement me`)
+    // this._reduxStore.dispatch(studioActions.historic.redo())
   }
 
   createContentOfSaveFile(projectId: ProjectId): OnDiskState {
-    const projectState =
-      this._reduxStore.getState().$persistent.historic.innerState.coreByProject[
-        projectId
-      ]
+    throw new Error(`Implement me`)
+    // const projectState =
+    //   this._reduxStore.getState().$persistent.historic.innerState.coreByProject[
+    //     projectId
+    //   ]
 
-    if (!projectState) {
-      throw new Error(`Project ${projectId} has not been initialized.`)
-    }
+    // if (!projectState) {
+    //   throw new Error(`Project ${projectId} has not been initialized.`)
+    // }
 
-    const revision = generateDiskStateRevision()
+    // const revision = generateDiskStateRevision()
 
-    this.tempTransaction(({stateEditors}) => {
-      stateEditors.coreByProject.historic.revisionHistory.add({
-        projectId,
-        revision,
+    // this.tempTransaction(({stateEditors}) => {
+    //   stateEditors.coreByProject.historic.revisionHistory.add({
+    //     projectId,
+    //     revision,
+    //   })
+    // }).commit()
+
+    // const projectHistoricState =
+    //   this._reduxStore.getState().$persistent.historic.innerState.coreByProject[
+    //     projectId
+    //   ]
+
+    // const generatedOnDiskState: OnDiskState = {
+    //   ...projectHistoricState,
+    // }
+
+    // return generatedOnDiskState
+  }
+
+  authenticate(opts?: Parameters<typeof this._auth.authenticate>[0]) {
+    return this._auth.authenticate(opts)
+  }
+
+  get appApi() {
+    return this._auth.appApi
+  }
+
+  get syncServerApi() {
+    return this._auth.syncServerApi
+  }
+}
+function createTrpcBackend(
+  dbNamePromise: Promise<string>,
+  syncServerApi: StudioStore['syncServerApi'],
+): Saaz.SaazBackInterface {
+  const applyUpdates: Saaz.SaazBackInterface['applyUpdates'] = async (opts) => {
+    const dbName = await dbNamePromise
+    return await syncServerApi.projectState.saaz_applyUpdates.mutate({
+      dbName,
+      opts,
+    })
+  }
+
+  const updatePresence: Saaz.SaazBackInterface['updatePresence'] = async (
+    opts,
+  ) => {
+    const dbName = await dbNamePromise
+    return await syncServerApi.projectState.saaz_updatePresence.mutate({
+      dbName,
+      opts,
+    })
+  }
+
+  const getUpdatesSinceClock: Saaz.SaazBackInterface['getUpdatesSinceClock'] =
+    async (opts) => {
+      const dbName = await dbNamePromise
+
+      return await syncServerApi.projectState.saaz_getUpdatesSinceClock.query({
+        dbName,
+        opts,
       })
-    }).commit()
-
-    const projectHistoricState =
-      this._reduxStore.getState().$persistent.historic.innerState.coreByProject[
-        projectId
-      ]
-
-    const generatedOnDiskState: OnDiskState = {
-      ...projectHistoricState,
     }
 
-    return generatedOnDiskState
+  const subscribe: Saaz.SaazBackInterface['subscribe'] = async (
+    opts,
+    onUpdate,
+  ) => {
+    const dbName = await dbNamePromise
+
+    const subscription = syncServerApi.projectState.saaz_subscribe.subscribe(
+      {
+        dbName,
+        opts,
+      },
+      {
+        onData(d) {
+          onUpdate(d as $FixMe)
+        },
+      },
+    )
+
+    return subscription.unsubscribe
+  }
+  return {
+    applyUpdates,
+    getUpdatesSinceClock,
+    subscribe: subscribe,
+    updatePresence,
   }
 }

@@ -1,5 +1,5 @@
 import {useVal} from '@theatre/react'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import getStudio from '@theatre/studio/getStudio'
 import React from 'react'
 import styled from 'styled-components'
@@ -13,7 +13,9 @@ const Container = styled.div`
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25), 0px 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0px 1px 1px rgba(0, 0, 0, 0.25),
+    0px 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(14px);
   pointer-events: auto;
   // makes the edges of the item highlights match the rounded corners
@@ -117,7 +119,7 @@ const untaggedVersion: string = version.match(/^[^\-]+/)![0]
 
 const MoreMenu = React.forwardRef((props: {}, ref) => {
   const hasUpdates = useVal(
-    getStudio().atomP.ahistoric.updateChecker.result.hasUpdates,
+    getStudio().ahistoricAtom.pointer.updateChecker.result.hasUpdates,
   )
 
   return (

@@ -18,6 +18,7 @@ module.exports = {
     'nanoid/non-secure': '<rootDir>/node_modules/nanoid/non-secure/index.cjs',
     'react-icons/(.*)': 'identity-obj-proxy',
     'react-merge-refs': 'identity-obj-proxy',
+    '@trpc/client': 'identity-obj-proxy',
   },
   setupFiles: ['./theatre/shared/src/setupTestEnv.ts'],
   automock: false,

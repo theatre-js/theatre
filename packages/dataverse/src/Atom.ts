@@ -133,6 +133,9 @@ export default class Atom<State> implements PointerToPrismProvider {
     this._checkUpdates(this._rootScope, oldState, newState)
   }
 
+  /**
+   * Returns the current state of the atom.
+   */
   get(): State {
     return this._currentState
   }
@@ -245,10 +248,33 @@ export default class Atom<State> implements PointerToPrismProvider {
     return curScope
   }
 
-  private _onPointerValueChange = <P>(
-    pointer: Pointer<P>,
-    cb: (v: P) => void,
+  /**
+   * Adds a listener that will be called whenever the value at the given pointer changes.
+   * @param pointer - The pointer to listen to
+   * @param cb - The callback to call when the value changes
+   * @returns A function that can be called to unsubscribe from the listener
+   *
+   * **NOTE** Unlike {@link prism}s, `onChangeByPointer` and `onChange()` are traditional event listeners. They don't
+   * provide any of the benefits of prisms. They don't compose, they can't be coordinated via a Ticker, their derivations
+   * aren't cached, etc. You're almost always better off using a prism (which will internally use `onChangeByPointer`).
+   *
+   * ```ts
+   * const a = atom({foo: 1})
+   * const unsubscribe = a.onChangeByPointer(a.pointer.foo, (v) => {
+   *  console.log('foo changed to', v)
+   * })
+   * a.setByPointer(a.pointer.foo, 2) // logs 'foo changed to 2'
+   * a.set({foo: 3}) // logs 'foo changed to 3'
+   * unsubscribe()
+   * ```
+   */
+  onChangeByPointer = <S>(
+    pointerOrFn: Pointer<S> | ((p: Pointer<State>) => Pointer<S>),
+    cb: (v: S) => void,
   ): (() => void) => {
+    const pointer = isPointer(pointerOrFn)
+      ? pointerOrFn
+      : (pointerOrFn as $IntentionalAny)(this.pointer)
     const {path} = getPointerParts(pointer)
     const scope = this._getOrCreateScopeForPath(path)
     scope.identityChangeListeners.add(cb as $IntentionalAny)
@@ -256,6 +282,28 @@ export default class Atom<State> implements PointerToPrismProvider {
       scope.identityChangeListeners.delete(cb as $IntentionalAny)
     }
     return unsubscribe
+  }
+
+  /**
+   * Adds a listener that will be called whenever the state of the atom changes.
+   * @param cb - The callback to call when the value changes
+   * @returns A function that can be called to unsubscribe from the listener
+   *
+   * **NOTE** Unlike {@link prism}s, `onChangeByPointer` and `onChange()` are traditional event listeners. They don't
+   * provide any of the benefits of prisms. They don't compose, they can't be coordinated via a Ticker, their derivations
+   * aren't cached, etc. You're almost always better off using a prism (which will internally use `onChangeByPointer`).
+   *
+   * ```ts
+   * const a = atom({foo: 1})
+   * const unsubscribe = a.onChange((v) => {
+   * console.log('a changed to', v)
+   * })
+   * a.set({foo: 3}) // logs 'a changed to {foo: 3}'
+   * unsubscribe()
+   * ```
+   */
+  onChange(cb: (v: State) => void): () => void {
+    return this.onChangeByPointer(this.pointer, cb)
   }
 
   /**
@@ -271,7 +319,7 @@ export default class Atom<State> implements PointerToPrismProvider {
   pointerToPrism<P>(pointer: Pointer<P>): Prism<P> {
     const {path} = getPointerParts(pointer)
     const subscribe = (listener: (val: unknown) => void) =>
-      this._onPointerValueChange(pointer, listener)
+      this.onChangeByPointer(pointer, listener)
 
     const getValue = () => this._getIn(path)
 

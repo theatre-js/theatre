@@ -1,4 +1,4 @@
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {transparentize} from 'polished'
 import React from 'react'
@@ -23,7 +23,9 @@ const Container = styled.div`
   border-radius: 3px;
   z-index: 10000;
   border: 1px solid var(--popover-inner-stroke);
-  box-shadow: 0 0 0 1px var(--popover-outer-stroke), 0 6px 8px -4px black;
+  box-shadow:
+    0 0 0 1px var(--popover-outer-stroke),
+    0 6px 8px -4px black;
   backdrop-filter: blur(8px);
 
   & a {

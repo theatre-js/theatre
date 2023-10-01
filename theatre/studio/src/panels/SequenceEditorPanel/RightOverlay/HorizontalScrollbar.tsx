@@ -1,6 +1,6 @@
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import {useVal} from '@theatre/react'
-import type {IRange} from '@theatre/shared/utils/types'
+import type {IRange} from '@theatre/utils/types'
 import type {Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import mapValues from 'lodash-es/mapValues'

@@ -1,12 +1,12 @@
 import {prism, val} from '@theatre/dataverse'
 import {usePrism} from '@theatre/react'
-import type {UIPanelId} from '@theatre/shared/utils/ids'
-import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
+import type {$IntentionalAny, VoidFn} from '@theatre/utils/types'
 import getStudio from '@theatre/studio/getStudio'
-import type {PanelPosition} from '@theatre/studio/store/types'
+import type {PanelPosition} from '@theatre/sync-server/state/types'
 import useLockSet from '@theatre/studio/uiComponents/useLockSet'
 import React, {useContext} from 'react'
 import useWindowSize from 'react-use/esm/useWindowSize'
+import type {UIPanelId} from '@theatre/sync-server/state/types'
 
 type PanelStuff = {
   panelId: UIPanelId

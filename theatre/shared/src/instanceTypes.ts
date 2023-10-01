@@ -4,7 +4,7 @@ import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import type SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
-import type {$IntentionalAny} from './utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 
 /**
  * Since \@theatre/core and \@theatre/studio are separate bundles,

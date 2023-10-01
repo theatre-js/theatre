@@ -1,7 +1,7 @@
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
+import type {$IntentionalAny, VoidFn} from '@theatre/utils/types'
 import getStudio from '@theatre/studio/getStudio'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import React, {useMemo, useRef} from 'react'
 import styled from 'styled-components'
@@ -29,13 +29,13 @@ const PanelDragZone: React.FC<
       lockCursorTo: 'move',
       onDragStart() {
         const stuffBeforeDrag = panelStuffRef.current
-        let tempTransaction: CommitOrDiscard | undefined
+        let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
         const unlock = panelStuff.addBoundsHighlightLock()
 
         return {
           onDrag(dx, dy) {
-            const newDims: typeof panelStuff['dims'] = {
+            const newDims: (typeof panelStuff)['dims'] = {
               ...stuffBeforeDrag.dims,
               top: clamp(
                 stuffBeforeDrag.dims.top + dy,

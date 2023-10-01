@@ -1,7 +1,7 @@
 import getStudio from '@theatre/studio/getStudio'
-import {decodePathToProp} from '@theatre/shared/utils/addresses'
-import getDeep from '@theatre/shared/utils/getDeep'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
+import {decodePathToProp} from '@theatre/utils/pathToProp'
+import getDeep from '@theatre/utils/getDeep'
+import type {SequenceTrackId} from '@theatre/sync-server/state/types/core'
 import {usePrism} from '@theatre/react'
 import type {Pointer} from '@theatre/dataverse'
 import {val} from '@theatre/dataverse'
@@ -13,15 +13,6 @@ import HorizontallyScrollableArea from '@theatre/studio/panels/SequenceEditorPan
 import PrimitivePropGraph from './PrimitivePropGraph'
 import FrameGrid from '@theatre/studio/panels/SequenceEditorPanel/FrameGrid/FrameGrid'
 import {transparentize} from 'polished'
-
-export const graphEditorColors = {
-  '1': {iconColor: '#b98b08'},
-  '2': {iconColor: '#70a904'},
-  '3': {iconColor: '#2e928a'},
-  '4': {iconColor: '#a943bb'},
-  '5': {iconColor: '#b90808'},
-  '6': {iconColor: '#b4bf0e'},
-}
 
 const Container = styled.div`
   position: absolute;

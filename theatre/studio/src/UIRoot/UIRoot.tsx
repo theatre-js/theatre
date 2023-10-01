@@ -7,7 +7,7 @@ import PanelsRoot from './PanelsRoot'
 import GlobalToolbar from '@theatre/studio/toolbars/GlobalToolbar'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {PortalContext} from 'reakit'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import useKeyboardShortcuts from './useKeyboardShortcuts'
 import PointerEventsHandler from '@theatre/studio/uiComponents/PointerEventsHandler'
 import TooltipContext from '@theatre/studio/uiComponents/Popover/TooltipContext'
@@ -77,7 +77,7 @@ export default function UIRoot(props: {
   const inside = usePrism(() => {
     const visiblityState = val(studio.atomP.ahistoric.visibilityState)
 
-    const initialised = val(studio.atomP.ephemeral.initialised)
+    const initialised = val(studio.initializedP)
 
     return !initialised ? null : (
       <ProvideLogger logger={logger}>

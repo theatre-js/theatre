@@ -7,20 +7,23 @@ import type {
 } from '@theatre/core/sheets/TheatreSheet'
 import {emptyArray} from '@theatre/shared/utils'
 import type {
-  PathToProp,
   SheetObjectAddress,
   WithoutSheetInstance,
-} from '@theatre/shared/utils/addresses'
-import getDeep from '@theatre/shared/utils/getDeep'
-import type {ObjectAddressKey, SequenceTrackId} from '@theatre/shared/utils/ids'
-import SimpleCache from '@theatre/shared/utils/SimpleCache'
+} from '@theatre/sync-server/state/types'
+import type {PathToProp} from '@theatre/utils/pathToProp'
+import getDeep from '@theatre/utils/getDeep'
+import type {
+  ObjectAddressKey,
+  SequenceTrackId,
+} from '@theatre/sync-server/state/types/core'
+import SimpleCache from '@theatre/utils/SimpleCache'
 import type {
   $FixMe,
   $IntentionalAny,
   SerializableMap,
   SerializablePrimitive,
   SerializableValue,
-} from '@theatre/shared/utils/types'
+} from '@theatre/utils/types'
 import type {Prism, Pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
 import set from 'lodash-es/set'
@@ -32,7 +35,7 @@ import {
   isPropConfSequencable,
 } from '@theatre/shared/propTypes/utils'
 import getOrderingOfPropTypeConfig from './getOrderingOfPropTypeConfig'
-import type {SheetState_Historic} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {SheetState_Historic} from '@theatre/sync-server/state/types/core'
 import {cloneDeep, unset} from 'lodash-es'
 
 function isObjectEmpty(obj: unknown): boolean {

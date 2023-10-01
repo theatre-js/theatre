@@ -4,7 +4,7 @@ import React from 'react'
 import LeftSheetObjectRow from './SheetObjectRow'
 import AnyCompositeRow from './AnyCompositeRow'
 import {setCollapsedSheetItem} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/setCollapsedSheetObjectOrCompoundProp'
-import uniqueKeyForAnyObject from '@theatre/shared/utils/uniqueKeyForAnyObject'
+import uniqueKeyForAnyObject from '@theatre/utils/uniqueKeyForAnyObject'
 
 const SheetRow: React.VFC<{
   leaf: SequenceEditorTree_Sheet

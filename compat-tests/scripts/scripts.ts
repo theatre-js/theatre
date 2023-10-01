@@ -182,7 +182,7 @@ async function patchTheatreDependencies(pathToPackageJson, version) {
     }
   }
   // run the json through prettier
-  const jsonStringPrettified = prettier.format(
+  const jsonStringPrettified = await prettier.format(
     JSON.stringify(packageJson, null, 2),
     {
       parser: 'json',

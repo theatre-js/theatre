@@ -1,19 +1,19 @@
 import type {InterpolationTriple} from '@theatre/core/sequences/interpolationTripleAtPosition'
 import interpolationTripleAtPosition from '@theatre/core/sequences/interpolationTripleAtPosition'
 import type Sheet from '@theatre/core/sheets/Sheet'
-import type {SheetObjectAddress} from '@theatre/shared/utils/addresses'
-import deepMergeWithCache from '@theatre/shared/utils/deepMergeWithCache'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
-import pointerDeep from '@theatre/shared/utils/pointerDeep'
-import SimpleCache from '@theatre/shared/utils/SimpleCache'
+import type {SheetObjectAddress} from '@theatre/sync-server/state/types'
+import deepMergeWithCache from '@theatre/utils/deepMergeWithCache'
+import type {SequenceTrackId} from '@theatre/sync-server/state/types/core'
+import pointerDeep from '@theatre/utils/pointerDeep'
+import SimpleCache from '@theatre/utils/SimpleCache'
 import type {
   $FixMe,
   $IntentionalAny,
   DeepPartialOfSerializableValue,
   SerializableMap,
   SerializableValue,
-} from '@theatre/shared/utils/types'
-import {valToAtom} from '@theatre/shared/utils/valToAtom'
+} from '@theatre/utils/types'
+import {valToAtom} from '@theatre/utils/valToAtom'
 import type {PointerToPrismProvider, Prism, Pointer} from '@theatre/dataverse'
 
 import {Atom, getPointerParts, pointer, prism, val} from '@theatre/dataverse'

@@ -52,7 +52,9 @@ export const ExtensionToolbar: React.FC<{
   showLeftDivider?: boolean
 }> = ({toolbarId, showLeftDivider}) => {
   const groups: Array<React.ReactNode> = []
-  const extensionsById = useVal(getStudio().atomP.ephemeral.extensions.byId)
+  const extensionsById = useVal(
+    getStudio().ephemeralAtom.pointer.extensions.byId,
+  )
 
   let isAfterFirstGroup = false
   for (const [, extension] of Object.entries(extensionsById)) {

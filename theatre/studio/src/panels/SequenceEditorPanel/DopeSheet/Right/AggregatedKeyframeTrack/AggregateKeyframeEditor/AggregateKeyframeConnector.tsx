@@ -5,7 +5,7 @@ import {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/Sequen
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import getStudio from '@theatre/studio/getStudio'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import type {IAggregateKeyframeEditorUtils} from './useAggregateKeyframeEditorUtils'
@@ -19,8 +19,8 @@ import {
   keyframesWithPaths,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
-import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types'
+import {commonRootOfPathsToProps} from '@theatre/utils/pathToProp'
+import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/sync-server/state/types'
 
 const POPOVER_MARGIN_PX = 5
 const EasingPopoverWrapper = styled(BasicPopover)`
@@ -47,62 +47,63 @@ export const AggregateCurveEditorPopover: React.FC<
   )
 })
 
-export const AggregateKeyframeConnector: React.VFC<IAggregateKeyframeConnectorProps> =
-  (props) => {
-    const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
-    const {editorProps} = props
+export const AggregateKeyframeConnector: React.VFC<
+  IAggregateKeyframeConnectorProps
+> = (props) => {
+  const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
+  const {editorProps} = props
 
-    const [contextMenu] = useConnectorContextMenu(props, node)
-    const [isDragging] = useDragKeyframe(node, props.editorProps)
+  const [contextMenu] = useConnectorContextMenu(props, node)
+  const [isDragging] = useDragKeyframe(node, props.editorProps)
 
-    const {
-      node: popoverNode,
-      toggle: togglePopover,
-      close: closePopover,
-    } = usePopover(
-      () => {
-        const rightDims = val(editorProps.layoutP.rightDims)
+  const {
+    node: popoverNode,
+    toggle: togglePopover,
+    close: closePopover,
+  } = usePopover(
+    () => {
+      const rightDims = val(editorProps.layoutP.rightDims)
 
-        return {
-          debugName: 'Connector',
-          constraints: {
-            minX: rightDims.screenX + POPOVER_MARGIN_PX,
-            maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN_PX,
-          },
-        }
-      },
-      () => {
-        return (
-          <AggregateCurveEditorPopover
-            {...editorProps}
-            closePopover={closePopover}
-          />
-        )
-      },
-    )
-
-    const {connected, isAggregateEditingInCurvePopover} = props.utils
-
-    // We don't want to interrupt an existing drag, so in order to persist the dragged
-    // html node, we just set the connector length to 0, but we don't remove it yet.
-    return connected || isDragging ? (
-      <>
-        <ConnectorLine
-          ref={nodeRef}
-          connectorLengthInUnitSpace={connected ? connected.length : 0}
-          isSelected={connected ? connected.selected : false}
-          isPopoverOpen={isAggregateEditingInCurvePopover}
-          openPopover={(e) => {
-            if (node) togglePopover(e, node)
-          }}
+      return {
+        debugName: 'Connector',
+        constraints: {
+          minX: rightDims.screenX + POPOVER_MARGIN_PX,
+          maxX: rightDims.screenX + rightDims.width - POPOVER_MARGIN_PX,
+        },
+      }
+    },
+    () => {
+      return (
+        <AggregateCurveEditorPopover
+          {...editorProps}
+          closePopover={closePopover}
         />
-        {popoverNode}
-        {contextMenu}
-      </>
-    ) : (
-      <></>
-    )
-  }
+      )
+    },
+  )
+
+  const {connected, isAggregateEditingInCurvePopover} = props.utils
+
+  // We don't want to interrupt an existing drag, so in order to persist the dragged
+  // html node, we just set the connector length to 0, but we don't remove it yet.
+  return connected || isDragging ? (
+    <>
+      <ConnectorLine
+        ref={nodeRef}
+        connectorLengthInUnitSpace={connected ? connected.length : 0}
+        isSelected={connected ? connected.selected : false}
+        isPopoverOpen={isAggregateEditingInCurvePopover}
+        openPopover={(e) => {
+          if (node) togglePopover(e, node)
+        }}
+      />
+      {popoverNode}
+      {contextMenu}
+    </>
+  ) : (
+    <></>
+  )
+}
 type IAggregateKeyframeConnectorProps = {
   utils: IAggregateKeyframeEditorUtils
   editorProps: IAggregateKeyframeEditorProps
@@ -120,7 +121,7 @@ function useDragKeyframe(
       lockCSSCursorTo: 'ew-resize',
       onDragStart(event) {
         const props = propsRef.current
-        let tempTransaction: CommitOrDiscard | undefined
+        let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
         const keyframes = props.aggregateKeyframes[props.index].keyframes
 

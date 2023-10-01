@@ -1,9 +1,9 @@
 import {prism, val} from '@theatre/dataverse'
-import type {PaneInstanceId} from '@theatre/shared/utils/ids'
-import SimpleCache from '@theatre/shared/utils/SimpleCache'
-import type {$IntentionalAny, StrictRecord} from '@theatre/shared/utils/types'
+import SimpleCache from '@theatre/utils/SimpleCache'
+import type {$IntentionalAny, StrictRecord} from '@theatre/utils/types'
 import type {Studio} from './Studio'
 import type {PaneInstance} from './TheatreStudio'
+import type {PaneInstanceId} from '@theatre/sync-server/state/types'
 
 export default class PaneManager {
   private readonly _cache = new SimpleCache()
@@ -28,7 +28,7 @@ export default class PaneManager {
           this._studio.atomP.historic.panelInstanceDesceriptors,
         )
         const paneClasses = val(
-          this._studio.atomP.ephemeral.extensions.paneClasses,
+          this._studio.ephemeralAtom.pointer.extensions.paneClasses,
         )
 
         const instances: StrictRecord<PaneInstanceId, PaneInstance<string>> = {}
@@ -74,7 +74,7 @@ export default class PaneManager {
     }
 
     const extensionId = val(
-      this._studio.atomP.ephemeral.extensions.paneClasses[paneClass]
+      this._studio.ephemeralAtom.pointer.extensions.paneClasses[paneClass]
         .extensionId,
     )
 
@@ -91,11 +91,11 @@ export default class PaneManager {
       throw new Error(`Pane class "${paneClass}" is not registered.`)
     }
 
-    this._studio.transaction(({drafts}) => {
-      drafts.historic.panelInstanceDesceriptors[instanceId] = {
+    this._studio.transaction(({stateEditors}) => {
+      stateEditors.studio.historic.panelInstanceDescriptors.setDescriptor({
         instanceId,
         paneClass,
-      }
+      })
     })
 
     return this._getAllPanes().getValue()[instanceId]!
@@ -109,8 +109,8 @@ export default class PaneManager {
       )
     }
 
-    this._studio.transaction(({drafts}) => {
-      delete drafts.historic.panelInstanceDesceriptors[instanceId]
+    this._studio.transaction(({stateEditors}) => {
+      stateEditors.studio.historic.panelInstanceDescriptors.remove({instanceId})
     })
   }
 }

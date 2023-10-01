@@ -28,14 +28,16 @@ const ProjectListItem: React.FC<{
   const hasConflict = usePrism(() => {
     const projectId = project.address.projectId
     const loadingState = val(
-      getStudio().atomP.ephemeral.coreByProject[projectId].loadingState,
+      getStudio().ephemeralAtom.pointer.coreByProject[projectId].loadingState,
     )
     return loadingState?.type === 'browserStateIsNotBasedOnDiskState'
   }, [project])
 
   const select = useCallback(() => {
     getStudio().transaction(({stateEditors}) => {
-      stateEditors.studio.historic.panels.outline.selection.set([project])
+      stateEditors.studio.historic.panels.outline.selection.set([
+        {...project.address, type: 'Project'},
+      ])
     })
   }, [project])
 

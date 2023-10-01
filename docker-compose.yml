@@ -37,4 +37,11 @@ services:
       - /app/theatre/node_modules
       - /app/theatre/shared/node_modules
       - /app/theatre/studio/node_modules
+      - /app/packages/sync-server/node_modules
+      - /app/packages/sync-server/prisma/client-generated/node_modules
+      - /app/packages/app/node_modules
+      - /app/packages/app/prisma/client-generated/node_modules
+      - /app/packages/app/.next/node_modules
+      - /app/packages/saaz/node_modules
+      - /app/packages/utils/node_modules
     command: ['bash', '-c', 'while true; do sleep 1; done']

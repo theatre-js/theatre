@@ -2,11 +2,11 @@ import type {
   BasicKeyframedTrack,
   Keyframe,
   TrackData,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
+} from '@theatre/sync-server/state/types/core'
 import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import type {IUtilContext} from '@theatre/shared/logger'
-import type {SerializableValue} from '@theatre/shared/utils/types'
+import type {SerializableValue} from '@theatre/utils/types'
 import UnitBezier from 'timing-function/lib/UnitBezier'
 
 /** `left` and `right` are not necessarily the same type.  */

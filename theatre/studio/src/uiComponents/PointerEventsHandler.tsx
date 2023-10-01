@@ -1,4 +1,4 @@
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import React, {
   createContext,
   useContext,

@@ -21,6 +21,7 @@ export type Notify = (
    */
   allowDuplicates?: boolean,
 ) => void
+
 export type Notifiers = {
   /**
    * Show a success notification.

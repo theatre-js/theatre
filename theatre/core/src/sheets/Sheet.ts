@@ -6,11 +6,14 @@ import type {
   SheetObjectPropTypeConfig,
 } from '@theatre/core/sheets/TheatreSheet'
 import TheatreSheet from '@theatre/core/sheets/TheatreSheet'
-import type {SheetAddress} from '@theatre/shared/utils/addresses'
+import type {SheetAddress} from '@theatre/sync-server/state/types'
 import {Atom, prism, val} from '@theatre/dataverse'
 import type SheetTemplate from './SheetTemplate'
-import type {ObjectAddressKey, SheetInstanceId} from '@theatre/shared/utils/ids'
-import type {StrictRecord} from '@theatre/shared/utils/types'
+import type {
+  ObjectAddressKey,
+  SheetInstanceId,
+} from '@theatre/sync-server/state/types/core'
+import type {StrictRecord} from '@theatre/utils/types'
 import type {ILogger} from '@theatre/shared/logger'
 import {isInteger} from 'lodash-es'
 

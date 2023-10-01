@@ -7,7 +7,7 @@ import TooltipWrapper from './TooltipWrapper'
 import {createPortal} from 'react-dom'
 import {useTooltipOpenState} from './TooltipContext'
 import {PortalContext} from 'reakit'
-import noop from '@theatre/shared/utils/noop'
+import noop from '@theatre/utils/noop'
 
 export default function useTooltip<T extends HTMLElement>(
   opts: {

@@ -2,8 +2,8 @@ import type {
   PropTypeConfig_AllSimples,
   PropTypeConfig_Compound,
 } from '@theatre/core/propTypes'
-import type {PathToProp} from './addresses'
-import type {$IntentionalAny} from './types'
+import type {PathToProp} from '@theatre/utils/pathToProp'
+import type {$IntentionalAny} from '@theatre/utils/types'
 
 /**
  * Iterates recursively over all props of an object (which should be a {@link SerializableMap}) and runs `fn`

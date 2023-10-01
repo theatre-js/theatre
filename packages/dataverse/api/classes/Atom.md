@@ -29,6 +29,8 @@ Wraps an object whose (sub)properties can be individually tracked.
 
 - [get](Atom.md#get)
 - [getByPointer](Atom.md#getbypointer)
+- [onChange](Atom.md#onchange)
+- [onChangeByPointer](Atom.md#onchangebypointer)
 - [pointerToPrism](Atom.md#pointertoprism)
 - [reduce](Atom.md#reduce)
 - [reduceByPointer](Atom.md#reducebypointer)
@@ -85,13 +87,15 @@ ___
 
 ▸ **get**(): `State`
 
+Returns the current state of the atom.
+
 #### Returns
 
 `State`
 
 #### Defined in
 
-[Atom.ts:136](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L136)
+[Atom.ts:139](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L139)
 
 ___
 
@@ -119,7 +123,118 @@ Returns the value at the given pointer
 
 #### Defined in
 
-[Atom.ts:152](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L152)
+[Atom.ts:155](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L155)
+
+___
+
+### onChange
+
+▸ **onChange**(`cb`): () => `void`
+
+Adds a listener that will be called whenever the state of the atom changes.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `cb` | (`v`: `State`) => `void` | The callback to call when the value changes |
+
+#### Returns
+
+`fn`
+
+A function that can be called to unsubscribe from the listener
+
+**NOTE** Unlike [prism](../README.md#prism)s, `onChangeByPointer` and `onChange()` are traditional event listeners. They don't
+provide any of the benefits of prisms. They don't compose, they can't be coordinated via a Ticker, their derivations
+aren't cached, etc. You're almost always better off using a prism (which will internally use `onChangeByPointer`).
+
+```ts
+const a = atom({foo: 1})
+const unsubscribe = a.onChange((v) => {
+console.log('a changed to', v)
+})
+a.set({foo: 3}) // logs 'a changed to {foo: 3}'
+unsubscribe()
+```
+
+▸ (): `void`
+
+Adds a listener that will be called whenever the state of the atom changes.
+
+##### Returns
+
+`void`
+
+A function that can be called to unsubscribe from the listener
+
+**NOTE** Unlike [prism](../README.md#prism)s, `onChangeByPointer` and `onChange()` are traditional event listeners. They don't
+provide any of the benefits of prisms. They don't compose, they can't be coordinated via a Ticker, their derivations
+aren't cached, etc. You're almost always better off using a prism (which will internally use `onChangeByPointer`).
+
+```ts
+const a = atom({foo: 1})
+const unsubscribe = a.onChange((v) => {
+console.log('a changed to', v)
+})
+a.set({foo: 3}) // logs 'a changed to {foo: 3}'
+unsubscribe()
+```
+
+#### Defined in
+
+[Atom.ts:305](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L305)
+
+___
+
+### onChangeByPointer
+
+▸ **onChangeByPointer**<`S`\>(`pointerOrFn`, `cb`): () => `void`
+
+Adds a listener that will be called whenever the value at the given pointer changes.
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `S` |
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `pointerOrFn` | [`Pointer`](../README.md#pointer)<`S`\> \| (`p`: [`Pointer`](../README.md#pointer)<`State`\>) => [`Pointer`](../README.md#pointer)<`S`\> | - |
+| `cb` | (`v`: `S`) => `void` | The callback to call when the value changes |
+
+#### Returns
+
+`fn`
+
+A function that can be called to unsubscribe from the listener
+
+**NOTE** Unlike [prism](../README.md#prism)s, `onChangeByPointer` and `onChange()` are traditional event listeners. They don't
+provide any of the benefits of prisms. They don't compose, they can't be coordinated via a Ticker, their derivations
+aren't cached, etc. You're almost always better off using a prism (which will internally use `onChangeByPointer`).
+
+```ts
+const a = atom({foo: 1})
+const unsubscribe = a.onChangeByPointer(a.pointer.foo, (v) => {
+ console.log('foo changed to', v)
+})
+a.setByPointer(a.pointer.foo, 2) // logs 'foo changed to 2'
+a.set({foo: 3}) // logs 'foo changed to 3'
+unsubscribe()
+```
+
+▸ (): `void`
+
+##### Returns
+
+`void`
+
+#### Defined in
+
+[Atom.ts:271](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L271)
 
 ___
 
@@ -151,7 +266,7 @@ Returns a new prism of the value at the provided path.
 
 #### Defined in
 
-[Atom.ts:271](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L271)
+[Atom.ts:319](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L319)
 
 ___
 
@@ -171,7 +286,7 @@ ___
 
 #### Defined in
 
-[Atom.ts:170](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L170)
+[Atom.ts:173](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L173)
 
 ___
 
@@ -200,7 +315,7 @@ Reduces the value at the given pointer
 
 #### Defined in
 
-[Atom.ts:186](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L186)
+[Atom.ts:189](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L189)
 
 ___
 
@@ -251,4 +366,4 @@ Sets the value at the given pointer
 
 #### Defined in
 
-[Atom.ts:211](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L211)
+[Atom.ts:214](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/Atom.ts#L214)

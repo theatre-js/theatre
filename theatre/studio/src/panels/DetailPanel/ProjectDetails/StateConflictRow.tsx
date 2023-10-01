@@ -3,12 +3,12 @@ import getStudio from '@theatre/studio/getStudio'
 import React from 'react'
 import styled from 'styled-components'
 import {generateDiskStateRevision} from '@theatre/studio/StudioStore/generateDiskStateRevision'
-import type {ProjectEphemeralState} from '@theatre/core/projects/store/storeTypes'
+import type {ProjectEphemeralState} from '@theatre/sync-server/state/types/core'
 import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import BasicTooltip from '@theatre/studio/uiComponents/Popover/BasicTooltip'
-import type {$FixMe} from '@theatre/shared/utils/types'
+import type {$FixMe} from '@theatre/utils/types'
 import DetailPanelButton from '@theatre/studio/uiComponents/DetailPanelButton'
-import type {ProjectId} from '@theatre/shared/utils/ids'
+import type {ProjectId} from '@theatre/sync-server/state/types/core'
 
 const Container = styled.div`
   padding: 8px 10px;
@@ -40,7 +40,7 @@ const ChooseStateRow = styled.div`
 
 const StateConflictRow: React.FC<{projectId: ProjectId}> = ({projectId}) => {
   const loadingState = useVal(
-    getStudio().atomP.ephemeral.coreByProject[projectId].loadingState,
+    getStudio().ephemeralAtom.pointer.coreByProject[projectId].loadingState,
   )
 
   if (!loadingState) return null
@@ -64,7 +64,7 @@ const InConflict: React.FC<{
    * scheme, these will be unnecessary anyway.
    */
   const useBrowserState = () => {
-    getStudio().transaction(({drafts, stateEditors}) => {
+    getStudio().transaction(({stateEditors}) => {
       stateEditors.coreByProject.historic.revisionHistory.add({
         projectId,
         revision: loadingState.onDiskState.revisionHistory[0],
@@ -74,20 +74,29 @@ const InConflict: React.FC<{
         projectId,
         revision: generateDiskStateRevision(),
       })
-
-      drafts.ephemeral.coreByProject[projectId]!.loadingState = {
-        type: 'loaded',
-      }
     })
+    getStudio().ephemeralAtom.setByPointer(
+      (p) => p.coreByProject[projectId]!.loadingState,
+      {
+        type: 'loaded',
+      },
+    )
   }
 
   const useOnDiskState = () => {
-    getStudio().transaction(({drafts}) => {
-      drafts.historic.coreByProject[projectId] = loadingState.onDiskState
-      drafts.ephemeral.coreByProject[projectId]!.loadingState = {
-        type: 'loaded',
-      }
+    getStudio().transaction(({stateEditors}) => {
+      stateEditors.coreByProject.historic.setProjectState({
+        projectId,
+        state: loadingState.onDiskState,
+      })
+      // drafts.historic.coreByProject[projectId] = loadingState.onDiskState
     })
+    getStudio().ephemeralAtom.setByPointer(
+      (p) => p.coreByProject[projectId]!.loadingState,
+      {
+        type: 'loaded',
+      },
+    )
   }
 
   const [browserStateNode, browserStateRef] = useTooltip({}, () => (

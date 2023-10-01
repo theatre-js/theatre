@@ -17,7 +17,7 @@ const LeftSheetObjectRow: React.VFC<{
         // set selection to this sheet object on click
         getStudio().transaction(({stateEditors}) => {
           stateEditors.studio.historic.panels.outline.selection.set([
-            leaf.sheetObject,
+            {type: 'SheetObject', ...leaf.sheetObject.address},
           ])
         })
       }}

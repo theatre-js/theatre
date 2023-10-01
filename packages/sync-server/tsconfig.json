@@ -1,0 +1,26 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "composite": true,
+    "paths": {
+      "@prisma/client": ["./prisma/client-generated"],
+      "@theatre/utils/*": ["../utils/src/*"]
+    }
+  },
+  "references": [{"path": "../utils"}, {"path": "../app"}, {"path": "../saaz"}],
+  "include": ["next-env.d.ts", "src/**/*", "devEnv/**/*", "prisma/seed.ts"],
+  "exclude": ["node_modules"]
+}

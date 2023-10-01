@@ -1,20 +1,25 @@
 import type {IProject, IRafDriver, ISheet, ISheetObject} from '@theatre/core'
 import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism} from '@theatre/dataverse'
-import SimpleCache from '@theatre/shared/utils/SimpleCache'
-import type {$IntentionalAny, VoidFn} from '@theatre/shared/utils/types'
+import SimpleCache from '@theatre/utils/SimpleCache'
+import type {$IntentionalAny, VoidFn} from '@theatre/utils/types'
 import type {IScrub} from '@theatre/studio/Scrub'
 import type {Studio} from '@theatre/studio/Studio'
 import {
+  isProject,
+  isSheet,
+  isSheetObject,
   isSheetObjectPublicAPI,
+  isSheetObjectTemplate,
   isSheetPublicAPI,
+  isSheetTemplate,
 } from '@theatre/shared/instanceTypes'
 import {getOutlineSelection} from './selectors'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from './getStudio'
-import {debounce} from 'lodash-es'
+import {debounce, uniq} from 'lodash-es'
 import type Sheet from '@theatre/core/sheets/Sheet'
-import type {PaneInstanceId, ProjectId} from '@theatre/shared/utils/ids'
+import type {ProjectId} from '@theatre/sync-server/state/types/core'
 import {
   __experimental_disblePlayPauseKeyboardShortcut,
   __experimental_enablePlayPauseKeyboardShortcut,
@@ -22,6 +27,11 @@ import {
 import type TheatreSheetObject from '@theatre/core/sheetObjects/TheatreSheetObject'
 import type TheatreSheet from '@theatre/core/sheets/TheatreSheet'
 import type {__UNSTABLE_Project_OnDiskState} from '@theatre/core'
+import type {OutlineSelectionState} from '@theatre/sync-server/src/state/types/studio'
+import type Project from '@theatre/core/projects/Project'
+import type SheetTemplate from '@theatre/core/sheets/SheetTemplate'
+import type SheetObjectTemplate from '@theatre/core/sheetObjects/SheetObjectTemplate'
+import type {PaneInstanceId} from '@theatre/sync-server/state/types'
 
 export interface ITransactionAPI {
   /**
@@ -218,6 +228,8 @@ export interface _StudioInitializeOpts {
   usePersistentStorage?: boolean
 
   __experimental_rafDriver?: IRafDriver | undefined
+
+  serverUrl?: string | undefined
 }
 
 /**
@@ -526,8 +538,8 @@ export default class TheatreStudio implements IStudio {
     getStudio().extend(extension, opts)
   }
 
-  transaction(fn: (api: ITransactionAPI) => void): void {
-    return getStudio().transaction(({set, unset, stateEditors}) => {
+  transaction(fn: (api: ITransactionAPI) => void) {
+    getStudio().transaction(({set, unset, stateEditors}) => {
       const __experimental_forgetObject = (object: TheatreSheetObject) => {
         if (!isSheetObjectPublicAPI(object)) {
           throw new Error(
@@ -579,13 +591,42 @@ export default class TheatreStudio implements IStudio {
   }
 
   setSelection(selection: Array<ISheetObject | ISheet>): void {
-    const sanitizedSelection = [...selection]
+    const sanitizedSelection: Array<
+      Project | Sheet | SheetObject | SheetTemplate | SheetObjectTemplate
+    > = [...selection]
       .filter((s) => isSheetObjectPublicAPI(s) || isSheetPublicAPI(s))
       .map((s) => getStudio().corePrivateAPI!(s))
 
     getStudio().transaction(({stateEditors}) => {
+      const newSelectionState: OutlineSelectionState[] = []
+
+      for (const item of uniq(sanitizedSelection)) {
+        if (isProject(item)) {
+          newSelectionState.push({type: 'Project', ...item.address})
+        } else if (isSheet(item)) {
+          newSelectionState.push({
+            type: 'Sheet',
+            ...item.template.address,
+          })
+          stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.setSelectedInstanceId(
+            item.address,
+          )
+        } else if (isSheetTemplate(item)) {
+          newSelectionState.push({type: 'Sheet', ...item.address})
+        } else if (isSheetObject(item)) {
+          newSelectionState.push({
+            type: 'SheetObject',
+            ...item.template.address,
+          })
+          stateEditors.studio.historic.projects.stateByProjectId.stateBySheetId.setSelectedInstanceId(
+            item.sheet.address,
+          )
+        } else if (isSheetObjectTemplate(item)) {
+          newSelectionState.push({type: 'SheetObject', ...item.address})
+        }
+      }
       stateEditors.studio.historic.panels.outline.selection.set(
-        sanitizedSelection,
+        newSelectionState,
       )
     })
   }

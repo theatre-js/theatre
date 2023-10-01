@@ -5,7 +5,7 @@ import type {
   SequenceEditorTree_Sheet,
   SequenceEditorTree_SheetObject,
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
-import type {VoidFn} from '@theatre/shared/utils/types'
+import type {VoidFn} from '@theatre/utils/types'
 import React, {useRef} from 'react'
 import {HiOutlineChevronRight} from 'react-icons/all'
 import styled from 'styled-components'
@@ -59,7 +59,9 @@ const LeftRowHead_Icon = styled.span<{isCollapsed: boolean}>`
   display: flex;
   align-items: center;
 
-  transition: transform 0.05s ease-out, color 0.1s ease-out;
+  transition:
+    transform 0.05s ease-out,
+    color 0.1s ease-out;
   transform: rotateZ(${(props) => (props.isCollapsed ? 0 : 90)}deg);
   color: #66686a;
 

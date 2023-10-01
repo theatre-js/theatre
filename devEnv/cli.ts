@@ -1,5 +1,5 @@
 import sade from 'sade'
-import {$, fs, path} from '@cspotcode/zx'
+import {$, fs, path, question} from '@cspotcode/zx'
 import * as core from '@actions/core'
 import * as os from 'os'
 
@@ -462,10 +462,55 @@ prog
     void prerelease()
   })
 
-prog
-  .command('dev all', 'Starts all services to develop all of the packages')
-  .action(async () => {
-    await $`yarn workspace playground run serve`
-  })
+{
+  const allDevCommands = [
+    `yarn workspace playground run serve`,
+    `yarn workspace @theatre/app run cli dev all`,
+    `yarn workspace @theatre/sync-server run cli dev all`,
+  ]
+
+  prog
+    .command('dev all', 'Starts all services to develop all of the packages')
+    .action(async () => {
+      await Promise.all(allDevCommands.map((cmd) => $`${cmd}`))
+    })
+
+  prog
+    .command(
+      'tmux <name>',
+      'A helper command to start all the development services in a tmux session',
+    )
+    .option('--kill', 'If a session by that name already exists, kill it first')
+    .action(async (session = 'theatre', opts: {kill?: boolean}) => {
+      // check if the session already exists
+      if (opts.kill) {
+        try {
+          await $`tmux kill-session -t ${session}`
+        } catch {}
+        console.log('starting a new tmux session')
+      } else {
+        console.log(
+          'starting a new tmux session or attaching to an existing one',
+        )
+      }
+      await $`tmux new-session -d -A -s ${session}`
+
+      for (const cmd of allDevCommands) {
+        await $`tmux send-keys -t ${session} ${cmd} C-m`
+        await $`tmux split-window -t ${session}`
+      }
+
+      console.log('to attach to the session, run:')
+      console.log(`tmux attach -t ${session}`)
+
+      console.log(
+        'to attach to the session in control mode (so for example you can control tmux via iTerm), run:',
+      )
+      console.log(`tmux -CC attach -t ${session}`)
+
+      await question('Press enter to kill the session')
+      await $`tmux kill-session -t ${session}`
+    })
+}
 
 prog.parse(process.argv)

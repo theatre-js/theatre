@@ -535,11 +535,9 @@ describe(`The exhaustive guide to dataverse`, () => {
 
       // now let's define the `listen` and `get` functions that we'll pass to `prism.source()`
       function listen(cb: (value: number) => void) {
-        // `atom._onPointerValueChange()` is a method that we can use to listen to changes in a specific path of the atom's state.
-        // This is not a public API, so typescript will complain, but we can silence it with `@ts-ignore`.
-        // _onPointerValueChange() returns an unsubscribe function, so we'll just return that as is.
-        // @ts-ignore
-        return atom._onPointerValueChange(
+        // `atom.onChangeByPointer()` is a method that we can use to listen to changes in a specific path of the atom's state.
+        // onChangeByPointer() returns an unsubscribe function, so we'll just return that as is.
+        return atom.onChangeByPointer(
           // the path to listen to is just the pointer to the `bar` property of the atom's state.
           atom.pointer.bar,
           cb,
@@ -756,8 +754,7 @@ describe(`The exhaustive guide to dataverse`, () => {
 
         // the listen function will listen to changes on the pointer
         const listen = (cb: (newValue: V) => void): (() => void) => {
-          // @ts-ignore we'll ignore the typescript error because `_onPointerValueChange()` is not a public method
-          return atom._onPointerValueChange(ptr, cb)
+          return atom.onChangeByPointer(ptr, cb)
         }
 
         const get = (): V => {
@@ -802,7 +799,7 @@ describe(`The exhaustive guide to dataverse`, () => {
       expect(pointerToPrismV2(ptr).getValue()).toBe(0) // the prism works
 
       // The second improvement would be to decouple `pointerToPrism()` from the implementation of `Atom`.
-      // Namely, `pointerToPrism()` only calls `Atom._onPointerValueChange()` and `Atom.getByPointer()`, which
+      // Namely, `pointerToPrism()` only calls `Atom.onChangeByPointer()` and `Atom.getByPointer()`, which
       // are methods that can be implemented on other objects as well. Instead, we can just define an interface
       // that requires these methods to be implemented.
       // We call this interface `PointerToPrismProvider`:

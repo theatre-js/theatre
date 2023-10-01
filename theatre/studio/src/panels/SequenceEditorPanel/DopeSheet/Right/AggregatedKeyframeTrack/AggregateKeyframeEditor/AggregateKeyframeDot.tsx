@@ -12,8 +12,8 @@ import {
   copyableKeyframesFromSelection,
   keyframesWithPaths,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
-import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/studio/store/types/ahistoric'
-import {commonRootOfPathsToProps} from '@theatre/shared/utils/addresses'
+import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/sync-server/state/types'
+import {commonRootOfPathsToProps} from '@theatre/utils/pathToProp'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
 import type {
   PrimitivePropEditingOptions,

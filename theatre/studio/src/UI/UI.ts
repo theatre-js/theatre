@@ -35,15 +35,15 @@ export default class UI {
   }
 
   hide() {
-    this.studio.transaction(({drafts}) => {
-      drafts.ahistoric.visibilityState = 'everythingIsHidden'
+    this.studio.transaction(({stateEditors}) => {
+      stateEditors.studio.ahistoric.setVisibilityState('everythingIsHidden')
     })
   }
 
   restore() {
     this.render()
-    this.studio.transaction(({drafts}) => {
-      drafts.ahistoric.visibilityState = 'everythingIsVisible'
+    this.studio.transaction(({stateEditors}) => {
+      stateEditors.studio.ahistoric.setVisibilityState('everythingIsVisible')
     })
   }
 

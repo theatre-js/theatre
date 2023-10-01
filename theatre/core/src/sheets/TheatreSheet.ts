@@ -6,18 +6,18 @@ import type {PropTypeConfig_Compound} from '@theatre/core/propTypes'
 import {compound} from '@theatre/core/propTypes'
 import type {ISheetObject} from '@theatre/core/sheetObjects/TheatreSheetObject'
 import type Sheet from '@theatre/core/sheets/Sheet'
-import type {SheetAddress} from '@theatre/shared/utils/addresses'
-import {InvalidArgumentError} from '@theatre/shared/utils/errors'
-import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/shared/utils/slashedPaths'
-import type {$FixMe, $IntentionalAny} from '@theatre/shared/utils/types'
-import userReadableTypeOfValue from '@theatre/shared/utils/userReadableTypeOfValue'
+import type {SheetAddress} from '@theatre/sync-server/state/types'
+import {InvalidArgumentError} from '@theatre/utils/errors'
+import {validateAndSanitiseSlashedPathOrThrow} from '@theatre/utils/slashedPaths'
+import type {$FixMe, $IntentionalAny} from '@theatre/utils/types'
+import userReadableTypeOfValue from '@theatre/utils/userReadableTypeOfValue'
 import deepEqual from 'fast-deep-equal'
 import type {
   UnknownShorthandCompoundProps,
   UnknownValidCompoundProps,
 } from '@theatre/core/propTypes/internals'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-import type {ObjectAddressKey} from '@theatre/shared/utils/ids'
+import type {ObjectAddressKey} from '@theatre/sync-server/state/types/core'
 import {notify} from '@theatre/shared/notify'
 
 export type SheetObjectPropTypeConfig =
@@ -146,6 +146,7 @@ export default class TheatreSheet implements ISheet {
     const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
       key,
       `sheet.object`,
+      notify.warning,
     )
 
     const existingObject = internal.getObject(sanitizedPath as ObjectAddressKey)
@@ -221,6 +222,7 @@ export default class TheatreSheet implements ISheet {
     const sanitizedPath = validateAndSanitiseSlashedPathOrThrow(
       key,
       `sheet.deleteObject("${key}")`,
+      notify.warning,
     ) as ObjectAddressKey
 
     const obj = internal.getObject(sanitizedPath)

@@ -1,7 +1,4 @@
-import type {
-  TrackData,
-  Keyframe,
-} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {TrackData, Keyframe} from '@theatre/sync-server/state/types/core'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import type {

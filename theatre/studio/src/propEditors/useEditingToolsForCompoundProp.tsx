@@ -1,12 +1,9 @@
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import getDeep from '@theatre/shared/utils/getDeep'
+import getDeep from '@theatre/utils/getDeep'
 import {usePrism} from '@theatre/react'
-import type {
-  $IntentionalAny,
-  SerializablePrimitive,
-} from '@theatre/shared/utils/types'
+import type {$IntentionalAny, SerializablePrimitive} from '@theatre/utils/types'
 import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import get from 'lodash-es/get'
@@ -18,15 +15,15 @@ import {
   isPropConfigComposite,
   iteratePropType,
 } from '@theatre/shared/propTypes/utils'
-import type {SequenceTrackId} from '@theatre/shared/utils/ids'
-import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
+import type {SequenceTrackId} from '@theatre/sync-server/state/types/core'
 import type {IPropPathToTrackIdTree} from '@theatre/core/sheetObjects/SheetObjectTemplate'
-import pointerDeep from '@theatre/shared/utils/pointerDeep'
+import pointerDeep from '@theatre/utils/pointerDeep'
 import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {KeyframeWithTrack} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import {emptyObject} from '@theatre/shared/utils'
+import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 
 interface CommonStuff {
   beingScrubbed: boolean
@@ -193,7 +190,6 @@ export function useEditingToolsForCompoundProp<T extends SerializablePrimitive>(
 
               stateEditors.coreByProject.historic.sheetsById.sequence.setPrimitivePropAsSequenced(
                 propAddress,
-                propConfig,
               )
             }
           })

@@ -1,12 +1,12 @@
-/*
- * @jest-environment jsdom
- */
 import {setupTestSheet} from '@theatre/shared/testUtils'
-import {encodePathToProp} from '@theatre/shared/utils/addresses'
-import {asKeyframeId, asSequenceTrackId} from '@theatre/shared/utils/ids'
-import type {ObjectAddressKey, SequenceTrackId} from '@theatre/shared/utils/ids'
+import {encodePathToProp} from '@theatre/utils/pathToProp'
+import type {
+  ObjectAddressKey,
+  SequenceTrackId,
+} from '@theatre/sync-server/state/types/core'
 import {iterateOver, prism} from '@theatre/dataverse'
-import type {SheetState_Historic} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {SheetState_Historic} from '@theatre/sync-server/state/types/core'
+import {asKeyframeId, asSequenceTrackId} from '@theatre/shared/utils/ids'
 
 describe(`SheetObject`, () => {
   describe('static overrides', () => {

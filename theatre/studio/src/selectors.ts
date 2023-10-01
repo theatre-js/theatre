@@ -5,10 +5,12 @@ import type Sheet from '@theatre/core/sheets/Sheet'
 import {val} from '@theatre/dataverse'
 import type {$IntentionalAny} from '@theatre/dataverse/src/types'
 import {isSheet, isSheetObject} from '@theatre/shared/instanceTypes'
-import type {SheetId} from '@theatre/shared/utils/ids'
+import type {SheetId} from '@theatre/sync-server/state/types/core'
 import {uniq} from 'lodash-es'
 import getStudio from './getStudio'
-import type {OutlineSelectable, OutlineSelection} from './store/types'
+
+export type OutlineSelectable = Project | Sheet | SheetObject
+export type OutlineSelection = OutlineSelectable[]
 
 export const getOutlineSelection = (): OutlineSelection => {
   const projects = val(getStudio().projectsP)

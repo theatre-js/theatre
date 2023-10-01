@@ -1,8 +1,8 @@
 import {pointerToPrism, val} from '@theatre/dataverse'
-import {defer} from '@theatre/shared/utils/defer'
-import type {$IntentionalAny} from '@theatre/shared/utils/types'
+import {defer} from '@theatre/utils/defer'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import getStudio from './getStudio'
-import type {UpdateCheckerResponse} from './store/types'
+import type {UpdateCheckerResponse} from './Studio'
 
 const UPDATE_CHECK_INTERVAL = 30 * 60 * 1000 // check for updates every 30 minutes
 const TIME_TO_WAIT_ON_ERROR = 1000 * 60 * 60 // an hour
@@ -42,7 +42,7 @@ export default async function checkForUpdates() {
   await wait(500)
   await waitTilUIIsVisible()
   while (true) {
-    const state = val(getStudio().atomP.ahistoric.updateChecker)
+    const state = val(getStudio().ahistoricAtom.pointer.updateChecker)
     if (state) {
       if (state.result !== 'error') {
         const lastChecked = state.lastChecked
@@ -68,11 +68,9 @@ export default async function checkForUpdates() {
         if (!isValidUpdateCheckerResponse(json)) {
           throw new Error(`Bad response`)
         }
-        getStudio().transaction(({drafts}) => {
-          drafts.ahistoric.updateChecker = {
-            lastChecked: Date.now(),
-            result: {...json},
-          }
+        getStudio().ahistoricAtom.setByPointer((p) => p.updateChecker, {
+          lastChecked: Date.now(),
+          result: {...json},
         })
 
         await wait(1000)

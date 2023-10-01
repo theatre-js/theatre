@@ -1,5 +1,5 @@
 import getStudio from '@theatre/studio/getStudio'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -7,7 +7,7 @@ import {val} from '@theatre/dataverse'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {Keyframe} from '@theatre/sync-server/state/types/core'
 import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {includeLockFrameStampAttrs} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
@@ -147,7 +147,7 @@ function useDragKeyframe(options: {
         )
 
         const unlockExtremums = propsAtStartOfDrag.extremumSpace.lock()
-        let tempTransaction: CommitOrDiscard | undefined
+        let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
         return {
           onDrag(dx, dy) {

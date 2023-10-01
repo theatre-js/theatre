@@ -1,5 +1,5 @@
 import getStudio from '@theatre/studio/getStudio'
-import type {CommitOrDiscard} from '@theatre/studio/StudioStore/StudioStore'
+import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
@@ -11,7 +11,7 @@ import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'
 import CurveEditorPopover, {
   isConnectionEditingInCurvePopover,
 } from './CurveEditorPopover/CurveEditorPopover'
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {Keyframe} from '@theatre/sync-server/state/types/core'
 import type {ISingleKeyframeEditorProps} from './SingleKeyframeEditor'
 import type {IConnectorThemeValues} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
 import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/keyframeRowUI/ConnectorLine'
@@ -159,7 +159,7 @@ function useDragKeyframe(
       lockCSSCursorTo: 'ew-resize',
       onDragStart(event) {
         const props = propsRef.current
-        let tempTransaction: CommitOrDiscard | undefined
+        let tempTransaction: CommitOrDiscardOrRecapture | undefined
 
         if (props.selection) {
           const {selection, leaf} = props

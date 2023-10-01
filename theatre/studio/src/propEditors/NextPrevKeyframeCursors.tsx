@@ -1,12 +1,12 @@
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
-import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
-import type {VoidFn} from '@theatre/shared/utils/types'
+import type {Keyframe} from '@theatre/sync-server/state/types/core'
+import type {VoidFn} from '@theatre/utils/types'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {transparentize} from 'polished'
 import React from 'react'
 import styled, {css} from 'styled-components'
 import {PresenceFlag} from '@theatre/studio/uiComponents/usePresence'
 import usePresence from '@theatre/studio/uiComponents/usePresence'
+import type {StudioSheetItemKey} from '@theatre/sync-server/state/types'
 
 export type NearbyKeyframesControls = {
   prev?: Pick<Keyframe, 'position'> & {

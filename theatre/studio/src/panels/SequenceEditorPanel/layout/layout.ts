@@ -1,14 +1,14 @@
 import type Sheet from '@theatre/core/sheets/Sheet'
 import getStudio from '@theatre/studio/getStudio'
 import type useDrag from '@theatre/studio/uiComponents/useDrag'
-import type {SheetAddress} from '@theatre/shared/utils/addresses'
-import subPrism from '@theatre/shared/utils/subPrism'
+import type {SheetAddress} from '@theatre/sync-server/state/types'
+import subPrism from '@theatre/utils/subPrism'
 import type {
   IRange,
   PositionInScreenSpace,
   StrictRecord,
-} from '@theatre/shared/utils/types'
-import {valToAtom} from '@theatre/shared/utils/valToAtom'
+} from '@theatre/utils/types'
+import {valToAtom} from '@theatre/utils/valToAtom'
 import type {Prism, Pointer} from '@theatre/dataverse'
 import {Atom, prism, val} from '@theatre/dataverse'
 import type {SequenceEditorTree} from './tree'
@@ -18,7 +18,7 @@ import type {
   KeyframeId,
   ObjectAddressKey,
   SequenceTrackId,
-} from '@theatre/shared/utils/ids'
+} from '@theatre/sync-server/state/types/core'
 
 // A Side is either the left side of the panel or the right side
 type DimsOfPanelPart = {

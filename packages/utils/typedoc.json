@@ -1,0 +1,23 @@
+{
+  "visibilityFilters": {
+    "protected": false,
+    "private": false,
+    "inherited": true,
+    "external": false,
+    "@alpha": false,
+    "@beta": false
+  },
+  "excludeTags": [
+    "@override",
+    "@virtual",
+    "@privateRemarks",
+    "@satisfies",
+    "@overload",
+    "@remarks"
+  ],
+  "categorizeByGroup": false,
+  "excludeInternal": true,
+  "excludeProtected": true,
+  "excludePrivate": true,
+  "sourceLinkTemplate": "https://github.com/theatre-js/theatre/blob/main/{path}#L{line}"
+}

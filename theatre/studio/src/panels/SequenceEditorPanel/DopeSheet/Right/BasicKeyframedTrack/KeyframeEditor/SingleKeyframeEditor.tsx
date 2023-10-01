@@ -1,4 +1,4 @@
-import type {Keyframe} from '@theatre/core/projects/store/types/SheetState_Historic'
+import type {Keyframe} from '@theatre/sync-server/state/types/core'
 import type {
   DopeSheetSelection,
   SequenceEditorPanelLayout,
@@ -11,7 +11,7 @@ import styled from 'styled-components'
 import SingleKeyframeConnector from './BasicKeyframeConnector'
 import SingleKeyframeDot from './SingleKeyframeDot'
 import type {TrackWithId} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
-import type {StudioSheetItemKey} from '@theatre/shared/utils/ids'
+import type {StudioSheetItemKey} from '@theatre/sync-server/state/types'
 
 const SingleKeyframeEditorContainer = styled.div`
   position: absolute;
