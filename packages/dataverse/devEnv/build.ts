@@ -13,7 +13,7 @@ function createBundles(watch: boolean) {
     watch,
     platform: 'neutral',
     mainFields: ['browser', 'module', 'main'],
-    target: ['firefox57', 'chrome58'],
+    target: ['es2020'],
     conditions: ['browser', 'node'],
   }
 

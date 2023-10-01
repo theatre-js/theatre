@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "tsc --project tsconfig.json",
+    "build": "yarn cli build",
     "cli": "node -r esbuild-register devEnv/cli.ts",
     "prebuild": "yarn cli prebuild",
     "postinstall": "prisma generate"

@@ -9,6 +9,13 @@ import type {Env} from 'src/envSchema'
 const isProduction = process.env.NODE_ENV === 'production'
 
 if (!isProduction) {
+  if (!fs.existsSync(path.join(__dirname, '..', '.env'))) {
+    console.log(`Creating .env file`)
+    fs.copyFileSync(
+      path.join(__dirname, '..', '.env.example'),
+      path.join(__dirname, '..', '.env'),
+    )
+  }
   config({path: '.env'})
 }
 

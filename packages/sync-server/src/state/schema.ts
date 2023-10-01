@@ -48,7 +48,8 @@ import type {
 import {clamp, cloneDeep} from 'lodash-es'
 import {pointableSetUtil} from '@theatre/utils/PointableSet'
 import type {ProjectState_Historic} from './types'
-import {current, type Draft as _Draft} from 'immer'
+import {current} from 'immer'
+import type {Draft as _Draft} from 'immer'
 import type {
   EditorDefinitionToEditorInvocable,
   Schema,

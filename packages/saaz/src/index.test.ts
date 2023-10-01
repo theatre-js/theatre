@@ -95,6 +95,8 @@ describe(`saaz`, () => {
       }),
     ).not.toThrow()
 
+    await new Promise((resolve) => setTimeout(resolve, 100))
+
     expect(saaz.state.count).toEqual(10)
 
     saaz.tx((editors) => {
@@ -152,6 +154,10 @@ describe(`saaz`, () => {
     await saaz3.waitForBackendSync()
 
     expect(saaz3.state).toEqual(saaz.state)
+
+    saaz.teardown()
+    saaz2.teardown()
+    saaz3.teardown()
 
     // const s = saaz.scrub()
     // s.capture((editors) => {

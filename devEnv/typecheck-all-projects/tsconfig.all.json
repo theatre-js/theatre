@@ -18,7 +18,6 @@
     {"path": "../../packages/app"},
     {"path": "../../packages/sync-server"},
     {"path": "../../packages/saaz"},
-    {"path": "../../packages/reducers"},
     {"path": "../../packages/utils"}
   ]
 }

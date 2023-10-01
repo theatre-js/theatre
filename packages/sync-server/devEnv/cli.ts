@@ -8,6 +8,13 @@ import type {Env} from 'src/envSchema'
 const isProduction = process.env.NODE_ENV === 'production'
 
 if (!isProduction) {
+  if (!fs.existsSync(path.join(__dirname, '..', '.env'))) {
+    console.log(`Creating .env file`)
+    fs.copyFileSync(
+      path.join(__dirname, '..', '.env.example'),
+      path.join(__dirname, '..', '.env'),
+    )
+  }
   config({path: '.env'})
 }
 
@@ -112,9 +119,10 @@ prog.command('prod start', 'Start in production mode').action(async () => {
   await $`tsx src/index.ts --tsconfig tsconfig.json`
 })
 
-prog.command('prebuild', 'Prebuild pages').action(async () => {
+prog.command('prebuild', 'Prebuild').action(async () => {
   validateEnv()
   await $`prisma generate`
+  await $`tsc --project tsconfig.json`
   await $`prisma migrate deploy`
 })
 

@@ -21,8 +21,9 @@ import {FrontStorage} from './FrontStorage'
 import {ensureStateIsUptodate} from '../shared/utils'
 import {debounce} from 'lodash-es'
 import type {Prism} from '@theatre/dataverse'
-import {Atom, asyncIterateOver, prism, val} from '@theatre/dataverse'
+import {Atom, prism, val} from '@theatre/dataverse'
 import waitForPrism from '@theatre/utils/waitForPrism'
+import {subscribeDebounced} from '@theatre/utils/subscribeDebounced'
 import fastDeepEqual from 'fast-deep-equal'
 import {diff} from 'jest-diff'
 
@@ -101,9 +102,15 @@ export class SaazFront<
    */
   private readonly _schema: Schema<Snapshot, Editors, Generators>
 
-  // private readonly _ticker: Ticker
-
+  /**
+   * A counter that is used to generate unique ids for temp transactions.
+   */
   private _tempTransactionCounter: number = 0
+
+  /**
+   * A list of functions that will be called when the frontend is destroyed.
+   */
+  private _teardownCallbacks: (() => void)[] = []
 
   /**
    * We use dataverse prisms to derive several values from the atom. This makes the reactive parts of the code easier to maintain.
@@ -310,7 +317,7 @@ export class SaazFront<
     )
 
     if (opts.keepPrismsHot !== false) {
-      this._prisms.withPeers.keepHot()
+      this._teardownCallbacks.push(this._prisms.withPeers.keepHot())
     }
 
     this._schema = opts.schema
@@ -375,12 +382,21 @@ export class SaazFront<
       this._atom.setByPointer((p) => p.initialized, true)
     })
 
-    void this._subscribeToBackend()
-    void this._reflectBackendStateToStorage()
-    void this._reflectOptimisticUpdatesToStorage()
-    void this._reflectUpdatesToBackend()
-    void this._reflectPresenceToBackend()
-    void this._removeStalePeerPresenceStates()
+    this._teardownCallbacks.push(
+      this._subscribeToBackend(),
+      this._reflectBackendStateToStorage(),
+      this._reflectOptimisticUpdatesToStorage(),
+      this._reflectPresenceToBackend(),
+      this._removeStalePeerPresenceStates(),
+      this._reflectUpdatesToBackend(),
+    )
+  }
+
+  teardown(): void {
+    for (const cb of this._teardownCallbacks) {
+      cb()
+    }
+    this._teardownCallbacks.length = 0
   }
 
   private _removeStalePeerPresenceStates() {
@@ -393,70 +409,74 @@ export class SaazFront<
     )
   }
 
-  private async _reflectPresenceToBackend() {
+  private _reflectPresenceToBackend() {
     let lastTempTransactions: TempTransaction[] = []
     let lastUpdateSent: number = 0
-    while (true) {
-      const tempTransactions = val(this._atom.pointer.tempTransactions)
-      const now = Date.now()
-      if (
-        !fastDeepEqual(tempTransactions, lastTempTransactions) ||
-        now - lastUpdateSent > 1000 * 5
-      ) {
-        lastTempTransactions = tempTransactions
-        lastUpdateSent = now
-        void this._backend.updatePresence({
-          peerId: this._peerId,
-          presence: {tempTransactions},
-        })
-      }
-      await new Promise((resolve) => setTimeout(resolve, 30))
-    }
+
+    return subscribeDebounced(
+      this._atom.pointer.tempTransactions,
+      async (tempTransactions) => {
+        const now = Date.now()
+        if (
+          !fastDeepEqual(tempTransactions, lastTempTransactions) ||
+          now - lastUpdateSent > 1000 * 5
+        ) {
+          lastTempTransactions = tempTransactions
+          lastUpdateSent = now
+          void this._backend.updatePresence({
+            peerId: this._peerId,
+            presence: {tempTransactions},
+          })
+        }
+        await new Promise((resolve) => setTimeout(resolve, 30))
+      },
+    )
   }
 
-  private async _reflectUpdatesToBackend() {
-    for await (const updates of asyncIterateOver(
+  private _reflectUpdatesToBackend() {
+    return subscribeDebounced(
       this._atom.pointer.optimisticUpdatesQueue,
-    )) {
-      const lastIncorporatedPeerClock =
-        val(this._atom.pointer.backendState.lastIncorporatedPeerClock) ?? -1
+      async (updates) => {
+        const lastIncorporatedPeerClock =
+          val(this._atom.pointer.backendState.lastIncorporatedPeerClock) ?? -1
 
-      const toPushToBackend = updates.filter(
-        (update) => update.peerClock > lastIncorporatedPeerClock,
-      )
-
-      if (toPushToBackend.length !== updates.length) {
-        this._atom.setByPointer(
-          (p) => p.optimisticUpdatesQueue,
-          toPushToBackend,
+        const toPushToBackend = updates.filter(
+          (update) => update.peerClock > lastIncorporatedPeerClock,
         )
-        console.warn(
-          `These updates should have been GC-ed already: `,
-          updates.filter(
-            (update) => update.peerClock <= lastIncorporatedPeerClock,
-          ),
-        )
-      }
 
-      if (toPushToBackend.length === 0) continue
-
-      try {
-        const res = await this._backend.applyUpdates({
-          backendClock: lastIncorporatedPeerClock,
-          peerId: this._peerId,
-          updates: toPushToBackend,
-        })
-
-        if (res.ok) {
-          this._processBackendUpdate(res)
-        } else {
-          console.error(res.error)
-          throw new Error('Backend rejected optimistic update')
+        if (toPushToBackend.length !== updates.length) {
+          this._atom.setByPointer(
+            (p) => p.optimisticUpdatesQueue,
+            toPushToBackend,
+          )
+          console.warn(
+            `These updates should have been GC-ed already: `,
+            updates.filter(
+              (update) => update.peerClock <= lastIncorporatedPeerClock,
+            ),
+          )
         }
-      } catch (errs) {
-        console.error(errs)
-      }
-    }
+
+        if (toPushToBackend.length === 0) return
+
+        try {
+          const res = await this._backend.applyUpdates({
+            backendClock: lastIncorporatedPeerClock,
+            peerId: this._peerId,
+            updates: toPushToBackend,
+          })
+
+          if (res.ok) {
+            this._processBackendUpdate(res)
+          } else {
+            console.error(res.error)
+            throw new Error('Backend rejected optimistic update')
+          }
+        } catch (errs) {
+          console.error(errs)
+        }
+      },
+    )
   }
 
   private _processBackendUpdate(s: BackGetUpdateSinceClockResult) {
@@ -485,61 +505,64 @@ export class SaazFront<
     }
   }
 
-  private async _reflectBackendStateToStorage() {
-    for await (const memory of asyncIterateOver(
+  private _reflectBackendStateToStorage() {
+    return subscribeDebounced(
       this._atom.pointer.backendState,
-    )) {
-      if (!memory) continue
+      async (backendState) => {
+        if (!backendState) return
 
-      try {
-        await this._storage.transaction(async (t) => {
-          await t.setLastBackendState(memory)
-        })
-        this._atom.setByPointer(
-          (p) => p.frontStorageStateMirror.backendState,
-          memory,
-        )
-      } catch (error) {
-        console.error(error)
-        continue
-      }
-    }
+        try {
+          await this._storage.transaction(async (t) => {
+            await t.setLastBackendState(backendState)
+          })
+          this._atom.setByPointer(
+            (p) => p.frontStorageStateMirror.backendState,
+            backendState,
+          )
+        } catch (error) {
+          console.error(error)
+        }
+      },
+    )
   }
 
-  private async _reflectOptimisticUpdatesToStorage() {
-    for await (const memory of asyncIterateOver(
+  private _reflectOptimisticUpdatesToStorage() {
+    return subscribeDebounced(
       this._atom.pointer.optimisticUpdatesQueue,
-    )) {
-      const last =
-        this._atom.get().frontStorageStateMirror.optimisticUpdatesQueue
-      if (memory.length === 0 && last.length === 0) continue
+      async (memory) => {
+        const last =
+          this._atom.get().frontStorageStateMirror.optimisticUpdatesQueue
+        if (memory.length === 0 && last.length === 0) return
 
-      const toPush: Transaction[] = []
-      const toPluck: Transaction[] = []
+        const toPush: Transaction[] = []
+        const toPluck: Transaction[] = []
 
-      for (const transacion of memory) {
-        const existing = last.find((t) => t.peerClock === transacion.peerClock)
-        if (!existing) {
-          toPush.push(transacion)
-        } else {
-          toPluck.push(existing)
+        for (const transacion of memory) {
+          const existing = last.find(
+            (t) => t.peerClock === transacion.peerClock,
+          )
+          if (!existing) {
+            toPush.push(transacion)
+          } else {
+            toPluck.push(existing)
+          }
         }
-      }
 
-      try {
-        await this._storage.transaction(async (t) => {
-          await t.pushOptimisticUpdates(toPush)
-          await t.pluckOptimisticUpdates(toPluck)
-        })
-        this._atom.setByPointer(
-          (p) => p.frontStorageStateMirror.optimisticUpdatesQueue,
-          memory,
-        )
-      } catch (error) {
-        console.error(error)
-        continue
-      }
-    }
+        try {
+          await this._storage.transaction(async (t) => {
+            await t.pushOptimisticUpdates(toPush)
+            await t.pluckOptimisticUpdates(toPluck)
+          })
+          this._atom.setByPointer(
+            (p) => p.frontStorageStateMirror.optimisticUpdatesQueue,
+            memory,
+          )
+        } catch (error) {
+          console.error(error)
+          return
+        }
+      },
+    )
   }
 
   private _cachedApplyTransactionToState(
@@ -604,9 +627,9 @@ export class SaazFront<
     this._processBackendUpdate(s)
   }
 
-  private async _subscribeToBackend(): Promise<() => void> {
+  private _subscribeToBackend(): () => void {
     void this._pullUpdatesFromBackend()
-    const stop = await this._backend.subscribe(
+    const stop = this._backend.subscribe(
       {
         peerId: this._peerId,
       },
@@ -621,7 +644,7 @@ export class SaazFront<
     )
 
     const unsub = () => {
-      stop()
+      void stop.then((s) => stop)
     }
 
     return unsub

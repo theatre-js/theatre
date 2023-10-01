@@ -19,7 +19,7 @@
     "test": "jest",
     "test:compat:install": "yarn workspace @theatre/compat-tests run install-fixtures",
     "test:compat:run": "jest --config jest.compat-tests.config.js",
-    "postinstall": "husky install",
+    "postinstall": "husky install && yarn workspace @theatre/app run prisma generate && yarn workspace @theatre/sync-server run prisma generate",
     "lint:all": "eslint . --ext ts,tsx --ignore-path=.gitignore --rulesdir ./devEnv/eslint/rules"
   },
   "lint-staged": {

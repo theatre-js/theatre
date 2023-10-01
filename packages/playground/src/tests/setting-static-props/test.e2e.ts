@@ -6,7 +6,8 @@ const delay = (dur: number) =>
   new Promise((resolve) => setTimeout(resolve, dur))
 
 test.describe('setting-static-props', () => {
-  test('Undo/redo', async ({page}) => {
+  // temporarily skipping this test until undo/redo is implemented in Saaz
+  test.skip('Undo/redo', async ({page}) => {
     await page.goto('./tests/setting-static-props/')
     // https://github.com/microsoft/playwright/issues/12298
     // The div does in fact intercept pointer events, but it is meant to 🤦‍

@@ -29,7 +29,6 @@ The animation-optimized FRP library powering the internals of Theatre.js.
 
 ### Functions
 
-- [asyncIterateOver](README.md#asynciterateover)
 - [getPointerParts](README.md#getpointerparts)
 - [isPointer](README.md#ispointer)
 - [isPrism](README.md#isprism)
@@ -105,32 +104,6 @@ A wrapper type for the type a `Pointer` points to.
 [pointer.ts:35](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/pointer.ts#L35)
 
 ## Functions
-
-### asyncIterateOver
-
-▸ **asyncIterateOver**<`V`\>(`pointerOrPrism`): `AsyncGenerator`<`V`, `void`, `void`\>
-
-#### Type parameters
-
-| Name |
-| :------ |
-| `V` |
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `pointerOrPrism` | [`Prism`](interfaces/Prism-1.md)<`V`\> \| [`Pointer`](README.md#pointer)<`V`\> |
-
-#### Returns
-
-`AsyncGenerator`<`V`, `void`, `void`\>
-
-#### Defined in
-
-[prism/asyncIterateOver.ts:7](https://github.com/theatre-js/theatre/blob/main/packages/dataverse/src/prism/asyncIterateOver.ts#L7)
-
-___
 
 ### getPointerParts
 
