@@ -53,6 +53,10 @@ runs:
       shell: bash
       run: yarn workspace playground run playwright install --with-deps
 
+    - name: Run postinstall
+      shell: bash
+      run: yarn postinstall
+
     # - name: Update browserlist
     #   shell: bash
     #   run: npx browserslist@latest --update-db
