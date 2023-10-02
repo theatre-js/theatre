@@ -34,6 +34,7 @@ prog
   )
   .action(async () => {
     const packages = [
+      '@theatre/saaz',
       'theatre',
       '@theatre/dataverse',
       '@theatre/react',
@@ -49,6 +50,7 @@ prog
 
 prog.command('build', 'Builds all the main packages').action(async () => {
   const packagesToBuild = [
+    '@theatre/saaz',
     'theatre',
     '@theatre/dataverse',
     '@theatre/react',
@@ -79,6 +81,7 @@ prog
      * It assigns the same version number to all packages (like lerna's fixed mode).
      **/
     const packagesToBuild = [
+      '@theatre/saaz',
       'theatre',
       '@theatre/dataverse',
       '@theatre/react',
@@ -91,6 +94,7 @@ prog
       '@theatre/core',
       '@theatre/studio',
       '@theatre/dataverse',
+      '@theatre/saaz',
       '@theatre/react',
       '@theatre/browser-bundles',
       '@theatre/r3f',
@@ -107,6 +111,7 @@ prog
       'theatre/studio',
       'packages/dataverse',
       'packages/react',
+      'packages/saaz',
       'packages/browser-bundles',
       'packages/r3f',
       'packages/theatric',
@@ -287,6 +292,7 @@ prog
       '@theatre/core',
       '@theatre/studio',
       '@theatre/dataverse',
+      '@theatre/saaz',
       '@theatre/react',
       '@theatre/browser-bundles',
       '@theatre/r3f',
