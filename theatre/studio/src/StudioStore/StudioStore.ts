@@ -17,7 +17,7 @@ import SyncStoreAuth from '@theatre/studio/SyncStore/SyncStoreAuth'
 import SyncServerLink from '@theatre/studio/SyncStore/SyncServerLink'
 import {schema} from '@theatre/sync-server/state/schema'
 import type {
-  IInvokableStateEditors,
+  IInvokableDraftEditors,
   IStateEditors,
   StateEditorsAPI,
 } from '@theatre/sync-server/state/schema'
@@ -39,11 +39,11 @@ export type StudioStoreOptions = {
 export interface ITransactionPrivateApi {
   set<T>(pointer: Pointer<T>, value: T): void
   unset<T>(pointer: Pointer<T>): void
-  stateEditors: IInvokableStateEditors
+  stateEditors: IInvokableDraftEditors
 }
 
 export type CommitOrDiscardOrRecapture = {
-  commit: VoidFn
+  commit: (undoable?: boolean) => void
   discard: VoidFn
   recapture: (fn: (api: ITransactionPrivateApi) => void) => void
   reset: VoidFn
@@ -62,18 +62,23 @@ export default class StudioStore {
   }>({ready: false})
 
   private _optionsDeferred = defer<StudioStoreOptions>()
-  private _saaz: Saaz.SaazFront<StudioState, IStateEditors, StateEditorsAPI>
+  private _saaz: Saaz.SaazFront<
+    {$schemaVersion: number},
+    IStateEditors,
+    StateEditorsAPI,
+    StudioState
+  >
 
   constructor() {
     const syncServerLinkDeferred = defer<SyncServerLink>()
     this._syncServerLink = syncServerLinkDeferred.promise
     this._appLink = this._optionsDeferred.promise.then(({serverUrl}) =>
-      typeof window === 'undefined'
+      typeof window === 'undefined' && false
         ? (null as $IntentionalAny)
         : new AppLink(serverUrl),
     )
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && false) {
       void this._appLink
         .then((appLink) => {
           return appLink.api.syncServerUrl.query().then((url) => {
@@ -89,7 +94,7 @@ export default class StudioStore {
     }
 
     this._auth =
-      typeof window !== 'undefined'
+      typeof window !== 'undefined' && false
         ? new SyncStoreAuth(
             this._optionsDeferred.promise,
             this._appLink,
@@ -97,7 +102,7 @@ export default class StudioStore {
           )
         : (null as $IntentionalAny)
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && false) {
       void this._auth.ready.then(() => {
         this._state.setByPointer((p) => p.ready, true)
       })
@@ -106,7 +111,7 @@ export default class StudioStore {
     }
 
     const backend =
-      typeof window === 'undefined'
+      typeof window === 'undefined' || true
         ? new SaazBack({
             storageAdapter: new Saaz.BackMemoryAdapter(),
             dbName: 'test',
@@ -129,10 +134,10 @@ export default class StudioStore {
     this._saaz = saaz as $IntentionalAny
 
     this._atom = new Atom({} as StudioState)
-    this._atom.set(saaz.state)
+    this._atom.set(saaz.state.cell as $FixMe)
 
     saaz.subscribe((state) => {
-      this._atom.set(state as $IntentionalAny)
+      this._atom.set(state.cell as $IntentionalAny)
     })
     this.atomP = this._atom.pointer
   }
@@ -170,22 +175,29 @@ export default class StudioStore {
     // )
   }
 
-  transaction(fn: (api: ITransactionPrivateApi) => void) {
-    this._saaz.tx((editors) => {
-      let running = true
+  transaction(
+    fn: (api: ITransactionPrivateApi) => void,
+    undoable: boolean = true,
+  ) {
+    this._saaz.tx(
+      () => {},
+      (draft) => {
+        let running = true
 
-      let ensureRunning = () => {
-        if (!running) {
-          throw new Error(
-            `You seem to have called the transaction api after studio.transaction() has finished running`,
-          )
+        let ensureRunning = () => {
+          if (!running) {
+            throw new Error(
+              `You seem to have called the transaction api after studio.transaction() has finished running`,
+            )
+          }
         }
-      }
-      const transactionApi = createTransactionPrivateApi(ensureRunning, editors)
-      const ret = fn(transactionApi)
-      running = false
-      return ret
-    })
+        const transactionApi = createTransactionPrivateApi(ensureRunning, draft)
+        const ret = fn(transactionApi)
+        running = false
+        return ret
+      },
+      undoable,
+    )
     return
   }
 
@@ -198,56 +210,60 @@ export default class StudioStore {
       return existingTransaction
     }
 
-    const t = this._saaz.tempTx((editors) => {
-      let running = true
+    const t = this._saaz.tempTx(
+      () => {},
+      (draft) => {
+        let running = true
 
-      let ensureRunning = () => {
-        if (!running) {
-          throw new Error(
-            `You seem to have called the transaction api after studio.transaction() has finished running`,
-          )
+        let ensureRunning = () => {
+          if (!running) {
+            throw new Error(
+              `You seem to have called the transaction api after studio.transaction() has finished running`,
+            )
+          }
         }
-      }
-      const transactionApi = createTransactionPrivateApi(ensureRunning, editors)
-      const ret = fn(transactionApi)
-      running = false
-      return ret
-    })
+        const transactionApi = createTransactionPrivateApi(ensureRunning, draft)
+        const ret = fn(transactionApi)
+        running = false
+        return ret
+      },
+    )
 
     return {
       commit: t.commit,
       discard: t.discard,
       reset: t.reset,
       recapture: (fn: (api: ITransactionPrivateApi) => void): void => {
-        t.recapture((editors) => {
-          let running = true
+        t.recapture(
+          () => {},
+          (draft) => {
+            let running = true
 
-          let ensureRunning = () => {
-            if (!running) {
-              throw new Error(
-                `You seem to have called the transaction api after studio.transaction() has finished running`,
-              )
+            let ensureRunning = () => {
+              if (!running) {
+                throw new Error(
+                  `You seem to have called the transaction api after studio.transaction() has finished running`,
+                )
+              }
             }
-          }
-          const transactionApi = createTransactionPrivateApi(
-            ensureRunning,
-            editors,
-          )
-          const ret = fn(transactionApi)
-          running = false
-        })
+            const transactionApi = createTransactionPrivateApi(
+              ensureRunning,
+              draft,
+            )
+            const ret = fn(transactionApi)
+            running = false
+          },
+        )
       },
     }
   }
 
   undo() {
-    throw new Error(`Implement me`)
-    // this._reduxStore.dispatch(studioActions.historic.undo())
+    this._saaz.undo()
   }
 
   redo() {
-    throw new Error(`Implement me`)
-    // this._reduxStore.dispatch(studioActions.historic.redo())
+    this._saaz.redo()
   }
 
   createContentOfSaveFile(projectId: ProjectId): OnDiskState {

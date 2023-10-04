@@ -18,17 +18,10 @@ export type StudioAhistoricState = {
    */
   pinDetails?: boolean
   pinNotifications?: boolean
-  visibilityState: 'everythingIsHidden' | 'everythingIsVisible'
+  visibilityState?: 'everythingIsHidden' | 'everythingIsVisible'
   clipboard?: {
     keyframesWithRelativePaths?: KeyframeWithPathToPropFromCommonRoot[]
     // future clipboard data goes here
-  }
-  theTrigger: {
-    position: {
-      closestCorner: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'
-      distanceFromHorizontalEdge: number
-      distanceFromVerticalEdge: number
-    }
   }
 
   projects: {

@@ -20,6 +20,7 @@ import {useKeyframeInlineEditorPopover} from '@theatre/studio/panels/SequenceEdi
 import usePresence, {
   PresenceFlag,
 } from '@theatre/studio/uiComponents/usePresence'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 export const dotSize = 6
 
@@ -62,7 +63,10 @@ const GraphEditorDotScalar: React.VFC<IProps> = (props) => {
   const [ref, node] = useRefAndState<SVGCircleElement | null>(null)
 
   const {index, trackData} = props
-  const cur = trackData.keyframes[index]
+  const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+    trackData.keyframes,
+  )
+  const cur = sortedKeyframes[index]
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
   const presence = usePresence(props.itemKey)
@@ -153,8 +157,10 @@ function useDragKeyframe(options: {
 
         return {
           onDrag(dx, dy) {
-            const original =
-              propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
+            const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+              propsAtStartOfDrag.trackData.keyframes,
+            )
+            const original = sortedKeyframes[propsAtStartOfDrag.index]
 
             const deltaPos = toUnitSpace(dx)
             const dyInVerticalSpace = -dy
@@ -177,10 +183,10 @@ function useDragKeyframe(options: {
             updatedKeyframes.push(cur)
 
             if (keepSpeeds) {
-              const prev =
-                propsAtStartOfDrag.trackData.keyframes[
-                  propsAtStartOfDrag.index - 1
-                ]
+              const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+                propsAtStartOfDrag.trackData.keyframes,
+              )
+              const prev = sortedKeyframes[propsAtStartOfDrag.index - 1]
 
               if (
                 prev &&
@@ -200,10 +206,8 @@ function useDragKeyframe(options: {
                   cur.value as number,
                 )
               }
-              const next =
-                propsAtStartOfDrag.trackData.keyframes[
-                  propsAtStartOfDrag.index + 1
-                ]
+
+              const next = sortedKeyframes[propsAtStartOfDrag.index + 1]
 
               if (
                 next &&

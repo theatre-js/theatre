@@ -14,6 +14,7 @@ import type {
   HistoricPositionalSequence,
   Keyframe,
 } from '@theatre/sync-server/state/types/core'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 const HitZone = styled.div`
   z-index: 1;
@@ -115,7 +116,8 @@ export function collectKeyframeSnapPositions(
           Object.entries(trackDataAndTrackIdByPropPath!.trackData).map(
             ([trackId, track]) => [
               trackId,
-              track!.keyframes
+              keyframeUtils
+                .getSortedKeyframesCached(track!.keyframes)
                 .filter((kf) =>
                   shouldIncludeKeyframe(kf, {
                     trackId,

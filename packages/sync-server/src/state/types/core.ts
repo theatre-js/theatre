@@ -1,4 +1,5 @@
 import type {Nominal} from '@theatre/utils/Nominal'
+import type {PointableSet} from '@theatre/utils/PointableSet'
 import type {PathToProp_Encoded} from '@theatre/utils/pathToProp'
 
 import type {
@@ -40,13 +41,13 @@ export type HistoricPositionalSequence = {
    * get truncated, but calling sequence.play() will play until it reaches the
    * length of the sequence.
    */
-  length: number
+  length?: number
   /**
    * Given the most common case of tracking a sequence against time (where 1 second = position 1),
    * If set to, say, 30, then the keyframe editor will try to snap all keyframes
    * to a 30fps grid
    */
-  subUnitsPerUnit: number
+  subUnitsPerUnit?: number
 
   tracksByObject: StrictRecord<
     ObjectAddressKey,
@@ -105,7 +106,7 @@ export type BasicKeyframedTrack = TrackDataCommon<'BasicKeyframedTrack'> & {
    * {@link Keyframe} is not provided an explicit generic value `T`, because
    * a single track can technically have multiple different types for each keyframe.
    */
-  keyframes: Keyframe[]
+  keyframes: PointableSet<KeyframeId, Keyframe>
 }
 
 type ProjectLoadingState =

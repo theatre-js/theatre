@@ -1,4 +1,5 @@
 import {clamp} from 'lodash-es'
+import memoizeFn from './memoizeFn'
 
 /**
  * Robust check for a valid hex value (without the "#") in a string
@@ -63,14 +64,19 @@ export function rgba2hex(
 // TODO: We should add a decorate property to the propConfig too.
 // Right now, each place that has anything to do with a color is individually
 // responsible for defining a toString() function on the object it returns.
-export function decorateRgba(rgba: Rgba) {
-  return {
+export const decorateRgba = memoizeFn((rgba: Rgba) => {
+  const obj = {
     ...rgba,
-    toString() {
-      return rgba2hex(this, {removeAlphaIfOpaque: true})
-    },
+    // toString: () => rgba2hex(rgba),
   }
-}
+  Object.defineProperty(obj, 'toString', {
+    value: () => rgba2hex(rgba),
+    enumerable: false,
+    writable: false,
+    configurable: false,
+  })
+  return obj
+})
 
 export function clampRgba(rgba: Rgba) {
   return Object.fromEntries(

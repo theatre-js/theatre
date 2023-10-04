@@ -11,23 +11,27 @@ import type {
   $IntentionalAny,
   EditorDefinitions,
   Schema,
-  ValidSnapshot as ValidSnapshot,
+  ValidOpSnapshot as ValidOpSnapshot,
   ValidGenerators,
   GeneratorRecordings,
+  FullSnapshot,
 } from '../types'
+import {fromOps} from '../rogue'
 
-export function applyOptimisticUpdateToState<State extends ValidSnapshot>(
+export function applyOptimisticUpdateToState<
+  OpSnapshot extends ValidOpSnapshot,
+>(
   {
     invokations,
     generatorRecordings,
-  }: Pick<Transaction, 'invokations' | 'generatorRecordings'>,
-  before: State,
-  schema: Schema<State>,
+    draftOps,
+  }: Pick<Transaction, 'invokations' | 'generatorRecordings' | 'draftOps'>,
+  before: FullSnapshot<OpSnapshot>,
+  schema: Schema<OpSnapshot>,
   playbackOnly: boolean = false,
   testDeterminism: boolean = true,
-): [snapshot: State, generatorRecordings: GeneratorRecordings] {
-  const draft = createDraft(before)
-  // const {generatorRecordings, invokations} = update
+): [after: FullSnapshot<OpSnapshot>, generatorRecordings: GeneratorRecordings] {
+  const draft = createDraft(before.op)
   const [generatorSpy, newRecordings] = GeneratorSpy.createGeneratorsSpy(
     schema.generators,
     generatorRecordings,
@@ -35,10 +39,12 @@ export function applyOptimisticUpdateToState<State extends ValidSnapshot>(
   )
 
   runInvokations(schema, draft, invokations, generatorSpy)
-  const after = finishDraft(draft) as $FixMe as State
-  return [after, newRecordings]
+  const opSnapshotAfter = finishDraft(draft) as $FixMe as OpSnapshot
+  const [cellAfter] = fromOps(before.cell, draftOps)
+  return [{op: opSnapshotAfter, cell: cellAfter}, newRecordings]
 }
-export function recordInvokations<Editors extends {}, State extends {}>(
+
+export function recordInvokations<Editors extends {}, Lorenzo extends {}>(
   editors: Editors,
   fn: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
 ): Invokations {
@@ -59,18 +65,12 @@ export function recordInvokations<Editors extends {}, State extends {}>(
   return invokations
 }
 
-function runInvokations<Snapshot extends ValidSnapshot>(
+function runInvokations<Snapshot extends ValidOpSnapshot>(
   schema: Schema<Snapshot>,
   prevState: Draft<Snapshot>,
   invokations: Invokations,
   generatorSpy: ValidGenerators,
 ): void {
-  // const {generatorRecordings, invokations} = tr
-  // const [generatorSpy] = GeneratorSpy.createGeneratorsSpy(
-  //   schema.generators,
-  //   generatorRecordings,
-  //   false,
-  // )
   for (const [fnPath, opts] of invokations) {
     const fn = get(schema.editors, fnPath.split('.')) as EditorDefinitionFn
     if (typeof fn !== 'function') {

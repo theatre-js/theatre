@@ -21,6 +21,7 @@ import {
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import {commonRootOfPathsToProps} from '@theatre/utils/pathToProp'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/sync-server/state/types'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 const POPOVER_MARGIN_PX = 5
 const EasingPopoverWrapper = styled(BasicPopover)`
@@ -160,17 +161,20 @@ function useDragKeyframe(
               tempTransaction.discard()
               tempTransaction = undefined
             }
+
             tempTransaction = getStudio().tempTransaction(({stateEditors}) => {
               for (const keyframe of keyframes) {
+                const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+                  keyframe.track.data.keyframes,
+                )
                 stateEditors.coreByProject.historic.sheetsById.sequence.transformKeyframes(
                   {
                     ...keyframe.track.sheetObject.address,
                     trackId: keyframe.track.id,
                     keyframeIds: [
                       keyframe.kf.id,
-                      keyframe.track.data.keyframes[
-                        keyframe.track.data.keyframes.indexOf(keyframe.kf) + 1
-                      ].id,
+                      sortedKeyframes[sortedKeyframes.indexOf(keyframe.kf) + 1]
+                        .id,
                     ],
                     translate: delta,
                     scale: 1,

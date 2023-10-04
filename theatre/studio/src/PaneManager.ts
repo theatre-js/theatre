@@ -4,6 +4,7 @@ import type {$IntentionalAny, StrictRecord} from '@theatre/utils/types'
 import type {Studio} from './Studio'
 import type {PaneInstance} from './TheatreStudio'
 import type {PaneInstanceId} from '@theatre/sync-server/state/types'
+import {emptyObject} from '@theatre/shared/utils'
 
 export default class PaneManager {
   private readonly _cache = new SimpleCache()
@@ -24,12 +25,12 @@ export default class PaneManager {
       prism((): StrictRecord<PaneInstanceId, PaneInstance<string>> => {
         const core = val(this._studio.coreP)
         if (!core) return {}
-        const instanceDescriptors = val(
-          this._studio.atomP.historic.panelInstanceDesceriptors,
-        )
-        const paneClasses = val(
-          this._studio.ephemeralAtom.pointer.extensions.paneClasses,
-        )
+        const instanceDescriptors =
+          val(this._studio.atomP.historic.panelInstanceDesceriptors)! ??
+          emptyObject
+        const paneClasses =
+          val(this._studio.ephemeralAtom.pointer.extensions.paneClasses) ??
+          emptyObject
 
         const instances: StrictRecord<PaneInstanceId, PaneInstance<string>> = {}
         for (const instanceDescriptor of Object.values(instanceDescriptors)) {
@@ -78,9 +79,8 @@ export default class PaneManager {
         .extensionId,
     )
 
-    const allPaneInstances = val(
-      this._studio.atomP.historic.panelInstanceDesceriptors,
-    )
+    const allPaneInstances =
+      val(this._studio.atomP.historic.panelInstanceDesceriptors)! ?? emptyObject
     let instanceId!: PaneInstanceId
     for (let i = 1; i < 1000; i++) {
       instanceId = `${paneClass} #${i}` as PaneInstanceId

@@ -1,16 +1,16 @@
 import {SaazFront} from './front/SaazFront'
 import {FrontMemoryAdapter} from './front/FrontMemoryAdapter'
 import SaazBack from './back/SaazBack'
-import type {$IntentionalAny} from './types'
+import type {$IntentionalAny, Schema} from './types'
 import {BackMemoryAdapter} from './back/BackMemoryAdapter'
 
 jest.setTimeout(1000)
 
 describe(`saaz`, () => {
   test('everything', async () => {
-    type Snapshot = {
+    type OpShape = {
       $schemaVersion: number
-      count: number
+      opCount: number
     }
 
     type Generators = {
@@ -25,31 +25,40 @@ describe(`saaz`, () => {
       },
     }
 
-    const editors = {
-      increaseBy(state: Snapshot, generators: Generators, opts: {by: number}) {
-        state.count += opts.by
+    const opEditors = {
+      increaseBy(state: OpShape, generators: Generators, opts: {by: number}) {
+        let count = state.opCount ?? 0
+        state.opCount = count + opts.by
       },
 
       // this is a bad editor because it uses a random number generator, so it's not deterministic.
       // we expect saaz.tx() to throw an error if we try to use it.
-      randomizeCountBadly(state: Snapshot, generators: Generators, opts: {}) {
-        state.count = Math.random()
+      randomizeCountBadly(state: OpShape, generators: Generators, opts: {}) {
+        state.opCount = Math.random()
       },
 
       // this is a good editor because it uses a random number generator, but it's deterministic.
-      randomizeCountWell(state: Snapshot, generators: Generators, opts: {}) {
-        state.count = generators.rand()
+      randomizeCountWell(state: OpShape, generators: Generators, opts: {}) {
+        state.opCount = generators.rand()
       },
     }
 
-    const schema = {
-      shape: null as $IntentionalAny as Snapshot,
-      migrate(state: $IntentionalAny) {
-        state.count ??= 0
-      },
+    type CellShape = {cellCount?: number}
+
+    const schema: Schema<
+      OpShape,
+      typeof opEditors,
+      typeof generators,
+      CellShape
+    > = {
+      opShape: null as $IntentionalAny as OpShape,
+      // migrateOp(state: $IntentionalAny) {},
+      // migrateCell(s) {},
+
       version: 1,
-      editors,
+      editors: opEditors,
       generators: generators,
+      cellShape: null as any as CellShape,
     } as const
 
     const mem = new FrontMemoryAdapter()
@@ -70,7 +79,8 @@ describe(`saaz`, () => {
 
     await saaz.ready
 
-    expect(saaz.state.count).toEqual(0)
+    expect(saaz.state.op.opCount).toEqual(undefined)
+    expect(saaz.state.cell.cellCount).toEqual(undefined)
 
     expect(() =>
       saaz.tx((editors) => {
@@ -78,7 +88,15 @@ describe(`saaz`, () => {
       }),
     ).toThrow()
 
-    expect(saaz.state.count).toEqual(0)
+    expect(() =>
+      saaz.tx(undefined, (draft) => {
+        draft.cellCount = 1
+        throw new Error('oops')
+      }),
+    ).toThrow()
+
+    expect(saaz.state.op.opCount).toEqual(undefined)
+    expect(saaz.state.cell.cellCount).toEqual(undefined)
 
     expect(() =>
       saaz.tx((editors) => {
@@ -87,7 +105,7 @@ describe(`saaz`, () => {
       }),
     ).toThrow()
 
-    expect(saaz.state.count).toEqual(0)
+    expect(saaz.state.op.opCount).toEqual(undefined)
 
     expect(() =>
       saaz.tx((editors) => {
@@ -97,23 +115,28 @@ describe(`saaz`, () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100))
 
-    expect(saaz.state.count).toEqual(10)
+    expect(saaz.state.op.opCount).toEqual(10)
+
+    saaz.tx(undefined, (draft) => {
+      draft.cellCount = 1
+    })
+
+    expect(saaz.state.cell.cellCount).toEqual(1)
 
     saaz.tx((editors) => {
       editors.increaseBy({by: 3})
     })
 
-    expect(saaz.state.count).toEqual(13)
+    expect(saaz.state.op.opCount).toEqual(13)
 
     await saaz.waitForBackendSync()
-
-    // await new Promise((resolve) => setTimeout(resolve, 100))
 
     await saaz.waitForStorageSync()
 
     expect(
-      (mem.export() as $IntentionalAny).keyval['test/lastBackendState'].value,
-    ).toEqual({count: 13})
+      (mem.export() as $IntentionalAny).keyval['test/lastBackendState'].value
+        .op,
+    ).toEqual({opCount: 13})
 
     // const fauxBackennd: SaazBackInterface = {
     //   async getUpdatesSinceClock() {
@@ -155,30 +178,58 @@ describe(`saaz`, () => {
 
     expect(saaz3.state).toEqual(saaz.state)
 
+    saaz.tx(undefined, (draft) => {
+      draft.cellCount = 2
+    })
+
+    expect(saaz.state.cell.cellCount).toEqual(2)
+
+    saaz.tx(undefined, (draft) => {
+      draft.cellCount = 3
+    })
+
+    expect(saaz.state.cell.cellCount).toEqual(3)
+
+    await saaz.waitForBackendSync()
+    await saaz3.waitForBackendSync()
+
+    expect(saaz3.state).toEqual(saaz.state)
+
+    saaz.undo()
+
+    expect(saaz.state.cell.cellCount).toEqual(2)
+
+    await saaz.waitForBackendSync()
+    await saaz3.waitForBackendSync()
+
+    expect(saaz3.state).toEqual(saaz.state)
+
+    saaz.undo()
+
+    expect(saaz.state.cell.cellCount).toEqual(1)
+
+    saaz.redo()
+    expect(saaz.state.cell.cellCount).toEqual(2)
+
+    saaz.redo()
+    expect(saaz.state.cell.cellCount).toEqual(3)
+
+    saaz.undo()
+    saaz.undo()
+    expect(saaz.state.cell.cellCount).toEqual(1)
+
+    saaz.tx(undefined, (draft) => {
+      draft.cellCount = 4
+    })
+
+    expect(saaz.state.cell.cellCount).toEqual(4)
+    saaz.redo()
+    expect(saaz.state.cell.cellCount).toEqual(4)
+    saaz.undo()
+    expect(saaz.state.cell.cellCount).toEqual(1)
+
     saaz.teardown()
     saaz2.teardown()
     saaz3.teardown()
-
-    // const s = saaz.scrub()
-    // s.capture((editors) => {
-    //   editors.foo({by: 1})
-    // })
-
-    // expect(saaz.state.count).toEqual(1)
-
-    // s.reset()
-    // expect(saaz.state.count).toEqual(0)
-    // s.capture((editors) => {
-    //   editors.foo({by: 1})
-    // })
-    // expect(saaz.state.count).toEqual(1)
-    // s.commit()
-    // expect(saaz.state.count).toEqual(1)
-
-    // saaz.undo()
-    // expect(saaz.state.count).toEqual(0)
-
-    // saaz.redo()
-    // expect(saaz.state.count).toEqual(0)
   })
 })

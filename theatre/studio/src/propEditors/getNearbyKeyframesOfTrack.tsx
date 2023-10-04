@@ -5,6 +5,7 @@ import type {
   KeyframeWithTrack,
   TrackWithId,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 const cache = new WeakMap<
   TrackData,
@@ -18,16 +19,22 @@ export function getNearbyKeyframesOfTrack(
   track: TrackWithId | undefined,
   sequencePosition: number,
 ): NearbyKeyframes {
-  if (!track || track.data.keyframes.length === 0) return noKeyframes
+  if (
+    !track ||
+    keyframeUtils.getSortedKeyframesCached(track.data.keyframes).length === 0
+  )
+    return noKeyframes
 
   const cachedItem = cache.get(track.data)
   if (cachedItem && cachedItem[0] === sequencePosition) {
     return cachedItem[1]
   }
 
+  const sorted = keyframeUtils.getSortedKeyframesCached(track.data.keyframes)
+
   function getKeyframeWithTrackId(idx: number): KeyframeWithTrack | undefined {
     if (!track) return
-    const found = track.data.keyframes[idx]
+    const found = sorted[idx]
     return (
       found && {
         kf: found,
@@ -42,13 +49,13 @@ export function getNearbyKeyframesOfTrack(
   }
 
   const calculate = (): NearbyKeyframes => {
-    const nextOrCurIdx = track.data.keyframes.findIndex(
+    const nextOrCurIdx = sorted.findIndex(
       (kf) => kf.position >= sequencePosition,
     )
 
     if (nextOrCurIdx === -1) {
       return {
-        prev: getKeyframeWithTrackId(track.data.keyframes.length - 1),
+        prev: getKeyframeWithTrackId(sorted.length - 1),
       }
     }
 

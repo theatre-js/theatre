@@ -16,6 +16,9 @@ import type {PathToProp} from '@theatre/utils/pathToProp'
 import {getPropConfigByPath} from '@theatre/shared/propTypes/utils'
 import {isPlainObject} from 'lodash-es'
 import userReadableTypeOfValue from '@theatre/utils/userReadableTypeOfValue'
+import type {StudioState} from '@theatre/sync-server/state/types'
+import type {IInvokableDraftEditors} from '@theatre/sync-server/state/schema'
+import {stateEditors} from '@theatre/sync-server/state/schema'
 
 /**
  * Deep-clones a plain JS object or a `string | number | boolean`. In case of a plain
@@ -74,8 +77,13 @@ function forEachDeepSimplePropOfCompoundProp(
 
 export default function createTransactionPrivateApi(
   ensureRunning: () => void,
-  stateEditors: ITransactionPrivateApi['stateEditors'],
+  draft: StudioState,
 ): ITransactionPrivateApi {
+  const _invokableStateEditors = proxyStateEditors(
+    draft,
+    stateEditors,
+    ensureRunning,
+  ) as IInvokableDraftEditors
   return {
     set: (pointer, value) => {
       ensureRunning()
@@ -97,13 +105,6 @@ export default function createTransactionPrivateApi(
             } does not have a prop at ${JSON.stringify(path)}`,
           )
         }
-
-        // if (isPropConfigComposite(propConfig)) {
-        //   propConfig.validate(_value)
-        // } else {
-
-        //   propConfig.validate(_value)
-        // }
 
         const setStaticOrKeyframeProp = <T>(
           value: T,
@@ -136,7 +137,7 @@ export default function createTransactionPrivateApi(
           if (typeof trackId === 'string') {
             const seq = root.sheet.getSequence()
             seq.position = seq.closestGridPosition(seq.position)
-            stateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
+            _invokableStateEditors.coreByProject.historic.sheetsById.sequence.setKeyframeAtPosition(
               {
                 ...propAddress,
                 trackId,
@@ -147,7 +148,7 @@ export default function createTransactionPrivateApi(
               },
             )
           } else {
-            stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.setValueOfPrimitiveProp(
+            _invokableStateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.setValueOfPrimitiveProp(
               {...propAddress, value: value as $FixMe},
             )
           }
@@ -217,7 +218,7 @@ export default function createTransactionPrivateApi(
             | undefined
 
           if (typeof trackId === 'string') {
-            stateEditors.coreByProject.historic.sheetsById.sequence.unsetKeyframeAtPosition(
+            _invokableStateEditors.coreByProject.historic.sheetsById.sequence.unsetKeyframeAtPosition(
               {
                 ...propAddress,
                 trackId,
@@ -225,7 +226,7 @@ export default function createTransactionPrivateApi(
               },
             )
           } else if (propConfig !== undefined) {
-            stateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.unsetValueOfPrimitiveProp(
+            _invokableStateEditors.coreByProject.historic.sheetsById.staticOverrides.byObject.unsetValueOfPrimitiveProp(
               propAddress,
             )
           }
@@ -249,7 +250,33 @@ export default function createTransactionPrivateApi(
       }
     },
     get stateEditors() {
-      return stateEditors
+      return _invokableStateEditors
     },
   }
+}
+
+function proxyStateEditors(
+  draft: StudioState,
+  part: $IntentionalAny = stateEditors,
+  ensureRunning: () => void,
+): {} {
+  return new Proxy(part, {
+    get(_, prop) {
+      ensureRunning()
+      if (Object.hasOwn(part, prop)) {
+        const v = part[prop as $IntentionalAny]
+        if (typeof v === 'function') {
+          return (opts: {}) => {
+            ensureRunning()
+            return v(draft, {}, opts)
+          }
+        } else if (typeof v === 'object' && v !== null) {
+          return proxyStateEditors(draft, v, ensureRunning)
+        } else {
+          return v
+        }
+      }
+      return undefined
+    },
+  })
 }

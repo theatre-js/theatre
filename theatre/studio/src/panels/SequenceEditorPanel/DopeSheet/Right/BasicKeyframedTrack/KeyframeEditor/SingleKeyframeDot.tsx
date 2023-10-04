@@ -27,6 +27,7 @@ import {useKeyframeInlineEditorPopover} from './useSingleKeyframeInlineEditorPop
 import usePresence, {
   PresenceFlag,
 } from '@theatre/studio/uiComponents/usePresence'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 export const DOT_SIZE_PX = 6
 const DOT_HOVER_SIZE_PX = DOT_SIZE_PX + 2
@@ -284,8 +285,9 @@ function useDragForSingleKeyframeDot(
             .getDragHandlers({
               ...sheetObject.address,
               domNode: node!,
-              positionAtStartOfDrag:
-                props.track.data.keyframes[props.index].position,
+              positionAtStartOfDrag: keyframeUtils.getSortedKeyframesCached(
+                props.track.data.keyframes,
+              )[props.index].position,
             })
             .onDragStart(event)
 
@@ -314,8 +316,9 @@ function useDragForSingleKeyframeDot(
 
         return {
           onDrag(dx, dy, event) {
-            const original =
-              propsAtStartOfDrag.track.data.keyframes[propsAtStartOfDrag.index]
+            const original = keyframeUtils.getSortedKeyframesCached(
+              propsAtStartOfDrag.track.data.keyframes,
+            )[propsAtStartOfDrag.index]
             const newPosition = Math.max(
               // check if our event hoversover a [data-pos] element
               DopeSnap.checkIfMouseEventSnapToPos(event, {

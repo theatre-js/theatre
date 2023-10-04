@@ -3,12 +3,13 @@ import type {
   AllPeersPresenceState,
   BackGetUpdateSinceClockResult,
   BackState,
+  FullSnapshot,
   SaazBackInterface,
   Schema,
   TempTransaction,
   TempTransactionApi,
   Transaction,
-  ValidSnapshot,
+  ValidOpSnapshot,
 } from '../types'
 import type {ValidGenerators, EditorDefinitionToEditorInvocable} from '../types'
 import type {OnDiskSnapshot} from '../types'
@@ -26,13 +27,22 @@ import waitForPrism from '@theatre/utils/waitForPrism'
 import {subscribeDebounced} from '@theatre/utils/subscribeDebounced'
 import fastDeepEqual from 'fast-deep-equal'
 import {diff} from 'jest-diff'
+import type {Ops} from '../rogue'
+import {jsonFromCell, makeDraft} from '../rogue'
+import memoizeFn from '@theatre/utils/memoizeFn'
 
 const emptyObject = {}
+const MAX_UNDO_STACK_SIZE = 1000
 
-type AtomState<Snapshot extends ValidSnapshot> = {
+type UndoStackItem = {
+  forwardOps: Ops
+  backwardOps: Ops
+}
+
+type AtomState<OpSnapshot extends ValidOpSnapshot, CellShape extends {}> = {
   optimisticUpdatesQueue: Transaction[]
-  backendState: BackState<Snapshot> | null
-  emptySnapshot: Snapshot
+  backendState: BackState<OpSnapshot> | null
+  emptySnapshot: FullSnapshot<OpSnapshot>
   tempTransactions: TempTransaction[]
   allPeersPresenceState: AllPeersPresenceState
   initialized: boolean
@@ -41,26 +51,33 @@ type AtomState<Snapshot extends ValidSnapshot> = {
    * We can use this to determine if the front storage is up to date.
    */
   frontStorageStateMirror: {
-    backendState: BackState<Snapshot> | null
+    backendState: BackState<OpSnapshot> | null
     optimisticUpdatesQueue: Transaction[]
   }
   peerClock: number
   closedSessions: ClosedSession[]
+  undoRedo: {
+    // the stack is a list of transactions that can be undone. The first item is the most recent transaction.
+    stack: UndoStackItem[]
+    // 0 means no undo has been called since the last transaction.
+    cursor: number
+  }
 }
 
 export class SaazFront<
-  Snapshot extends ValidSnapshot,
+  OpSnapshot extends ValidOpSnapshot,
   Editors extends {},
   Generators extends ValidGenerators,
+  CellShape extends {} = {},
 > {
   /**
    * Using an atom here so we can react to changes to its state
    */
-  private readonly _atom: Atom<AtomState<Snapshot>>
+  private readonly _atom: Atom<AtomState<OpSnapshot, CellShape>>
   /**
    * The initial snapshot that was saved to disk, and provided as opts.initialSnapshot to the constructor
    */
-  private readonly _diskSnapshot: OnDiskSnapshot<Snapshot> | null
+  private readonly _diskSnapshot: OnDiskSnapshot<OpSnapshot> | null
   /**
    * The peer id of this frontend. It is supposed to be unique per-tab, and globally. If there are more than
    * one Saaz instance per tab, then each should have its own peer id. Better to generate this via UUID.
@@ -100,7 +117,7 @@ export class SaazFront<
   /**
    * The schema includes the shape of the snapshot, a nested object of editors, and a shallow object of generator functions.
    */
-  private readonly _schema: Schema<Snapshot, Editors, Generators>
+  private readonly _schema: Schema<OpSnapshot, Editors, Generators>
 
   /**
    * A counter that is used to generate unique ids for temp transactions.
@@ -116,18 +133,19 @@ export class SaazFront<
    * We use dataverse prisms to derive several values from the atom. This makes the reactive parts of the code easier to maintain.
    */
   private _prisms: {
+    base: Prism<FullSnapshot<OpSnapshot>>
     /**
      * The state as it is on the backend, plus all the optimistic updates that have not been acknowledged by the backend yet.
      */
-    optimisticState: Prism<Snapshot>
+    optimisticState: Prism<FullSnapshot<OpSnapshot>>
     /**
      * This is optimisticState (see above), plus the temp transactions.
      */
-    withTemps: Prism<Snapshot>
+    withTemps: Prism<FullSnapshot<OpSnapshot>>
     /**
      * This is withTemps (see above), plus the temp transactions of all the peers.
      */
-    withPeers: Prism<Snapshot>
+    withPeers: Prism<FullSnapshot<OpSnapshot>>
 
     /**
      * The number of optimistic updates that have not been acknowledged by the backend yet.
@@ -144,12 +162,15 @@ export class SaazFront<
      */
     allSyncedToFrontStorage: Prism<boolean>
   } = {
-    optimisticState: prism<Snapshot>(() => {
-      const base: Snapshot =
-        val(this._atom.pointer.backendState.value) ??
+    base: prism<FullSnapshot<OpSnapshot>>(() => {
+      return (
+        val(this._atom.pointer.backendState.snapshot) ??
         val(this._atom.pointer.emptySnapshot)
-
-      let stateSoFar: Snapshot = base
+      )
+    }),
+    optimisticState: prism<FullSnapshot<OpSnapshot>>(() => {
+      const base = this._prisms.base.getValue()
+      let stateSoFar = base
       // this may become a bottleneck
       const closedSessions = val(this._atom.pointer.closedSessions)
       for (const session of closedSessions) {
@@ -181,7 +202,7 @@ export class SaazFront<
       return stateSoFar
     }),
 
-    withTemps: prism<Snapshot>(() => {
+    withTemps: prism<FullSnapshot<OpSnapshot>>(() => {
       let currentState = this._prisms.optimisticState.getValue()
       const temps = val(this._atom.pointer.tempTransactions)
       for (const temp of temps) {
@@ -195,7 +216,7 @@ export class SaazFront<
       return currentState
     }),
 
-    withPeers: prism<Snapshot>(() => {
+    withPeers: prism<FullSnapshot<OpSnapshot>>(() => {
       let currentState = this._prisms.withTemps.getValue()
       for (const [peerId, presence] of Object.entries(
         val(this._atom.pointer.allPeersPresenceState),
@@ -269,14 +290,18 @@ export class SaazFront<
   private _caches = {
     transactionToState: new WeakMap<
       Transaction,
-      {before: Snapshot; after: Snapshot; base: Snapshot}
+      {
+        before: FullSnapshot<OpSnapshot>
+        after: FullSnapshot<OpSnapshot>
+        base: FullSnapshot<OpSnapshot>
+      }
     >(),
   }
 
   constructor(opts: {
-    schema: Schema<Snapshot, Editors, Generators>
+    schema: Schema<OpSnapshot, Editors, Generators, CellShape>
     backend: SaazBackInterface
-    diskSnapshot?: OnDiskSnapshot<Snapshot>
+    diskSnapshot?: OnDiskSnapshot<OpSnapshot>
     peerId: string
     dbName: string
     storageAdapter: FrontStorageAdapter
@@ -296,9 +321,9 @@ export class SaazFront<
     } else {
       this._diskSnapshot = null
     }
-    this._atom = new Atom<AtomState<Snapshot>>({
+    this._atom = new Atom<AtomState<OpSnapshot, CellShape>>({
       optimisticUpdatesQueue: [],
-      emptySnapshot: ensureStateIsUptodate({}, opts.schema),
+      emptySnapshot: ensureStateIsUptodate(null, opts.schema),
       backendState: null,
       tempTransactions: [],
       allPeersPresenceState: emptyObject,
@@ -309,6 +334,10 @@ export class SaazFront<
       },
       peerClock: -1,
       closedSessions: [],
+      undoRedo: {
+        stack: [],
+        cursor: 0,
+      },
     })
 
     this._initializedPromise = waitForPrism(
@@ -359,7 +388,7 @@ export class SaazFront<
           backendClock: initialSnapshot?.clock ?? null,
           lastIncorporatedPeerClock: null,
           lastSyncTime: null,
-          value: initialSnapshot?.snapshot ?? null,
+          snapshot: initialSnapshot?.snapshot ?? null,
         })
       } else {
         if (initialSnapshot) {
@@ -370,9 +399,8 @@ export class SaazFront<
             lastSyncTime: null,
             backendClock: cachedBackendState.backendClock ?? null,
             lastIncorporatedPeerClock: null,
-
-            value: ensureStateIsUptodate(
-              cachedBackendState.value,
+            snapshot: ensureStateIsUptodate<OpSnapshot>(
+              cachedBackendState.snapshot as $IntentionalAny,
               this._schema,
             ),
           })
@@ -500,7 +528,7 @@ export class SaazFront<
         backendClock: s.clock,
         lastIncorporatedPeerClock: s.lastIncorporatedPeerClock,
         lastSyncTime: Date.now(),
-        value: snapshot.value as $IntentionalAny,
+        snapshot: snapshot.value,
       })
     }
   }
@@ -567,9 +595,9 @@ export class SaazFront<
 
   private _cachedApplyTransactionToState(
     transaction: Transaction,
-    base: Snapshot,
-    before: Snapshot,
-  ): Snapshot {
+    base: FullSnapshot<OpSnapshot>,
+    before: FullSnapshot<OpSnapshot>,
+  ): FullSnapshot<OpSnapshot> {
     let cache = this._caches.transactionToState.get(transaction)
     if (cache) {
       if (cache.before === before) {
@@ -594,8 +622,11 @@ export class SaazFront<
     return after
   }
 
-  _setBackendState(opts: BackState<Snapshot>) {
-    const s = {...opts, value: ensureStateIsUptodate(opts.value, this._schema)}
+  _setBackendState(opts: BackState<OpSnapshot>) {
+    const s = {
+      ...opts,
+      value: ensureStateIsUptodate(opts.snapshot, this._schema),
+    }
     this._atom.setByPointer((p) => p.backendState, s)
 
     // let's GC the updates the backend has incorporated
@@ -650,8 +681,8 @@ export class SaazFront<
     return unsub
   }
 
-  get state(): Snapshot {
-    return this._prisms.withPeers.getValue()
+  get state(): {op: OpSnapshot; cell: CellShape} {
+    return finalState(this._prisms.withPeers.getValue()) as $IntentionalAny
   }
 
   get isReady(): boolean {
@@ -662,35 +693,39 @@ export class SaazFront<
     return this._initializedPromise
   }
 
-  tx(fn: (editors: EditorDefinitionToEditorInvocable<Editors>) => void): void {
-    const [update, isEmpty] = this._createTransaction(
+  tx(
+    editorFn?: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
+    draftFn?: (cellDraft: CellShape) => void,
+    undoable: boolean = true,
+  ): void {
+    const [update, isEmpty, backwardOps] = this._createTransaction(
       this._prisms.optimisticState.getValue(),
-      (editors) => {
-        return fn(editors)
-      },
+      editorFn,
+      draftFn,
     )
     if (isEmpty) return
-    this._pushOptimisticUpdate(update)
+    this._pushOptimisticUpdate(update, undoable ? backwardOps : [])
   }
 
   tempTx(
-    fn: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
-    existingTempTransaction?: TempTransactionApi<Editors>,
-  ): TempTransactionApi<Editors> {
+    editorFn?: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
+    draftFn?: (cellDraft: CellShape) => void,
+    existingTempTransaction?: TempTransactionApi<Editors, CellShape>,
+  ): TempTransactionApi<Editors, CellShape> {
     if (existingTempTransaction) {
-      existingTempTransaction.recapture(fn)
+      existingTempTransaction.recapture(editorFn, draftFn)
       return existingTempTransaction
     }
-    const [o, originalIsEmpty] = this._createTransaction(
+    const [o, originalIsEmpty, originalBackwardOps] = this._createTransaction(
       this._prisms.optimisticState.getValue(),
-      (editors) => {
-        return fn(editors)
-      },
+      editorFn,
+      draftFn,
     )
 
     const originalTransaction: TempTransaction = {
       ...o,
       tempId: this._tempTransactionCounter++,
+      backwardOps: originalBackwardOps,
     }
 
     this._setTempTransaction(originalTransaction.tempId, originalTransaction)
@@ -700,7 +735,7 @@ export class SaazFront<
 
     let transactionState: 'alive' | 'committed' | 'discarded' = 'alive'
 
-    const commit = (): void => {
+    const commit = (undoable: boolean = true): void => {
       if (transactionState !== 'alive') {
         throw new Error('Transaction is already ' + transactionState)
       }
@@ -710,7 +745,10 @@ export class SaazFront<
 
       const finalUpdate = {...currentTransaction}
 
-      this._pushOptimisticUpdate(finalUpdate)
+      this._pushOptimisticUpdate(
+        finalUpdate,
+        undoable ? currentTransaction.backwardOps : [],
+      )
     }
     const discard = (): void => {
       if (transactionState !== 'alive') {
@@ -720,21 +758,22 @@ export class SaazFront<
       this._setTempTransaction(originalTransaction.tempId, undefined)
     }
     const recapture = (
-      fn: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
+      editorFn?: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
+      draftFn?: (cellDraft: CellShape) => void,
     ): void => {
       if (transactionState !== 'alive') {
         throw new Error('Transaction is already ' + transactionState)
       }
-      const [update, newIsEmpty] = this._createTransaction(
+      const [update, newIsEmpty, backwardOps] = this._createTransaction(
         this._prisms.optimisticState.getValue(),
-        (editors) => {
-          return fn(editors)
-        },
+        editorFn,
+        draftFn,
       )
 
       const newTransaction: TempTransaction = {
         ...update,
         tempId: originalTransaction.tempId,
+        backwardOps,
       }
       currentTransaction = newTransaction
       currentIsEmpty = newIsEmpty
@@ -781,21 +820,40 @@ export class SaazFront<
   }
 
   private _createTransaction(
-    snapshot: Snapshot,
-    fn: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
-    warnIfNoInvokations: boolean = true,
-  ): [udpate: Omit<Transaction, 'peerClock'>, isEmpty: boolean] {
-    const invokations = recordInvokations(this._schema.editors, fn)
+    fullSnapshot: FullSnapshot<OpSnapshot>,
+    editorFn?: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
+    draftFn?: (draft: CellShape) => void,
+    warnIfNoInvokations: boolean = false,
+  ): [
+    udpate: Omit<Transaction, 'peerClock'>,
+    isEmpty: boolean,
+    backwardOps: Ops,
+  ] {
+    const invokations = editorFn
+      ? recordInvokations(this._schema.editors, editorFn)
+      : []
 
     if (invokations.length === 0) {
-      if (warnIfNoInvokations)
+      if (warnIfNoInvokations && editorFn)
         console.info(`Transaction didn't invoke any editors. It's a no-op.`)
+    }
+    let backwardOps: Ops = []
+
+    let draftOps: any[] = []
+    if (typeof draftFn === 'function') {
+      const [draft, fin] = makeDraft(fullSnapshot.cell)
+      draftFn(draft)
+      const [_, forwardOps, _backwardOps] = fin()
+      if (forwardOps.length > 0) {
+        draftOps = forwardOps
+        backwardOps = _backwardOps
+      }
     }
 
     const [producedSnapshot, generatorRecordings] =
       applyOptimisticUpdateToState(
-        {invokations, generatorRecordings: {}},
-        snapshot,
+        {invokations, generatorRecordings: {}, draftOps},
+        fullSnapshot,
         this._schema,
         false,
       )
@@ -803,13 +861,16 @@ export class SaazFront<
     const transaction: Omit<Transaction, 'peerClock'> = {
       invokations,
       generatorRecordings: generatorRecordings,
+      draftOps: draftOps,
       peerId: this._peerId,
     }
-    // const after = finishDraft(draft) as $FixMe as State
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' && editorFn) {
       if (
-        !fastDeepEqual(invokations, recordInvokations(this._schema.editors, fn))
+        !fastDeepEqual(
+          invokations,
+          recordInvokations(this._schema.editors, editorFn),
+        )
       ) {
         throw new Error(
           `Transaction function seems to invoke different editors each time it is called. This means it is not deterministic, and running it several times will create different states. To fix this, make sure the transaction calls exactly the same editors, in the same order, with the same arguments`,
@@ -818,7 +879,7 @@ export class SaazFront<
 
       const [secondSnapshot] = applyOptimisticUpdateToState(
         transaction,
-        snapshot,
+        fullSnapshot,
         this._schema,
         true,
       )
@@ -836,8 +897,9 @@ export class SaazFront<
             {
               invokations: invokationsSoFar,
               generatorRecordings: transaction.generatorRecordings,
+              draftOps: transaction.draftOps,
             },
-            snapshot,
+            fullSnapshot,
             this._schema,
             true,
           )
@@ -846,8 +908,9 @@ export class SaazFront<
             {
               invokations: invokationsSoFar,
               generatorRecordings: transaction.generatorRecordings,
+              draftOps: transaction.draftOps,
             },
-            snapshot,
+            fullSnapshot,
             this._schema,
             true,
           )
@@ -874,7 +937,11 @@ export class SaazFront<
       }
     }
 
-    return [transaction, invokations.length === 0]
+    return [
+      transaction,
+      invokations.length === 0 && transaction.draftOps.length === 0,
+      backwardOps,
+    ]
   }
 
   async waitForStorageSync() {
@@ -883,6 +950,8 @@ export class SaazFront<
 
   private _pushOptimisticUpdate(
     updateWithoutPeerClock: Omit<Transaction, 'peerClock'>,
+    // if defined, then it'll constitute an undo-able operation
+    backwardOps: Ops | undefined,
   ): void {
     const clockBefore = this._atom.get().peerClock
     const newClock = clockBefore + 1
@@ -892,6 +961,7 @@ export class SaazFront<
       invokations: updateWithoutPeerClock.invokations,
       peerId: updateWithoutPeerClock.peerId,
       peerClock: newClock,
+      draftOps: updateWithoutPeerClock.draftOps,
     }
 
     this._atom.reduce((state) => ({
@@ -899,6 +969,12 @@ export class SaazFront<
       peerClock: newClock,
       optimisticUpdatesQueue: [...state.optimisticUpdatesQueue, transaction],
     }))
+
+    if (backwardOps?.length === 0) {
+      console.log('no backward ops', transaction.draftOps)
+    }
+    if (backwardOps && backwardOps.length > 0)
+      this._addToUndoStack({backwardOps, forwardOps: transaction.draftOps})
   }
 
   async waitForBackendSync(): Promise<void> {
@@ -909,22 +985,89 @@ export class SaazFront<
     )
   }
 
+  private _addToUndoStack(op: UndoStackItem) {
+    this._atom.reduceByPointer(
+      (p) => p.undoRedo,
+      (o) => {
+        let stack =
+          // copy the stack
+          [...o.stack]
+            // and only keep the items that are before the cursor (so if the user has undone, and then does a new operation, we'll discard the redo stack)
+            .slice(o.cursor)
+
+        stack.unshift(op)
+
+        if (stack.length > MAX_UNDO_STACK_SIZE)
+          stack.length = MAX_UNDO_STACK_SIZE
+
+        return {
+          cursor: 0,
+          stack,
+        }
+      },
+    )
+  }
+
   undo() {
-    throw new Error('not implemented')
+    const undoRedo = this._atom.get().undoRedo
+    if (undoRedo.cursor >= undoRedo.stack.length) return
+    const item = undoRedo.stack[undoRedo.cursor]
+    this._atom.reduceByPointer(
+      (p) => p.undoRedo,
+      (o) => {
+        return {
+          ...o,
+          cursor: o.cursor + 1,
+        }
+      },
+    )
+
+    this._pushOptimisticUpdate(
+      {
+        draftOps: item.backwardOps,
+        generatorRecordings: {},
+        invokations: [],
+        peerId: this._peerId,
+      },
+      undefined,
+    )
   }
 
   redo() {
-    throw new Error('not implemented')
+    const undoRedo = this._atom.get().undoRedo
+    if (undoRedo.cursor === 0) return
+    const item = undoRedo.stack[undoRedo.cursor - 1]
+    this._atom.reduceByPointer(
+      (p) => p.undoRedo,
+      (o) => {
+        return {
+          ...o,
+          cursor: o.cursor - 1,
+        }
+      },
+    )
+
+    this._pushOptimisticUpdate(
+      {
+        draftOps: item.forwardOps,
+        generatorRecordings: {},
+        invokations: [],
+        peerId: this._peerId,
+      },
+      undefined,
+    )
   }
 
-  subscribe(fn: (newState: Snapshot) => void): () => void {
+  subscribe(
+    fn: (newState: {op: OpSnapshot; cell: CellShape}) => void,
+  ): () => void {
     const withPeers = this._prisms.withPeers
     let oldState = withPeers.getValue()
     return withPeers.onStale(() => {
       const newState = withPeers.getValue()
       if (newState !== oldState) {
         oldState = newState
-        fn(newState)
+        fn(finalState(newState) as $IntentionalAny)
       }
     })
   }
@@ -936,6 +1079,13 @@ export class SaazFront<
 
 type ClosedSession = {
   peerId: string
-  backState: BackState<ValidSnapshot> | null
+  backState: BackState<ValidOpSnapshot> | null
   optimisticUpdates: Transaction[]
 }
+
+const finalState = memoizeFn(<S>(s: FullSnapshot<S>): {op: S; cell: {}} => {
+  return {
+    op: s.op,
+    cell: jsonFromCell(s.cell) as $IntentionalAny,
+  }
+})

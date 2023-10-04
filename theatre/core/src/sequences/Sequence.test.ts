@@ -5,6 +5,7 @@ import type {
   SequenceTrackId,
 } from '@theatre/sync-server/state/types/core'
 import {asKeyframeId, asSequenceTrackId} from '@theatre/shared/utils/ids'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 describe(`Sequence`, () => {
   test('sequence.getKeyframesOfSimpleProp()', async () => {
@@ -14,8 +15,8 @@ describe(`Sequence`, () => {
       },
       sequence: {
         type: 'PositionalSequence',
-        length: 20,
-        subUnitsPerUnit: 30,
+        // length: 20,
+        // subUnitsPerUnit: 30,
         tracksByObject: {
           ['obj' as ObjectAddressKey]: {
             trackIdByPropPath: {
@@ -24,7 +25,8 @@ describe(`Sequence`, () => {
             trackData: {
               ['1' as SequenceTrackId]: {
                 type: 'BasicKeyframedTrack',
-                keyframes: [
+
+                keyframes: keyframeUtils.fromArray([
                   {
                     id: asKeyframeId('0'),
                     position: 10,
@@ -41,7 +43,7 @@ describe(`Sequence`, () => {
                     type: 'bezier',
                     value: 6,
                   },
-                ],
+                ]),
               },
             },
           },

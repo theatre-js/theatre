@@ -27,6 +27,7 @@ import type {
   ITheatreLoggingConfig,
 } from '@theatre/shared/logger'
 import {_coreLogger} from '@theatre/core/_coreLogger'
+import type {$IntentionalAny} from '@theatre/utils/types'
 
 type ICoreAssetStorage = {
   /** Returns a URL for the provided asset ID */
@@ -198,7 +199,9 @@ export default class Project {
         await initialiseProjectState(studio, this, this.config.state)
 
         this._pointerProxies.historic.setPointer(
-          studio.atomP.historic.coreByProject[this.address.projectId],
+          studio.atomP.historic.coreByProject[
+            this.address.projectId
+          ] as $IntentionalAny,
         )
 
         this._pointerProxies.ephemeral.setPointer(

@@ -20,6 +20,7 @@ import {useKeyframeInlineEditorPopover} from '@theatre/studio/panels/SequenceEdi
 import usePresence, {
   PresenceFlag,
 } from '@theatre/studio/uiComponents/usePresence'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 export const dotSize = 6
 
@@ -62,7 +63,10 @@ const GraphEditorDotNonScalar: React.VFC<IProps> = (props) => {
   const [ref, node] = useRefAndState<SVGCircleElement | null>(null)
 
   const {index, trackData, itemKey} = props
-  const cur = trackData.keyframes[index]
+  const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+    trackData.keyframes,
+  )
+  const cur = sortedKeyframes[index]
 
   const [contextMenu] = useKeyframeContextMenu(node, props)
 
@@ -151,8 +155,10 @@ function useDragKeyframe(options: {
 
         return {
           onDrag(dx, dy) {
-            const original =
-              propsAtStartOfDrag.trackData.keyframes[propsAtStartOfDrag.index]
+            const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+              propsAtStartOfDrag.trackData.keyframes,
+            )
+            const original = sortedKeyframes[propsAtStartOfDrag.index]
 
             const deltaPos = toUnitSpace(dx)
 

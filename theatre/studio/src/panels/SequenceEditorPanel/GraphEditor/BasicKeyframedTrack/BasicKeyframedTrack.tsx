@@ -16,6 +16,7 @@ import {
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import {useVal} from '@theatre/react'
 import type {GraphEditorColors} from '@theatre/sync-server/state/types'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 export type ExtremumSpace = {
   fromValueSpace: (v: number) => number
@@ -62,10 +63,13 @@ const BasicKeyframedTrack: React.VFC<{
     }, [])
 
     const extremumSpace: ExtremumSpace = useMemo(() => {
+      const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+        trackData.keyframes,
+      )
       const extremums =
         propConfig.type === 'number'
-          ? calculateScalarExtremums(trackData.keyframes, propConfig)
-          : calculateNonScalarExtremums(trackData.keyframes)
+          ? calculateScalarExtremums(sortedKeyframes, propConfig)
+          : calculateNonScalarExtremums(sortedKeyframes)
 
       const fromValueSpace = (val: number): number =>
         (val - extremums[0]) / (extremums[1] - extremums[0])
@@ -91,7 +95,11 @@ const BasicKeyframedTrack: React.VFC<{
       cachedExtremumSpace.current = extremumSpace
     }
 
-    const keyframeEditors = trackData.keyframes.map((kf, index) => (
+    const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+      trackData.keyframes,
+    )
+
+    const keyframeEditors = sortedKeyframes.map((kf, index) => (
       <KeyframeEditor
         pathToProp={pathToProp}
         propConfig={propConfig}

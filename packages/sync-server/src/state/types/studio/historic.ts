@@ -89,7 +89,7 @@ export type StudioHistoricStateSequenceEditorMarker = {
  * See root {@link StudioHistoricState}
  */
 export type StudioHistoricStateProjectSheet = {
-  selectedInstanceId: undefined | SheetInstanceId
+  selectedInstanceId?: undefined | SheetInstanceId
   sequenceEditor: {
     markerSet?: PointableSet<
       SequenceMarkerId,
@@ -122,6 +122,5 @@ export type StudioHistoricState = {
     PaneInstanceId,
     PaneInstanceDescriptor
   >
-  autoKey: boolean
   coreByProject: Record<ProjectId, ProjectState_Historic>
 }

@@ -3,6 +3,7 @@ import type Project from '@theatre/core/projects/Project'
 import {val} from '@theatre/dataverse'
 import forEachPropDeep from '@theatre/shared/utils/forEachDeep'
 import type {$IntentionalAny} from '@theatre/utils/types'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 export function getAllPossibleAssetIDs(project: Project, type?: string) {
   const sheets = Object.values(val(project.pointers.historic.sheetsById) ?? {})
@@ -13,7 +14,11 @@ export function getAllPossibleAssetIDs(project: Project, type?: string) {
   const keyframeValues = sheets
     .flatMap((sheet) => Object.values(sheet?.sequence?.tracksByObject ?? {}))
     .flatMap((tracks) => Object.values(tracks?.trackData ?? {}))
-    .flatMap((track) => track?.keyframes)
+    .flatMap((track) =>
+      keyframeUtils.getSortedKeyframesCached(
+        track?.keyframes ?? {byId: {}, allIds: {}},
+      ),
+    )
     .map((keyframe) => keyframe?.value)
 
   const allValues = [...keyframeValues]

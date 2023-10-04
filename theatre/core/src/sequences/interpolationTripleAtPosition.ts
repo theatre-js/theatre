@@ -8,6 +8,7 @@ import {prism, val} from '@theatre/dataverse'
 import type {IUtilContext} from '@theatre/shared/logger'
 import type {SerializableValue} from '@theatre/utils/types'
 import UnitBezier from 'timing-function/lib/UnitBezier'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 /** `left` and `right` are not necessarily the same type.  */
 export type InterpolationTriple = {
@@ -86,8 +87,9 @@ function updateState(
   progressionD: Prism<number>,
   track: BasicKeyframedTrack,
 ): IStartedState {
+  const keyframes = keyframeUtils.getSortedKeyframesCached(track.keyframes)
   const progression = progressionD.getValue()
-  if (track.keyframes.length === 0) {
+  if (keyframes.length === 0) {
     return {
       started: true,
       validFrom: -Infinity,
@@ -99,7 +101,7 @@ function updateState(
   let currentKeyframeIndex = 0
 
   while (true) {
-    const currentKeyframe = track.keyframes[currentKeyframeIndex]
+    const currentKeyframe = keyframes[currentKeyframeIndex]
 
     if (!currentKeyframe) {
       if (process.env.NODE_ENV !== 'production') {
@@ -108,7 +110,7 @@ function updateState(
       return states.error
     }
 
-    const isLastKeyframe = currentKeyframeIndex === track.keyframes.length - 1
+    const isLastKeyframe = currentKeyframeIndex === keyframes.length - 1
 
     if (progression < currentKeyframe.position) {
       if (currentKeyframeIndex === 0) {
@@ -128,23 +130,23 @@ function updateState(
       } else {
         return states.between(
           currentKeyframe,
-          track.keyframes[currentKeyframeIndex + 1],
+          keyframes[currentKeyframeIndex + 1],
           progressionD,
         )
       }
     } else {
       // last point
-      if (currentKeyframeIndex === track.keyframes.length - 1) {
+      if (currentKeyframeIndex === keyframes.length - 1) {
         return states.lastKeyframe(currentKeyframe)
       } else {
         const nextKeyframeIndex = currentKeyframeIndex + 1
-        if (track.keyframes[nextKeyframeIndex].position <= progression) {
+        if (keyframes[nextKeyframeIndex].position <= progression) {
           currentKeyframeIndex = nextKeyframeIndex
           continue
         } else {
           return states.between(
             currentKeyframe,
-            track.keyframes[currentKeyframeIndex + 1],
+            keyframes[currentKeyframeIndex + 1],
             progressionD,
           )
         }

@@ -7,6 +7,7 @@ export default class AppLink {
   private _client!: CreateTRPCProxyClient<AppTrpcRouter>
 
   constructor(private _webAppUrl: string) {
+    if (process.env.NODE_ENV === 'test') return
     this._client = createTRPCProxyClient<AppTrpcRouter>({
       links: [
         httpBatchLink({
@@ -21,7 +22,7 @@ export default class AppLink {
       transformer: superjson,
     })
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && false) {
       void this._client.healthCheck.query({name: 'the lib'}).then((res) => {
         console.log('app/healthCheck', res)
       })

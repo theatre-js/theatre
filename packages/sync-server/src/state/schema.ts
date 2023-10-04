@@ -35,7 +35,6 @@ import findLastIndex from 'lodash-es/findLastIndex'
 import keyBy from 'lodash-es/keyBy'
 import pullFromArray from 'lodash-es/pull'
 import set from 'lodash-es/set'
-import sortBy from 'lodash-es/sortBy'
 import type {
   KeyframeWithPathToPropFromCommonRoot,
   OutlineSelectionState,
@@ -48,13 +47,14 @@ import type {
 import {clamp, cloneDeep} from 'lodash-es'
 import {pointableSetUtil} from '@theatre/utils/PointableSet'
 import type {ProjectState_Historic} from './types'
-import {current} from 'immer'
+import {current} from '@theatre/saaz'
 import type {Draft as _Draft} from 'immer'
 import type {
   EditorDefinitionToEditorInvocable,
   Schema,
 } from '@theatre/saaz/src/types'
 import {nanoid as generateNonSecure} from 'nanoid/non-secure'
+import memoizeFn from '@theatre/utils/memoizeFn'
 
 export const graphEditorColors: GraphEditorColors = {
   '1': {iconColor: '#b98b08'},
@@ -77,13 +77,13 @@ function generateSequenceTrackId(): SequenceTrackId {
   return generateNonSecure(10) as SequenceTrackId
 }
 
-export const stateEditorAPI = {
+const generators = {
   rand,
   generateKeyframeId,
   generateSequenceTrackId,
 } as const
 
-export type StateEditorsAPI = typeof stateEditorAPI
+export type StateEditorsAPI = {}
 
 type Draft = _Draft<StudioState>
 type API = StateEditorsAPI
@@ -91,14 +91,7 @@ type API = StateEditorsAPI
 const initialState: StudioState = {
   $schemaVersion: 1,
   ahistoric: {
-    visibilityState: 'everythingIsVisible',
-    theTrigger: {
-      position: {
-        closestCorner: 'bottomLeft',
-        distanceFromHorizontalEdge: 0.02,
-        distanceFromVerticalEdge: 0.02,
-      },
-    },
+    // visibilityState: 'everythingIsVisible',
     projects: {
       stateByProjectId: {},
     },
@@ -107,7 +100,6 @@ const initialState: StudioState = {
     projects: {
       stateByProjectId: {},
     },
-    autoKey: true,
     coreByProject: {},
     panelInstanceDesceriptors: {},
   },
@@ -119,6 +111,12 @@ const initialState: StudioState = {
 }
 
 export namespace stateEditors {
+  function _ensureAll(draft: Draft): Required<StudioState> {
+    draft.ahistoric ??= initialState.ahistoric
+    draft.historic ??= initialState.historic
+    draft.ephemeral ??= initialState.ephemeral
+    return draft as Required<StudioState>
+  }
   export namespace studio {
     export namespace historic {
       export namespace panelPositions {
@@ -130,7 +128,7 @@ export namespace stateEditors {
             position: PanelPosition
           },
         ) {
-          const h = draft.historic
+          const h = _ensureAll(draft).historic
           h.panelPositions ??= {}
           h.panelPositions[p.panelId] = p.position
         }
@@ -142,7 +140,7 @@ export namespace stateEditors {
           api: API,
           {instanceId, paneClass}: PaneInstanceDescriptor,
         ) {
-          draft.historic.panelInstanceDesceriptors[instanceId] = {
+          _ensureAll(draft).historic.panelInstanceDesceriptors[instanceId] = {
             instanceId,
             paneClass,
           }
@@ -153,13 +151,15 @@ export namespace stateEditors {
           api: API,
           p: {instanceId: PaneInstanceId},
         ) {
-          delete draft.historic.panelInstanceDesceriptors[p.instanceId]
+          delete _ensureAll(draft).historic.panelInstanceDesceriptors[
+            p.instanceId
+          ]
         }
       }
       export namespace panels {
         export function _ensure(draft: Draft, api: API) {
-          draft.historic.panels ??= {}
-          return draft.historic.panels!
+          _ensureAll(draft).historic.panels ??= {}
+          return _ensureAll(draft).historic.panels!
         }
 
         export namespace outline {
@@ -214,7 +214,7 @@ export namespace stateEditors {
       export namespace projects {
         export namespace stateByProjectId {
           export function _ensure(draft: Draft, api: API, p: ProjectAddress) {
-            const s = draft.historic
+            const s = _ensureAll(draft).historic
             if (!s.projects.stateByProjectId[p.projectId]) {
               s.projects.stateByProjectId[p.projectId] = {
                 stateBySheetId: {},
@@ -284,7 +284,6 @@ export namespace stateEditors {
                 for (const [_, selectedProps] of Object.entries(
                   selectedPropsByObject,
                 )) {
-                  // debugger
                   for (const [_, takenColor] of Object.entries(
                     selectedProps!,
                   )) {
@@ -452,7 +451,7 @@ export namespace stateEditors {
       export namespace projects {
         export namespace stateByProjectId {
           export function _ensure(draft: Draft, api: API, p: ProjectAddress) {
-            const s = draft.ephemeral
+            const s = _ensureAll(draft).ephemeral
             if (!s.projects.stateByProjectId[p.projectId]) {
               s.projects.stateByProjectId[p.projectId] = {
                 stateBySheetId: {},
@@ -533,28 +532,28 @@ export namespace stateEditors {
         api: API,
         pinOutline: StudioAhistoricState['pinOutline'],
       ) {
-        draft.ahistoric.pinOutline = pinOutline
+        _ensureAll(draft).ahistoric.pinOutline = pinOutline
       }
       export function setPinDetails(
         draft: Draft,
         api: API,
         pinDetails: StudioAhistoricState['pinDetails'],
       ) {
-        draft.ahistoric.pinDetails = pinDetails
+        _ensureAll(draft).ahistoric.pinDetails = pinDetails
       }
       export function setPinNotifications(
         draft: Draft,
         api: API,
         pinNotifications: StudioAhistoricState['pinNotifications'],
       ) {
-        draft.ahistoric.pinNotifications = pinNotifications
+        _ensureAll(draft).ahistoric.pinNotifications = pinNotifications
       }
       export function setVisibilityState(
         draft: Draft,
         api: API,
         visibilityState: StudioAhistoricState['visibilityState'],
       ) {
-        draft.ahistoric.visibilityState = visibilityState
+        _ensureAll(draft).ahistoric.visibilityState = visibilityState
       }
 
       export function setClipboardKeyframes(
@@ -573,12 +572,13 @@ export namespace stateEditors {
           }),
         )
 
+        const ahistoric = _ensureAll(draft).ahistoric
         // save selection
-        if (draft.ahistoric.clipboard) {
-          draft.ahistoric.clipboard.keyframesWithRelativePaths =
+        if (ahistoric.clipboard) {
+          ahistoric.clipboard.keyframesWithRelativePaths =
             keyframesWithCommonRootPath
         } else {
-          draft.ahistoric.clipboard = {
+          _ensureAll(draft).ahistoric.clipboard = {
             keyframesWithRelativePaths: keyframesWithCommonRootPath,
           }
         }
@@ -587,7 +587,7 @@ export namespace stateEditors {
       export namespace projects {
         export namespace stateByProjectId {
           export function _ensure(draft: Draft, api: API, p: ProjectAddress) {
-            const s = draft.ahistoric
+            const s = _ensureAll(draft).ahistoric
             if (!s.projects.stateByProjectId[p.projectId]) {
               s.projects.stateByProjectId[p.projectId] = {
                 stateBySheetId: {},
@@ -760,7 +760,9 @@ export namespace stateEditors {
         api: API,
         p: ProjectAddress & {state: ProjectState_Historic},
       ) {
-        draft.historic.coreByProject[p.projectId] = cloneDeep(p.state)
+        _ensureAll(draft).historic.coreByProject[p.projectId] = cloneDeep(
+          p.state,
+        )
       }
       export namespace revisionHistory {
         export function add(
@@ -769,7 +771,8 @@ export namespace stateEditors {
           p: ProjectAddress & {revision: string},
         ) {
           const revisionHistory =
-            draft.historic.coreByProject[p.projectId].revisionHistory
+            _ensureAll(draft).historic.coreByProject[p.projectId]
+              .revisionHistory
 
           const maxNumOfRevisionsToKeep = 50
           revisionHistory.unshift(p.revision)
@@ -785,7 +788,7 @@ export namespace stateEditors {
           p: WithoutSheetInstance<SheetAddress>,
         ): SheetState_Historic {
           const sheetsById =
-            draft.historic.coreByProject[p.projectId].sheetsById
+            _ensureAll(draft).historic.coreByProject[p.projectId].sheetsById
 
           if (!sheetsById[p.sheetId]) {
             sheetsById[p.sheetId] = {staticOverrides: {byObject: {}}}
@@ -799,7 +802,9 @@ export namespace stateEditors {
           p: WithoutSheetInstance<SheetObjectAddress>,
         ) {
           const sheetState =
-            draft.historic.coreByProject[p.projectId].sheetsById[p.sheetId]
+            _ensureAll(draft).historic.coreByProject[p.projectId].sheetsById[
+              p.sheetId
+            ]
           if (!sheetState) return
           delete sheetState.staticOverrides.byObject[p.objectKey]
 
@@ -814,11 +819,12 @@ export namespace stateEditors {
           p: WithoutSheetInstance<SheetAddress>,
         ) {
           const sheetState =
-            draft.historic.coreByProject[p.projectId].sheetsById[p.sheetId]
-          if (sheetState) {
-            delete draft.historic.coreByProject[p.projectId].sheetsById[
+            _ensureAll(draft).historic.coreByProject[p.projectId].sheetsById[
               p.sheetId
             ]
+          if (sheetState) {
+            delete _ensureAll(draft).historic.coreByProject[p.projectId]
+              .sheetsById[p.sheetId]
           }
         }
 
@@ -834,8 +840,6 @@ export namespace stateEditors {
               p,
             )
             s.sequence ??= {
-              subUnitsPerUnit: 30,
-              length: 10,
               type: 'PositionalSequence',
               tracksByObject: {},
             }
@@ -882,12 +886,12 @@ export namespace stateEditors {
             const possibleTrackId = tracks.trackIdByPropPath[pathEncoded]
             if (typeof possibleTrackId === 'string') return
 
-            const trackId = api.generateSequenceTrackId()
+            const trackId = generators.generateSequenceTrackId()
 
             const track: BasicKeyframedTrack = {
               type: 'BasicKeyframedTrack',
               __debugName: `${p.objectKey}:${pathEncoded}`,
-              keyframes: [],
+              keyframes: {allIds: {}, byId: {}},
             }
 
             tracks.trackData[trackId] = track
@@ -968,7 +972,7 @@ export namespace stateEditors {
           ): Keyframe | undefined {
             const track = _getTrack(draft, api, p)
             if (!track) return
-            return track.keyframes.find((kf) => kf.id === p.keyframeId)
+            return track.keyframes.byId[p.keyframeId]
           }
 
           /**
@@ -990,15 +994,20 @@ export namespace stateEditors {
             const position = p.snappingFunction(p.position)
             const track = _getTrack(draft, api, p)
             if (!track) return
-            const {keyframes} = track
+
+            const prevById = current(track.keyframes)
+            const keyframes = keyframeUtils.getSortedKeyframes(prevById)
+
             const existingKeyframeIndex = keyframes.findIndex(
               (kf) => kf.position === position,
             )
+
             if (existingKeyframeIndex !== -1) {
               const kf = keyframes[existingKeyframeIndex]
-              kf.value = p.value
+              track.keyframes.byId[kf.id]!.value = p.value
               return
             }
+
             const indexOfLeftKeyframe = findLastIndex(
               keyframes,
               (kf) => kf.position < position,
@@ -1008,24 +1017,26 @@ export namespace stateEditors {
                 // generating the keyframe within the `setKeyframeAtPosition` makes it impossible for us
                 // to make this business logic deterministic, which is important to guarantee for collaborative
                 // editing.
-                id: api.generateKeyframeId(),
+                id: generators.generateKeyframeId(),
                 position,
                 connectedRight: true,
                 handles: p.handles || [0.5, 1, 0.5, 0],
                 type: p.type || 'bezier',
                 value: p.value,
               })
+              track.keyframes = keyframeUtils.fromArray(keyframes)
               return
             }
             const leftKeyframe = keyframes[indexOfLeftKeyframe]
             keyframes.splice(indexOfLeftKeyframe + 1, 0, {
-              id: api.generateKeyframeId(),
+              id: generators.generateKeyframeId(),
               position,
               connectedRight: leftKeyframe.connectedRight,
               handles: p.handles || [0.5, 1, 0.5, 0],
               type: p.type || 'bezier',
               value: p.value,
             })
+            track.keyframes = keyframeUtils.fromArray(keyframes)
           }
 
           export function unsetKeyframeAtPosition(
@@ -1038,13 +1049,16 @@ export namespace stateEditors {
           ) {
             const track = _getTrack(draft, api, p)
             if (!track) return
-            const {keyframes} = track
+            const keyframes = keyframeUtils.getSortedKeyframes(
+              current(track.keyframes),
+            )
             const index = keyframes.findIndex(
               (kf) => kf.position === p.position,
             )
             if (index === -1) return
 
             keyframes.splice(index, 1)
+            track.keyframes = keyframeUtils.fromArray(keyframes)
           }
 
           type SnappingFunction = (p: number) => number
@@ -1063,7 +1077,9 @@ export namespace stateEditors {
           ) {
             const track = _getTrack(draft, api, p)
             if (!track) return
-            const initialKeyframes = current(track.keyframes)
+            const initialKeyframes = keyframeUtils.getSortedKeyframes(
+              current(track.keyframes),
+            )
 
             const selectedKeyframes = initialKeyframes.filter((kf) =>
               p.keyframeIds.includes(kf.id),
@@ -1105,8 +1121,11 @@ export namespace stateEditors {
             const track = _getTrack(draft, api, p)
             if (!track) return
 
-            track.keyframes = track.keyframes.map((kf, i) => {
-              const prevKf = track.keyframes[i - 1]
+            const sorted = keyframeUtils.getSortedKeyframes(
+              current(track.keyframes),
+            )
+            sorted.map((kf, i) => {
+              const prevKf = sorted[i - 1]
               const isBeingEdited = p.keyframeIds.includes(kf.id)
               const isAfterEditedKeyframe = p.keyframeIds.includes(prevKf?.id)
 
@@ -1144,6 +1163,8 @@ export namespace stateEditors {
                 return kf
               }
             })
+
+            track.keyframes = keyframeUtils.fromArray(sorted)
           }
 
           export function setHandlesForKeyframe(
@@ -1178,9 +1199,10 @@ export namespace stateEditors {
             const track = _getTrack(draft, api, p)
             if (!track) return
 
-            track.keyframes = track.keyframes.filter(
-              (kf) => p.keyframeIds.indexOf(kf.id) === -1,
-            )
+            for (const keyframeId of p.keyframeIds) {
+              delete track.keyframes.byId[keyframeId]
+              delete track.keyframes.allIds[keyframeId]
+            }
           }
 
           export function setKeyframeType(
@@ -1212,7 +1234,7 @@ export namespace stateEditors {
           ) {
             const track = _getTrack(draft, api, p)
             if (!track) return
-            const initialKeyframes = current(track.keyframes)
+
             const sanitizedKeyframes = p.keyframes
               .filter((kf) => {
                 if (typeof kf.value === 'number' && !isFinite(kf.value))
@@ -1226,6 +1248,9 @@ export namespace stateEditors {
 
             const newKeyframesById = keyBy(sanitizedKeyframes, 'id')
 
+            const initialKeyframes = keyframeUtils.getSortedKeyframes(
+              current(track.keyframes),
+            )
             const unselected = initialKeyframes.filter(
               (kf) => !newKeyframesById[kf.id],
             )
@@ -1242,12 +1267,13 @@ export namespace stateEditors {
               }
             })
 
-            const sorted = sortBy(
-              [...unselected, ...sanitizedKeyframes],
-              'position',
-            )
+            const unsorted = [...unselected, ...sanitizedKeyframes]
+            // const sorted = sortBy(
+            //   unsorted,
+            //   'position',
+            // )
 
-            track.keyframes = sorted
+            track.keyframes = keyframeUtils.fromArray(unsorted)
           }
         }
 
@@ -1313,18 +1339,61 @@ export namespace stateEditors {
   }
 }
 
-export type IStateEditors = typeof stateEditors
+export type IStateEditors = {}
 export type IInvokableStateEditors =
   EditorDefinitionToEditorInvocable<IStateEditors>
 
-export const schema: Schema<StudioState, IStateEditors, StateEditorsAPI> = {
-  shape: null as $IntentionalAny as StudioState,
+export type IInvokableDraftEditors = EditorDefinitionToEditorInvocable<
+  typeof stateEditors
+>
+
+export const schema: Schema<{$schemaVersion: number}, IStateEditors, {}> = {
+  opShape: null as $IntentionalAny as {$schemaVersion: number},
   version: 1,
-  migrate(s: $IntentionalAny) {
-    s.ahistoric ??= initialState.ahistoric
-    s.historic ??= initialState.historic
-    s.ephemeral ??= initialState.ephemeral
-  },
-  editors: stateEditors,
-  generators: stateEditorAPI,
+  // migrateOp(s: $IntentionalAny) {
+  //   s.$schemaVersion ??= 1
+  //   return
+  //   s.ahistoric ??= initialState.ahistoric
+  //   s.historic ??= initialState.historic
+  //   s.ephemeral ??= initialState.ephemeral
+  // },
+  // migrateCell(s: $IntentionalAny) {
+  //   s.ahistoric ??= initialState.ahistoric
+  //   s.historic ??= initialState.historic
+  //   s.ephemeral ??= initialState.ephemeral
+  // },
+  editors: {},
+  generators: {},
+  cellShape: null as $IntentionalAny as StudioState,
+}
+
+export namespace keyframeUtils {
+  export const getSortedKeyframes = (
+    keyframes: BasicKeyframedTrack['keyframes'],
+  ): Keyframe[] => {
+    const sorted = Object.values(
+      keyframes.byId,
+    ) as $IntentionalAny as Keyframe[]
+    sorted.sort((a, b) => a.position! - b.position!)
+
+    return cloneDeep(sorted)
+  }
+
+  export const getSortedKeyframesCached = memoizeFn(getSortedKeyframes)
+
+  export const fromArray = (
+    keyframes: Keyframe[],
+  ): BasicKeyframedTrack['keyframes'] => {
+    const byId: BasicKeyframedTrack['keyframes']['byId'] = {}
+    const allIds: BasicKeyframedTrack['keyframes']['allIds'] = {}
+
+    for (const keyframe of keyframes) {
+      byId[keyframe.id] = keyframe
+      allIds[keyframe.id] = true
+    }
+
+    return cloneDeep({byId, allIds})
+  }
+
+  export const fromSortedKeyframesCached = memoizeFn(fromArray)
 }

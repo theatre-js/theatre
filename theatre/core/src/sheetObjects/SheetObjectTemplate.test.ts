@@ -18,7 +18,7 @@ describe(`SheetObjectTemplate`, () => {
         sequence: {
           type: 'PositionalSequence',
           subUnitsPerUnit: 30,
-          length: 10,
+          // length: 10,
           tracksByObject: {
             ['obj' as ObjectAddressKey]: {
               trackIdByPropPath: {
@@ -54,8 +54,6 @@ describe(`SheetObjectTemplate`, () => {
         },
         sequence: {
           type: 'PositionalSequence',
-          subUnitsPerUnit: 30,
-          length: 10,
           tracksByObject: {},
         },
       })

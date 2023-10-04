@@ -63,7 +63,7 @@ export default async function initialiseProjectState(
           revisionHistory: [],
         },
       })
-    })
+    }, false)
     studio.ephemeralAtom.setByPointer(
       (p) => p.coreByProject[projectId].loadingState,
       {

@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Rogue merging defaults 1`] = `
+{
+  "a": {
+    "aStep": 1,
+    "bStep": 1,
+    "foo": "setBy1",
+    "obj": {
+      "objA": "true",
+      "objB": "true",
+    },
+  },
+}
+`;
+
+exports[`Rogue overriding an existing prop 1`] = `
+[
+  {
+    "branchName": "base",
+    "path": [
+      [
+        "base",
+        "a",
+      ],
+    ],
+    "type": "SetBoxedValue",
+    "value": 2,
+  },
+]
+`;
+
+exports[`Rogue setting a non-existing prop 1`] = `
+[
+  {
+    "$branches": {
+      "base": {
+        "$mapProps": {
+          "a": {
+            "$branches": {
+              "base": {
+                "$boxedValue": 1,
+              },
+            },
+            "$type": [
+              "boxed",
+              "base",
+            ],
+          },
+        },
+      },
+    },
+    "$type": [
+      "map",
+      "base",
+    ],
+  },
+  [
+    {
+      "path": [
+        [
+          "base",
+          "a",
+        ],
+      ],
+      "type": "ChangeType",
+      "value": [
+        "boxed",
+        "base",
+      ],
+    },
+    {
+      "branchName": "base",
+      "path": [
+        [
+          "base",
+          "a",
+        ],
+      ],
+      "type": "SetBoxedValue",
+      "value": 1,
+    },
+  ],
+]
+`;
+
+exports[`Rogue setting a non-existing prop to an object 1`] = `
+[
+  {
+    "$branches": {
+      "base": {
+        "$mapProps": {
+          "a": {
+            "$branches": {
+              "base": {
+                "$mapProps": {
+                  "b": {
+                    "$branches": {
+                      "base": {
+                        "$boxedValue": 1,
+                      },
+                    },
+                    "$type": [
+                      "boxed",
+                      "base",
+                    ],
+                  },
+                },
+              },
+            },
+            "$type": [
+              "map",
+              "base",
+            ],
+          },
+        },
+      },
+    },
+    "$type": [
+      "map",
+      "base",
+    ],
+  },
+  [
+    {
+      "path": [
+        [
+          "base",
+          "a",
+        ],
+      ],
+      "type": "ChangeType",
+      "value": [
+        "map",
+        "base",
+      ],
+    },
+    {
+      "path": [
+        [
+          "base",
+          "a",
+        ],
+        [
+          "base",
+          "b",
+        ],
+      ],
+      "type": "ChangeType",
+      "value": [
+        "boxed",
+        "base",
+      ],
+    },
+    {
+      "branchName": "base",
+      "path": [
+        [
+          "base",
+          "a",
+        ],
+        [
+          "base",
+          "b",
+        ],
+      ],
+      "type": "SetBoxedValue",
+      "value": 1,
+    },
+  ],
+]
+`;
