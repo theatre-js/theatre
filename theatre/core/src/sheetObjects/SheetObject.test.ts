@@ -7,6 +7,7 @@ import type {
 import {iterateOver, prism} from '@theatre/dataverse'
 import type {SheetState_Historic} from '@theatre/sync-server/state/types/core'
 import {asKeyframeId, asSequenceTrackId} from '@theatre/shared/utils/ids'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 describe(`SheetObject`, () => {
   describe('static overrides', () => {
@@ -268,7 +269,7 @@ describe(`SheetObject`, () => {
               trackData: {
                 ['1' as SequenceTrackId]: {
                   type: 'BasicKeyframedTrack',
-                  keyframes: [
+                  keyframes: keyframeUtils.fromArray([
                     {
                       id: asKeyframeId('0'),
                       position: 10,
@@ -285,7 +286,7 @@ describe(`SheetObject`, () => {
                       type: 'bezier',
                       value: 6,
                     },
-                  ],
+                  ]),
                 },
               },
             },

@@ -12,6 +12,7 @@ import SingleKeyframeConnector from './BasicKeyframeConnector'
 import SingleKeyframeDot from './SingleKeyframeDot'
 import type {TrackWithId} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import type {StudioSheetItemKey} from '@theatre/sync-server/state/types'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 const SingleKeyframeEditorContainer = styled.div`
   position: absolute;
@@ -35,8 +36,12 @@ const SingleKeyframeEditor: React.VFC<ISingleKeyframeEditorProps> = React.memo(
       index,
       track: {data: trackData},
     } = props
-    const cur = trackData.keyframes[index]
-    const next = trackData.keyframes[index + 1]
+    const cur = keyframeUtils.getSortedKeyframesCached(trackData.keyframes)[
+      index
+    ]
+    const next = keyframeUtils.getSortedKeyframesCached(trackData.keyframes)[
+      index + 1
+    ]
 
     const connected = cur.connectedRight && !!next
 

@@ -327,8 +327,11 @@ export class Studio {
     return this._store.tempTransaction(fn, existingTransaction)
   }
 
-  transaction(fn: (api: ITransactionPrivateApi) => void): unknown {
-    return this._store.transaction(fn)
+  transaction(
+    fn: (api: ITransactionPrivateApi) => void,
+    undoable: boolean = true,
+  ): unknown {
+    return this._store.transaction(fn, undoable)
   }
 
   authenticate(

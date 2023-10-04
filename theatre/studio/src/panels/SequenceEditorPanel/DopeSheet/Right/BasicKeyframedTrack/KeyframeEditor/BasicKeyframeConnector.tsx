@@ -22,6 +22,7 @@ import {copyableKeyframesFromSelection} from '@theatre/studio/panels/SequenceEdi
 import {selectedKeyframeConnections} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/selections'
 
 import styled from 'styled-components'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 const POPOVER_MARGIN = 5
 
@@ -36,8 +37,12 @@ const BasicKeyframeConnector: React.VFC<IBasicKeyframeConnectorProps> = (
   props,
 ) => {
   const {index, track} = props
-  const cur = track.data.keyframes[index]
-  const next = track.data.keyframes[index + 1]
+  const cur = keyframeUtils.getSortedKeyframesCached(track.data.keyframes)[
+    index
+  ]
+  const next = keyframeUtils.getSortedKeyframesCached(track.data.keyframes)[
+    index + 1
+  ]
 
   const [nodeRef, node] = useRefAndState<HTMLDivElement | null>(null)
 
@@ -108,8 +113,10 @@ const SingleCurveEditorPopover: React.FC<
     track: {data: trackData},
     selection,
   } = props
-  const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
+  const cur = keyframeUtils.getSortedKeyframesCached(trackData.keyframes)[index]
+  const next = keyframeUtils.getSortedKeyframesCached(trackData.keyframes)[
+    index + 1
+  ]
 
   const trackId = props.leaf.trackId
   const address = props.leaf.sheetObject.address
@@ -168,8 +175,9 @@ function useDragKeyframe(
             .getDragHandlers({
               ...sheetObject.address,
               domNode: node!,
-              positionAtStartOfDrag:
-                props.track.data.keyframes[props.index].position,
+              positionAtStartOfDrag: keyframeUtils.getSortedKeyframesCached(
+                props.track.data.keyframes,
+              )[props.index].position,
             })
             .onDragStart(event)
         }
@@ -195,9 +203,9 @@ function useDragKeyframe(
                   trackId: propsAtStartOfDrag.leaf.trackId,
                   keyframeIds: [
                     propsAtStartOfDrag.keyframe.id,
-                    propsAtStartOfDrag.track.data.keyframes[
-                      propsAtStartOfDrag.index + 1
-                    ].id,
+                    keyframeUtils.getSortedKeyframesCached(
+                      propsAtStartOfDrag.track.data.keyframes,
+                    )[propsAtStartOfDrag.index + 1].id,
                   ],
                   translate: delta,
                   scale: 1,

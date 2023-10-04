@@ -18,6 +18,7 @@ import KeyframeSnapTarget, {
   snapPositionsStateD,
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 const Container = styled.div`
   position: relative;
@@ -82,7 +83,10 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
       [trackData, leaf.trackId],
     )
 
-    const keyframeEditors = trackData.keyframes.map((kf, index) => (
+    const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+      trackData.keyframes,
+    )
+    const keyframeEditors = sortedKeyframes.map((kf, index) => (
       <SingleKeyframeEditor
         key={'keyframe-' + kf.id}
         itemKey={createStudioSheetItemKey.forTrackKeyframe(
@@ -110,7 +114,7 @@ const BasicKeyframedTrack: React.VFC<BasicKeyframedTracksProps> = React.memo(
 
     const additionalSnapTargets = !snapToAllKeyframes
       ? null
-      : trackData.keyframes.map((kf) => (
+      : sortedKeyframes.map((kf) => (
           <KeyframeSnapTarget
             key={`additionalSnapTarget-${kf.id}`}
             layoutP={layoutP}

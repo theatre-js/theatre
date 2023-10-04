@@ -5,6 +5,7 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React from 'react'
 import styled from 'styled-components'
 import type KeyframeEditor from './KeyframeEditor'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 const SVGPath = styled.path`
   stroke-width: 2;
@@ -20,8 +21,10 @@ const pathForHoldType = `M 0 0 L 1 0 L 1 1`
 
 const Curve: React.VFC<IProps> = (props) => {
   const {index, trackData} = props
-  const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
+  const cur = keyframeUtils.getSortedKeyframesCached(trackData.keyframes)[index]
+  const next = keyframeUtils.getSortedKeyframesCached(trackData.keyframes)[
+    index + 1
+  ]
 
   const connectorLengthInUnitSpace = next.position - cur.position
 
@@ -108,8 +111,10 @@ export default Curve
 
 function useConnectorContextMenu(node: SVGElement | null, props: IProps) {
   const {index, trackData} = props
-  const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
+  const cur = keyframeUtils.getSortedKeyframesCached(trackData.keyframes)[index]
+  const next = keyframeUtils.getSortedKeyframesCached(trackData.keyframes)[
+    index + 1
+  ]
 
   return useContextMenu(node, {
     menuItems: () => {

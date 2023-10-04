@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import {transformBox} from './Curve'
 import type KeyframeEditor from './KeyframeEditor'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 export const dotSize = 6
 
@@ -51,8 +52,10 @@ const CurveHandle: React.VFC<IProps> = (props) => {
   const [ref, node] = useRefAndState<SVGCircleElement | null>(null)
 
   const {index, trackData} = props
-  const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
+  const cur = keyframeUtils.getSortedKeyframesCached(trackData.keyframes)[index]
+  const next = keyframeUtils.getSortedKeyframesCached(trackData.keyframes)[
+    index + 1
+  ]
 
   const [contextMenu] = useOurContextMenu(node, props)
   useOurDrags(node, props)
@@ -148,8 +151,11 @@ function useOurDrags(node: SVGCircleElement | null, props: IProps): void {
             }
 
             const {index, trackData} = propsAtStartOfDrag
-            const cur = trackData.keyframes[index]
-            const next = trackData.keyframes[index + 1]
+            const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+              trackData.keyframes,
+            )
+            const cur = sortedKeyframes[index]
+            const next = sortedKeyframes[index + 1]
 
             const dPosInUnitSpace = scaledToUnitSpace(dxInScaledSpace)
             let dPosInKeyframeDiffSpace =

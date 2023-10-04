@@ -27,6 +27,7 @@ import type {ISequence} from '..'
 import {notify} from '@theatre/shared/notify'
 import type {$IntentionalAny} from '@theatre/dataverse/src/types'
 import {isSheetObject} from '@theatre/shared/instanceTypes'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 export type IPlaybackRange = [from: number, to: number]
 
@@ -154,7 +155,7 @@ export default class Sequence implements PointerToPrismProvider {
       return []
     }
 
-    return track.keyframes
+    return keyframeUtils.getSortedKeyframesCached(track.keyframes)
   }
 
   get positionFormatter(): ISequencePositionFormatter {

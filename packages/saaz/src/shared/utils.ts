@@ -1,19 +1,28 @@
-import produce from 'immer'
-import type {$IntentionalAny, Schema} from '../types'
+import type {$IntentionalAny, FullSnapshot, Schema} from '../types'
+
+const empty = {op: {}, cell: {}}
 
 export function ensureStateIsUptodate<S extends {$schemaVersion: number}>(
-  original: $IntentionalAny,
+  original: FullSnapshot<S> | null,
   schema: Schema<S>,
-): S {
-  if (
-    !original ||
-    typeof original.version !== 'number' ||
-    original.version < schema.version
-  ) {
-    return produce((original ?? {}) as {}, (originalDraft) => {
-      schema.migrate(originalDraft)
-    }) as S
-  } else {
-    return original
+): FullSnapshot<S> {
+  if (original === null) {
+    return empty as $IntentionalAny
   }
+  return original as $IntentionalAny
+
+  // if (
+  //   !original ||
+  //   typeof original.op.$schemaVersion !== 'number' ||
+  //   original.op.$schemaVersion < schema.version
+  // ) {
+  //   return {
+  //     op: produce((original?.op ?? {}) as {}, (originalDraft) => {
+  //       schema.migrateOp(originalDraft)
+  //     }) as S,
+  //     cell: original?.cell ?? {},
+  //   }
+  // } else {
+  //   return original
+  // }
 }

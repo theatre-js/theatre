@@ -1,3 +1,5 @@
+import type {Cell, Ops} from './rogue'
+
 export type $IntentionalAny = any
 export type $FixMe = any
 // Primitive values that are serializable to JSON.
@@ -69,23 +71,24 @@ export type Transaction = {
   generatorRecordings: GeneratorRecordings
   peerId: string
   peerClock: number
+  draftOps: Ops
 }
 
 export type GeneratorRecordings = {
   [key in string]?: SerializableValue[]
 }
 
-export type OnDiskSnapshot<Snapshot> = {
+export type OnDiskSnapshot<OpSnapshot> = {
   // the url of the backend that this snapshot was taken from
   origin: string
   // the name of the database that this snapshot was taken from
   dbName: string
   // the clock of the server when this snapshot was taken. A positive integer.
   clock: number
-  snapshot: Snapshot
+  snapshot: FullSnapshot<OpSnapshot>
 }
 
-export type BackState<State> = {
+export type BackState<OpSnapshot> = {
   /**
    * Unix timestamp of the last time the client synced with backend. Timestamp is produced on
    * the client, so it may be inaccurate. Null means never synced.
@@ -103,12 +106,14 @@ export type BackState<State> = {
   /**
    * The state of the backend.
    */
-  value: null | State
+  snapshot: FullSnapshot<OpSnapshot> | null
 }
 
 export type BackStateUpdateDescriptor = {
   clock: number
-  snapshot: {type: 'Snapshot'; value: unknown} | {type: 'Diff'; diff: 'todo'}
+  snapshot:
+    | {type: 'Snapshot'; value: FullSnapshot<$IntentionalAny>}
+    | {type: 'Diff'; diff: 'todo'}
   lastIncorporatedPeerClock: number | null
   tempTransactions?: 'todo'
   presense?: 'todo'
@@ -233,28 +238,35 @@ export interface FrontStorageAdapter {
 export interface BackStorageAdapter {}
 
 export type Schema<
-  State extends {$schemaVersion: number},
+  OpSnapshot extends {$schemaVersion: number},
   Editors extends {} = {},
   Generators extends ValidGenerators = {},
+  CellShape extends {} = {},
 > = {
   editors: Editors
   generators: Generators
-  shape: State
+  opShape: OpSnapshot
+  cellShape: CellShape
   version: number
-  migrate: (s: {}) => void
 }
 
-export type ValidSnapshot = {
+export type ValidOpSnapshot = {
   $schemaVersion: number
 }
 
-export type TempTransaction = Omit<Transaction, 'peerClock'> & {tempId: number}
+export type TempTransaction = Omit<Transaction, 'peerClock'> & {
+  tempId: number
+  backwardOps: Ops
+}
 
-export type TempTransactionApi<Editors extends {}> = {
+export type TempTransactionApi<Editors extends {}, CellShape extends {}> = {
   commit: () => void
   discard: () => void
   recapture: (
-    fn: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
+    editorFn?: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
+    draftFn?: (draft: CellShape) => void,
   ) => void
   reset: () => void
 }
+
+export type FullSnapshot<OpSnapshot> = {op: OpSnapshot; cell: Cell | {}}

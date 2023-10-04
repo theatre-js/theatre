@@ -17,6 +17,7 @@ import type {
   GraphEditorColors,
   StudioSheetItemKey,
 } from '@theatre/sync-server/state/types'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 const Container = styled.g`
   /* position: absolute; */
@@ -41,8 +42,11 @@ type IKeyframeEditorProps = {
 
 const KeyframeEditor: React.VFC<IKeyframeEditorProps> = (props) => {
   const {index, trackData, isScalar} = props
-  const cur = trackData.keyframes[index]
-  const next = trackData.keyframes[index + 1]
+  const sortedKeyframes = keyframeUtils.getSortedKeyframesCached(
+    trackData.keyframes,
+  )
+  const cur = sortedKeyframes[index]
+  const next = sortedKeyframes[index + 1]
 
   const connected = cur.connectedRight && !!next
   const shouldShowCurve = connected && next.value !== cur.value

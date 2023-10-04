@@ -11,11 +11,12 @@ import type {
   PeerSubscribeCallback,
   AllPeersPresenceState,
   PeerPresenceState,
+  FullSnapshot,
 } from '../types'
 import {BackStorage} from './BackStorage'
 import type {DebouncedFunc} from 'lodash-es'
 import {cloneDeep, throttle} from 'lodash-es'
-import {ensureStateIsUptodate} from '../shared/utils'
+import {ensureStateIsUptodate as ensureOpStateIsUptodate} from '../shared/utils'
 import {Atom} from '@theatre/dataverse'
 import deepEqual from '@theatre/utils/deepEqual'
 
@@ -23,7 +24,7 @@ export default class SaazBack implements SaazBackInterface {
   private _dbName: string
   private _storage: BackStorage
   private _readyDeferred = defer<void>()
-  private _dbState: {} = {}
+  private _dbState: FullSnapshot<$IntentionalAny> = {cell: {}, op: {}}
   private _clock: number | null = null
   private _peerStates: {
     [peerId in string]?: {
@@ -31,7 +32,7 @@ export default class SaazBack implements SaazBackInterface {
     }
   } = {}
   private _subsribers: Array<PeerSubscribeCallback> = []
-  private _schema: Schema<$IntentionalAny>
+  private _schema: Schema<{$schemaVersion: number}>
   private _presenceState: Atom<AllPeersPresenceState> = new Atom({})
   private _schedulePresenseUpdate: DebouncedFunc<() => void>
 
@@ -113,7 +114,10 @@ export default class SaazBack implements SaazBackInterface {
       clock: this._clock ?? -1,
       lastIncorporatedPeerClock:
         this._peerStates[opts.peerId]?.lastIncorporatedPeerClock ?? null,
-      snapshot: {type: 'Snapshot', value: this._dbState},
+      snapshot: {
+        type: 'Snapshot',
+        value: this._dbState,
+      },
     }
   }
 
@@ -168,7 +172,7 @@ export default class SaazBack implements SaazBackInterface {
     const peerState = this._peerStates[opts.peerId]!
 
     const rebasing = opts.backendClock !== this._clock
-    let stateSoFar = ensureStateIsUptodate(this._dbState, this._schema)
+    let snapshotSoFar = ensureOpStateIsUptodate(this._dbState, this._schema)
     let lastAcknowledgedClock = peerState.lastIncorporatedPeerClock
     let backendClock = this._clock ?? -1
     const updatesToIncorporate = []
@@ -178,20 +182,20 @@ export default class SaazBack implements SaazBackInterface {
         continue
       }
 
-      const before = stateSoFar
-      const [after] = applyOptimisticUpdateToState(
+      const snapshotBefore = snapshotSoFar
+      const [opSnapshotAfter] = applyOptimisticUpdateToState(
         update,
-        before,
+        snapshotBefore,
         this._schema,
         true,
       )
-      stateSoFar = after
+      snapshotSoFar = opSnapshotAfter
       lastAcknowledgedClock = update.peerClock
       backendClock++
     }
 
     if (lastAcknowledgedClock !== peerState.lastIncorporatedPeerClock) {
-      this._dbState = stateSoFar
+      this._dbState = snapshotSoFar
       peerState.lastIncorporatedPeerClock = lastAcknowledgedClock
       this._clock = backendClock
       this._callSubscribersForBackendStateUpdate()

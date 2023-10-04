@@ -9,3 +9,4 @@ export type {
   Schema,
 } from './types'
 export {BackMemoryAdapter} from './back/BackMemoryAdapter'
+export {current} from './rogue'

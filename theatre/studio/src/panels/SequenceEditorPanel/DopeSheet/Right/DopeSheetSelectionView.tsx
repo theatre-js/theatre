@@ -25,6 +25,7 @@ import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/Do
 import {collectAggregateKeyframesInPrism} from './collectAggregateKeyframes'
 import type {ILogger, IUtilLogger} from '@theatre/shared/logger'
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 const HITBOX_SIZE_PX = 5
 
@@ -253,7 +254,9 @@ namespace utils {
         return
       }
 
-      for (const kf of trackData.keyframes) {
+      for (const kf of keyframeUtils.getSortedKeyframesCached(
+        trackData.keyframes,
+      )) {
         if (
           kf.position + layout.scaledSpace.toUnitSpace(HITBOX_SIZE_PX) <=
           bounds.h[0]

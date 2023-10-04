@@ -16,6 +16,7 @@ import {
 } from '@theatre/utils/pathToProp'
 import type {StrictRecord} from '@theatre/utils/types'
 import type {KeyframeWithPathToPropFromCommonRoot} from '@theatre/sync-server/state/types'
+import {keyframeUtils} from '@theatre/sync-server/state/schema'
 
 /**
  * Keyframe connections are considered to be selected if the first
@@ -67,7 +68,9 @@ export function selectedKeyframeConnections(
 
       if (track) {
         ckfs = ckfs.concat(
-          keyframeConnections(track.keyframes)
+          keyframeConnections(
+            keyframeUtils.getSortedKeyframesCached(track.keyframes),
+          )
             .filter((kfc) => isKeyframeConnectionInSelection(kfc, selection))
             .map(({left, right}) => ({
               left,
@@ -176,7 +179,9 @@ export function keyframesWithPaths({
 
   return keyframeIds
     .map((keyframeId) => ({
-      keyframe: track.keyframes.find((keyframe) => keyframe.id === keyframeId),
+      keyframe: keyframeUtils
+        .getSortedKeyframesCached(track.keyframes)
+        .find((keyframe) => keyframe.id === keyframeId),
       pathToProp,
     }))
     .filter(
