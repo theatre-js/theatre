@@ -1,6 +1,6 @@
-import {withPageAuthRequired} from '@auth0/nextjs-auth0/client'
 import React, {useState} from 'react'
 import useApi from '../../useApi'
+import {withPageAuthRequired} from 'src/utils/withPageAuthRequired'
 
 const ProjectsPage: React.FC<{}> = withPageAuthRequired(({}) => {
   const {response, error, isLoading} = useApi('/api/projects')

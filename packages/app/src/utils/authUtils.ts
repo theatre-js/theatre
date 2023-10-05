@@ -1,48 +1,53 @@
-import type {NextApiRequest, NextApiResponse} from 'next'
+import type {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from 'next'
 import type {User} from '../../prisma/client-generated'
 import prisma from '../prisma'
-import {getSession} from '@auth0/nextjs-auth0'
 import {v4} from 'uuid'
 import * as jose from 'jose'
 import type {$IntentionalAny} from 'src/types'
 import {TRPCError} from '@trpc/server'
 import {z} from 'zod'
+import type {AuthOptions} from 'next-auth'
+import {getServerSession} from 'next-auth'
+import GithubProvider from 'next-auth/providers/github'
+import {PrismaAdapter} from '@auth/prisma-adapter'
+import type {Adapter} from 'next-auth/adapters'
 
-/**
- * Since Auth0 users are not stored in our database, we need to create a user in our database
- * whenever we encounter a valid Auth0 session. If the user already exists, we return it.
- *
- * If the session is not valid, we throw an error.
- */
-export async function ensureUserFromAuth0Session(
-  req: NextApiRequest,
-  res: NextApiResponse,
-): Promise<User> {
-  const session = await getSession(req, res)
-  if (!session || !session.user) {
-    throw new Error(`User is not authenticated`)
+// Extend NextAuth Session type to include all fields from the User model
+declare module 'next-auth' {
+  interface Session {
+    user: User
   }
+}
 
-  const user = await prisma.user.findUnique({
-    where: {
-      auth0Sid: session.user.sid,
+export const nextAuthConfig = {
+  // Why type assertion: https://github.com/nextauthjs/next-auth/issues/6106#issuecomment-1582582312
+  adapter: PrismaAdapter(prisma) as Adapter,
+  providers: [
+    GithubProvider({
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
+    }),
+  ],
+  callbacks: {
+    session({session, token, user}) {
+      session.user = {...session.user, ...user}
+      return session
     },
-  })
+  },
+} satisfies AuthOptions
 
-  if (!user) {
-    const userId = v4() + v4()
-    const user = await prisma.user.create({
-      data: {
-        auth0Sid: session.user.sid,
-        email: session.user.email,
-        auth0Data: session.user,
-        id: userId,
-      },
-    })
-    return user
-  }
-
-  return user
+// Use it in server contexts
+export function getAppSession(
+  ...args:
+    | [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']]
+    | [NextApiRequest, NextApiResponse]
+    | []
+) {
+  return getServerSession(...args, nextAuthConfig)
 }
 
 export type AccessTokenPayload = {
@@ -63,7 +68,7 @@ export namespace studioAuth {
     const privateKey = await privateKeyPromise
     const payload: AccessTokenPayload = {
       userId: user.id,
-      email: user.email,
+      email: user.email ?? '',
     }
     const jwt = await new jose.SignJWT(payload)
       .setProtectedHeader({alg: 'RS256'})
