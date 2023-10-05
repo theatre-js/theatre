@@ -1,5 +1,6 @@
 import React from 'react'
-import {useUser} from '@auth0/nextjs-auth0/client'
+import {useSession, signIn, signOut} from 'next-auth/react'
+
 import Link from 'next/link'
 
 export default function HomePage() {
@@ -12,13 +13,13 @@ export default function HomePage() {
 }
 
 const Profile: React.FC<{}> = () => {
-  const {user, error, isLoading} = useUser()
+  const {data: session, status} = useSession()
+  const user = session?.user
 
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>{error.message}</div>
+  if (status === 'loading') return <div>Loading...</div>
 
   if (!user) {
-    return <a href="/api/auth/login">log in</a>
+    return <button onClick={() => signIn('github')}>Sign in</button>
   }
 
   return (
@@ -27,7 +28,7 @@ const Profile: React.FC<{}> = () => {
       <h2>{user.name}</h2>
       <p>{user.email}</p>
       <Link href="/projects">Projects</Link> <br />
-      <a href="/api/auth/logout">log out</a>
+      <button onClick={() => signOut()}>Sign out</button>
     </div>
   )
 }

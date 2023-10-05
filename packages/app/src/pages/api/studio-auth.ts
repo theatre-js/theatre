@@ -1,8 +1,7 @@
 import type {NextApiRequest, NextApiResponse} from 'next'
 import prisma from 'src/prisma'
-import {getSession} from '@auth0/nextjs-auth0'
 
-import {ensureUserFromAuth0Session, studioAuth} from 'src/utils/authUtils'
+import {getAppSession, studioAuth} from 'src/utils/authUtils'
 import {userCodeLength} from 'src/trpc/routes/studioAuthRouter'
 
 export default async function libAuth(
@@ -35,9 +34,11 @@ export default async function libAuth(
     return
   }
 
-  const session = await getSession(req, res)
+  const session = await getAppSession(req, res)
+
+  // if no session, redirect to login
   if (!session || !session.user) {
-    res.redirect('/api/auth/login?returnTo=' + encodeURIComponent(req.url!))
+    res.redirect(`/api/auth/signin?callbackUrl=${encodeURIComponent(req.url!)}`)
     return
   }
 
@@ -72,7 +73,7 @@ export default async function libAuth(
     return
   }
 
-  const user = await ensureUserFromAuth0Session(req, res)
+  const user = session.user
 
   const {refreshToken, accessToken} = await studioAuth.createSession(user)
 
