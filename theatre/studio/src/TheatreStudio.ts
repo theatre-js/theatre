@@ -21,7 +21,7 @@ import {debounce, uniq} from 'lodash-es'
 import type Sheet from '@theatre/core/sheets/Sheet'
 import type {ProjectId} from '@theatre/sync-server/state/types/core'
 import {
-  __experimental_disblePlayPauseKeyboardShortcut,
+  __experimental_disablePlayPauseKeyboardShortcut,
   __experimental_enablePlayPauseKeyboardShortcut,
 } from './UIRoot/useKeyboardShortcuts'
 import type TheatreSheetObject from '@theatre/core/sheetObjects/TheatreSheetObject'
@@ -454,7 +454,7 @@ export interface IStudio {
      * Disables the play/pause keyboard shortcut (spacebar)
      * Also see `__experimental_enablePlayPauseKeyboardShortcut()` to re-enable it.
      */
-    __experimental_disblePlayPauseKeyboardShortcut(): void
+    __experimental_disablePlayPauseKeyboardShortcut(): void
     /**
      * Warning: This is an experimental API and will change in the future.
      *
@@ -506,16 +506,16 @@ export default class TheatreStudio implements IStudio {
   private readonly _cache = new SimpleCache()
 
   __experimental = {
-    __experimental_disblePlayPauseKeyboardShortcut(): void {
+    __experimental_disablePlayPauseKeyboardShortcut(): void {
       // This is an experimental API to respond to this issue: https://discord.com/channels/870988717190426644/870988717190426647/1067906775602430062
       // Ideally we need a coherent way for the user to control keyboard inputs, so we will remove this method in the future.
       // Here is the procedure for removing it:
       // 1. Replace this code with a `throw new Error("This is experimental method is now deprecated, and here is how to migrate: ...")`
       // 2. Then keep it for a few months, and then remove it.
-      __experimental_disblePlayPauseKeyboardShortcut()
+      __experimental_disablePlayPauseKeyboardShortcut()
     },
     __experimental_enablePlayPauseKeyboardShortcut(): void {
-      // see __experimental_disblePlayPauseKeyboardShortcut()
+      // see __experimental_disablePlayPauseKeyboardShortcut()
       __experimental_enablePlayPauseKeyboardShortcut()
     },
     __experimental_clearPersistentStorage(persistenceKey?: string): void {

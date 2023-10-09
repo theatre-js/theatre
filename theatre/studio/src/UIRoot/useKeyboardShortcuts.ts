@@ -10,7 +10,7 @@ import type Sequence from '@theatre/core/sequences/Sequence'
 import memoizeFn from '@theatre/utils/memoizeFn'
 
 let playPauseKeyboardShortcutIsEnabled = true
-export function __experimental_disblePlayPauseKeyboardShortcut() {
+export function __experimental_disablePlayPauseKeyboardShortcut() {
   playPauseKeyboardShortcutIsEnabled = false
 }
 
