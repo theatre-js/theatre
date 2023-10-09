@@ -413,6 +413,13 @@ export interface IStudio {
   ): PaneInstance<PaneClass>
 
   /**
+   * Destroys a previously created pane instance
+   *
+   * @param paneId - The unique identifier for the pane instance, provided in the 'mount' callback
+   */
+  destroyPane(paneId: string): void
+
+  /**
    * Returns the Theatre.js project that contains the studio's sheets and objects.
    *
    * It is useful if you'd like to have sheets/objects that are present only when
