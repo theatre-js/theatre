@@ -21,6 +21,7 @@ services:
       - /app/compat-tests/fixtures/r3f-react18/package/node_modules
       - /app/compat-tests/fixtures/r3f-vite2/package/node_modules
       - /app/compat-tests/fixtures/r3f-vite4/package/node_modules
+      - /app/compat-tests/fixtures/basic-vite4/package/node_modules
       - /app/compat-tests/node_modules
       - /app/examples/basic-dom/node_modules
       - /app/examples/dom-cra/node_modules
@@ -44,4 +45,5 @@ services:
       - /app/packages/app/.next/node_modules
       - /app/packages/saaz/node_modules
       - /app/packages/utils/node_modules
+
     command: ['bash', '-c', 'while true; do sleep 1; done']
