@@ -29,10 +29,11 @@ import {usePrism} from '@theatre/react'
 import {val} from '@theatre/dataverse'
 import {HiOutlineChevronRight} from 'react-icons/all'
 import memoizeFn from '@theatre/utils/memoizeFn'
+import {collapsedMap} from './collapsedMap'
 
 const Container = styled.div`
   --step: 15px;
-  --left-pad: 15px;
+  --left-pad: 10px;
   ${pointerEventsAutoInNormalMode};
   --right-width: 60%;
 `
@@ -193,8 +194,11 @@ function DetailCompoundPropEditor<
     propConfig,
   )
 
+  const label = propName || 'Props'
+
   const [contextMenu] = useContextMenu(propNameContainer, {
     menuItems: tools.contextMenuItems,
+    displayName: `${label}`,
   })
 
   const lastSubPropIsComposite = compositeSubs.length > 0
@@ -241,7 +245,7 @@ function DetailCompoundPropEditor<
             isHighlighted={isPropHighlightedD}
             ref={propNameContainerRef}
           >
-            <span>{propName || 'Props'}</span>
+            <span>{label}</span>
           </PropName>
           <CollapseIcon
             isCollapsed={isCollapsed}
@@ -297,5 +301,3 @@ function DetailCompoundPropEditor<
 }
 
 export default React.memo(DetailCompoundPropEditor)
-
-const collapsedMap = new Map<string, Atom<boolean>>()

@@ -3,7 +3,7 @@ import type {ElementType} from 'react'
 import React from 'react'
 import styled from 'styled-components'
 
-export const height = 26
+export const height = 30
 
 const ItemContainer = styled.li<{enabled: boolean}>`
   height: ${height}px;
@@ -11,25 +11,24 @@ const ItemContainer = styled.li<{enabled: boolean}>`
   margin: 0;
   display: flex;
   align-items: center;
-  font-size: 11px;
   font-weight: 400;
   position: relative;
   color: ${(props) => (props.enabled ? 'white' : '#8f8f8f')};
-  cursor: ${(props) => (props.enabled ? 'normal' : 'not-allowed')};
+  cursor: ${(props) => (props.enabled ? 'default' : 'not-allowed')};
 
   &:after {
     position: absolute;
-    inset: 2px 1px;
+    inset: 2px;
     display: block;
     content: ' ';
     pointer-events: none;
     z-index: -1;
-    border-radius: 3px;
+    border-radius: 4px;
   }
 
   &:hover:after {
     background-color: ${(props) =>
-      props.enabled ? 'rgba(63, 174, 191, 0.75)' : 'initial'};
+      props.enabled ? 'rgba(255, 255, 255, 0.075)' : 'initial'};
   }
 `
 

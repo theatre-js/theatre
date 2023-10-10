@@ -16,7 +16,10 @@ import {
 import type {PropTypeConfig_AllSimples} from '@theatre/core/propTypes'
 import {useVal} from '@theatre/react'
 import type {GraphEditorColors} from '@theatre/sync-server/state/types'
-import {keyframeUtils} from '@theatre/sync-server/state/schema'
+import {
+  graphEditorColors,
+  keyframeUtils,
+} from '@theatre/sync-server/state/schema'
 
 export type ExtremumSpace = {
   fromValueSpace: (v: number) => number
@@ -121,11 +124,13 @@ const BasicKeyframedTrack: React.VFC<{
       />
     ))
 
+    const iconColor = graphEditorColors[color].iconColor
+
     return (
       <g
         style={{
           // @ts-ignore
-          '--main-color': graphEditorColors[color].iconColor,
+          '--main-color': iconColor,
         }}
       >
         {keyframeEditors}

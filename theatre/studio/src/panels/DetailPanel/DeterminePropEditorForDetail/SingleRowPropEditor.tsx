@@ -111,6 +111,7 @@ export function SingleRowPropEditor<T>({
     useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useContextMenu(propNameContainer, {
+    displayName: `${label}`,
     menuItems: editingTools.contextMenuItems,
   })
 

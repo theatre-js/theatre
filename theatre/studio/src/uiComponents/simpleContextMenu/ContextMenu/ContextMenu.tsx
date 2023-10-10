@@ -9,6 +9,7 @@ import {height as itemHeight} from './Item'
 import {PortalContext} from 'reakit'
 import useOnKeyDown from '@theatre/studio/uiComponents/useOnKeyDown'
 import BaseMenu from './BaseMenu'
+import type {$IntentionalAny} from '@theatre/utils/types'
 
 /**
  * How far from the menu should the pointer travel to auto close the menu
@@ -17,7 +18,7 @@ const pointerDistanceThreshold = 20
 
 export type IContextMenuItemCustomNodeRenderFn = (controls: {
   closeMenu(): void
-}) => React.ReactChild
+}) => React.ReactElement
 
 export type IContextMenuItem = {
   label: string | ElementType
@@ -38,6 +39,26 @@ export type ContextMenuProps = {
     clientY: number
   }
   onRequestClose: () => void
+  // default: true
+  closeOnPointerLeave?: boolean
+}
+
+/**
+ * Useful helper in development to prevent the context menu from auto-closing,
+ * so its easier to inspect the DOM / change the styles, etc.
+ *
+ * Call window.$disableAutoCloseContextMenu() in the console to disable auto-close
+ */
+const shouldAutoCloseByDefault =
+  process.env.NODE_ENV === 'development'
+    ? (): boolean =>
+        (window as $IntentionalAny).__autoCloseContextMenuByDefault ?? true
+    : (): boolean => true
+
+if (process.env.NODE_ENV === 'development') {
+  ;(window as $IntentionalAny).$disableAutoCloseContextMenu = () => {
+    ;(window as $IntentionalAny).__autoCloseContextMenuByDefault = false
+  }
 }
 
 /**
@@ -86,7 +107,8 @@ const ContextMenu: React.FC<ContextMenuProps> = (props) => {
         e.clientY < pos.top - pointerDistanceThreshold ||
         e.clientY > pos.top + rect.height + pointerDistanceThreshold
       ) {
-        props.onRequestClose()
+        if (props.closeOnPointerLeave !== false && shouldAutoCloseByDefault())
+          props.onRequestClose()
       }
     }
 
@@ -95,7 +117,14 @@ const ContextMenu: React.FC<ContextMenuProps> = (props) => {
     return () => {
       window.removeEventListener('mousemove', onMouseMove)
     }
-  }, [rect, container, props.clickPoint, windowSize, props.onRequestClose])
+  }, [
+    rect,
+    container,
+    props.clickPoint,
+    windowSize,
+    props.onRequestClose,
+    props.closeOnPointerLeave,
+  ])
   const portalLayer = useContext(PortalContext)
 
   useOnKeyDown((ev) => {

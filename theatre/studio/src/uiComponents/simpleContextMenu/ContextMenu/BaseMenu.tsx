@@ -14,23 +14,26 @@ const MenuContainer = styled.ul`
   position: absolute;
   min-width: ${minWidth}px;
   z-index: 10000;
-  background: ${transparentize(0.2, '#111')};
-  backdrop-filter: blur(2px);
+  background: ${transparentize(0.8, '#000000')};
+  backdrop-filter: blur(8px) saturate(300%) contrast(65%) brightness(70%);
   color: white;
+  border: 0.5px solid #6262622c;
+  box-sizing: border-box;
+  box-shadow: ${transparentize(0.75, '#000000')} 0px 4px 20px;
   list-style-type: none;
-  padding: 2px 0;
+  padding: 0;
   margin: 0;
-  border-radius: 1px;
+  border-radius: 3px;
   cursor: default;
   ${pointerEventsAutoInNormalMode};
-  border-radius: 3px;
+  border-radius: 4px;
 `
 
 const MenuTitle = styled.div`
-  padding: 4px 10px;
-  border-bottom: 1px solid #6262626d;
-  color: #adadadb3;
-  font-size: 11px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #6262621b;
+  color: #d1d1d1;
+  font-size: 10px;
   font-weight: 500;
 `
 
