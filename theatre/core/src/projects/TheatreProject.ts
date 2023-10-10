@@ -3,7 +3,7 @@ import Project from '@theatre/core/projects/Project'
 import type {ISheet} from '@theatre/core/sheets/TheatreSheet'
 
 import type {ProjectAddress} from '@theatre/shared/utils/addresses'
-import type {Asset, File} from '@theatre/shared/utils/assets'
+import type {Asset, File as FileAsset} from '@theatre/shared/utils/assets'
 import type {
   ProjectId,
   SheetId,
@@ -80,7 +80,7 @@ export interface IProject {
    * @param asset - The asset to get the URL for
    * @returns The URL for the asset, or `undefined` if the asset is not found
    */
-  getAssetUrl(asset: Asset | File): string | undefined
+  getAssetUrl(asset: Asset | FileAsset): string | undefined
 }
 
 export default class TheatreProject implements IProject {
@@ -119,6 +119,19 @@ export default class TheatreProject implements IProject {
     return asset.id
       ? privateAPI(this).assetStorage.getAssetUrl(asset.id)
       : undefined
+  }
+
+  async createAsset(file: File) {
+    // probably should put this in project.createAsset but this will do for now
+    if (!this.isReady) {
+      console.error(
+        'Calling `project.createAsset()` before `project.ready` is resolved, will always return `undefined`. ' +
+          'Either use `project.ready.then(() => project.createAsset())` or `await project.ready` before calling `project.createAsset()`.',
+      )
+      return undefined
+    }
+
+    return privateAPI(this).assetStorage.createAsset(file)
   }
 
   sheet(sheetId: string, instanceId: string = 'default'): ISheet {
