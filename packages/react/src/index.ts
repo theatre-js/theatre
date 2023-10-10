@@ -49,24 +49,37 @@ export function usePrism<T>(
   deps: unknown[],
   debugLabel?: string,
 ): T {
-  const fnAsCallback = useCallback(fn, deps)
-  const atomRef = useRef<Atom<typeof fn>>(null as $IntentionalAny)
-  if (!atomRef.current) {
-    atomRef.current = new Atom(fnAsCallback)
+  const refs = useRef<{
+    atom: Atom<typeof fn>
+    prism: Prism<T>
+    deps: unknown[]
+  }>()
+
+  if (!refs.current) {
+    refs.current = {
+      atom: new Atom(fn),
+      prism: prism(() => {
+        const fn = refs.current!.atom.prism.getValue()
+        return fn()
+      }),
+      deps,
+    }
   } else {
-    atomRef.current.set(fnAsCallback)
+    if (deps.length !== refs.current.deps.length) {
+      refs.current.deps = deps
+      refs.current.atom.set(fn)
+    } else {
+      for (let i = 0; i < deps.length; i++) {
+        if (deps[i] !== refs.current.deps[i]) {
+          refs.current.deps = deps
+          refs.current.atom.set(fn)
+          break
+        }
+      }
+    }
   }
 
-  const prismRef = useRef<Prism<T> | null>(null)
-
-  if (!prismRef.current) {
-    prismRef.current = prism(() => {
-      const fn = atomRef.current.prism.getValue()
-      return fn()
-    })
-  }
-
-  return usePrismInstance(prismRef.current, debugLabel)
+  return _usePrismStaticInstance(refs.current.prism, debugLabel)
 }
 
 export const useVal: typeof val = (p: $IntentionalAny, debugLabel?: string) => {
@@ -237,65 +250,19 @@ function queueIfNeeded() {
     }, 1)
   })
 }
+
 /**
- * A React hook that returns the value of the prism that it received as the first argument.
- * It works like an implementation of Dataverse's Ticker, except that it runs the side effects in
- * an order where a component's prism is guaranteed to run before any of its descendents' prisms.
+ * Like `usePrismInstance()`, but it expects the prism's instance to be
+ * static and never change between renders.
  *
  * @param der - The prism
  * @param debugLabel - The label used by the debugger
- *
- * @remarks
- * It looks like this new implementation of usePrism() manages to:
- * 1. Not over-calculate the prisms
- * 2. Render prism in ancestor -\> descendent order
- * 3. Not set off React's concurrent mode alarms
- *
- *
- * I'm happy with how little bookkeeping we ended up doing here.
- *
- * ---
- *
- * Notes on the latest implementation:
- *
- * # Remove cold prism reads
- *
- * Prior to the latest change, the first render of every `usePrismInstance()` resulted in a cold read of its inner prism.
- * Cold reads are predictably slow. The reason we'd run cold reads was to comply with react's rule of not running side-effects
- * during render. (Turning a prism hot is _technically_ a side-effect).
- *
- * However, now that users are animating scenes with hundreds of objects in the same sequence, the lag started to be noticable.
- *
- * This commit changes `usePrismInstance()` so that it turns its prism hot before rendering them.
- *
- * # Freshen prisms before render
- *
- * Previously in order to avoid the zombie child problem (https://kaihao.dev/posts/stale-props-and-zombie-children-in-redux)
- * we deferred freshening the prisms to the render phase of components. This meant that if a prism's dependencies
- * changed, `usePrismInstance()` would schedule a re-render, regardless of whether that change actually affected the prism's
- * value. Here is a contrived example:
- *
- * ```ts
- * const num = new Box(1)
- * const isPositiveD = prism(() => num.prism.getValue() >= 0)
- *
- * const Comp = () => {
- *   return <div>{usePrismInstance(isPositiveD)}</div>
- * }
- *
- * num.set(2) // would cause Comp to re-render- even though 1 is still a positive number
- * ```
- *
- * We now avoid this problem by freshening the prism (i.e. calling `der.getValue()`) inside `runQueue()`,
- * and then only causing a re-render if the prism's value is actually changed.
- *
- * This still avoids the zombie-child problem because `runQueue` reads the prisms in-order of their position in
- * the mounting tree.
- *
- * On the off-chance that one of them still turns out to be a zombile child, `runQueue` will defer that particular
- * `usePrismInstance()` to be read inside a normal react render phase.
+ * @returns The value of the prism
  */
-export function usePrismInstance<T>(der: Prism<T>, debugLabel?: string): T {
+export function _usePrismStaticInstance<T>(
+  der: Prism<T>,
+  debugLabel?: string,
+): T {
   const _forceUpdate = useForceUpdate(debugLabel)
 
   const ref = useRef<QueueItem<T>>(undefined as $IntentionalAny)
@@ -363,6 +330,68 @@ export function usePrismInstance<T>(der: Prism<T>, debugLabel?: string): T {
   }
 
   return newValue
+}
+
+/**
+ * A React hook that returns the value of the prism that it received as the first argument.
+ * It works like an implementation of Dataverse's Ticker, except that it runs the side effects in
+ * an order where a component's prism is guaranteed to run before any of its descendents' prisms.
+ *
+ * @param der - The prism
+ * @param debugLabel - The label used by the debugger
+ *
+ * @remarks
+ * It looks like this new implementation of usePrism() manages to:
+ * 1. Not over-calculate the prisms
+ * 2. Render prism in ancestor -\> descendent order
+ * 3. Not set off React's concurrent mode alarms
+ *
+ *
+ * I'm happy with how little bookkeeping we ended up doing here.
+ *
+ * ---
+ *
+ * Notes on the latest implementation:
+ *
+ * # Remove cold prism reads
+ *
+ * Prior to the latest change, the first render of every `usePrismInstance()` resulted in a cold read of its inner prism.
+ * Cold reads are predictably slow. The reason we'd run cold reads was to comply with react's rule of not running side-effects
+ * during render. (Turning a prism hot is _technically_ a side-effect).
+ *
+ * However, now that users are animating scenes with hundreds of objects in the same sequence, the lag started to be noticable.
+ *
+ * This commit changes `usePrismInstance()` so that it turns its prism hot before rendering them.
+ *
+ * # Freshen prisms before render
+ *
+ * Previously in order to avoid the zombie child problem (https://kaihao.dev/posts/stale-props-and-zombie-children-in-redux)
+ * we deferred freshening the prisms to the render phase of components. This meant that if a prism's dependencies
+ * changed, `usePrismInstance()` would schedule a re-render, regardless of whether that change actually affected the prism's
+ * value. Here is a contrived example:
+ *
+ * ```ts
+ * const num = new Box(1)
+ * const isPositiveD = prism(() => num.prism.getValue() >= 0)
+ *
+ * const Comp = () => {
+ *   return <div>{usePrismInstance(isPositiveD)}</div>
+ * }
+ *
+ * num.set(2) // would cause Comp to re-render- even though 1 is still a positive number
+ * ```
+ *
+ * We now avoid this problem by freshening the prism (i.e. calling `der.getValue()`) inside `runQueue()`,
+ * and then only causing a re-render if the prism's value is actually changed.
+ *
+ * This still avoids the zombie-child problem because `runQueue` reads the prisms in-order of their position in
+ * the mounting tree.
+ *
+ * On the off-chance that one of them still turns out to be a zombile child, `runQueue` will defer that particular
+ * `usePrismInstance()` to be read inside a normal react render phase.
+ */
+export function usePrismInstance<T>(der: Prism<T>, debugLabel?: string): T {
+  return usePrism(() => der.getValue(), [der], debugLabel)
 }
 
 /**
