@@ -10,11 +10,13 @@ import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
-import {deriver} from '@theatre/studio/utils/derive-utils'
 import {rowIndentationFormulaCSS} from './rowIndentationFormulaCSS'
 import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground'
+import {mergeRefs} from 'react-merge-refs'
+import {useVal} from '@theatre/react'
+import useChordial from '@theatre/studio/uiComponents/chordial/useChodrial'
 
-const Container = deriver(styled.div<{
+const Container = styled.div<{
   isHighlighted: PropHighlighted
 }>`
   display: flex;
@@ -34,7 +36,7 @@ const Container = deriver(styled.div<{
   ${pointerEventsAutoInNormalMode};
 
   /* background-color: ${getDetailRowHighlightBackground}; */
-`)
+`
 
 const Left = styled.div`
   box-sizing: border-box;
@@ -50,7 +52,7 @@ const Left = styled.div`
   width: calc(100% - var(--right-width));
 `
 
-const PropNameContainer = deriver(styled.div<{
+const PropNameContainer = styled.div<{
   isHighlighted: PropHighlighted
 }>`
   text-align: left;
@@ -67,7 +69,7 @@ const PropNameContainer = deriver(styled.div<{
   &:hover {
     color: white;
   }
-`)
+`
 
 const ControlsContainer = styled.div`
   flex-basis: 8px;
@@ -107,25 +109,32 @@ export function SingleRowPropEditor<T>({
 > | null {
   const label = propConfig.label ?? last(getPointerParts(pointerToProp).path)
 
+  const title = ['obj', 'props', ...getPointerParts(pointerToProp).path].join(
+    '.',
+  )
+
+  const isHighlighted = useVal(isPropHighlightedD)
+
   const [propNameContainerRef, propNameContainer] =
     useRefAndState<HTMLDivElement | null>(null)
 
   const [contextMenu] = useContextMenu(propNameContainer, {
-    displayName: `${label}`,
+    displayName: `${title}`,
     menuItems: editingTools.contextMenuItems,
   })
 
+  const {targetRef} = useChordial(() => {
+    return {title, items: []}
+  })
+
   return (
-    <Container isHighlighted={isPropHighlightedD}>
+    <Container isHighlighted={isHighlighted}>
       {contextMenu}
       <Left>
         <ControlsContainer>{editingTools.controlIndicators}</ControlsContainer>
         <PropNameContainer
-          isHighlighted={isPropHighlightedD}
-          ref={propNameContainerRef}
-          title={['obj', 'props', ...getPointerParts(pointerToProp).path].join(
-            '.',
-          )}
+          isHighlighted={isHighlighted}
+          ref={mergeRefs([propNameContainerRef, targetRef])}
         >
           {label}
         </PropNameContainer>

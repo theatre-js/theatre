@@ -3,11 +3,12 @@ import React, {useCallback} from 'react'
 import BaseItem from '@theatre/studio/panels/OutlinePanel/BaseItem'
 import SheetsList from '@theatre/studio/panels/OutlinePanel/SheetsList/SheetsList'
 import getStudio from '@theatre/studio/getStudio'
-import {usePrism} from '@theatre/react'
-import {getOutlineSelection} from '@theatre/studio/selectors'
+import {usePrism, useVal} from '@theatre/react'
+import {outlineSelection} from '@theatre/studio/selectors'
 import {val} from '@theatre/dataverse'
 import styled from 'styled-components'
 import {useCollapseStateInOutlinePanel} from '@theatre/studio/panels/OutlinePanel/outlinePanelUtils'
+import useChordial from '@theatre/studio/uiComponents/chordial/useChodrial'
 
 const ConflictNotice = styled.div`
   color: #ff6363;
@@ -23,7 +24,7 @@ const ProjectListItem: React.FC<{
   depth: number
   project: Project
 }> = ({depth, project}) => {
-  const selection = usePrism(() => getOutlineSelection(), [])
+  const selection = useVal(outlineSelection)
 
   const hasConflict = usePrism(() => {
     const projectId = project.address.projectId
@@ -43,12 +44,20 @@ const ProjectListItem: React.FC<{
 
   const {collapsed, setCollapsed} = useCollapseStateInOutlinePanel(project)
 
+  const {targetRef} = useChordial(() => {
+    return {
+      title: `Project: ${project.address.projectId}`,
+      items: [],
+    }
+  })
+
   return (
     <BaseItem
       depth={depth}
       label={project.address.projectId}
       setIsCollapsed={setCollapsed}
       collapsed={collapsed}
+      headerRef={targetRef}
       labelDecoration={
         hasConflict ? <ConflictNotice>Has Conflicts</ConflictNotice> : null
       }

@@ -316,6 +316,7 @@ function usePlayheadContextMenu(
   options: {layoutP: Pointer<SequenceEditorPanelLayout>},
 ) {
   return useContextMenu(node, {
+    displayName: 'Playhead',
     menuItems() {
       return [
         {

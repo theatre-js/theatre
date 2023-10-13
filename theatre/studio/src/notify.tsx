@@ -90,7 +90,9 @@ const NotificationContainer = styled.div`
   gap: 12px;
   ${pointerEventsAutoInNormalMode};
   background-color: rgba(40, 43, 47, 0.8);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.25),
+    0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(14px);
 
   @supports not (backdrop-filter: blur()) {
@@ -281,7 +283,9 @@ const Button = styled.button<{danger?: boolean}>`
   gap: 12px;
   ${pointerEventsAutoInNormalMode};
   background-color: rgba(40, 43, 47, 0.8);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.25),
+    0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(14px);
   border: none;
   padding: 12px;

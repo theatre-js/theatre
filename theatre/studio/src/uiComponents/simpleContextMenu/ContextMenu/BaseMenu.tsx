@@ -23,18 +23,30 @@ const MenuContainer = styled.ul`
   list-style-type: none;
   padding: 0;
   margin: 0;
-  border-radius: 3px;
   cursor: default;
   ${pointerEventsAutoInNormalMode};
   border-radius: 4px;
 `
 
 const MenuTitle = styled.div`
-  padding: 8px 10px;
-  border-bottom: 1px solid #6262621b;
+  padding: 8px 10px 6px;
+  position: relative;
+
   color: #d1d1d1;
   font-size: 10px;
   font-weight: 500;
+
+  /* &:after {
+    // a horizontal line, taking up no space, with 4px padding on each side
+    content: '';
+    display: block;
+    height: 1px;
+    background: #6262622c;
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    bottom: 0px;
+  } */
 `
 
 type MenuItem = {

@@ -8,6 +8,7 @@ import type {
 import useRequestContextMenu from './useRequestContextMenu'
 import type {IRequestContextMenuOptions} from './useRequestContextMenu'
 import {contextMenuShownContext} from '@theatre/studio/panels/DetailPanel/DetailPanel'
+import {closeAllTooltips} from '@theatre/studio/uiComponents/Popover/useTooltip'
 
 // re-exports
 export type {
@@ -34,6 +35,7 @@ export default function useContextMenu(
   useEffect(() => {
     let removeContextMenu: () => void | undefined
     if (status.isOpen) {
+      closeAllTooltips()
       opts.onOpen?.()
       removeContextMenu = addContextMenu()
     }

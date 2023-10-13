@@ -14,6 +14,11 @@ const Container = styled.div`
   --popover-outer-stroke: #111;
 
   background: var(--popover-bg);
+  /* border: 1px solid var(--popover-inner-stroke); */
+  box-shadow:
+    0 0 0 1px var(--popover-outer-stroke),
+    0 6px 8px -4px black;
+  backdrop-filter: blur(8px);
 
   color: white;
   padding: 0;
@@ -22,11 +27,6 @@ const Container = styled.div`
   ${pointerEventsAutoInNormalMode};
   border-radius: 3px;
   z-index: 10000;
-  border: 1px solid var(--popover-inner-stroke);
-  box-shadow:
-    0 0 0 1px var(--popover-outer-stroke),
-    0 6px 8px -4px black;
-  backdrop-filter: blur(8px);
 
   & a {
     color: inherit;
@@ -42,7 +42,7 @@ const BasicPopover: React.FC<{
     {
       children,
       className,
-      showPopoverEdgeTriangle: showPopoverEdgeTriangle = true,
+      showPopoverEdgeTriangle: showPopoverEdgeTriangle = false,
     },
     ref,
   ) => {

@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.18.11",
+    "@react-spring/web": "^9.7.3",
     "@rollup/plugin-alias": "^3.1.5",
     "@rollup/plugin-multi-entry": "^4.1.0",
     "@rollup/plugin-replace": "^2.4.2",
@@ -47,6 +48,7 @@
     "@types/shallowequal": "^1.1.1",
     "@types/styled-components": "^5.1.26",
     "@types/uuid": "^8.3.0",
+    "@xstate/react": "^3.2.2",
     "axios": "^1.4.0",
     "blob-compare": "1.1.0",
     "cross-env": "^7.0.3",

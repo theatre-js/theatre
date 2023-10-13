@@ -1,4 +1,4 @@
-import type {VoidFn} from '@theatre/utils/types'
+import type {$FixMe, VoidFn} from '@theatre/utils/types'
 import React from 'react'
 import styled, {css} from 'styled-components'
 import noop from '@theatre/utils/noop'
@@ -141,6 +141,7 @@ const BaseItem: React.FC<{
   children?: React.ReactNode | undefined
   collapsed?: boolean
   setIsCollapsed?: (v: boolean) => void
+  headerRef?: React.MutableRefObject<$FixMe>
 }> = ({
   label,
   children,
@@ -150,6 +151,7 @@ const BaseItem: React.FC<{
   labelDecoration,
   collapsed = false,
   setIsCollapsed,
+  headerRef,
 }) => {
   const canContainChildren = children !== undefined
 
@@ -161,7 +163,12 @@ const BaseItem: React.FC<{
       }
       className={collapsed ? 'collapsed' : ''}
     >
-      <Header className={selectionStatus} onClick={select ?? noop} data-header>
+      <Header
+        className={selectionStatus}
+        onClick={select ?? noop}
+        data-header
+        ref={headerRef}
+      >
         <Head_IconContainer>
           {canContainChildren ? (
             <Head_Icon_WithDescendants

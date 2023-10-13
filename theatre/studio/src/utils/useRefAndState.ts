@@ -26,6 +26,7 @@ export default function useRefAndState<T>(
         return current
       },
       set current(v: T) {
+        if (v === current) return
         current = v
         setState(v)
       },

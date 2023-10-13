@@ -27,7 +27,7 @@ const LeftRowHeader = styled(BaseHeader)<{
   isSelectable: boolean
   isSelected: boolean
 }>`
-  padding-left: calc(8px + var(--depth) * 20px);
+  padding-left: calc(0px + var(--depth) * 20px);
 
   display: flex;
   align-items: stretch;

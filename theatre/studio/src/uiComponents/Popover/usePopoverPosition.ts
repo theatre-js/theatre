@@ -1,41 +1,31 @@
-import React from 'react'
-import {cloneElement, useLayoutEffect, useState} from 'react'
+import type React from 'react'
+import {useLayoutEffect, useState} from 'react'
 import useWindowSize from 'react-use/esm/useWindowSize'
 import useBoundingClientRect from '@theatre/studio/uiComponents/useBoundingClientRect'
-import ArrowContext from './ArrowContext'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import useOnClickOutside from '@theatre/studio/uiComponents/useOnClickOutside'
-import onPointerOutside from '@theatre/studio/uiComponents/onPointerOutside'
-import noop from '@theatre/utils/noop'
 import {clamp} from 'lodash-es'
 
 const minimumDistanceOfArrowToEdgeOfPopover = 8
 
-export type AbsolutePlacementBoxConstraints = {
+type AbsolutePlacementBoxConstraints = {
   minX?: number
   maxX?: number
   minY?: number
   maxY?: number
 }
 
-const TooltipWrapper: React.FC<{
-  target: HTMLElement | SVGElement | Element
-  onClickOutside?: (e: MouseEvent) => void
-  children: () => React.ReactElement
-  onPointerOutside?: {
-    threshold: number
-    callback: (e: MouseEvent) => void
-  }
+const usePopoverPosition = (props: {
+  target: HTMLElement | SVGElement | Element | null | undefined
   verticalPlacement?: 'top' | 'bottom' | 'overlay'
   verticalGap?: number // Has no effect if verticalPlacement === 'overlay'
   constraints?: AbsolutePlacementBoxConstraints
-}> = (props) => {
-  const originalElement = props.children()
-  const [ref, container] = useRefAndState<HTMLElement | SVGElement | null>(null)
-  const style: Record<string, string> = originalElement.props.style
-    ? {...originalElement.props.style}
-    : {}
-  style.position = 'absolute'
+}): [
+  containerRef: React.MutableRefObject<HTMLElement | SVGElement | null>,
+  position: undefined | {top: number; left: number},
+] => {
+  const [containerRef, container] = useRefAndState<
+    HTMLElement | SVGElement | null
+  >(null)
 
   const containerRect = useBoundingClientRect(container)
   const targetRect = useBoundingClientRect(props.target)
@@ -44,8 +34,15 @@ const TooltipWrapper: React.FC<{
     Record<string, string>
   >({})
 
+  const [positionRef, position] = useRefAndState<
+    undefined | {left: number; top: number}
+  >(undefined)
+
   useLayoutEffect(() => {
-    if (!containerRect || !container || !targetRect) return
+    if (!containerRect || !targetRect) {
+      positionRef.current = undefined
+      return
+    }
 
     const gap = props.verticalGap ?? 8
     const arrowStyle: Record<string, string> = {}
@@ -113,41 +110,16 @@ const TooltipWrapper: React.FC<{
       minY = -Infinity,
       maxY = Infinity,
     } = props.constraints ?? {}
+
     const pos = {
       left: clamp(left, minX, maxX - containerRect.width),
       top: clamp(top, minY, maxY + containerRect.height),
     }
 
-    container.style.left = pos.left + 'px'
-    container.style.top = pos.top + 'px'
-    setArrowContextValue(arrowStyle)
+    positionRef.current = pos
+  }, [containerRect, props.target, targetRect, windowSize])
 
-    if (props.onPointerOutside) {
-      return onPointerOutside(
-        container,
-        props.onPointerOutside.threshold,
-        props.onPointerOutside.callback,
-      )
-    }
-  }, [
-    containerRect,
-    container,
-    props.target,
-    targetRect,
-    windowSize,
-    props.onPointerOutside,
-  ])
-
-  useOnClickOutside(
-    [container, props.target ?? null],
-    props.onClickOutside ?? noop,
-  )
-
-  return (
-    <ArrowContext.Provider value={arrowContextValue}>
-      {cloneElement(originalElement, {ref, style})}
-    </ArrowContext.Provider>
-  )
+  return [containerRef, position]
 }
 
-export default TooltipWrapper
+export default usePopoverPosition
