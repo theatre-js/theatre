@@ -253,6 +253,7 @@ function useConnectorContextMenu(
 
       return [
         {
+          type: 'normal',
           label: copyableKeyframes.length > 0 ? 'Copy (selection)' : 'Copy',
           callback: () => {
             if (copyableKeyframes.length > 0) {
@@ -272,6 +273,7 @@ function useConnectorContextMenu(
           },
         },
         {
+          type: 'normal',
           label: props.selection ? 'Delete (selection)' : 'Delete',
           callback: () => {
             if (props.selection) {

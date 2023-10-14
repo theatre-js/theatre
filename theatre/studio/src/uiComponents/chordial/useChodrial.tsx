@@ -1,11 +1,14 @@
 import type {MutableRefObject} from 'react'
-import {useContext, useEffect, useRef} from 'react'
-import React from 'react'
-import {PortalContext} from 'reakit'
-import {createPortal} from 'react-dom'
-import {TooltipOverlay} from './TooltipOverlay'
+import {useEffect, useRef} from 'react'
+import type React from 'react'
 import type {ChordialOptsFn, ChodrialElement} from './chordialInternals'
-import {createChordialElement, hoverActor} from './chordialInternals'
+import {
+  contextActor,
+  createChordialElement,
+  findChodrialByDomNode,
+  gestureActor,
+  hoverActor,
+} from './chordialInternals'
 
 export default function useChordial<T extends HTMLElement>(
   optsFn: ChordialOptsFn,
@@ -50,28 +53,30 @@ export const useChordialCaptureEvents =
     return ref
   }
 
-export const ChordialRenderer: React.FC<{}> = () => {
-  const portalLayer = useContext(PortalContext)
-
-  if (!portalLayer) return null
-
-  return createPortal(
-    <>
-      <TooltipOverlay />
-    </>,
-    portalLayer,
-  )
-}
-
 const eventHandlers = {
-  windowMouseMove: (e: MouseEvent) => {
-    hoverActor.send([e, 'window'])
+  windowMouseMove: (mouseEvent: MouseEvent) => {
+    gestureActor.send({type: 'mousemove', mouseEvent})
+    hoverActor.send({type: 'mousemove', mouseEvent, source: 'window'})
   },
-  mouseMove: (e: MouseEvent) => {
-    hoverActor.send([e, 'root'])
+  mouseMove: (mouseEvent: MouseEvent) => {
+    hoverActor.send({type: 'mousemove', mouseEvent, source: 'root'})
   },
-  mouseDown: (e: MouseEvent) => {},
-  mouseUp: (e: MouseEvent) => {},
-  click: (e: MouseEvent) => {},
-  contextMenu: (e: MouseEvent) => {},
+  mouseDown: (e: MouseEvent) => {
+    gestureActor.send({type: 'mousedown', mouseEvent: e})
+    const el = findChodrialByDomNode(e.target)
+    if (!el) return
+  },
+  mouseUp: (e: MouseEvent) => {
+    gestureActor.send({type: 'mouseup', mouseEvent: e})
+    const el = findChodrialByDomNode(e.target)
+    if (!el) return
+  },
+  click: (e: MouseEvent) => {
+    const el = findChodrialByDomNode(e.target)
+    if (!el) return
+    console.log('click', el)
+  },
+  contextMenu: (e: MouseEvent) => {
+    contextActor.send({type: 'rclick', mouseEvent: e})
+  },
 }

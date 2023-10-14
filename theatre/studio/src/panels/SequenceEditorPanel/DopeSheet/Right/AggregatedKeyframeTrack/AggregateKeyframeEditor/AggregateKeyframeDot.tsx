@@ -163,6 +163,7 @@ function useAggregateKeyframeContextMenu(
 
       return [
         {
+          type: 'normal',
           label: selection ? 'Copy (selection)' : 'Copy',
           callback: () => {
             // see AGGREGATE_COPY_PASTE.md for explanation of this
@@ -225,6 +226,7 @@ function useAggregateKeyframeContextMenu(
           },
         },
         {
+          type: 'normal',
           label: selection ? 'Delete (selection)' : 'Delete',
           callback: () => {
             if (selection) {

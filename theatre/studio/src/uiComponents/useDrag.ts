@@ -38,7 +38,18 @@ type OnClickCallback = (mouseUpEvent: MouseEvent) => void
 
 type OnDragEndCallback = (dragHappened: boolean, event?: MouseEvent) => void
 
-export type UseDragOpts = {
+export type DragHandlers = {
+  /**
+   * Called at the end of the drag gesture.
+   * `dragHappened` will be `true` if the user actually moved the pointer
+   * (if onDrag isn't called, then this will be false becuase the user hasn't moved the pointer)
+   */
+  onDragEnd?: OnDragEndCallback
+  onDrag: OnDragCallback
+  onClick?: OnClickCallback
+}
+
+export type DragOpts = {
   /**
    * Provide a name for the thing wanting to use the drag helper.
    * This can show up in various errors and potential debug logs to help narrow down.
@@ -80,20 +91,7 @@ export type UseDragOpts = {
    * onDragStart can be undefined, in which case, we always handle useDrag,
    * but when defined, we can allow the handler to return false to indicate ignore this dragging
    */
-  onDragStart: (event: MouseEvent) =>
-    | false
-    | {
-        /**
-         * Called at the end of the drag gesture.
-         * `dragHappened` will be `true` if the user actually moved the pointer
-         * (if onDrag isn't called, then this will be false becuase the user hasn't moved the pointer)
-         */
-        onDragEnd?: OnDragEndCallback
-        onDrag: OnDragCallback
-        onClick?: OnClickCallback
-      }
-
-  // which mouse button to use the drag event
+  onDragStart: (event: MouseEvent) => false | DragHandlers
   buttons?:
     | [MouseButton]
     | [MouseButton, MouseButton]
@@ -101,8 +99,8 @@ export type UseDragOpts = {
 }
 
 /** How far in total does the cursor have to move before we decide that the user is dragging */
-const DRAG_DETECTION_DISTANCE_THRESHOLD = 3
-const DRAG_DETECTION_WAS_POINTER_LOCK_MOVEMENT = 100
+export const DRAG_DETECTION_DISTANCE_THRESHOLD = 3
+export const DRAG_DETECTION_WAS_POINTER_LOCK_MOVEMENT = 100
 
 type IUseDragStateRef = IUseDragState_NotStarted | IUseDragState_Started
 
@@ -153,14 +151,14 @@ type IUseDragStateDetection_Detected = {
 
 export default function useDrag(
   target: HTMLElement | SVGElement | undefined | null,
-  opts: UseDragOpts,
+  opts: DragOpts,
 ): [isDragging: boolean] {
-  const optsRef = useRef<UseDragOpts>(opts)
+  const optsRef = useRef<DragOpts>(opts)
   optsRef.current = opts
 
   /**
    * Safari has a gross behavior with locking the pointer changes the height of the webpage
-   * See {@link UseDragOpts.shouldPointerLock} for more context.
+   * See {@link DragOpts.shouldPointerLock} for more context.
    */
   const isPointerLockUsed = opts.shouldPointerLock && !isSafari
 
@@ -195,7 +193,7 @@ export default function useDrag(
 
       const stateStarted = stateRef.current
 
-      if (didPointerLockCauseMovement(event, stateStarted)) return
+      if (didPointerLockCauseMovement(event, stateStarted.detection)) return
 
       if (!stateStarted.detection.detected) {
         stateStarted.detection.totalDistanceMoved +=
@@ -248,7 +246,9 @@ export default function useDrag(
       if (!stateRef.current.domDragStarted) return
       const dragHappened = stateRef.current.detection.detected
       stateRef.current = {domDragStarted: false}
+
       if (opts.shouldPointerLock && !isSafari) document.exitPointerLock()
+
       callbacksRef.current.onDragEnd(dragHappened)
 
       // ensure that the window is focused after a successful drag
@@ -373,13 +373,14 @@ export default function useDrag(
  * @param event - MouseEvent from onDrag
  * @returns
  */
-function didPointerLockCauseMovement(
+export function didPointerLockCauseMovement(
   event: MouseEvent,
-  state: IUseDragState_Started,
+  detection:
+    | Pick<IUseDragStateDetection_Detected, 'detected' | 'dragEventCount'>
+    | Pick<IUseDragStateDetection_NotDetected, 'detected'>,
 ) {
   const isEarlyInDragging =
-    !state.detection.detected ||
-    (state.detection.detected && state.detection.dragEventCount < 3)
+    !detection.detected || (detection.detected && detection.dragEventCount < 3)
 
   return (
     isEarlyInDragging &&

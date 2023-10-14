@@ -13,11 +13,8 @@ import styled from 'styled-components'
 import {rowIndentationFormulaCSS} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/rowIndentationFormulaCSS'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import DeterminePropEditorForDetail from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-
-import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import {useEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEditingToolsForCompoundProp'
 import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
 import {whatPropIsHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
@@ -31,7 +28,6 @@ import {HiOutlineChevronRight} from 'react-icons/all'
 import memoizeFn from '@theatre/utils/memoizeFn'
 import {collapsedMap} from './collapsedMap'
 import useChordial from '@theatre/studio/uiComponents/chordial/useChodrial'
-import {mergeRefs} from 'react-merge-refs'
 
 const Container = styled.div`
   --step: 15px;
@@ -188,9 +184,6 @@ function DetailCompoundPropEditor<
     ([_, conf]) => !isPropConfigComposite(conf),
   )
 
-  const [propNameContainerRef, propNameContainer] =
-    useRefAndState<HTMLDivElement | null>(null)
-
   const tools = useEditingToolsForCompoundProp(
     pointerToProp as $FixMe,
     obj,
@@ -198,11 +191,6 @@ function DetailCompoundPropEditor<
   )
 
   const label: string = propName || 'Props'
-
-  const [contextMenu] = useContextMenu(propNameContainer, {
-    menuItems: tools.contextMenuItems,
-    displayName: `${label}`,
-  })
 
   const lastSubPropIsComposite = compositeSubs.length > 0
 
@@ -238,12 +226,11 @@ function DetailCompoundPropEditor<
     const title = ['obj', 'props', ...getPointerParts(pointerToProp).path].join(
       '.',
     )
-    return {title, items: []}
+    return {title, items: tools.contextMenuItems}
   })
 
   return (
     <Container>
-      {contextMenu}
       <Header
         // @ts-ignore
         style={{'--depth': visualIndentation - 1}}
@@ -251,10 +238,7 @@ function DetailCompoundPropEditor<
         <Padding isVectorProp={isVector}>
           <ControlIndicators>{tools.controlIndicators}</ControlIndicators>
 
-          <PropName
-            isHighlighted={isPropHighlightedD}
-            ref={mergeRefs([propNameContainerRef, targetRef])}
-          >
+          <PropName isHighlighted={isPropHighlightedD} ref={targetRef}>
             <span>{label}</span>
           </PropName>
           <CollapseIcon

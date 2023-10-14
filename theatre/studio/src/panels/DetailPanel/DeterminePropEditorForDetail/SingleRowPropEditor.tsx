@@ -1,8 +1,6 @@
 import type * as propTypes from '@theatre/core/propTypes'
 import {getPointerParts} from '@theatre/dataverse'
 import type {Pointer, Prism} from '@theatre/dataverse'
-import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {last} from 'lodash-es'
 import React from 'react'
 import type {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
@@ -12,9 +10,9 @@ import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS
 import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
 import {rowIndentationFormulaCSS} from './rowIndentationFormulaCSS'
 import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground'
-import {mergeRefs} from 'react-merge-refs'
 import {useVal} from '@theatre/react'
 import useChordial from '@theatre/studio/uiComponents/chordial/useChodrial'
+import type {$FixMe} from '@theatre/utils/types'
 
 const Container = styled.div<{
   isHighlighted: PropHighlighted
@@ -115,26 +113,20 @@ export function SingleRowPropEditor<T>({
 
   const isHighlighted = useVal(isPropHighlightedD)
 
-  const [propNameContainerRef, propNameContainer] =
-    useRefAndState<HTMLDivElement | null>(null)
-
-  const [contextMenu] = useContextMenu(propNameContainer, {
-    displayName: `${title}`,
-    menuItems: editingTools.contextMenuItems,
-  })
-
   const {targetRef} = useChordial(() => {
-    return {title, items: []}
+    return {
+      title,
+      items: editingTools.contextMenuItems,
+    }
   })
 
   return (
     <Container isHighlighted={isHighlighted}>
-      {contextMenu}
       <Left>
         <ControlsContainer>{editingTools.controlIndicators}</ControlsContainer>
         <PropNameContainer
           isHighlighted={isHighlighted}
-          ref={mergeRefs([propNameContainerRef, targetRef])}
+          ref={targetRef as $FixMe}
         >
           {label}
         </PropNameContainer>

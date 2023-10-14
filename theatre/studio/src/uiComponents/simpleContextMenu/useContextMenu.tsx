@@ -1,21 +1,14 @@
 import type {VoidFn} from '@theatre/utils/types'
 import React, {useContext, useEffect} from 'react'
 import ContextMenu from './ContextMenu/ContextMenu'
-import type {
-  IContextMenuItemsValue,
-  IContextMenuItem,
-} from './ContextMenu/ContextMenu'
+import type {IContextMenuItemsValue} from './ContextMenu/ContextMenu'
 import useRequestContextMenu from './useRequestContextMenu'
 import type {IRequestContextMenuOptions} from './useRequestContextMenu'
 import {contextMenuShownContext} from '@theatre/studio/panels/DetailPanel/DetailPanel'
 import {closeAllTooltips} from '@theatre/studio/uiComponents/Popover/useTooltip'
 
 // re-exports
-export type {
-  IContextMenuItemsValue,
-  IContextMenuItem,
-  IRequestContextMenuOptions,
-}
+export type {IContextMenuItemsValue, IRequestContextMenuOptions}
 
 const emptyNode = <></>
 

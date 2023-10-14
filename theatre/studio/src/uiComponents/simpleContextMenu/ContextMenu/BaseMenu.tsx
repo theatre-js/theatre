@@ -59,7 +59,7 @@ type MenuItem = {
 const BaseMenu: React.FC<{
   items: MenuItem[]
   ref?: $FixMe
-  displayName?: string
+  displayName?: React.ReactNode
   onRequestClose: () => void
 }> = React.forwardRef((props, ref: $FixMe) => {
   return (

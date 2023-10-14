@@ -2,10 +2,9 @@ import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import React from 'react'
 import type {$FixMe, $IntentionalAny} from '@theatre/utils/types'
-import useTooltip from '@theatre/studio/uiComponents/Popover/useTooltip'
 import {mergeRefs} from 'react-merge-refs'
-import MinimalTooltip from '@theatre/studio/uiComponents/Popover/MinimalTooltip'
 import ToolbarSwitchSelectContainer from './ToolbarSwitchSelectContainer'
+import useChordial from '@theatre/studio/uiComponents/chordial/useChodrial'
 
 export const Container = styled.button`
   ${pointerEventsAutoInNormalMode};
@@ -69,15 +68,16 @@ export const Container = styled.button`
 
 const ToolbarIconButton: typeof Container = React.forwardRef(
   ({title, ...props}: $FixMe, ref: $FixMe) => {
-    const [tooltip, localRef] = useTooltip(
-      {enabled: typeof title === 'string'},
-      () => <MinimalTooltip>{title}</MinimalTooltip>,
-    )
+    const c = useChordial(() => {
+      return {
+        title,
+        items: [],
+      }
+    })
 
     return (
       <>
-        {tooltip}
-        <Container ref={mergeRefs([localRef, ref])} {...props} />{' '}
+        <Container ref={mergeRefs([c.targetRef, ref])} {...props} />{' '}
       </>
     )
   },
