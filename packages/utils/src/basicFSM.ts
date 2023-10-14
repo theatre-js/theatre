@@ -19,8 +19,18 @@ type Actor<ContextType, EventType> = {
  */
 export function basicFSM<EventType, ContextType>(
   setup: (transition: TransitionFn<EventType, ContextType>) => void,
-): () => Actor<ContextType, EventType> {
-  return () => {
+): (actorOpts?: {
+  name?: string
+  log?: boolean
+}) => Actor<ContextType, EventType> {
+  return (actorOpts) => {
+    const log =
+      actorOpts?.log !== true
+        ? () => {}
+        : (...args: any[]) => {
+            console.log('actor:' + actorOpts?.name || 'undefined', ...args)
+          }
+
     const atom = new Atom<{
       stateName: string
       context: ContextType
@@ -32,12 +42,15 @@ export function basicFSM<EventType, ContextType>(
       context: ContextType,
       take: TakeFn<EventType>,
     ) {
+      log('transition', stateName, context)
       atom.set({stateName, context, take})
     }
 
     setup(transition)
 
     function send(event: EventType) {
+      log('event', event)
+
       let state = atom.get()
       state.take(event)
     }
