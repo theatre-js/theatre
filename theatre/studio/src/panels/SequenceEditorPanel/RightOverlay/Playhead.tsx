@@ -290,7 +290,7 @@ const Playhead: React.FC<{layoutP: Pointer<SequenceEditorPanelLayout>}> = ({
 
   const popover = usePopover({debugName: 'Playhead'}, () => {
     return (
-      <BasicPopover>
+      <BasicPopover showPopoverEdgeTriangle={true}>
         <PlayheadPositionPopover
           layoutP={layoutP}
           onRequestClose={popover.close}

@@ -129,7 +129,7 @@ type ICurveEditorPopoverProps = {
   additionalConnections: Array<KeyframeConnectionWithAddress>
 }
 
-const CurveEditorPopover: React.VFC<ICurveEditorPopoverProps> = (props) => {
+const CurveEditorPopover: React.FC<ICurveEditorPopoverProps> = (props) => {
   const allConnections = useMemo(
     () => [props.curveConnection, ...props.additionalConnections],
     [props.curveConnection, ...props.additionalConnections],

@@ -13,7 +13,6 @@ import BasicStringInput from '@theatre/studio/uiComponents/form/BasicStringInput
 const Container = styled.div`
   display: flex;
   gap: 8px;
-  /* padding: 4px 8px; */
   height: 28px;
   align-items: center;
 `
@@ -85,7 +84,7 @@ const MarkerEditorPopover: React.FC<{
 
   return (
     <Container>
-      {/* <Label>Marker</Label> */}
+      <Label>Marker</Label>
       <BasicStringInput
         value={marker.label ?? ''}
         {...fns}

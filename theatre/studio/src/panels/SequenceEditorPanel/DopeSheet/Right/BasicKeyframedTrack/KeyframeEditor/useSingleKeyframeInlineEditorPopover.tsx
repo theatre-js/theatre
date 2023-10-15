@@ -19,18 +19,16 @@ export function useKeyframeInlineEditorPopover(
 ) {
   return usePopover({debugName: 'useKeyframeInlineEditorPopover'}, () => (
     <BasicPopover showPopoverEdgeTriangle>
-      <div style={{margin: '1px 2px 1px 10px'}}>
-        {!Array.isArray(props)
-          ? undefined
-          : props.map((prop, i) => (
-              <DeterminePropEditorForKeyframeTree
-                key={i}
-                {...prop}
-                autoFocusInput={i === 0}
-                indent={0}
-              />
-            ))}
-      </div>
+      {!Array.isArray(props)
+        ? undefined
+        : props.map((prop, i) => (
+            <DeterminePropEditorForKeyframeTree
+              key={i}
+              {...prop}
+              autoFocusInput={i === 0}
+              indent={0}
+            />
+          ))}
     </BasicPopover>
   ))
 }

@@ -14,7 +14,6 @@ const greaterThanZero = (v: number) => isFinite(v) && v > 0
 const Container = styled.div`
   display: flex;
   gap: 8px;
-  padding: 4px 8px;
   height: 28px;
   align-items: center;
 `

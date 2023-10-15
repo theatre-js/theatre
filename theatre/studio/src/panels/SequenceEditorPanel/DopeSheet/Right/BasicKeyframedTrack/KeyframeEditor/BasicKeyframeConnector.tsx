@@ -29,6 +29,8 @@ const POPOVER_MARGIN = 5
 const EasingPopover = styled(BasicPopover)`
   --popover-outer-stroke: transparent;
   --popover-inner-stroke: ${COLOR_POPOVER_BACK};
+  border-radius: 2px;
+  padding: 0;
 `
 
 type IBasicKeyframeConnectorProps = ISingleKeyframeEditorProps
