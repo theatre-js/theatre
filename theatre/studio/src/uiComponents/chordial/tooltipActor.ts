@@ -3,20 +3,22 @@ import type {MaybeChodrialEl, ChodrialElement} from './chordialInternals'
 import {prism, val} from '@theatre/dataverse'
 import {contextActor} from './contextActor'
 import {hoverActor} from './hoverActor'
+import {mousedownActor} from './mousedownActor'
 
 /**
  * A state machine that determines which Chordial target should have a tooltip shown.
  */
 export const tooltipActor = basicFSM<
   | {type: 'hoverTargetChange'; element: MaybeChodrialEl}
-  | {type: 'contextMenuOpen'}
-  | {type: 'contextMenuClose'},
+  // emitted when the mouse button is down, or some other gesture is active so that the tooltip must not be shown
+  | {type: 'tooltipBlocked'}
+  | {type: 'tooltipUnblocked'},
   MaybeChodrialEl
 >((transition) => {
-  function contextMenuOpen() {
-    transition('contextMenuOpen', undefined, (e) => {
+  function tooltipBlocked() {
+    transition('tooltipBlocked', undefined, (e) => {
       switch (e.type) {
-        case 'contextMenuClose':
+        case 'tooltipUnblocked':
           idle()
           break
         default:
@@ -33,9 +35,9 @@ export const tooltipActor = basicFSM<
     const status = {isActive: true}
     transition(stateName, context, (e) => {
       switch (e.type) {
-        case 'contextMenuOpen':
+        case 'tooltipBlocked':
           status.isActive = false
-          contextMenuOpen()
+          tooltipBlocked()
           break
         case 'hoverTargetChange':
           take(e.element)
@@ -107,12 +109,15 @@ export const tooltipActor = basicFSM<
   idle()
 })({name: 'tooltipActor'})
 
-const currentContext = prism(() => val(contextActor.pointer))
-currentContext.onStale(() => {
-  const contextOpen = !!val(currentContext)
+const isTooltipBlocked = prism(() => {
+  const isContextMenuOpen = !!val(contextActor.pointer)
+  const isMouseDown = val(mousedownActor.pointer)
 
+  return isContextMenuOpen || isMouseDown
+})
+isTooltipBlocked.onStale(() => {
   tooltipActor.send({
-    type: contextOpen ? 'contextMenuOpen' : 'contextMenuClose',
+    type: val(isTooltipBlocked) ? 'tooltipBlocked' : 'tooltipUnblocked',
   })
 })
 

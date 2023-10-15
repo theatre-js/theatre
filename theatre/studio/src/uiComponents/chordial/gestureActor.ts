@@ -8,57 +8,73 @@ import {
 import {isSafari} from '@theatre/studio/uiComponents/isSafari'
 import type {CapturedPointer} from '@theatre/studio/UIRoot/PointerCapturing'
 import {createPointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
-import type {ChodrialElement} from './chordialInternals'
+import type {ChodrialElement, ChordialOpts} from './chordialInternals'
 import {findChodrialByDomNode} from './chordialInternals'
 
 export const gestureActor = basicFSM<
   | {type: 'mousedown'; mouseEvent: MouseEvent}
   | {type: 'mouseup'; mouseEvent: MouseEvent}
-  | {type: 'mousemove'; mouseEvent: MouseEvent},
+  | {type: 'mousemove'; mouseEvent: MouseEvent}
+  | {type: 'click'; mouseEvent: MouseEvent},
   undefined | ChodrialElement
 >((t) => {
   function idle() {
     t('idle', undefined, (e) => {
       switch (e.type) {
+        case 'click':
+          {
+            const el = findChodrialByDomNode(e.mouseEvent.target)
+            if (!el) return
+            const {invoke} = el.atom.get().optsFn()
+            if (!invoke) return
+            invoke({type: 'MouseEvent', event: e.mouseEvent})
+          }
+          break
         case 'mousedown':
-          const el = findChodrialByDomNode(e.mouseEvent.target)
-          if (!el) return
-          const {drag} = el.atom.get().optsFn()
-          if (!drag || drag.disabled === true) return
+          {
+            const el = findChodrialByDomNode(e.mouseEvent.target)
+            if (!el) return
+            const opts = el.atom.get().optsFn()
+            const {drag} = opts
+            if (!drag || drag.disabled === true) return
 
-          // defensively release
-          // TIODO
-          // capturedPointerRef.current?.release()
-          const acceptedButtons: MouseButton[] = drag.buttons ?? [
-            MouseButton.Left,
-          ]
+            // defensively release
+            // TIODO
+            // capturedPointerRef.current?.release()
+            const acceptedButtons: MouseButton[] = drag.buttons ?? [
+              MouseButton.Left,
+            ]
 
-          if (!acceptedButtons.includes(e.mouseEvent.button)) return
+            if (!acceptedButtons.includes(e.mouseEvent.button)) return
 
-          const dragHandlers = drag.onDragStart(e.mouseEvent)
+            const dragHandlers = drag.onDragStart(e.mouseEvent)
 
-          if (dragHandlers === false) {
-            // we should ignore the gesture
-            return
+            if (dragHandlers === false) {
+              // we should ignore the gesture
+              return
+            }
+
+            // need to capture pointer after we know the provided handler wants to handle drag start
+            const capturedPointer =
+              createPointerCapturing('Drag').capturing.capturePointer(
+                'dragStart',
+              )
+
+            if (!drag.dontBlockMouseDown) {
+              e.mouseEvent.stopPropagation()
+              e.mouseEvent.preventDefault()
+            }
+
+            beforeDetected(
+              el,
+              opts,
+              drag,
+              e.mouseEvent,
+              dragHandlers,
+              0,
+              capturedPointer,
+            )
           }
-
-          // need to capture pointer after we know the provided handler wants to handle drag start
-          const capturedPointer =
-            createPointerCapturing('Drag').capturing.capturePointer('dragStart')
-
-          if (!drag.dontBlockMouseDown) {
-            e.mouseEvent.stopPropagation()
-            e.mouseEvent.preventDefault()
-          }
-
-          beforeDetected(
-            el,
-            drag,
-            e.mouseEvent,
-            dragHandlers,
-            0,
-            capturedPointer,
-          )
           break
         default:
           break
@@ -67,6 +83,7 @@ export const gestureActor = basicFSM<
   }
 
   function handleMouseup(
+    opts: ChordialOpts,
     dragOpts: DragOpts,
     e: MouseEvent,
     handlers: DragHandlers,
@@ -85,12 +102,16 @@ export const gestureActor = basicFSM<
     // Fixes https://linear.app/theatre/issue/P-177/beginners-scrubbing-the-playhead-from-within-an-iframe-then-[space]
     window.focus()
 
-    handlers.onClick?.(e)
+    if (!dragHappened) {
+      handlers.onClick?.(e)
+      opts.invoke?.({type: 'MouseEvent', event: e})
+    }
     idle()
   }
 
   function beforeDetected(
     el: ChodrialElement,
+    opts: ChordialOpts,
     dragOpts: DragOpts,
     mousedownEvent: MouseEvent,
     handlers: DragHandlers,
@@ -101,6 +122,7 @@ export const gestureActor = basicFSM<
       switch (e.mouseEvent.type) {
         case 'mouseup':
           handleMouseup(
+            opts,
             dragOpts,
             e.mouseEvent,
             handlers,
@@ -137,6 +159,7 @@ export const gestureActor = basicFSM<
 
             afterDetected(
               el,
+              opts,
               dragOpts,
               mousedownEvent,
               handlers,
@@ -154,6 +177,7 @@ export const gestureActor = basicFSM<
 
   function afterDetected(
     el: ChodrialElement,
+    opts: ChordialOpts,
     dragOpts: DragOpts,
     mousedownEvent: MouseEvent,
     handlers: DragHandlers,
@@ -165,7 +189,14 @@ export const gestureActor = basicFSM<
     t('afterDetected', el, (e) => {
       switch (e.mouseEvent.type) {
         case 'mouseup':
-          handleMouseup(dragOpts, e.mouseEvent, handlers, true, capturedPointer)
+          handleMouseup(
+            opts,
+            dragOpts,
+            e.mouseEvent,
+            handlers,
+            true,
+            capturedPointer,
+          )
           break
         case 'mousemove':
           const isPointerLockUsed = dragOpts.shouldPointerLock && !isSafari
@@ -205,6 +236,7 @@ export const gestureActor = basicFSM<
 
           afterDetected(
             el,
+            opts,
             dragOpts,
             mousedownEvent,
             handlers,

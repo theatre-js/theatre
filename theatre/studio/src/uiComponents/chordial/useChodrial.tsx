@@ -1,4 +1,3 @@
-import type {MutableRefObject} from 'react'
 import {useEffect, useRef} from 'react'
 import type React from 'react'
 import type {ChordialOptsFn, ChodrialElement} from './chordialInternals'
@@ -6,12 +5,11 @@ import {createChordialElement, findChodrialByDomNode} from './chordialInternals'
 import {hoverActor} from './hoverActor'
 import {contextActor} from './contextActor'
 import {gestureActor} from './gestureActor'
+import {mousedownActor} from './mousedownActor'
 
-export default function useChordial<T extends HTMLElement>(
+export default function useChordial(
   optsFn: ChordialOptsFn,
-): {
-  targetRef: MutableRefObject<T | null>
-} {
+): ChodrialElement['returnValue'] {
   const refs = useRef<ChodrialElement | undefined>()
 
   if (!refs.current) {
@@ -59,19 +57,21 @@ const eventHandlers = {
     hoverActor.send({type: 'mousemove', mouseEvent, source: 'root'})
   },
   mouseDown: (e: MouseEvent) => {
+    mousedownActor.send([true])
     gestureActor.send({type: 'mousedown', mouseEvent: e})
     const el = findChodrialByDomNode(e.target)
     if (!el) return
   },
   mouseUp: (e: MouseEvent) => {
+    mousedownActor.send([false])
     gestureActor.send({type: 'mouseup', mouseEvent: e})
     const el = findChodrialByDomNode(e.target)
     if (!el) return
   },
   click: (e: MouseEvent) => {
+    gestureActor.send({type: 'click', mouseEvent: e})
     const el = findChodrialByDomNode(e.target)
     if (!el) return
-    console.log('click', el)
   },
   contextMenu: (e: MouseEvent) => {
     contextActor.send({type: 'rclick', mouseEvent: e})

@@ -11,6 +11,9 @@ import {tooltipTarget} from './tooltipActor'
 export const TooltipOverlay: React.FC<{}> = () => {
   const currentTarget = useVal(tooltipTarget)
 
+  const tooltipDisabled =
+    useVal(currentTarget?.atom.pointer.tooltipDisabled) ?? false
+
   const title = usePrism((): React.ReactNode => {
     const chordial = currentTarget
     if (!chordial) return null
@@ -31,7 +34,7 @@ export const TooltipOverlay: React.FC<{}> = () => {
   }> = []
 
   const chordial = currentTarget
-  if (chordial && positioning) {
+  if (chordial && positioning && !tooltipDisabled) {
     data.push({
       key: chordial.id,
       title,
