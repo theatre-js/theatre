@@ -2,13 +2,10 @@ import type {MutableRefObject} from 'react'
 import {useEffect, useRef} from 'react'
 import type React from 'react'
 import type {ChordialOptsFn, ChodrialElement} from './chordialInternals'
-import {
-  contextActor,
-  createChordialElement,
-  findChodrialByDomNode,
-  gestureActor,
-  hoverActor,
-} from './chordialInternals'
+import {createChordialElement, findChodrialByDomNode} from './chordialInternals'
+import {hoverActor} from './hoverActor'
+import {contextActor} from './contextActor'
+import {gestureActor} from './gestureActor'
 
 export default function useChordial<T extends HTMLElement>(
   optsFn: ChordialOptsFn,

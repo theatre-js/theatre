@@ -1,4 +1,3 @@
-import type {ReactNode} from 'react'
 import React from 'react'
 import type {$IntentionalAny} from '@theatre/utils/types'
 import {val} from '@theatre/dataverse'
@@ -7,12 +6,12 @@ import styled from 'styled-components'
 import usePopoverPosition from '@theatre/studio/uiComponents/Popover/usePopoverPosition'
 import {useTransition, animated, easings} from '@react-spring/web'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import {tooltipTarget} from './chordialInternals'
+import {tooltipTarget} from './tooltipActor'
 
 export const TooltipOverlay: React.FC<{}> = () => {
   const currentTarget = useVal(tooltipTarget)
 
-  const title = usePrism((): ReactNode => {
+  const title = usePrism((): React.ReactNode => {
     const chordial = currentTarget
     if (!chordial) return null
     const a = chordial.atom
@@ -27,7 +26,7 @@ export const TooltipOverlay: React.FC<{}> = () => {
 
   const data: Array<{
     key: string
-    title: ReactNode
+    title: React.ReactNode
     positioning: {left: number; top: number}
   }> = []
 
@@ -72,7 +71,6 @@ export const TooltipOverlay: React.FC<{}> = () => {
         >
           <Title>{title}</Title>
           <IconContainer>{theIcon}</IconContainer>
-          {title}
         </Container>
       )}
 
