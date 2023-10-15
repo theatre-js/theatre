@@ -8,7 +8,7 @@ import {Atom, getPointerParts} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
-import React, {useLayoutEffect, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {rowIndentationFormulaCSS} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/rowIndentationFormulaCSS'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
@@ -203,24 +203,19 @@ function DetailCompoundPropEditor<
     [pointerToProp],
   )
 
-  const globalPointerPath = `${obj.address.projectId},${obj.address.sheetId},${
-    obj.address.sheetInstanceId
-  },${obj.address.objectKey},${getPointerParts(pointerToProp).path.join()}`
-
   // isVectorProp is already memoized, so no need to wrap this in `useMemo()`
   const isVector = isVectorProp(propConfig)
 
-  useLayoutEffect(() => {
-    if (!collapsedMap.has(globalPointerPath)) {
-      collapsedMap.set(globalPointerPath, new Atom(isVector))
+  const isCollapsedAtom = useMemo(() => {
+    if (!collapsedMap.has(pointerToProp)) {
+      collapsedMap.set(pointerToProp, new Atom(isVector))
     }
-  }, [globalPointerPath, propConfig])
-
-  const box = collapsedMap.get(globalPointerPath)
+    return collapsedMap.get(pointerToProp)!
+  }, [pointerToProp])
 
   const isCollapsed = usePrism(() => {
-    return box ? val(box.pointer) : isVector
-  }, [box])
+    return isCollapsedAtom ? val(isCollapsedAtom.pointer) : isVector
+  }, [isCollapsedAtom, isVector])
 
   const {targetRef} = useChordial(() => {
     const title = ['obj', 'props', ...getPointerParts(pointerToProp).path].join(
@@ -245,7 +240,7 @@ function DetailCompoundPropEditor<
             isCollapsed={isCollapsed}
             isVector={isVector}
             onClick={() => {
-              box?.set(!box.get())
+              isCollapsedAtom.set(!isCollapsedAtom.get())
             }}
           >
             <HiOutlineChevronRight />
