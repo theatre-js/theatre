@@ -31,17 +31,72 @@ model Account {
 }
 
 model User {
-  projects      Project[]
   libSessions   LibSession[]
-  id            String       @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?      @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+  guestAccesses GuestAccess[]
+  teams         TeamMember[]
 
   @@index([email], name: "email")
+}
+
+model Team {
+  id         Int          @id @default(autoincrement())
+  name       String
+  workspaces Workspace[]
+  members    TeamMember[]
+  createdAt  DateTime     @default(now())
+}
+
+enum TeamUserRole {
+  OWNER
+  MEMBER
+}
+
+model TeamMember {
+  teamId   Int
+  userId   String
+  team     Team         @relation(fields: [teamId], references: [id])
+  user     User         @relation(fields: [userId], references: [id])
+  userRole TeamUserRole
+  accepted Boolean      @default(false)
+
+  @@id([userId, teamId])
+  @@index([teamId])
+  @@index([userId])
+}
+
+model Workspace {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String
+  teamId      Int
+  team        Team          @relation(fields: [teamId], references: [id])
+  guests      GuestAccess[]
+  createdAt   DateTime      @default(now())
+}
+
+enum AccessLevel {
+  READ
+  READ_WRITE
+}
+
+model GuestAccess {
+  workspaceId Int
+  userId      String
+  accessLevel AccessLevel
+  user        User        @relation(fields: [userId], references: [id])
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id])
+  accepted    Boolean     @default(false)
+
+  @@id([userId, workspaceId])
+  @@index([workspaceId])
+  @@index([userId])
 }
 
 model Session {
@@ -58,14 +113,6 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-}
-
-model Project {
-  id          String  @id
-  name        String?
-  description String?
-  userId      String
-  user        User    @relation(fields: [userId], references: [id])
 }
 
 model LibAuthenticationFlow {

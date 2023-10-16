@@ -2,7 +2,6 @@ import {z} from 'zod'
 import {studioAuth} from 'src/utils/authUtils'
 import {v4} from 'uuid'
 import * as t from '../trpc'
-import prisma from 'src/prisma'
 
 export const projectsRouter = t.createRouter({
   create: t.publicProcedure
@@ -13,7 +12,7 @@ export const projectsRouter = t.createRouter({
       const {userId} = s
       const id = v4() + '-' + v4()
 
-      await prisma.project.create({data: {id, userId, name: ''}})
+      // await prisma.project.create({data: {id, userId, name: ''}})
 
       return {id}
     }),

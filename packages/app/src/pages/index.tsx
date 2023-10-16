@@ -27,7 +27,7 @@ const Profile: React.FC<{}> = () => {
       {/* <img src={user.picture} alt={user.name} /> */}
       <h2>{user.name}</h2>
       <p>{user.email}</p>
-      <Link href="/projects">Projects</Link> <br />
+      <Link href="/workspaces">Projects</Link> <br />
       <button onClick={() => signOut()}>Sign out</button>
     </div>
   )

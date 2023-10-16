@@ -1,22 +1,23 @@
 import React, {useState} from 'react'
-import useApi from '../../useApi'
 import {withPageAuthRequired} from 'src/utils/withPageAuthRequired'
+import {trpcClient} from 'src/trpc/trpcClient'
 
-const ProjectsPage: React.FC<{}> = withPageAuthRequired(({}) => {
-  const {response, error, isLoading} = useApi('/api/projects')
+const WorkspacesPage: React.FC<{}> = withPageAuthRequired(({}) => {
+  const {data} = trpcClient.workspaces.getAll.useQuery()
 
-  const projects = response
-
-  if (!Array.isArray(projects)) return <>no projects</>
+  if (!Array.isArray(data)) return <>no projects</>
 
   return (
     <div>
       <ul>
-        {projects.map((project) => (
-          <li key={project.id}>{project.name}</li>
+        {data.map((data) => (
+          <li key={data.id}>
+            <h2>{data.name}</h2>
+            <p>{data.description}</p>
+          </li>
         ))}
       </ul>
-      <AddForm />
+      {/* <AddForm /> */}
     </div>
   )
 })
@@ -76,4 +77,4 @@ interface FormData {
   description: string
 }
 
-export default ProjectsPage
+export default WorkspacesPage

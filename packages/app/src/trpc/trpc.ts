@@ -1,8 +1,10 @@
-import {initTRPC} from '@trpc/server'
+import {TRPCError, initTRPC} from '@trpc/server'
 import type {CreateNextContextOptions} from '@trpc/server/adapters/next'
 import superjson from 'superjson'
 import {ZodError} from 'zod'
 import prisma from '../prisma'
+import {getAppSession} from 'src/utils/authUtils'
+import {type Session} from 'next-auth'
 
 /**
  * 1. CONTEXT
@@ -11,7 +13,9 @@ import prisma from '../prisma'
  *
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
-interface CreateContextOptions {}
+interface CreateContextOptions {
+  session: Session | null
+}
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
@@ -23,8 +27,9 @@ interface CreateContextOptions {}
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+const createInnerTRPCContext = async (opts: CreateContextOptions) => {
   return {
+    session: opts.session,
     prisma,
   }
 }
@@ -36,7 +41,10 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({...opts})
+  const {req, res} = opts
+  const session = await getAppSession(req, res)
+
+  return createInnerTRPCContext({session})
 }
 
 /**
@@ -83,3 +91,24 @@ export const createRouter = t.router
  * are logged in.
  */
 export const publicProcedure = t.procedure
+
+const isAuthed = t.middleware(({ctx, next}) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({code: 'UNAUTHORIZED'})
+  }
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: ctx.session,
+    },
+  })
+})
+
+/**
+ * Protected (authenticated) procedure
+ *
+ * This is the base piece you use to build new queries and mutations on your tRPC API. It guarantees
+ * that a user querying is authorized, and you can access user session data.
+ */
+export const protectedProcedure = t.procedure.use(isAuthed)

@@ -2,6 +2,8 @@ import {z} from 'zod'
 import {studioAuthRouter} from './studioAuthRouter'
 import * as t from '../trpc'
 import {projectsRouter} from './projectsRouter'
+import {workspaceRouter} from './workspaceRouter'
+import {teamsRouter} from './teamsRouter'
 
 export const appRouter = t.createRouter({
   healthCheck: t.publicProcedure
@@ -20,6 +22,8 @@ export const appRouter = t.createRouter({
   syncServerUrl: t.publicProcedure.query(() => `ws://localhost:3001/api/trpc`),
   studioAuth: studioAuthRouter,
   projects: projectsRouter,
+  workspaces: workspaceRouter,
+  teams: teamsRouter,
 })
 // export only the type definition of the API
 // None of the actual implementation is exposed to the client
