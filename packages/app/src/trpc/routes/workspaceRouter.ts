@@ -9,7 +9,7 @@ export const workspaceRouter = t.createRouter({
       z.array(
         z
           .object({
-            id: z.number(),
+            id: z.string(),
             name: z.string(),
             description: z.string(),
             isGuest: z.boolean(),
@@ -83,9 +83,9 @@ export const workspaceRouter = t.createRouter({
     }),
   create: t.protectedProcedure
     .input(
-      z.object({name: z.string(), description: z.string(), teamId: z.number()}),
+      z.object({name: z.string(), description: z.string(), teamId: z.string()}),
     )
-    .output(z.object({id: z.number()}))
+    .output(z.object({id: z.string()}))
     .mutation(async (opts) => {
       const {name, description, teamId} = opts.input
       const {session} = opts.ctx
@@ -125,7 +125,7 @@ export const workspaceRouter = t.createRouter({
   update: t.protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         name: z.string().optional(),
         description: z.string().optional(),
       }),
@@ -177,7 +177,7 @@ export const workspaceRouter = t.createRouter({
       })
     }),
   delete: t.protectedProcedure
-    .input(z.object({id: z.number()}))
+    .input(z.object({id: z.string()}))
     .mutation(async (opts) => {
       const {id} = opts.input
       const {session} = opts.ctx
@@ -221,7 +221,7 @@ export const workspaceRouter = t.createRouter({
   inviteGuests: t.protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         invites: z.array(
           z.object({
             email: z.string(),
@@ -313,7 +313,7 @@ export const workspaceRouter = t.createRouter({
       })
     }),
   removeGuest: t.protectedProcedure
-    .input(z.object({id: z.number(), email: z.string()}))
+    .input(z.object({id: z.string(), email: z.string()}))
     .mutation(async (opts) => {
       const {id, email} = opts.input
       const {session} = opts.ctx
@@ -376,7 +376,7 @@ export const workspaceRouter = t.createRouter({
   changeGuestAccess: t.protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         email: z.string(),
         accessLevel: z.enum(['READ', 'READ_WRITE']),
       }),
@@ -442,7 +442,7 @@ export const workspaceRouter = t.createRouter({
       })
     }),
   acceptInvite: t.protectedProcedure
-    .input(z.object({id: z.number()}))
+    .input(z.object({id: z.string()}))
     .mutation(async (opts) => {
       const {id} = opts.input
       const {session} = opts.ctx

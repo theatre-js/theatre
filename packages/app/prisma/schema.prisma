@@ -46,7 +46,7 @@ model User {
 }
 
 model Team {
-  id         Int          @id @default(autoincrement())
+  id         String       @id @default(cuid())
   name       String
   workspaces Workspace[]
   members    TeamMember[]
@@ -59,7 +59,7 @@ enum TeamUserRole {
 }
 
 model TeamMember {
-  teamId   Int
+  teamId   String
   userId   String
   team     Team         @relation(fields: [teamId], references: [id])
   user     User         @relation(fields: [userId], references: [id])
@@ -72,10 +72,10 @@ model TeamMember {
 }
 
 model Workspace {
-  id          Int           @id @default(autoincrement())
+  id          String        @id @default(cuid())
   name        String
   description String
-  teamId      Int
+  teamId      String
   team        Team          @relation(fields: [teamId], references: [id])
   guests      GuestAccess[]
   createdAt   DateTime      @default(now())
@@ -87,7 +87,7 @@ enum AccessLevel {
 }
 
 model GuestAccess {
-  workspaceId Int
+  workspaceId String
   userId      String
   accessLevel AccessLevel
   user        User        @relation(fields: [userId], references: [id])

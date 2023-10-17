@@ -9,7 +9,7 @@ export const teamsRouter = t.createRouter({
       z.array(
         z
           .object({
-            id: z.number(),
+            id: z.string(),
             name: z.string(),
             members: z.array(
               z.object({
@@ -21,7 +21,7 @@ export const teamsRouter = t.createRouter({
             ),
             workspaces: z.array(
               z.object({
-                id: z.number(),
+                id: z.string(),
                 name: z.string(),
                 description: z.string(),
               }),
@@ -91,7 +91,7 @@ export const teamsRouter = t.createRouter({
         ),
       }),
     )
-    .output(z.object({id: z.number()}).strict())
+    .output(z.object({id: z.string()}).strict())
     .mutation(async ({ctx, input}) => {
       const {name, members} = input
       const {session} = ctx
@@ -120,13 +120,13 @@ export const teamsRouter = t.createRouter({
   update: t.protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         name: z.string().optional(),
       }),
     )
     .output(
       z.object({
-        id: z.number(),
+        id: z.string(),
         name: z.string(),
       }),
     )
@@ -170,7 +170,7 @@ export const teamsRouter = t.createRouter({
       }
     }),
   delete: t.protectedProcedure
-    .input(z.object({id: z.number()}))
+    .input(z.object({id: z.string()}))
     .mutation(async ({ctx, input}) => {
       const {id} = input
       const {session} = ctx
@@ -205,7 +205,7 @@ export const teamsRouter = t.createRouter({
   inviteMembers: t.protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         invites: z.array(
           z.object({
             email: z.string().email(),
@@ -287,7 +287,7 @@ export const teamsRouter = t.createRouter({
       })
     }),
   removeMember: t.protectedProcedure
-    .input(z.object({id: z.number(), email: z.string()}))
+    .input(z.object({id: z.string(), email: z.string()}))
     .mutation(async ({ctx, input}) => {
       const {id, email} = input
       const {session} = ctx
@@ -347,7 +347,7 @@ export const teamsRouter = t.createRouter({
   changeMemberRole: t.protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         email: z.string(),
         role: z.enum(['OWNER', 'MEMBER']),
       }),
@@ -414,7 +414,7 @@ export const teamsRouter = t.createRouter({
       })
     }),
   acceptInvite: t.protectedProcedure
-    .input(z.object({id: z.number()}))
+    .input(z.object({id: z.string()}))
     .mutation(async ({ctx, input}) => {
       const {id} = input
       const {session} = ctx

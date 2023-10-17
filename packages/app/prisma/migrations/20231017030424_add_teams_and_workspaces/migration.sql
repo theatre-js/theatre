@@ -18,7 +18,7 @@ DROP TABLE "Project";
 
 -- CreateTable
 CREATE TABLE "Team" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -27,7 +27,7 @@ CREATE TABLE "Team" (
 
 -- CreateTable
 CREATE TABLE "TeamMember" (
-    "teamId" INTEGER NOT NULL,
+    "teamId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "userRole" "TeamUserRole" NOT NULL,
     "accepted" BOOLEAN NOT NULL DEFAULT false,
@@ -37,10 +37,10 @@ CREATE TABLE "TeamMember" (
 
 -- CreateTable
 CREATE TABLE "Workspace" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "teamId" INTEGER NOT NULL,
+    "teamId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Workspace_pkey" PRIMARY KEY ("id")
@@ -48,7 +48,7 @@ CREATE TABLE "Workspace" (
 
 -- CreateTable
 CREATE TABLE "GuestAccess" (
-    "workspaceId" INTEGER NOT NULL,
+    "workspaceId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "accessLevel" "AccessLevel" NOT NULL,
     "accepted" BOOLEAN NOT NULL DEFAULT false,
