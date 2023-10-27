@@ -61,8 +61,8 @@ enum TeamUserRole {
 model TeamMember {
   teamId   String
   userId   String
-  team     Team         @relation(fields: [teamId], references: [id])
-  user     User         @relation(fields: [userId], references: [id])
+  team     Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userRole TeamUserRole
   accepted Boolean      @default(false)
 
@@ -76,7 +76,7 @@ model Workspace {
   name        String
   description String
   teamId      String
-  team        Team          @relation(fields: [teamId], references: [id])
+  team        Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
   guests      GuestAccess[]
   createdAt   DateTime      @default(now())
 }
@@ -90,8 +90,8 @@ model GuestAccess {
   workspaceId String
   userId      String
   accessLevel AccessLevel
-  user        User        @relation(fields: [userId], references: [id])
-  workspace   Workspace   @relation(fields: [workspaceId], references: [id])
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   accepted    Boolean     @default(false)
 
   @@id([userId, workspaceId])

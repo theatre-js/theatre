@@ -23,7 +23,8 @@
       }
     ],
     "paths": {
-      "@prisma/client": ["./prisma/client-generated"]
+      "@prisma/client": ["./prisma/client-generated"],
+      "~/*": ["./src/*"]
     },
     "noEmit": false
   },
