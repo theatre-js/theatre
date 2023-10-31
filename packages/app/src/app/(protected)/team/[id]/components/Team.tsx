@@ -7,9 +7,13 @@ import NewWorkspaceDialog from '~/app/(protected)/_components/NewWorkspaceDialog
 import EditWorkspaceDialog from '~/app/(protected)/_components/EditWorkspaceDialog'
 import {useToast} from '~/ui/components/ui/use-toast'
 import InviteGuestsDialog from '~/app/(protected)/_components/InviteGuestsDialog'
+import {Button} from '~/ui/components/ui/button'
+import {Settings} from 'lucide-react'
+import {promptTeamSettings} from '~/app/(protected)/_components/TeamSettingsPrompt'
 
 export default function Team({id}: {id: string}) {
   const {data: team} = api.teams.get.useQuery({id})
+  const me = api.me.get.useQuery().data!
   const {mutateAsync: deleteWorkspace} = api.workspaces.delete.useMutation()
   const {mutateAsync: duplicateWorkspace} =
     api.workspaces.duplicate.useMutation()
@@ -18,12 +22,31 @@ export default function Team({id}: {id: string}) {
   const [editingWorkspace, setEditingWorkspace] = useState<string | null>(null)
   const [invitingGuests, setInvitingGuests] = useState<string | null>(null)
 
+  const isOwner =
+    team?.members.find((member) => member.id === me.id)?.role === 'OWNER'
+
   const {toast} = useToast()
 
   return (
     <div className="p-6 w-full">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold tracking-tight">{team?.name}</h2>
+        <div className="flex gap-4 items-center group">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            {team?.name}
+          </h2>
+          {isOwner && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="invisible group-hover:visible"
+              onClick={() => {
+                promptTeamSettings(id)
+              }}
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
         <div>
           <NewWorkspaceDialog teamId={team!.id} />
         </div>

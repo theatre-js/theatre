@@ -9,8 +9,10 @@ import {cn} from '~/ui/lib/utils'
 import AccountSwitcher from './AccountSwitcher'
 import NotificationsPopover from './NotificationsPopover'
 
+
+
 export default function Navigation() {
-  const {data: teams} = api.teams.getAll.useQuery()
+  const teams = api.teams.getAll.useQuery().data!
   const segments = useSelectedLayoutSegments()
   const selected = segments[0] === 'team' ? segments[1] : segments[0]
 
@@ -48,16 +50,40 @@ export default function Navigation() {
               Teams
             </h2>
             <div className="space-y-1">
-              {teams?.map((team) => (
-                <Link key={team.id} href={`/team/${team.id}`}>
-                  <Button
-                    variant={selected === team.id ? 'secondary' : 'ghost'}
-                    className="w-full justify-start"
-                  >
-                    {team.name}
-                  </Button>
-                </Link>
-              ))}
+              {teams
+                .filter((team) =>
+                  team.members.some((member) => member.accepted),
+                )
+                .map((team) => (
+                  <Link key={team.id} href={`/team/${team.id}`}>
+                    <Button
+                      variant={selected === team.id ? 'secondary' : 'ghost'}
+                      className="w-full justify-start"
+                    >
+                      {team.name}
+                    </Button>
+                  </Link>
+                  // <ContextMenu>
+                  //   <ContextMenuTrigger>
+                  //     <Link key={team.id} href={`/team/${team.id}`}>
+                  //       <Button
+                  //         variant={selected === team.id ? 'secondary' : 'ghost'}
+                  //         className="w-full justify-start"
+                  //       >
+                  //         {team.name}
+                  //       </Button>
+                  //     </Link>
+                  //   </ContextMenuTrigger>
+                  //   <ContextMenuContent className="w-40">
+                  //     <ContextMenuItem
+                  //       onSelect={async () => {
+                  //       }}
+                  //     >
+                  //       Rename
+                  //     </ContextMenuItem>
+                  //   </ContextMenuContent>
+                  // </ContextMenu>
+                ))}
             </div>
           </div>
         </div>

@@ -98,6 +98,7 @@ export const teamsRouter = t.createRouter({
                 name: z.string().nullable(),
                 email: z.string().nullable(),
                 role: z.string(),
+                accepted: z.boolean(),
               }),
             ),
             workspaces: z.array(
@@ -149,6 +150,7 @@ export const teamsRouter = t.createRouter({
               name: member.user.name,
               email: member.user.email,
               role: member.userRole,
+              accepted: member.accepted,
             }
           }),
           workspaces: team.workspaces.map((workspace) => {
@@ -515,7 +517,9 @@ export const teamsRouter = t.createRouter({
       })
 
       // Only team members are allowed to accept invites
-      const acceptAllowed = team?.members.length === 0
+      const acceptAllowed = team?.members.length !== 0
+
+      console.log(acceptAllowed)
 
       if (!acceptAllowed) {
         throw new TRPCError({code: 'FORBIDDEN'})
@@ -532,5 +536,63 @@ export const teamsRouter = t.createRouter({
           accepted: true,
         },
       })
+    }),
+  getMembers: t.protectedProcedure
+    .input(z.object({id: z.string()}))
+    .output(
+      z.array(
+        z.object({
+          email: z.string(),
+          name: z.string().nullable(),
+          image: z.string().nullable(),
+          role: z.enum(['OWNER', 'MEMBER']),
+          accepted: z.boolean(),
+        }),
+      ),
+    )
+    .query(async ({ctx, input}) => {
+      const {id} = input
+      const {session} = ctx
+      const userId = session.user.id
+
+      const team = await prisma.team.findFirst({
+        where: {
+          id,
+          members: {
+            some: {
+              userId,
+            },
+          },
+        },
+        include: {
+          members: {
+            include: {
+              user: {
+                select: {
+                  email: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
+          },
+        },
+      })
+
+      if (!team) {
+        throw new TRPCError({code: 'NOT_FOUND'})
+      }
+
+      const clientData = team.members.map((member) => {
+        return {
+          email: member.user.email!,
+          name: member.accepted ? member.user.name : null,
+          image: member.accepted ? member.user.image : null,
+          role: member.userRole,
+          accepted: member.accepted,
+        }
+      })
+
+      return clientData
     }),
 })

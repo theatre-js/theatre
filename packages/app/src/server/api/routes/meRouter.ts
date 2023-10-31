@@ -95,4 +95,29 @@ export const meRouter = t.createRouter({
       accessLevel: guestInvitation.accessLevel,
     }))
   }),
+  getTeamInvitations: t.protectedProcedure.query(async ({ctx}) => {
+    const {session} = ctx
+    const user = session.user
+
+    const teamInvitations = await prisma.teamMember.findMany({
+      where: {
+        userId: user.id,
+        accepted: false,
+      },
+      include: {
+        team: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    })
+
+    return teamInvitations.map((teamInvitation) => ({
+      teamId: teamInvitation.teamId,
+      teamName: teamInvitation.team.name,
+      role: teamInvitation.userRole,
+    }))
+  }),
 })

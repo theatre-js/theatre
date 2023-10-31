@@ -22,6 +22,15 @@ export const workspaceName = z
     message: 'Name is too long',
   })
 
+export const teamName = z
+  .string()
+  .min(2, {
+    message: 'Name is too short',
+  })
+  .max(50, {
+    message: 'Name is too long',
+  })
+
 export const workspaceDescription = z.string().max(500, {
   message: 'Description is over 500 characters',
 })
