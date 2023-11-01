@@ -37,6 +37,7 @@ const TeamSettingsPrompt: FC<{id: string}> = ({id}) => {
             className="text-blue-500"
             onClick={async () => {
               const name = await promptValue.string(`Rename ${team.name}`, {
+                defaultValue: team.name,
                 schema: schemas.teamName,
               })
 
