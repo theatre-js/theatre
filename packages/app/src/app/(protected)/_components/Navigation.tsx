@@ -8,11 +8,16 @@ import {Button} from '~/ui/components/ui/button'
 import {cn} from '~/ui/lib/utils'
 import AccountSwitcher from './AccountSwitcher'
 import NotificationsPopover from './NotificationsPopover'
+import {Plus} from 'lucide-react'
+import {promptValue} from '~/app/_components/Prompts'
+import * as schemas from '~/schemas'
 
 export default function Navigation() {
   const teams = api.teams.getAll.useQuery().data!
+  const createTeam = api.teams.create.useMutation().mutateAsync
   const segments = useSelectedLayoutSegments()
   const selected = segments[0] === 'team' ? segments[1] : segments[0]
+  const queryUtils = api.useUtils()
 
   return (
     <div>
@@ -51,9 +56,27 @@ export default function Navigation() {
             </div>
           </div>
           <div className="px-3 py-2">
-            <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-              Teams
-            </h2>
+            <div className="flex gap-2 items-center group mb-2">
+              <h2 className="pl-4 text-lg font-semibold tracking-tight">
+                Teams
+              </h2>
+              <Button
+                variant="outline"
+                size="icon"
+                className="invisible group-hover:visible h-7 w-7"
+                onClick={async () => {
+                  const name = await promptValue.string('Create team', {
+                    label: 'Team name',
+                    schema: schemas.teamName,
+                  })
+                  if (!name) return
+                  await createTeam({name})
+                  queryUtils.teams.invalidate()
+                }}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
             <div className="space-y-1">
               {teams
                 .filter((team) =>

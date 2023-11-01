@@ -169,14 +169,11 @@ export const teamsRouter = t.createRouter({
     .input(
       z.object({
         name: z.string(),
-        members: z.array(
-          z.object({id: z.string(), role: z.enum(['OWNER', 'MEMBER'])}),
-        ),
       }),
     )
     .output(z.object({id: z.string()}).strict())
     .mutation(async ({ctx, input}) => {
-      const {name, members} = input
+      const {name} = input
       const {session} = ctx
       const userId = session.user.id
 
@@ -184,16 +181,15 @@ export const teamsRouter = t.createRouter({
         data: {
           name,
           members: {
-            create: members.map((member) => {
-              return {
-                user: {
-                  connect: {
-                    id: member.id,
-                  },
+            create: {
+              user: {
+                connect: {
+                  id: userId,
                 },
-                userRole: member.role,
-              }
-            }),
+              },
+              userRole: 'OWNER',
+              accepted: true,
+            },
           },
         },
       })

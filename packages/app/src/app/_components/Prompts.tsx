@@ -19,6 +19,7 @@ import {
   FormMessage,
   FormControl,
   Form,
+  FormLabel,
 } from '~/ui/components/ui/form'
 import {Input} from '~/ui/components/ui/input'
 
@@ -43,10 +44,12 @@ const PromptString = ({
   done,
   message,
   defaultValue,
+  label,
   schema,
 }: PromptProps<string> & {
   message: string
   defaultValue: string
+  label?: string
   schema: ZodString
 }) => {
   const formSchema = z.object({
@@ -64,11 +67,9 @@ const PromptString = ({
     done(values.value)
   }
 
-  console.log(message)
-
   return (
     <>
-      <DialogContent>
+      <>
         <DialogHeader>
           <DialogTitle>{message}</DialogTitle>
         </DialogHeader>
@@ -80,6 +81,7 @@ const PromptString = ({
                 name="value"
                 render={({field}) => (
                   <FormItem>
+                    {label && <FormLabel>{label}</FormLabel>}
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -101,7 +103,7 @@ const PromptString = ({
             </DialogFooter>
           </form>
         </Form>
-      </DialogContent>
+      </>
     </>
   )
 }
@@ -109,15 +111,16 @@ const PromptString = ({
 export const promptValue = {
   string: (
     message: string,
-    options?: {defaultValue?: string; schema?: ZodString},
+    options?: {defaultValue?: string; label?: string; schema?: ZodString},
   ) => {
-    const {defaultValue = '', schema = z.string()} = options ?? {}
+    const {defaultValue = '', label, schema = z.string()} = options ?? {}
     return prompt<string>((done) => (
       <PromptString
         done={done}
         message={message}
         defaultValue={defaultValue}
         schema={schema}
+        label={label}
       />
     ))
   },
