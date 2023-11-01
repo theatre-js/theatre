@@ -29,12 +29,15 @@ export default function Navigation() {
             </div>
 
             <div className="space-y-1">
-              <Button
-                variant={selected === 'recents' ? 'secondary' : 'ghost'}
-                className="w-full justify-start"
-              >
-                Recents
-              </Button>
+              <Link href="/recents">
+                <Button
+                  variant={selected === 'recents' ? 'secondary' : 'ghost'}
+                  className="w-full justify-start"
+                >
+                  Recents
+                </Button>
+              </Link>
+
               <Link href="/shared-with-me">
                 <Button
                   variant={
