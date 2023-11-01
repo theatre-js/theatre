@@ -11,7 +11,7 @@ export const workspaceRouter = t.createRouter({
         id: z.string(),
         name: z.string(),
         description: z.string(),
-        isGuest: z.boolean(),
+        accessType: z.enum(['TEAM', 'GUEST', 'GUEST_PENDING']),
         accessLevel: z.string(),
       }),
     )
@@ -60,7 +60,11 @@ export const workspaceRouter = t.createRouter({
         id: workspace.id,
         name: workspace.name,
         description: workspace?.description,
-        isGuest,
+        accessType: !isGuest
+          ? ('TEAM' as const)
+          : workspace?.guests[0].accepted
+          ? ('GUEST' as const)
+          : ('GUEST_PENDING' as const),
         accessLevel: isGuest ? workspace?.guests[0].accessLevel : 'READ_WRITE',
       }
 
@@ -74,7 +78,7 @@ export const workspaceRouter = t.createRouter({
             id: z.string(),
             name: z.string(),
             description: z.string(),
-            isGuest: z.boolean(),
+            accessType: z.enum(['TEAM', 'GUEST', 'GUEST_PENDING']),
             accessLevel: z.string(),
           })
           .strict(),
@@ -115,22 +119,24 @@ export const workspaceRouter = t.createRouter({
       })
 
       const clientData = workspaces.map((workspace) => {
-        const isGuest = workspace.guests.some(
-          (guest) => guest.userId === userId,
-        )
+        const guest = workspace.guests.find((guest) => guest.userId === userId)
 
         const filtered = {
           id: workspace.id,
           name: workspace.name,
           description: workspace.description,
-          isGuest,
+          accessType: !guest
+            ? ('TEAM' as const)
+            : guest.accepted
+            ? ('GUEST' as const)
+            : ('GUEST_PENDING' as const),
         }
 
         // If guest, they have the access level defined in the guest settings
-        if (isGuest) {
+        if (guest) {
           return {
             ...filtered,
-            accessLevel: workspace.guests[0].accessLevel,
+            accessLevel: guest.accessLevel,
           }
         }
 

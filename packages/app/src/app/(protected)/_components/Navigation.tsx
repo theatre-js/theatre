@@ -9,8 +9,6 @@ import {cn} from '~/ui/lib/utils'
 import AccountSwitcher from './AccountSwitcher'
 import NotificationsPopover from './NotificationsPopover'
 
-
-
 export default function Navigation() {
   const teams = api.teams.getAll.useQuery().data!
   const segments = useSelectedLayoutSegments()
@@ -37,12 +35,16 @@ export default function Navigation() {
               >
                 Recents
               </Button>
-              <Button
-                variant={selected === 'shared-with-me' ? 'secondary' : 'ghost'}
-                className="w-full justify-start"
-              >
-                Shared with me
-              </Button>
+              <Link href="/shared-with-me">
+                <Button
+                  variant={
+                    selected === 'shared-with-me' ? 'secondary' : 'ghost'
+                  }
+                  className="w-full justify-start"
+                >
+                  Shared with me
+                </Button>
+              </Link>
             </div>
           </div>
           <div className="px-3 py-2">

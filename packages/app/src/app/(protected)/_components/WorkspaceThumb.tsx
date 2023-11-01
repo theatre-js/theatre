@@ -14,6 +14,7 @@ interface WorkspaceThumbProps extends React.HTMLAttributes<HTMLDivElement> {
   onDuplicate?: () => void
   onInvite?: () => void
   onEdit?: () => void
+  allowEdit?: boolean
 }
 
 export default function WorkspaceThumb({
@@ -24,13 +25,14 @@ export default function WorkspaceThumb({
   onDuplicate,
   onInvite,
   onEdit,
+  allowEdit,
   className,
   ...props
 }: WorkspaceThumbProps) {
   return (
     <div className={cn('space-y-3', className)} {...props}>
       <ContextMenu>
-        <ContextMenuTrigger>
+        <ContextMenuTrigger disabled={!allowEdit}>
           <div className="overflow-hidden rounded-md w-full h-[200px]">
             <div
               className={'transition-all hover:scale-105 w-full h-full'}
