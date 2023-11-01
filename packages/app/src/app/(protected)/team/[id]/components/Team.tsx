@@ -60,6 +60,7 @@ export default function Team({id}: {id: string}) {
               description={workspace.description}
               // thumbnail={workspace.thumbnail}
               thumbnail="/butterfly.png"
+              allowEdit={true}
               onDelete={async () => {
                 await deleteWorkspace({id: workspace.id})
                 queryUtils.teams.invalidate()
