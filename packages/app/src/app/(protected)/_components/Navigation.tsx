@@ -11,6 +11,7 @@ import NotificationsPopover from './NotificationsPopover'
 import {Plus} from 'lucide-react'
 import {promptValue} from '~/app/_components/Prompts'
 import * as schemas from '~/schemas'
+import {promptInviteMembers} from './InviteTeamMembersPrompt'
 
 export default function Navigation() {
   const teams = api.teams.getAll.useQuery().data!
@@ -70,7 +71,8 @@ export default function Navigation() {
                     schema: schemas.teamName,
                   })
                   if (!name) return
-                  await createTeam({name})
+                  const {id} = await createTeam({name})
+                  await promptInviteMembers(id)
                   queryUtils.teams.invalidate()
                 }}
               >
