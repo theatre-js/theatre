@@ -6,7 +6,7 @@ import {Button} from '~/ui/components/ui/button'
 import {DialogHeader, DialogTitle} from '~/ui/components/ui/dialog'
 import {Separator} from '~/ui/components/ui/separator'
 import Members from './TeamMembers'
-import {prompt} from 'react-promptify'
+import {prompt} from '~/app/_components/Prompts'
 import {Input} from '~/ui/components/ui/input'
 import {
   Select,

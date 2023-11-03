@@ -249,9 +249,9 @@ export const teamsRouter = t.createRouter({
       }
     }),
   delete: t.protectedProcedure
-    .input(z.object({id: z.string()}))
+    .input(z.object({id: z.string(), safety: z.string()}))
     .mutation(async ({ctx, input}) => {
-      const {id} = input
+      const {id, safety} = input
       const {session} = ctx
       const userId = session.user.id
 
@@ -260,6 +260,7 @@ export const teamsRouter = t.createRouter({
           id,
         },
         select: {
+          name: true,
           members: {
             where: {
               userId,
@@ -267,6 +268,10 @@ export const teamsRouter = t.createRouter({
           },
         },
       })
+
+      if (safety !== `delete ${team?.name}`) {
+        throw new TRPCError({code: 'BAD_REQUEST'})
+      }
 
       // Only team owners are allowed to delete teams
       const deleteAllowed = team?.members[0]?.userRole === 'OWNER'

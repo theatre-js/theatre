@@ -292,9 +292,9 @@ export const workspaceRouter = t.createRouter({
       })
     }),
   delete: t.protectedProcedure
-    .input(z.object({id: z.string()}))
+    .input(z.object({id: z.string(), safety: z.string()}))
     .mutation(async (opts) => {
-      const {id} = opts.input
+      const {id, safety} = opts.input
       const {session} = opts.ctx
       const userId = session.user.id
 
@@ -303,6 +303,7 @@ export const workspaceRouter = t.createRouter({
           id,
         },
         select: {
+          name: true,
           team: {
             select: {
               members: {
@@ -319,6 +320,10 @@ export const workspaceRouter = t.createRouter({
           },
         },
       })
+
+      if (safety !== `delete ${workspace?.name}`) {
+        throw new TRPCError({code: 'BAD_REQUEST'})
+      }
 
       // Only team members are allowed to remove workspaces
       const deleteAllowed = workspace?.team?.members.length !== 0

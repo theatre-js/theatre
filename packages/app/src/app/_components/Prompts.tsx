@@ -1,7 +1,7 @@
 'use client'
 
 import {Suspense} from 'react'
-import {type CallbackFn, Prompter, prompt} from 'react-promptify'
+import {type CallbackFn, createPrompter} from 'react-promptify'
 import {type ZodString, z} from 'zod'
 import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
@@ -22,18 +22,42 @@ import {
   FormLabel,
 } from '~/ui/components/ui/form'
 import {Input} from '~/ui/components/ui/input'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '~/ui/components/ui/alert-dialog'
+
+const {Prompter, prompt} = createPrompter()
+const {Prompter: AlertPrompter, prompt: alert} = createPrompter()
+
+export {prompt, alert}
 
 export default function Prompts() {
   return (
-    <Prompter>
-      {({children, open, cancel}) => (
-        <Dialog open={open} onOpenChange={(open) => open || cancel()}>
-          <DialogContent className="sm:max-w-[425px]">
-            <Suspense>{children}</Suspense>
-          </DialogContent>
-        </Dialog>
-      )}
-    </Prompter>
+    <>
+      <Prompter>
+        {({children, open, cancel}) => (
+          <Dialog open={open} onOpenChange={(open) => open || cancel()}>
+            <DialogContent className="sm:max-w-[425px]">
+              <Suspense>{children}</Suspense>
+            </DialogContent>
+          </Dialog>
+        )}
+      </Prompter>
+      <AlertPrompter>
+        {({children, open}) => (
+          <AlertDialog open={open}>
+            <AlertDialogContent>{children}</AlertDialogContent>
+          </AlertDialog>
+        )}
+      </AlertPrompter>
+    </>
   )
 }
 
@@ -124,4 +148,23 @@ export const promptValue = {
       />
     ))
   },
+}
+
+export const confirm = async (title: string, description: string) => {
+  return alert<boolean>((done) => (
+    <>
+      <AlertDialogHeader>
+        <AlertDialogTitle>{title}</AlertDialogTitle>
+        <AlertDialogDescription>{description}</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel onClick={() => done(false)}>
+          Cancel
+        </AlertDialogCancel>
+        <AlertDialogAction onClick={() => done(true)}>
+          Continue
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </>
+  )) as Promise<boolean>
 }

@@ -62,16 +62,19 @@ export default function Team({id}: {id: string}) {
               thumbnail="/butterfly.png"
               allowEdit={true}
               onDelete={async () => {
-                await deleteWorkspace({id: workspace.id})
-                queryUtils.teams.invalidate()
-                queryUtils.workspaces.invalidate()
+                await deleteWorkspace({
+                  id: workspace.id,
+                  safety: `delete ${workspace.name}`,
+                })
+                void queryUtils.teams.invalidate()
+                void queryUtils.workspaces.invalidate()
               }}
               onEdit={() => setEditingWorkspace(workspace.id)}
               onDuplicate={async () => {
                 try {
                   await duplicateWorkspace({id: workspace.id})
-                  queryUtils.teams.invalidate()
-                  queryUtils.workspaces.invalidate()
+                  void queryUtils.teams.invalidate()
+                  void queryUtils.workspaces.invalidate()
                 } catch (error) {
                   toast({
                     variant: 'destructive',

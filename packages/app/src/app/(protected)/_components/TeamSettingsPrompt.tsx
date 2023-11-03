@@ -1,7 +1,8 @@
 'use client'
 
 import {type FC, Suspense} from 'react'
-import {prompt} from 'react-promptify'
+import type {PromptProps} from '~/app/_components/Prompts';
+import { confirm, prompt} from '~/app/_components/Prompts'
 import {DialogHeader, DialogTitle} from '~/ui/components/ui/dialog'
 import * as schemas from '~/schemas'
 import {Button} from '~/ui/components/ui/button'
@@ -11,11 +12,18 @@ import {toast} from '~/ui/components/ui/use-toast'
 import {Separator} from '~/ui/components/ui/separator'
 import Members from './TeamMembers'
 import {promptInviteMembers} from './InviteTeamMembersPrompt'
+import {useRouter} from 'next/navigation'
 
-const TeamSettingsPrompt: FC<{id: string}> = ({id}) => {
+const TeamSettingsPrompt: FC<{id: string} & PromptProps<null>> = ({
+  id,
+  done,
+}) => {
   const team = api.teams.get.useQuery({id}).data!
   const updateTeam = api.teams.update.useMutation().mutateAsync
+  const deleteTeam = api.teams.delete.useMutation().mutateAsync
   const queryUtils = api.useUtils()
+
+  const router = useRouter()
 
   return (
     <>
@@ -42,7 +50,7 @@ const TeamSettingsPrompt: FC<{id: string}> = ({id}) => {
                   id,
                   name,
                 })
-                queryUtils.teams.invalidate()
+                void queryUtils.teams.invalidate()
               } catch (err) {
                 toast({
                   variant: 'destructive',
@@ -74,9 +82,35 @@ const TeamSettingsPrompt: FC<{id: string}> = ({id}) => {
           <Members teamId={id} />
         </Suspense>
       </div>
+      <Separator className="my-4" />
+      <Button
+        variant="destructive"
+        onClick={async () => {
+          const response = await confirm(
+            `Are you sure you want to delete ${team.name}?`,
+            "Deleting a team will delete all of the team's workspaces and cannot be undone.",
+          )
+
+          if (!response) return
+
+          try {
+            await deleteTeam({id, safety: `delete ${team.name}`})
+            done(null)
+            router.replace('/')
+          } catch (err) {
+            toast({
+              variant: 'destructive',
+              title: 'Uh oh! Something went wrong.',
+              description: "Couldn't delete team.",
+            })
+          }
+        }}
+      >
+        Delete {team.name}
+      </Button>
     </>
   )
 }
 
 export const promptTeamSettings = (id: string) =>
-  prompt<null>(() => <TeamSettingsPrompt id={id} />)
+  prompt<null>((done) => <TeamSettingsPrompt id={id} done={done} />)

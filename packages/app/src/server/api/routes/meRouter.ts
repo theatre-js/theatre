@@ -49,7 +49,7 @@ export const meRouter = t.createRouter({
       })
     }),
   delete: t.protectedProcedure
-    .input(z.object({justToBeSure: z.literal('DELETE')}))
+    .input(z.object({safety: z.literal('DELETE')}))
     .mutation(async ({ctx}) => {
       const {session} = ctx
       const user = session.user
