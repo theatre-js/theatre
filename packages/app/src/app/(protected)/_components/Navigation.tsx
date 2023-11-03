@@ -73,7 +73,7 @@ export default function Navigation() {
                   if (!name) return
                   const {id} = await createTeam({name})
                   await promptInviteMembers(id)
-                  queryUtils.teams.invalidate()
+                  void queryUtils.teams.invalidate()
                 }}
               >
                 <Plus className="h-4 w-4" />

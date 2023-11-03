@@ -13,6 +13,7 @@ import {
   PopoverTrigger,
 } from '~/ui/components/ui/popover'
 import {api} from '~/trpc/react'
+import {promptAccountSettings} from './AccountSettingsPrompt'
 
 export default function AccountSwitcher() {
   const [open, setOpen] = React.useState(false)
@@ -39,7 +40,14 @@ export default function AccountSwitcher() {
           <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="flex w-[200px] p-2">
+      <PopoverContent className="flex w-[200px] p-2 flex-col">
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={() => promptAccountSettings()}
+        >
+          Account settings
+        </Button>
         <Button
           variant="ghost"
           className="w-full justify-start"
