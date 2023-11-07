@@ -1,4 +1,4 @@
-import type {AppTrpcRouter} from '@theatre/app/src/trpc/routes'
+import type {AppTrpcRouter} from '@theatre/app/src/server/trpc/routes'
 import {createTRPCProxyClient, httpBatchLink} from '@trpc/client'
 import superjson from 'superjson'
 

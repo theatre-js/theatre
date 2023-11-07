@@ -1,6 +1,6 @@
 import {basicFSM} from '@theatre/utils/basicFSM'
-import type {ChodrialElement} from './chordialInternals';
-import { findChodrialByDomNode} from './chordialInternals'
+import type {ChodrialElement} from './chordialInternals'
+import {findChodrialByDomNode} from './chordialInternals'
 
 export const hoverActor = basicFSM<
   {type: 'mousemove'; mouseEvent: MouseEvent; source: 'window' | 'root'},
