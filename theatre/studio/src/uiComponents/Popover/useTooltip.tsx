@@ -1,13 +1,32 @@
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import type {MutableRefObject} from 'react'
 import {useContext} from 'react'
-import {useEffect} from 'react'
 import React from 'react'
-import TooltipWrapper from './TooltipWrapper'
+import PopoverPositioner from './PopoverPositioner'
 import {createPortal} from 'react-dom'
-import {useTooltipOpenState} from './TooltipContext'
 import {PortalContext} from 'reakit'
 import noop from '@theatre/utils/noop'
+import type {$IntentionalAny} from '@theatre/utils/types'
+import {Atom} from '@theatre/dataverse'
+import {useCallback, useEffect, useMemo} from 'react'
+
+/**
+ * Useful helper in development to prevent the tooltips from auto-closing,
+ * so its easier to inspect the DOM / change the styles, etc.
+ *
+ * Call window.$disableAutoCloseTooltip() in the console to disable auto-close
+ */
+const shouldAutoCloseByDefault =
+  process.env.NODE_ENV === 'development'
+    ? (): boolean =>
+        (window as $IntentionalAny).__disableAutoCloseTooltip ?? true
+    : (): boolean => true
+
+if (process.env.NODE_ENV === 'development') {
+  ;(window as $IntentionalAny).$disableAutoCloseTooltip = () => {
+    ;(window as $IntentionalAny).__disableAutoCloseTooltip = false
+  }
+}
 
 export default function useTooltip<T extends HTMLElement>(
   opts: {
@@ -33,11 +52,13 @@ export default function useTooltip<T extends HTMLElement>(
       return
     }
 
-    const target = targetRef.current
+    const target = targetNode
     if (!target) return
 
-    const onMouseEnter = () => setIsOpen(true, opts.enterDelay ?? 400)
-    const onMouseLeave = () => setIsOpen(false, opts.exitDelay ?? 200)
+    const onMouseEnter = () => setIsOpen(true, opts.enterDelay ?? 800)
+    const onMouseLeave = () => {
+      if (shouldAutoCloseByDefault()) setIsOpen(false, opts.exitDelay ?? 200)
+    }
 
     target.addEventListener('mouseenter', onMouseEnter)
     target.addEventListener('mouseleave', onMouseLeave)
@@ -46,14 +67,14 @@ export default function useTooltip<T extends HTMLElement>(
       target.removeEventListener('mouseenter', onMouseEnter)
       target.removeEventListener('mouseleave', onMouseLeave)
     }
-  }, [targetRef, enabled, opts.enterDelay, opts.exitDelay])
+  }, [targetNode, enabled, opts.enterDelay, opts.exitDelay])
 
   const portalLayer = useContext(PortalContext)
 
   const node =
     enabled && isOpen && targetNode ? (
       createPortal(
-        <TooltipWrapper
+        <PopoverPositioner
           children={render}
           target={targetNode}
           onClickOutside={noop}
@@ -67,4 +88,52 @@ export default function useTooltip<T extends HTMLElement>(
     )
 
   return [node, targetRef, isOpen]
+}
+
+let lastTooltipId = 0
+
+export const useTooltipOpenState = (): [
+  isOpen: boolean,
+  setIsOpen: (isOpen: boolean, delay: number) => void,
+] => {
+  const id = useMemo(() => lastTooltipId++, [])
+  const [isOpenRef, isOpen] = useRefAndState<boolean>(false)
+
+  const setIsOpen = useCallback((shouldOpen: boolean, delay: number) => {
+    setCurrentTooltipId(shouldOpen ? id : -1, delay)
+  }, [])
+
+  useEffect(() => {
+    return currentTooltip.onStale(() => {
+      const flag = currentTooltip.getValue() === id
+
+      if (isOpenRef.current !== flag) isOpenRef.current = flag
+    })
+  }, [currentTooltip, id])
+
+  return [isOpen, setIsOpen]
+}
+
+const currentTooltipId = new Atom(-1)
+let lastTimeout: NodeJS.Timeout | undefined = undefined
+const setCurrentTooltipId = (id: number, delay: number) => {
+  const overridingPreviousTimeout = lastTimeout !== undefined
+  if (lastTimeout !== undefined) {
+    clearTimeout(lastTimeout)
+    lastTimeout = undefined
+  }
+  if (delay === 0 || overridingPreviousTimeout) {
+    currentTooltipId.set(id)
+  } else {
+    lastTimeout = setTimeout(() => {
+      currentTooltipId.set(id)
+      lastTimeout = undefined
+    }, delay)
+  }
+}
+
+const currentTooltip = currentTooltipId.prism
+
+export const closeAllTooltips = () => {
+  setCurrentTooltipId(-1, 0)
 }

@@ -1,8 +1,6 @@
 import type * as propTypes from '@theatre/core/propTypes'
 import {getPointerParts} from '@theatre/dataverse'
 import type {Pointer, Prism} from '@theatre/dataverse'
-import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
-import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import {last} from 'lodash-es'
 import React from 'react'
 import type {useEditingToolsForSimplePropInDetailsPanel} from '@theatre/studio/propEditors/useEditingToolsForSimpleProp'
@@ -10,11 +8,13 @@ import styled from 'styled-components'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
-import {deriver} from '@theatre/studio/utils/derive-utils'
 import {rowIndentationFormulaCSS} from './rowIndentationFormulaCSS'
 import {getDetailRowHighlightBackground} from './getDetailRowHighlightBackground'
+import {useVal} from '@theatre/react'
+import useChordial from '@theatre/studio/uiComponents/chordial/useChodrial'
+import type {$FixMe} from '@theatre/utils/types'
 
-const Container = deriver(styled.div<{
+const Container = styled.div<{
   isHighlighted: PropHighlighted
 }>`
   display: flex;
@@ -34,7 +34,7 @@ const Container = deriver(styled.div<{
   ${pointerEventsAutoInNormalMode};
 
   /* background-color: ${getDetailRowHighlightBackground}; */
-`)
+`
 
 const Left = styled.div`
   box-sizing: border-box;
@@ -50,7 +50,7 @@ const Left = styled.div`
   width: calc(100% - var(--right-width));
 `
 
-const PropNameContainer = deriver(styled.div<{
+const PropNameContainer = styled.div<{
   isHighlighted: PropHighlighted
 }>`
   text-align: left;
@@ -67,7 +67,7 @@ const PropNameContainer = deriver(styled.div<{
   &:hover {
     color: white;
   }
-`)
+`
 
 const ControlsContainer = styled.div`
   flex-basis: 8px;
@@ -107,25 +107,26 @@ export function SingleRowPropEditor<T>({
 > | null {
   const label = propConfig.label ?? last(getPointerParts(pointerToProp).path)
 
-  const [propNameContainerRef, propNameContainer] =
-    useRefAndState<HTMLDivElement | null>(null)
+  const title = ['obj', 'props', ...getPointerParts(pointerToProp).path].join(
+    '.',
+  )
 
-  const [contextMenu] = useContextMenu(propNameContainer, {
-    displayName: `${label}`,
-    menuItems: editingTools.contextMenuItems,
+  const isHighlighted = useVal(isPropHighlightedD)
+
+  const {targetRef} = useChordial(() => {
+    return {
+      title,
+      items: editingTools.contextMenuItems,
+    }
   })
 
   return (
-    <Container isHighlighted={isPropHighlightedD}>
-      {contextMenu}
+    <Container isHighlighted={isHighlighted}>
       <Left>
         <ControlsContainer>{editingTools.controlIndicators}</ControlsContainer>
         <PropNameContainer
-          isHighlighted={isPropHighlightedD}
-          ref={propNameContainerRef}
-          title={['obj', 'props', ...getPointerParts(pointerToProp).path].join(
-            '.',
-          )}
+          isHighlighted={isHighlighted}
+          ref={targetRef as $FixMe}
         >
           {label}
         </PropNameContainer>

@@ -12,7 +12,6 @@ import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism, val, pointerToPrism} from '@theatre/dataverse'
 import React, {useMemo, Fragment} from 'react'
 import styled from 'styled-components'
-import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import type {
@@ -28,7 +27,7 @@ import {collectAggregateSnapPositionsObjectOrCompound} from '@theatre/studio/pan
 import {useLogger} from '@theatre/studio/uiComponents/useLogger'
 import {getAggregateKeyframeEditorUtilsPrismFn} from './AggregateKeyframeEditor/useAggregateKeyframeEditorUtils'
 import DopeSnap from '@theatre/studio/panels/SequenceEditorPanel/RightOverlay/DopeSnap'
-import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
+import type {DragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
 import {useLockFrameStampPositionRef} from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
@@ -57,6 +56,7 @@ import {
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 import {collectAggregateSnapPositionsSheet} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/collectAggregateKeyframes'
 import type {Keyframe} from '@theatre/sync-server/state/types/core'
+import type {ContextMenuItem} from '@theatre/studio/uiComponents/chordial/chordialInternals'
 
 const AggregatedKeyframeTrackContainer = styled.div`
   position: relative;
@@ -317,8 +317,9 @@ function useAggregatedKeyframeTrackContextMenu(
 function pasteKeyframesContextMenuItem(
   props: IAggregatedKeyframeTracksProps,
   keyframes: KeyframeWithPathToPropFromCommonRoot[],
-): IContextMenuItem {
+): ContextMenuItem {
   return {
+    type: 'normal',
     label: 'Paste Keyframes',
     enabled: keyframes.length > 0,
     callback: () => {
@@ -585,7 +586,7 @@ function useDragForAggregateKeyframeDot(
 ): [isDragging: boolean] {
   const logger = useLogger('useDragForAggregateKeyframeDot')
   const frameStampLock = useLockFrameStampPositionRef()
-  const useDragOpts = useMemo<UseDragOpts>(() => {
+  const useDragOpts = useMemo<DragOpts>(() => {
     return {
       debugName: 'AggregateKeyframeDot/useDragKeyframe',
       onDragStart(event) {

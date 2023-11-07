@@ -10,11 +10,8 @@ const devOnly = z.object({
 // the env variables that both development and production require
 const commonSchema = z.object({
   DATABASE_URL: z.string(),
-  AUTH0_SECRET: z.string().min(32),
-  AUTH0_BASE_URL: z.string().url(),
-  AUTH0_ISSUER_BASE_URL: z.string().url(),
-  AUTH0_CLIENT_ID: z.string(),
-  AUTH0_CLIENT_SECRET: z.string(),
+  GITHUB_ID: z.string(),
+  GITHUB_SECRET: z.string(),
   STUDIO_AUTH_JWT_PRIVATE_KEY: z
     .string()
     .startsWith('-----BEGIN PRIVATE KEY-----')

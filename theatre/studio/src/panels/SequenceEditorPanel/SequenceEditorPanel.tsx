@@ -1,4 +1,4 @@
-import {getOutlineSelection} from '@theatre/studio/selectors'
+import {outlineSelection} from '@theatre/studio/selectors'
 import {usePrism} from '@theatre/react'
 import {valToAtom} from '@theatre/utils/valToAtom'
 import type {Pointer} from '@theatre/dataverse'
@@ -125,7 +125,8 @@ const Content: React.VFC<{}> = () => {
     )
 
     const selectedSheets = uniq(
-      getOutlineSelection()
+      outlineSelection
+        .getValue()
         .filter((s): s is SheetObject | Sheet => isSheet(s) || isSheetObject(s))
         .map((s) => (isSheetObject(s) ? s.sheet : s)),
     )

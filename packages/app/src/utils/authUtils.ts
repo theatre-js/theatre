@@ -28,8 +28,8 @@ export const nextAuthConfig = {
   adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     GithubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
     }),
   ],
   callbacks: {
@@ -132,6 +132,43 @@ export namespace studioAuth {
       throw new Error(`Invalid refresh token`)
     }
 
+    if (session.succeededByRefreshToken) {
+      if (session.successorLinkExpresAt! < new Date()) {
+        await destroySession(session.refreshToken)
+        throw new Error(`Invalid refresh token`)
+      } else {
+        const newSession = await prisma.libSession.findUnique({
+          where: {
+            refreshToken: session.succeededByRefreshToken,
+          },
+        })
+
+        if (!newSession) {
+          throw new Error(`Invalid refresh token`)
+        }
+
+        const user = await prisma.user.findUnique({
+          where: {
+            id: newSession.userId,
+          },
+        })
+
+        if (!user) {
+          throw new Error(`Invalid refresh token`)
+        }
+
+        const accessToken = await generateAccessToken(user)
+
+        return {refreshToken: newSession.refreshToken, accessToken}
+      }
+    }
+
+    // session is expired
+    if (session.validUntil < new Date()) {
+      await destroySession(session.refreshToken)
+      throw new Error(`Invalid refresh token`)
+    }
+
     const user = await prisma.user.findUnique({
       where: {
         id: session.userId,
@@ -142,9 +179,16 @@ export namespace studioAuth {
       throw new Error(`Invalid refresh token`)
     }
 
-    await destroySession(refreshToken)
     const {refreshToken: newRefreshToken, accessToken} =
       await createSession(user)
+
+    await prisma.libSession.update({
+      where: {refreshToken},
+      data: {
+        succeededByRefreshToken: newRefreshToken,
+        successorLinkExpresAt: new Date(Date.now() + 60).toISOString(),
+      },
+    })
 
     return {refreshToken: newRefreshToken, accessToken}
   }

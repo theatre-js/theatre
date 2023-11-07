@@ -3,8 +3,8 @@ import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import React, {useCallback, useContext, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
 import {PortalContext} from 'reakit'
-import type {AbsolutePlacementBoxConstraints} from './TooltipWrapper'
-import TooltipWrapper from './TooltipWrapper'
+import type {AbsolutePlacementBoxConstraints} from './PopoverPositioner'
+import PopoverPositioner from './PopoverPositioner'
 import {contextMenuShownContext} from '@theatre/studio/panels/DetailPanel/DetailPanel'
 
 export type OpenFn = (
@@ -151,7 +151,7 @@ export default function usePopover(
   const node = state.isOpen ? (
     createPortal(
       <PopoverAutoCloseLock.Provider value={lock.childPopoverLock}>
-        <TooltipWrapper
+        <PopoverPositioner
           children={render}
           target={state.target}
           onClickOutside={state.onClickOutside}

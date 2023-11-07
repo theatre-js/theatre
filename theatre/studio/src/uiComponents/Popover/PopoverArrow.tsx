@@ -15,7 +15,7 @@ const Adjust = styled.div`
   height: 8px;
   position: absolute;
   left: -7px;
-  top: -8px;
+  top: -6px;
   text-align: center;
   line-height: 0;
 `
@@ -50,7 +50,7 @@ const PopoverArrow = forwardRef<HTMLDivElement, Props>(({className}, ref) => {
           xmlns="http://www.w3.org/2000/svg"
         >
           <OuterStroke d="M6 0L0 6H12L6 0Z" />
-          <InnerStroke d="M6 1.5L0 7.5H12L6 1.5Z" />
+          {/* <InnerStroke d="M6 1.5L0 7.5H12L6 1.5Z" /> */}
           <InnerTriangle d="M6 3L0 9H12L6 3Z" />
         </svg>
       </Adjust>

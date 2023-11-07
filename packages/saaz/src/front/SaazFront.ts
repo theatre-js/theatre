@@ -40,6 +40,10 @@ type UndoStackItem = {
 }
 
 type AtomState<OpSnapshot extends ValidOpSnapshot, CellShape extends {}> = {
+  /**
+   * The queue of optimistic updates that have not been acknowledged by the backend yet. As soon as
+   * the backend acknowledges an update, it will be removed from this queue.
+   */
   optimisticUpdatesQueue: Transaction[]
   backendState: BackState<OpSnapshot> | null
   emptySnapshot: FullSnapshot<OpSnapshot>

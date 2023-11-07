@@ -4,7 +4,7 @@ import {ConnectorLine} from '@theatre/studio/panels/SequenceEditorPanel/DopeShee
 import {AggregateKeyframePositionIsSelected} from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/AggregatedKeyframeTrack/AggregatedKeyframeTrack'
 import usePopover from '@theatre/studio/uiComponents/Popover/usePopover'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
+import type {DragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import getStudio from '@theatre/studio/getStudio'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
@@ -116,7 +116,7 @@ function useDragKeyframe(
   const propsRef = useRef(editorProps)
   propsRef.current = editorProps
 
-  const gestureHandlers = useMemo<UseDragOpts>(() => {
+  const gestureHandlers = useMemo<DragOpts>(() => {
     return {
       debugName: 'useDragKeyframe',
       lockCSSCursorTo: 'ew-resize',
@@ -242,6 +242,7 @@ function useConnectorContextMenu(
 
       return [
         {
+          type: 'normal',
           label: 'Copy',
           callback: () => {
             if (props.editorProps.selection) {
@@ -265,6 +266,7 @@ function useConnectorContextMenu(
           },
         },
         {
+          type: 'normal',
           label: 'Delete',
           callback: () => {
             if (props.editorProps.selection) {

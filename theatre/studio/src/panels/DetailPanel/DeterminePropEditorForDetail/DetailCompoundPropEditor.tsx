@@ -8,16 +8,13 @@ import {Atom, getPointerParts} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
 import last from 'lodash-es/last'
 import {darken, transparentize} from 'polished'
-import React, {useLayoutEffect, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {rowIndentationFormulaCSS} from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail/rowIndentationFormulaCSS'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
-import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import DeterminePropEditorForDetail from '@theatre/studio/panels/DetailPanel/DeterminePropEditorForDetail'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
-
-import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import {useEditingToolsForCompoundProp} from '@theatre/studio/propEditors/useEditingToolsForCompoundProp'
 import type {PropHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
 import {whatPropIsHighlighted} from '@theatre/studio/panels/SequenceEditorPanel/whatPropIsHighlighted'
@@ -30,6 +27,7 @@ import {val} from '@theatre/dataverse'
 import {HiOutlineChevronRight} from 'react-icons/all'
 import memoizeFn from '@theatre/utils/memoizeFn'
 import {collapsedMap} from './collapsedMap'
+import useChordial from '@theatre/studio/uiComponents/chordial/useChodrial'
 
 const Container = styled.div`
   --step: 15px;
@@ -175,7 +173,8 @@ function DetailCompoundPropEditor<
   propConfig,
   visualIndentation,
 }: ICompoundPropDetailEditorProps<TPropTypeConfig>) {
-  const propName = propConfig.label ?? last(getPointerParts(pointerToProp).path)
+  const propName =
+    propConfig.label ?? (last(getPointerParts(pointerToProp).path) as string)
 
   const allSubs = Object.entries(propConfig.props)
   const compositeSubs = allSubs.filter(([_, conf]) =>
@@ -185,21 +184,13 @@ function DetailCompoundPropEditor<
     ([_, conf]) => !isPropConfigComposite(conf),
   )
 
-  const [propNameContainerRef, propNameContainer] =
-    useRefAndState<HTMLDivElement | null>(null)
-
   const tools = useEditingToolsForCompoundProp(
     pointerToProp as $FixMe,
     obj,
     propConfig,
   )
 
-  const label = propName || 'Props'
-
-  const [contextMenu] = useContextMenu(propNameContainer, {
-    menuItems: tools.contextMenuItems,
-    displayName: `${label}`,
-  })
+  const label: string = propName || 'Props'
 
   const lastSubPropIsComposite = compositeSubs.length > 0
 
@@ -212,28 +203,29 @@ function DetailCompoundPropEditor<
     [pointerToProp],
   )
 
-  const globalPointerPath = `${obj.address.projectId},${obj.address.sheetId},${
-    obj.address.sheetInstanceId
-  },${obj.address.objectKey},${getPointerParts(pointerToProp).path.join()}`
-
   // isVectorProp is already memoized, so no need to wrap this in `useMemo()`
   const isVector = isVectorProp(propConfig)
 
-  useLayoutEffect(() => {
-    if (!collapsedMap.has(globalPointerPath)) {
-      collapsedMap.set(globalPointerPath, new Atom(isVector))
+  const isCollapsedAtom = useMemo(() => {
+    if (!collapsedMap.has(pointerToProp)) {
+      collapsedMap.set(pointerToProp, new Atom(isVector))
     }
-  }, [globalPointerPath, propConfig])
-
-  const box = collapsedMap.get(globalPointerPath)
+    return collapsedMap.get(pointerToProp)!
+  }, [pointerToProp])
 
   const isCollapsed = usePrism(() => {
-    return box ? val(box.pointer) : isVector
-  }, [box])
+    return isCollapsedAtom ? val(isCollapsedAtom.pointer) : isVector
+  }, [isCollapsedAtom, isVector])
+
+  const {targetRef} = useChordial(() => {
+    const title = ['obj', 'props', ...getPointerParts(pointerToProp).path].join(
+      '.',
+    )
+    return {title, items: tools.contextMenuItems}
+  })
 
   return (
     <Container>
-      {contextMenu}
       <Header
         // @ts-ignore
         style={{'--depth': visualIndentation - 1}}
@@ -241,17 +233,14 @@ function DetailCompoundPropEditor<
         <Padding isVectorProp={isVector}>
           <ControlIndicators>{tools.controlIndicators}</ControlIndicators>
 
-          <PropName
-            isHighlighted={isPropHighlightedD}
-            ref={propNameContainerRef}
-          >
+          <PropName isHighlighted={isPropHighlightedD} ref={targetRef}>
             <span>{label}</span>
           </PropName>
           <CollapseIcon
             isCollapsed={isCollapsed}
             isVector={isVector}
             onClick={() => {
-              box?.set(!box.get())
+              isCollapsedAtom.set(!isCollapsedAtom.get())
             }}
           >
             <HiOutlineChevronRight />

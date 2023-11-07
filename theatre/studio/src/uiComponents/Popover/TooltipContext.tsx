@@ -1,18 +1,6 @@
-import type {Prism} from '@theatre/dataverse'
 import {Atom} from '@theatre/dataverse'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-} from 'react'
-
-const ctx = createContext<{
-  cur: Prism<number>
-  set: (id: number, delay: number) => void
-}>(null!)
+import {useCallback, useEffect, useMemo} from 'react'
 
 let lastTooltipId = 0
 
@@ -21,48 +9,43 @@ export const useTooltipOpenState = (): [
   setIsOpen: (isOpen: boolean, delay: number) => void,
 ] => {
   const id = useMemo(() => lastTooltipId++, [])
-  const {cur, set} = useContext(ctx)
   const [isOpenRef, isOpen] = useRefAndState<boolean>(false)
 
   const setIsOpen = useCallback((shouldOpen: boolean, delay: number) => {
-    set(shouldOpen ? id : -1, delay)
+    setCurrentTooltipId(shouldOpen ? id : -1, delay)
   }, [])
 
   useEffect(() => {
-    return cur.onStale(() => {
-      const flag = cur.getValue() === id
+    return currentTooltip.onStale(() => {
+      const flag = currentTooltip.getValue() === id
 
       if (isOpenRef.current !== flag) isOpenRef.current = flag
     })
-  }, [cur, id])
+  }, [currentTooltip, id])
 
   return [isOpen, setIsOpen]
 }
 
-const TooltipContext: React.FC<{children: React.ReactNode}> = ({children}) => {
-  const currentTooltipId = useMemo(() => new Atom(-1), [])
-  const cur = currentTooltipId.prism
-
-  const set = useMemo(() => {
-    let lastTimeout: NodeJS.Timeout | undefined = undefined
-    return (id: number, delay: number) => {
-      const overridingPreviousTimeout = lastTimeout !== undefined
-      if (lastTimeout !== undefined) {
-        clearTimeout(lastTimeout)
-        lastTimeout = undefined
-      }
-      if (delay === 0 || overridingPreviousTimeout) {
-        currentTooltipId.set(id)
-      } else {
-        lastTimeout = setTimeout(() => {
-          currentTooltipId.set(id)
-          lastTimeout = undefined
-        }, delay)
-      }
-    }
-  }, [])
-
-  return <ctx.Provider value={{cur, set}}>{children}</ctx.Provider>
+const currentTooltipId = new Atom(-1)
+let lastTimeout: NodeJS.Timeout | undefined = undefined
+const setCurrentTooltipId = (id: number, delay: number) => {
+  const overridingPreviousTimeout = lastTimeout !== undefined
+  if (lastTimeout !== undefined) {
+    clearTimeout(lastTimeout)
+    lastTimeout = undefined
+  }
+  if (delay === 0 || overridingPreviousTimeout) {
+    currentTooltipId.set(id)
+  } else {
+    lastTimeout = setTimeout(() => {
+      currentTooltipId.set(id)
+      lastTimeout = undefined
+    }, delay)
+  }
 }
 
-export default TooltipContext
+const currentTooltip = currentTooltipId.prism
+
+export const closeAllTooltips = () => {
+  setCurrentTooltipId(-1, 0)
+}

@@ -58,20 +58,6 @@ type ChnangeTypeOp = {
   value: Cell['$type']
 }
 
-/**
- * {
- * // type: base,foo
- * // box:  base,foo,base
- * foo: bar
- * // type: base,nested
- * nested: {
- *   // type: base,nested,base,a
- *   // box:  base,nested,base,a,base
- *   a: 1
- * }
- * }
- */
-
 type SetBoxedValue = {
   type: 'SetBoxedValue'
   path: Array<[branchName: BranchName, mapProp: string]>

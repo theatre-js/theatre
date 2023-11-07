@@ -5,7 +5,6 @@ import {getPointerParts, prism, val} from '@theatre/dataverse'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from '@theatre/studio/getStudio'
 import type Scrub from '@theatre/studio/Scrub'
-import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import getDeep from '@theatre/utils/getDeep'
 import {usePrismInstance} from '@theatre/react'
 import type {
@@ -21,11 +20,12 @@ import {getNearbyKeyframesOfTrack} from './getNearbyKeyframesOfTrack'
 import type {NearbyKeyframesControls} from './NextPrevKeyframeCursors'
 import NextPrevKeyframeCursors from './NextPrevKeyframeCursors'
 import type {Asset, File as AssetFile} from '@theatre/utils/types'
+import type {ContextMenuItem} from '@theatre/studio/uiComponents/chordial/chordialInternals'
 
 interface EditingToolsCommon<T> {
   value: T
   beingScrubbed: boolean
-  contextMenuItems: Array<IContextMenuItem>
+  contextMenuItems: Array<ContextMenuItem>
   /** e.g. `< • >` or `<   >` for {@link EditingToolsSequenced} */
   controlIndicators: React.ReactElement
 
@@ -134,7 +134,7 @@ function createPrism<T extends SerializablePrimitive>(
         ),
       ) === true
 
-    const contextMenuItems: IContextMenuItem[] = []
+    const contextMenuItems: ContextMenuItem[] = []
 
     const common: EditingToolsCommon<T> = {
       ...editPropValue,
@@ -157,6 +157,7 @@ function createPrism<T extends SerializablePrimitive>(
 
       if (isSequenced) {
         contextMenuItems.push({
+          type: 'normal',
           label: 'Make static',
           callback: () => {
             getStudio()!.transaction(({stateEditors}) => {
@@ -278,6 +279,7 @@ function createPrism<T extends SerializablePrimitive>(
 
     if (typeof staticOverride !== 'undefined') {
       contextMenuItems.push({
+        type: 'normal',
         label: 'Reset to default',
         callback: () => {
           getStudio()!.transaction(({unset: unset}) => {
@@ -289,6 +291,7 @@ function createPrism<T extends SerializablePrimitive>(
 
     if (isSequencable) {
       contextMenuItems.push({
+        type: 'normal',
         label: 'Sequence',
         callback: () => {
           getStudio()!.transaction(({stateEditors}) => {

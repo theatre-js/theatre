@@ -29,6 +29,8 @@ const POPOVER_MARGIN = 5
 const EasingPopover = styled(BasicPopover)`
   --popover-outer-stroke: transparent;
   --popover-inner-stroke: ${COLOR_POPOVER_BACK};
+  border-radius: 2px;
+  padding: 0;
 `
 
 type IBasicKeyframeConnectorProps = ISingleKeyframeEditorProps
@@ -253,6 +255,7 @@ function useConnectorContextMenu(
 
       return [
         {
+          type: 'normal',
           label: copyableKeyframes.length > 0 ? 'Copy (selection)' : 'Copy',
           callback: () => {
             if (copyableKeyframes.length > 0) {
@@ -272,6 +275,7 @@ function useConnectorContextMenu(
           },
         },
         {
+          type: 'normal',
           label: props.selection ? 'Delete (selection)' : 'Delete',
           callback: () => {
             if (props.selection) {

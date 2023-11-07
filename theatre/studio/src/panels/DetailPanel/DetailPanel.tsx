@@ -1,4 +1,4 @@
-import {getOutlineSelection} from '@theatre/studio/selectors'
+import {outlineSelection} from '@theatre/studio/selectors'
 import {usePrism, useVal} from '@theatre/react'
 import React, {
   createContext,
@@ -37,7 +37,9 @@ const Container = styled.div<{pin: boolean}>`
   height: fit-content;
   z-index: ${panelZIndexes.propsPanel};
 
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.25),
+    0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(14px);
   border-radius: 2px;
 
@@ -115,7 +117,7 @@ const DetailPanel: React.FC<{}> = (props) => {
   usePresenceListenersOnRootElement(containerElt)
 
   return usePrism(() => {
-    const selection = getOutlineSelection()
+    const selection = outlineSelection.getValue()
 
     const obj = selection.find(isSheetObject)
 

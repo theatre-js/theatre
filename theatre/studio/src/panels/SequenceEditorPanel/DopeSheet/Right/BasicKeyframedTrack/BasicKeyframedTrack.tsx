@@ -8,7 +8,6 @@ import {val} from '@theatre/dataverse'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import SingleKeyframeEditor from './KeyframeEditor/SingleKeyframeEditor'
-import type {IContextMenuItem} from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useContextMenu from '@theatre/studio/uiComponents/simpleContextMenu/useContextMenu'
 import useRefAndState from '@theatre/studio/utils/useRefAndState'
 import getStudio from '@theatre/studio/getStudio'
@@ -19,6 +18,7 @@ import KeyframeSnapTarget, {
 } from '@theatre/studio/panels/SequenceEditorPanel/DopeSheet/Right/KeyframeSnapTarget'
 import {createStudioSheetItemKey} from '@theatre/shared/utils/ids'
 import {keyframeUtils} from '@theatre/sync-server/state/schema'
+import type {ContextMenuItem} from '@theatre/studio/uiComponents/chordial/chordialInternals'
 
 const Container = styled.div`
   position: relative;
@@ -163,8 +163,9 @@ function useBasicKeyframedTrackContextMenu(
 function pasteKeyframesContextMenuItem(
   props: BasicKeyframedTracksProps,
   keyframes: KeyframeWithPathToPropFromCommonRoot[],
-): IContextMenuItem {
+): ContextMenuItem {
   return {
+    type: 'normal',
     label: 'Paste Keyframes',
     enabled: keyframes.length > 0,
     callback: () => {

@@ -14,7 +14,7 @@ import {
   isSheetPublicAPI,
   isSheetTemplate,
 } from '@theatre/shared/instanceTypes'
-import {getOutlineSelection} from './selectors'
+import {outlineSelection} from './selectors'
 import type SheetObject from '@theatre/core/sheetObjects/SheetObject'
 import getStudio from './getStudio'
 import {debounce, uniq} from 'lodash-es'
@@ -607,7 +607,8 @@ export default class TheatreStudio implements IStudio {
   private _getSelectionPrism(): Prism<(ISheetObject | ISheet)[]> {
     return this._cache.get('_getSelectionPrism()', () =>
       prism((): (ISheetObject | ISheet)[] => {
-        return getOutlineSelection()
+        return outlineSelection
+          .getValue()
           .filter(
             (s): s is SheetObject | Sheet =>
               s.type === 'Theatre_SheetObject' || s.type === 'Theatre_Sheet',

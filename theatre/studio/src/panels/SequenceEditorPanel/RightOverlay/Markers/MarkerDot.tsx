@@ -14,7 +14,7 @@ import {useLockFrameStampPosition} from '@theatre/studio/panels/SequenceEditorPa
 import type {SequenceEditorPanelLayout} from '@theatre/studio/panels/SequenceEditorPanel/layout/layout'
 import type {SheetAddress} from '@theatre/sync-server/state/types'
 import useDrag from '@theatre/studio/uiComponents/useDrag'
-import type {UseDragOpts} from '@theatre/studio/uiComponents/useDrag'
+import type {DragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type {CommitOrDiscardOrRecapture} from '@theatre/studio/StudioStore/StudioStore'
 import type {StudioHistoricStateSequenceEditorMarker} from '@theatre/sync-server/state/types'
 import {zIndexes} from '@theatre/studio/panels/SequenceEditorPanel/SequenceEditorPanel'
@@ -173,7 +173,7 @@ const MarkerDotVisible: React.VFC<IMarkerDotVisibleProps> = ({
     close: closePopover,
   } = usePopover({debugName: 'MarkerPopover'}, () => {
     return (
-      <BasicPopover>
+      <BasicPopover showPopoverEdgeTriangle={true}>
         <MarkerEditorPopover
           marker={marker}
           layoutP={layoutP}
@@ -214,6 +214,7 @@ function useMarkerContextMenu(
     menuItems() {
       return [
         {
+          type: 'normal',
           label: 'Remove marker',
           callback: () => {
             getStudio().transaction(({stateEditors}) => {
@@ -241,7 +242,7 @@ function useDragMarker(
   const propsRef = useRef(props)
   propsRef.current = props
 
-  const useDragOpts = useMemo<UseDragOpts>(() => {
+  const useDragOpts = useMemo<DragOpts>(() => {
     return {
       debugName: `MarkerDot/useDragMarker (${props.marker.id})`,
       onDragStart(_event) {

@@ -133,9 +133,11 @@ enum LibAuthenticationFlowState {
 }
 
 model LibSession {
-  refreshToken String   @id
-  createdAt    DateTime @db.Timestamptz()
-  validUntil   DateTime @db.Timestamptz()
-  userId       String
-  user         User     @relation(fields: [userId], references: [id])
+  refreshToken            String    @id
+  createdAt               DateTime  @db.Timestamptz()
+  validUntil              DateTime  @db.Timestamptz()
+  userId                  String
+  user                    User      @relation(fields: [userId], references: [id])
+  succeededByRefreshToken String? // if this session was refreshed, this will contain the refresh token of the new session
+  successorLinkExpresAt   DateTime? @db.Timestamptz() // the time at which the link to the successor will expire. This is supposed to give a minute of leeway for the client to access the new refresh token in case it didn't receive it in the first try
 }
