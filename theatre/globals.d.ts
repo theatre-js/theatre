@@ -13,6 +13,7 @@ declare namespace NodeJS {
     THEATRE_VERSION: string
     // This is set to 'true' when building the playground
     BUILT_FOR_PLAYGROUND: 'true' | 'false'
+    BACKEND_URL?: string // defaults to https://app.theatrejs.com
   }
 }
 

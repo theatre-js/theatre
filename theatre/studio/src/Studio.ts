@@ -195,7 +195,7 @@ export class Studio {
     const storeOpts: Parameters<StudioStore['initialize']>[0] = {
       persistenceKey: DEFAULT_PERSISTENCE_KEY,
       usePersistentStorage: true,
-      serverUrl: 'https://app.theatrejs.com',
+      serverUrl: process.env.BACKEND_URL ?? 'https://app.theatrejs.com',
     }
 
     if (typeof opts?.serverUrl == 'string') {

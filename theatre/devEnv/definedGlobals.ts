@@ -10,4 +10,5 @@ export const definedGlobals = {
   // this is only used in `@theatre/studio`, which only supports evergreen browsers
   'global.Set': 'Set',
   'process.env.BUILT_FOR_PLAYGROUND': JSON.stringify('false'),
+  'process.env.BACKEND_URL': JSON.stringify(`https://app.theatrejs.com`),
 }
