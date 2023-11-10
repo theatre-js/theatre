@@ -23,25 +23,23 @@ export class FrontStorage {
 class FrontStorageTransactionImpl {
   constructor(
     private _adapterTransaction: FrontStorageAdapterTransaction,
-    private _dbName: string,
+    private _session: string,
   ) {}
 
   async setLastBackendState(s: BackState<unknown>) {
     // TODO: serializing the state every time this changes probably wastes IO.
     // better to create a writeahead log and compact it every once in a while
-    await this._adapterTransaction.set(this._dbName + '/lastBackendState', s)
+    await this._adapterTransaction.set('lastBackendState', s, this._session)
   }
 
   async getLastBackendState(): Promise<BackState<unknown> | undefined> {
-    const v = this._adapterTransaction.get(this._dbName + '/lastBackendState')
+    const v = this._adapterTransaction.get('lastBackendState', this._session)
     return v as $IntentionalAny
   }
 
   async getOptimisticUpdates(): Promise<Transaction[]> {
     return (
-      await this._adapterTransaction.getList(
-        this._dbName + '/optimisticUpdates',
-      )
+      await this._adapterTransaction.getList('optimisticUpdates', this._session)
     ).map((t: $IntentionalAny) => t.transaction)
   }
 
@@ -49,18 +47,20 @@ class FrontStorageTransactionImpl {
     transactions: Pick<Transaction, 'peerClock' | 'peerId'>[],
   ): Promise<void> {
     await this._adapterTransaction.pluckFromList(
-      this._dbName + '/optimisticUpdates',
+      'optimisticUpdates',
       transactions.map(({peerId, peerClock}) => peerId + '#' + peerClock),
+      this._session,
     )
   }
 
   async pushOptimisticUpdates(transactions: Transaction[]): Promise<void> {
     await this._adapterTransaction.pushToList(
-      this._dbName + '/optimisticUpdates',
+      'optimisticUpdates',
       transactions.map((t) => ({
         id: t.peerId + '#' + t.peerClock,
         transacion: t,
       })),
+      this._session,
     )
   }
 }

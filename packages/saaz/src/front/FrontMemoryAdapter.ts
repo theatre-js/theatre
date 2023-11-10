@@ -6,13 +6,18 @@ import {defer} from '@theatre/utils/defer'
 
 export class FrontMemoryAdapter implements FrontStorageAdapter {
   private _state: {
-    lists: {
-      [key in string]?: Array<{id: string}>
+    sessions: {
+      [key in string]?: {
+        lists: {
+          [key in string]?: Array<{id: string}>
+        }
+        keyval: {
+          [key in string]?: unknown
+        }
+      }
     }
-    keyval: {
-      [key in string]?: unknown
-    }
-  } = {lists: {}, keyval: {}}
+  } = {sessions: {}}
+
   private _readyDeferred = defer<void>()
   private _lastTransactionPromise: Promise<void> = Promise.resolve()
 
@@ -60,34 +65,43 @@ export class FrontMemoryAdapter implements FrontStorageAdapter {
     }
   }
 
-  async get<T>(key: string): Promise<T | void> {
-    return await this.transaction(({get}) => get(key))
+  async get<T>(key: string, session: string): Promise<T | void> {
+    return await this.transaction(({get}) => get(key, session))
   }
 
-  async getList<T extends {id: string}>(key: string): Promise<T[]> {
-    return await this.transaction(({getList}) => getList(key))
+  async getList<T extends {id: string}>(
+    key: string,
+    session: string,
+  ): Promise<T[]> {
+    return await this.transaction(({getList}) => getList(key, session))
   }
 }
 
-class Transaction {
+class Transaction implements FrontStorageAdapterTransaction {
   constructor(private _draft: Draft<FrontMemoryAdapter['_state']>) {}
 
-  async get<T>(key: string): Promise<T | void> {
-    return current(this._draft.keyval)[key] as T | void
+  async get<T>(key: string, session: string): Promise<T | void> {
+    return current(this._draft.sessions[session]?.keyval)?.[key] as T | void
   }
 
-  async set<T>(key: string, value: T): Promise<void> {
-    this._draft.keyval[key] = value
+  async set<T>(key: string, value: T, session: string): Promise<void> {
+    this._draft.sessions[session] ??= {keyval: {}, lists: {}}
+    const s = this._draft.sessions[session]!
+    s.keyval[key] = value
   }
 
   async pushToList<T extends {id: string}>(
     key: string,
     rows: T[],
+    session: string,
   ): Promise<void> {
-    if (!this._draft.lists[key]) {
-      this._draft.lists[key] = []
+    this._draft.sessions[session] ??= {keyval: {}, lists: {}}
+    const s = this._draft.sessions[session]!
+
+    if (!s.lists[key]) {
+      s.lists[key] = []
     }
-    const list = this._draft.lists[key]!
+    const list = s.lists[key]!
     if (list.some((row) => rows.some((r) => r.id === row.id))) {
       throw new Error(
         `Cannot push to list "${key}" because one or more rows already exist`,
@@ -96,21 +110,29 @@ class Transaction {
     list.push(...rows)
   }
 
-  async getList<T extends {id: string}>(key: string): Promise<T[]> {
-    if (!this._draft.lists[key]) {
+  async getList<T extends {id: string}>(
+    key: string,
+    session: string,
+  ): Promise<T[]> {
+    const s = this._draft.sessions[session]
+    if (!s?.lists[key]) {
       return []
     }
-    return current(this._draft.lists)[key]! as $IntentionalAny
+    return current(s?.lists)[key]! as $IntentionalAny
   }
 
   async pluckFromList<T extends {id: string}>(
     key: string,
     ids: string[],
+    session: string,
   ): Promise<Array<T | undefined>> {
-    if (!this._draft.lists[key]) {
+    this._draft.sessions[session] ??= {keyval: {}, lists: {}}
+    const s = this._draft.sessions[session]!
+
+    if (!s.lists[key]) {
       return []
     }
-    const list = this._draft.lists[key]!
+    const list = s.lists[key]!
     return ids.map((id) => {
       const index = list.findIndex((row) => row.id === id)
       if (index === -1) {

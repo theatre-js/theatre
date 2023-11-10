@@ -171,11 +171,11 @@ export type FrontStorageAdapterTransaction = {
   /**
    * Gets a singular value.
    */
-  get<T>(key: string): Promise<T | void>
+  get<T>(key: string, session: string): Promise<T | void>
   /**
    * Sets a singular value.
    */
-  set<T>(key: string, value: T): Promise<void>
+  set<T>(key: string, value: T, session: string): Promise<void>
   /**
    * Pushes one or more rows to a list.
    */
@@ -186,6 +186,7 @@ export type FrontStorageAdapterTransaction = {
   >(
     key: string,
     rows: T[],
+    session: string,
   ): Promise<void>
   /**
    * Reads all the rows from a list.
@@ -196,6 +197,7 @@ export type FrontStorageAdapterTransaction = {
     },
   >(
     key: string,
+    session: string,
   ): Promise<T[]>
   /**
    * Removes one or more rows from a list.
@@ -207,6 +209,7 @@ export type FrontStorageAdapterTransaction = {
   >(
     key: string,
     ids: Array<string>,
+    session: string,
   ): Promise<Array<T | undefined>>
 }
 
@@ -228,11 +231,11 @@ export interface FrontStorageAdapter {
   /**
    * Gets a singular value.
    */
-  get<T>(key: string): Promise<T | void>
+  get<T>(key: string, session: string): Promise<T | void>
   /**
    * Sets a singular value.
    */
-  getList<T extends {id: string}>(key: string): Promise<T[]>
+  getList<T extends {id: string}>(key: string, session: string): Promise<T[]>
 }
 
 export interface BackStorageAdapter {}

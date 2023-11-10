@@ -78,7 +78,7 @@ export default class StudioStore {
         : new AppLink(serverUrl),
     )
 
-    if (typeof window !== 'undefined' && false) {
+    if (typeof window !== 'undefined') {
       void this._appLink
         .then((appLink) => {
           return appLink.api.syncServerUrl.query().then((url) => {
@@ -94,7 +94,7 @@ export default class StudioStore {
     }
 
     this._auth =
-      typeof window !== 'undefined' && false
+      typeof window !== 'undefined'
         ? new SyncStoreAuth(
             this._optionsDeferred.promise,
             this._appLink,
@@ -102,7 +102,7 @@ export default class StudioStore {
           )
         : (null as $IntentionalAny)
 
-    if (typeof window !== 'undefined' && false) {
+    if (typeof window !== 'undefined') {
       void this._auth.ready.then(() => {
         this._state.setByPointer((p) => p.ready, true)
       })
@@ -128,7 +128,10 @@ export default class StudioStore {
       schema,
       dbName: 'test',
       peerId: peerId,
-      storageAdapter: new Saaz.FrontMemoryAdapter(),
+      storageAdapter:
+        typeof window === 'undefined' || process.env.NODE_ENV === 'test'
+          ? new Saaz.FrontMemoryAdapter()
+          : new Saaz.FrontIDBAdapter('blah', 'test'),
       backend,
     })
     this._saaz = saaz as $IntentionalAny

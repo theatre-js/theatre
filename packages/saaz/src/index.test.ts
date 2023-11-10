@@ -134,8 +134,8 @@ describe(`saaz`, () => {
     await saaz.waitForStorageSync()
 
     expect(
-      (mem.export() as $IntentionalAny).keyval['test/lastBackendState'].value
-        .op,
+      (mem.export() as $IntentionalAny).sessions['test'].keyval.lastBackendState
+        .value.op,
     ).toEqual({opCount: 13})
 
     // const fauxBackennd: SaazBackInterface = {
