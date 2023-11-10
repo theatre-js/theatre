@@ -61,7 +61,7 @@ export const tooltipActor = basicFSM<
   function waitingForActive(originalHover: ChodrialElement) {
     const timeout = setTimeout(() => {
       if (status.isActive) active(originalHover)
-    }, 800)
+    }, 1200)
 
     const status = wrap('waitingForActive', undefined, (newHover) => {
       clearTimeout(timeout)

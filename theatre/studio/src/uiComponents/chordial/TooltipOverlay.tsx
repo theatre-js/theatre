@@ -45,7 +45,7 @@ export const TooltipOverlay: React.FC<{}> = () => {
   const transitions = useTransition(data, {
     from: {
       opacity: 0.5,
-      transform: `translateY(-10px) perspective(200px) scale(0.95) rotateX(-90deg) `,
+      transform: `translateY(0px) perspective(200px) scale(0.95) rotateX(-45deg) `,
     },
     enter: {
       opacity: 1,
@@ -59,7 +59,7 @@ export const TooltipOverlay: React.FC<{}> = () => {
     config: (item, index, phase) => (key) => {
       return {
         // velocity: phase === 'leave' ? 0.5 : 6,
-        duration: phase === 'leave' ? 66 : 33 * 4,
+        duration: phase === 'leave' ? 33 * 3 : 33 * 4,
         easing: easings.easeOutCubic,
       }
     },
