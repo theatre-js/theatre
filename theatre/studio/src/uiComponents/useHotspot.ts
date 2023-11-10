@@ -5,7 +5,7 @@ export default function useHotspot(spot: 'left' | 'right') {
 
   useEffect(() => {
     const hoverListener = (e: MouseEvent) => {
-      const threshold = active ? 200 : 50
+      const threshold = active ? 200 : 25
 
       // This is a super specific solution just for now so that the hotspot region
       // excludes the pin button.
