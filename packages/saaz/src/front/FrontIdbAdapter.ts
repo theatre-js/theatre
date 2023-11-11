@@ -34,10 +34,13 @@ export class FrontIDBAdapter implements FrontStorageAdapter {
           keyPath: 'sessionAndKey',
         })
 
+        singularValueStore.createIndex('session', 'session')
+
         const listsStore = db.createObjectStore('lists', {
           keyPath: 'sessionAndKeyAndId',
         })
 
+        listsStore.createIndex('session', 'session')
         listsStore.createIndex('sessionAndKey', 'sessionAndKey')
       },
     })
@@ -77,6 +80,19 @@ class IDBTransaction implements FrontStorageAdapterTransaction {
 
     const v = (await store.get(sessionAndKey)) as SingularValue<T>
     return v?.value
+  }
+
+  async getAll<T>(key: string): Promise<Record<string, T>> {
+    const index = this._tx.objectStore('singularValues').index('session')
+    const all: Array<SingularValue<T>> = await index.getAll()
+
+    const record: Record<string, T> = {}
+
+    for (const row of all) {
+      record[row.session] = row.value
+    }
+
+    return record
   }
 
   async set<T>(key: string, value: T, session: string): Promise<void> {
@@ -125,9 +141,11 @@ class IDBTransaction implements FrontStorageAdapterTransaction {
     session: string,
   ): Promise<T[]> {
     const store = this._tx.objectStore('lists')
-    const keyIndex = store.index('keyAndSession')
-    const keyAndSession = `${session}/${key}`
-    return (await keyIndex.getAll(keyAndSession)) as T[]
+    const keyIndex = store.index('sessionAndKey')
+    const sessionAndKey = `${session}/${key}`
+    const all = await keyIndex.getAll(sessionAndKey)
+
+    return all.map((s) => s.value)
   }
 
   async pluckFromList<T extends {id: string}>(

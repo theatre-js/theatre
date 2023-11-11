@@ -90,6 +90,21 @@ class Transaction implements FrontStorageAdapterTransaction {
     s.keyval[key] = value
   }
 
+  async getAll<T>(key: string): Promise<Record<string, T>> {
+    const vals: Record<string, T> = {}
+
+    for (const [sessionId, v] of Object.entries(this._draft.sessions)) {
+      if (!v) continue
+      if (Object.hasOwn(v.keyval, key)) {
+        const value: T | undefined = v.keyval[key] as $IntentionalAny
+        if (value === undefined) continue
+        vals[sessionId] = value
+      }
+    }
+
+    return vals
+  }
+
   async pushToList<T extends {id: string}>(
     key: string,
     rows: T[],

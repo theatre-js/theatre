@@ -72,7 +72,7 @@ describe(`saaz`, () => {
     const saaz = new SaazFront({
       schema,
       backend,
-      peerId: '1',
+      peerId: 'peer1',
       storageAdapter: mem,
       dbName: 'test',
     })
@@ -134,7 +134,7 @@ describe(`saaz`, () => {
     await saaz.waitForStorageSync()
 
     expect(
-      (mem.export() as $IntentionalAny).sessions['test'].keyval.lastBackendState
+      (mem.export() as $IntentionalAny).sessions['peer1'].keyval.sessionState
         .value.op,
     ).toEqual({opCount: 13})
 

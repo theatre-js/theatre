@@ -122,12 +122,9 @@ export default class StudioStore {
             this.syncServerApi,
           )
 
-    const peerId = 'peer#' + Math.random()
-
     const saaz = new Saaz.SaazFront({
       schema,
       dbName: 'test',
-      peerId: peerId,
       storageAdapter:
         typeof window === 'undefined' || process.env.NODE_ENV === 'test'
           ? new Saaz.FrontMemoryAdapter()

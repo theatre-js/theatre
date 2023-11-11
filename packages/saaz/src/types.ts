@@ -88,7 +88,7 @@ export type OnDiskSnapshot<OpSnapshot> = {
   snapshot: FullSnapshot<OpSnapshot>
 }
 
-export type BackState<OpSnapshot> = {
+export type SessionState<OpSnapshot> = {
   /**
    * Unix timestamp of the last time the client synced with backend. Timestamp is produced on
    * the client, so it may be inaccurate. Null means never synced.
@@ -107,6 +107,7 @@ export type BackState<OpSnapshot> = {
    * The state of the backend.
    */
   snapshot: FullSnapshot<OpSnapshot> | null
+  peerId: string
 }
 
 export type BackStateUpdateDescriptor = {
@@ -172,6 +173,12 @@ export type FrontStorageAdapterTransaction = {
    * Gets a singular value.
    */
   get<T>(key: string, session: string): Promise<T | void>
+
+  /**
+   * Like `get()`, but returns the value for each session
+   */
+  getAll<T>(key: string): Promise<Record<string, T>>
+
   /**
    * Sets a singular value.
    */

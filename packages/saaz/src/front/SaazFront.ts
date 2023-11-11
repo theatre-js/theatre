@@ -2,7 +2,7 @@ import type {
   $IntentionalAny,
   AllPeersPresenceState,
   BackGetUpdateSinceClockResult,
-  BackState,
+  SessionState,
   FullSnapshot,
   SaazBackInterface,
   Schema,
@@ -30,13 +30,23 @@ import {diff} from 'jest-diff'
 import type {Ops} from '../rogue'
 import {jsonFromCell, makeDraft} from '../rogue'
 import memoizeFn from '@theatre/utils/memoizeFn'
+import {nanoid} from 'nanoid'
+import {defer} from '@theatre/utils/defer'
+import type {VoidFn} from '@theatre/utils/types'
 
 const emptyObject = {}
 const MAX_UNDO_STACK_SIZE = 1000
+const PEERID_LENGTH = 32
+const LOCK_PREFIX = 'theatrejs-saaz-closed-session-lock/'
 
 type UndoStackItem = {
   forwardOps: Ops
   backwardOps: Ops
+}
+
+type SessionLock = {
+  peerId: string
+  unlock: VoidFn
 }
 
 type AtomState<OpSnapshot extends ValidOpSnapshot, CellShape extends {}> = {
@@ -45,7 +55,7 @@ type AtomState<OpSnapshot extends ValidOpSnapshot, CellShape extends {}> = {
    * the backend acknowledges an update, it will be removed from this queue.
    */
   optimisticUpdatesQueue: Transaction[]
-  backendState: BackState<OpSnapshot> | null
+  sessionState: SessionState<OpSnapshot> | null
   emptySnapshot: FullSnapshot<OpSnapshot>
   tempTransactions: TempTransaction[]
   allPeersPresenceState: AllPeersPresenceState
@@ -55,7 +65,7 @@ type AtomState<OpSnapshot extends ValidOpSnapshot, CellShape extends {}> = {
    * We can use this to determine if the front storage is up to date.
    */
   frontStorageStateMirror: {
-    backendState: BackState<OpSnapshot> | null
+    backendState: SessionState<OpSnapshot> | null
     optimisticUpdatesQueue: Transaction[]
   }
   peerClock: number
@@ -168,7 +178,7 @@ export class SaazFront<
   } = {
     base: prism<FullSnapshot<OpSnapshot>>(() => {
       return (
-        val(this._atom.pointer.backendState.snapshot) ??
+        val(this._atom.pointer.sessionState.snapshot) ??
         val(this._atom.pointer.emptySnapshot)
       )
     }),
@@ -190,7 +200,7 @@ export class SaazFront<
       const optimisticUpdates = val(this._atom.pointer.optimisticUpdatesQueue)
 
       const lastIncorporatedPeerClock =
-        val(this._atom.pointer.backendState.lastIncorporatedPeerClock) ?? -1
+        val(this._atom.pointer.sessionState.lastIncorporatedPeerClock) ?? -1
 
       for (const update of optimisticUpdates) {
         // if the update has already been incorporated into the backend state, skip it (it'll be garbage collected soon)
@@ -250,7 +260,7 @@ export class SaazFront<
 
       // backendClock as of the last time the front communicated with the backend
       const backendClock =
-        val(this._atom.pointer.backendState.backendClock) ?? -1
+        val(this._atom.pointer.sessionState.backendClock) ?? -1
       // backendClock as of the last time we stored the backend's state in the front storage
       const lastStoredBackendClock =
         val(
@@ -306,7 +316,7 @@ export class SaazFront<
     schema: Schema<OpSnapshot, Editors, Generators, CellShape>
     backend: SaazBackInterface
     diskSnapshot?: OnDiskSnapshot<OpSnapshot>
-    peerId: string
+    peerId?: string
     dbName: string
     storageAdapter: FrontStorageAdapter
     /**
@@ -328,7 +338,7 @@ export class SaazFront<
     this._atom = new Atom<AtomState<OpSnapshot, CellShape>>({
       optimisticUpdatesQueue: [],
       emptySnapshot: ensureStateIsUptodate(null, opts.schema),
-      backendState: null,
+      sessionState: null,
       tempTransactions: [],
       allPeersPresenceState: emptyObject,
       initialized: false,
@@ -354,7 +364,7 @@ export class SaazFront<
     }
 
     this._schema = opts.schema
-    this._peerId = opts.peerId
+    this._peerId = opts.peerId ?? nanoid(PEERID_LENGTH)
     this._backend = opts.backend
     this._dbName = opts.dbName
     this._storage = new FrontStorage(this._dbName, opts.storageAdapter)
@@ -363,46 +373,37 @@ export class SaazFront<
   }
 
   private async _init() {
-    // in case there are crashed/closed sesions that haven't synced
-    // with backend yet, let's take them over
-    const closedSessions = await this._getClosedSesions()
-
-    // sort the sessions by backendClock. the last one is the most recent
-    const sortedSessions = closedSessions
-      // take only the sessions that have a backend state
-      .filter((c) => !!c.backState)
-      .sort(
-        (a, b) =>
-          (a.backState?.backendClock ?? -1) - (b.backState?.backendClock ?? -1),
-      )
-
-    this._atom.setByPointer((p) => p.closedSessions, sortedSessions)
+    await this._loadClosedSessions()
 
     // The most recent backend state that one of the closed sessions has cached.
     // We can use this until we get the first update from the backend
-    const cachedBackendState =
-      sortedSessions[sortedSessions.length - 1]?.backState
+    const cachedBackendState: SessionState<unknown> | undefined =
+      await this._storage.transaction(async (t) =>
+        t.getMostRecentlySyncedSessionState(),
+      )
 
     // this will create the database and start a transaction
     await this._storage.transaction(async (t) => {
       const initialSnapshot = this._diskSnapshot
       if (!cachedBackendState) {
         // there are no closed/crashed sessions that have a backend state.
-        this._setBackendState({
+        this._setSessionState({
           backendClock: initialSnapshot?.clock ?? null,
           lastIncorporatedPeerClock: null,
           lastSyncTime: null,
           snapshot: initialSnapshot?.snapshot ?? null,
+          peerId: this._peerId,
         })
       } else {
         if (initialSnapshot) {
           // TODO
           throw new Error(`Not implemented`)
         } else {
-          this._atom.setByPointer((p) => p.backendState, {
+          this._atom.setByPointer((p) => p.sessionState, {
             lastSyncTime: null,
             backendClock: cachedBackendState.backendClock ?? null,
             lastIncorporatedPeerClock: null,
+            peerId: this._peerId,
             snapshot: ensureStateIsUptodate<OpSnapshot>(
               cachedBackendState.snapshot as $IntentionalAny,
               this._schema,
@@ -422,6 +423,77 @@ export class SaazFront<
       this._removeStalePeerPresenceStates(),
       this._reflectUpdatesToBackend(),
     )
+  }
+
+  private async _loadClosedSessions() {
+    // in case there are crashed/closed sesions that haven't synced
+    // with backend yet, let's take them over
+    const closedSessionsLocks = await this._acquireLocksOnClosedSessions()
+
+    const closedSessions: ClosedSession[] = await this._storage.transaction(
+      async (t) =>
+        await Promise.all(
+          closedSessionsLocks.map(async (closedSessionLock) => {
+            return {
+              optimisticUpdates: await t.getOptimisticUpdates(
+                closedSessionLock.peerId,
+              ),
+              peerId: closedSessionLock.peerId,
+            }
+          }),
+        ),
+    )
+
+    this._atom.setByPointer((p) => p.closedSessions, closedSessions)
+  }
+
+  private async _acquireLocksOnClosedSessions(): Promise<Array<SessionLock>> {
+    const allPeerIds: string[] = await this._storage.transaction(async (t) =>
+      t.getAllExistingSessionIds(),
+    )
+
+    const all: Array<SessionLock | undefined> = await Promise.all(
+      allPeerIds.map(async (peerId) => {
+        try {
+          const d = defer<undefined | SessionLock>()
+          void navigator.locks.request(
+            LOCK_PREFIX + peerId,
+            {
+              mode: 'exclusive',
+              ifAvailable: true,
+              steal: false,
+            },
+            async (lock) => {
+              if (!lock) {
+                d.resolve(undefined)
+                return
+              }
+
+              const unlockDeferred = defer<void>()
+
+              let locked = true
+
+              d.resolve({
+                peerId,
+                unlock: () => {
+                  if (!locked) return
+                  locked = false
+                  unlockDeferred.resolve()
+                },
+              })
+
+              await unlockDeferred.promise
+            },
+          )
+
+          return d.promise
+        } catch (error) {
+          return undefined
+        }
+      }),
+    )
+
+    return all.filter((v): v is SessionLock => !!v)
   }
 
   teardown(): void {
@@ -470,7 +542,7 @@ export class SaazFront<
       this._atom.pointer.optimisticUpdatesQueue,
       async (updates) => {
         const lastIncorporatedPeerClock =
-          val(this._atom.pointer.backendState.lastIncorporatedPeerClock) ?? -1
+          val(this._atom.pointer.sessionState.lastIncorporatedPeerClock) ?? -1
 
         const toPushToBackend = updates.filter(
           (update) => update.peerClock > lastIncorporatedPeerClock,
@@ -512,13 +584,13 @@ export class SaazFront<
   }
 
   private _processBackendUpdate(s: BackGetUpdateSinceClockResult) {
-    const originalBackendState = this._atom.get().backendState
+    const originalBackendState = this._atom.get().sessionState
     if (!originalBackendState) {
       throw new Error('backend state not initialized')
     }
 
     if (!s.hasUpdates) {
-      this._setBackendState({
+      this._setSessionState({
         ...originalBackendState,
         lastSyncTime: Date.now(),
       })
@@ -528,24 +600,25 @@ export class SaazFront<
       if (snapshot.type !== 'Snapshot') {
         throw new Error('Non-snapshot updates not implemented')
       }
-      this._setBackendState({
+      this._setSessionState({
         backendClock: s.clock,
         lastIncorporatedPeerClock: s.lastIncorporatedPeerClock,
         lastSyncTime: Date.now(),
         snapshot: snapshot.value,
+        peerId: this._peerId,
       })
     }
   }
 
   private _reflectBackendStateToStorage() {
     return subscribeDebounced(
-      this._atom.pointer.backendState,
+      this._atom.pointer.sessionState,
       async (backendState) => {
         if (!backendState) return
 
         try {
           await this._storage.transaction(async (t) => {
-            await t.setLastBackendState(backendState)
+            await t.setSessionState(backendState, this._peerId)
           })
           this._atom.setByPointer(
             (p) => p.frontStorageStateMirror.backendState,
@@ -582,8 +655,8 @@ export class SaazFront<
 
         try {
           await this._storage.transaction(async (t) => {
-            await t.pushOptimisticUpdates(toPush)
-            await t.pluckOptimisticUpdates(toPluck)
+            await t.pushOptimisticUpdates(toPush, this._peerId)
+            await t.pluckOptimisticUpdates(toPluck, this._peerId)
           })
           this._atom.setByPointer(
             (p) => p.frontStorageStateMirror.optimisticUpdatesQueue,
@@ -626,12 +699,12 @@ export class SaazFront<
     return after
   }
 
-  _setBackendState(opts: BackState<OpSnapshot>) {
+  _setSessionState(opts: SessionState<OpSnapshot>) {
     const s = {
       ...opts,
       value: ensureStateIsUptodate(opts.snapshot, this._schema),
     }
-    this._atom.setByPointer((p) => p.backendState, s)
+    this._atom.setByPointer((p) => p.sessionState, s)
 
     // let's GC the updates the backend has incorporated
     const lastAcknowledgedPeerClock = s.lastIncorporatedPeerClock ?? -1
@@ -649,7 +722,7 @@ export class SaazFront<
   }
 
   private async _pullUpdatesFromBackend(): Promise<void> {
-    const originalBackendState = this._atom.get().backendState
+    const originalBackendState = this._atom.get().sessionState
     if (!originalBackendState) {
       throw new Error('backend state not initialized')
     }
@@ -975,7 +1048,7 @@ export class SaazFront<
     }))
 
     if (backwardOps?.length === 0) {
-      console.log('no backward ops', transaction.draftOps)
+      // console.log('no backward ops', transaction.draftOps)
     }
     if (backwardOps && backwardOps.length > 0)
       this._addToUndoStack({backwardOps, forwardOps: transaction.draftOps})
@@ -1075,15 +1148,10 @@ export class SaazFront<
       }
     })
   }
-
-  private async _getClosedSesions(): Promise<Array<ClosedSession>> {
-    return []
-  }
 }
 
 type ClosedSession = {
   peerId: string
-  backState: BackState<ValidOpSnapshot> | null
   optimisticUpdates: Transaction[]
 }
 

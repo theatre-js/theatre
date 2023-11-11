@@ -292,7 +292,9 @@ export default class SyncStoreAuth {
         return response
       }
     } catch (err) {
+      console.log('err', err)
       if (err instanceof TRPCClientError && err.data.code === 'UNAUTHORIZED') {
+        console.log('is unaothorized error')
         if (retriesLeft <= 0) {
           return Promise.reject(err)
         }
