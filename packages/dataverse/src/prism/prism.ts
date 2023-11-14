@@ -279,10 +279,10 @@ class PrismInstance<V> implements Prism<V> {
    */
   onStale(callback: () => void): VoidFn {
     const untap = () => {
-      this._removeDependent(fn)
+      this._removeDependent(onStaleCallback)
     }
-    const fn = () => callback()
-    this._addDependent(fn)
+    const onStaleCallback = () => callback()
+    this._addDependent(onStaleCallback)
     return untap
   }
 
