@@ -108,6 +108,26 @@ class IDBTransaction implements FrontStorageAdapterTransaction {
     await store.put(s)
   }
 
+  async deleteSession(session: string): Promise<void> {
+    {
+      const store = this._tx.objectStore('singularValues')
+      const index = store.index('session')
+      const sessionIndex = await index.getAllKeys(session)
+
+      for (const key of sessionIndex) {
+        await store.delete(key)
+      }
+    }
+
+    const listsStore = this._tx.objectStore('lists')
+    const listsIndex = listsStore.index('session')
+    const listsSessionIndex = await listsIndex.getAllKeys(session)
+
+    for (const key of listsSessionIndex) {
+      await listsStore.delete(key)
+    }
+  }
+
   async pushToList<T extends {id: string}>(
     key: string,
     rows: T[],

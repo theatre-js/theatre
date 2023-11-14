@@ -5,7 +5,6 @@ import type {
   SaazBackInterface,
   BackStorageAdapter,
   BackGetUpdateSinceClockResult,
-  BackStateUpdateDescriptor,
   Schema,
   $IntentionalAny,
   PeerSubscribeCallback,
@@ -101,24 +100,47 @@ export default class SaazBack implements SaazBackInterface {
   private _getUpdatesSinceClockSync(opts: {
     clock: number | null
     peerId: string
-  }): {hasUpdates: false} | ({hasUpdates: true} & BackStateUpdateDescriptor) {
+  }): BackGetUpdateSinceClockResult {
     if (!this.ready) {
       throw new Error('Backend is not ready')
     }
 
-    if ((opts.clock ?? -1) === (this._clock ?? -1)) {
-      return {hasUpdates: false}
+    const lastIncorporatedPeerClock =
+      this._peerStates[opts.peerId]?.lastIncorporatedPeerClock ?? null
+
+    const clock = this._clock ?? -1
+    const {peerId} = opts
+
+    if ((opts.clock ?? -1) === clock) {
+      return {hasUpdates: false, peerId, clock, lastIncorporatedPeerClock}
     }
+
     return {
       hasUpdates: true,
-      clock: this._clock ?? -1,
-      lastIncorporatedPeerClock:
-        this._peerStates[opts.peerId]?.lastIncorporatedPeerClock ?? null,
+      clock,
+      lastIncorporatedPeerClock,
+      peerId,
       snapshot: {
         type: 'Snapshot',
         value: this._dbState,
       },
     }
+  }
+
+  async getLastIncorporatedPeerClock(opts: {
+    peerId: string
+  }): Promise<{lastIncorporatedPeerClock: number | null; peerId: string}> {
+    await this._readyDeferred.promise
+    return {
+      peerId: opts.peerId,
+      lastIncorporatedPeerClock:
+        this._peerStates[opts.peerId]?.lastIncorporatedPeerClock ?? null,
+    }
+  }
+
+  async closePeer(opts: {peerId: string}): Promise<{ok: boolean}> {
+    delete this._peerStates[opts.peerId]
+    return {ok: true}
   }
 
   async updatePresence(opts: {
@@ -171,11 +193,13 @@ export default class SaazBack implements SaazBackInterface {
     }
     const peerState = this._peerStates[opts.peerId]!
 
-    const rebasing = opts.backendClock !== this._clock
+    // const rebasing = opts.backendClock !== this._clock
+
     let snapshotSoFar = ensureOpStateIsUptodate(this._dbState, this._schema)
     let lastAcknowledgedClock = peerState.lastIncorporatedPeerClock
     let backendClock = this._clock ?? -1
-    const updatesToIncorporate = []
+
+    // const updatesToIncorporate = []
 
     for (const update of opts.updates) {
       if (peerState.lastIncorporatedPeerClock >= update.peerClock) {

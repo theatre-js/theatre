@@ -116,8 +116,7 @@ export type BackStateUpdateDescriptor = {
     | {type: 'Snapshot'; value: FullSnapshot<$IntentionalAny>}
     | {type: 'Diff'; diff: 'todo'}
   lastIncorporatedPeerClock: number | null
-  tempTransactions?: 'todo'
-  presense?: 'todo'
+  peerId: string
 }
 
 export type BackApplyUpdateOps = {
@@ -127,7 +126,9 @@ export type BackApplyUpdateOps = {
 }
 
 export type BackGetUpdateSinceClockResult =
-  | {hasUpdates: false}
+  | ({
+      hasUpdates: false
+    } & Omit<BackStateUpdateDescriptor, 'snapshot'>)
   | ({
       hasUpdates: true
     } & BackStateUpdateDescriptor)
@@ -148,6 +149,12 @@ export interface SaazBackInterface {
     clock: number | null
     peerId: string
   }): Promise<BackGetUpdateSinceClockResult>
+
+  getLastIncorporatedPeerClock(opts: {
+    peerId: string
+  }): Promise<{lastIncorporatedPeerClock: null | number; peerId: string}>
+
+  closePeer(opts: {peerId: string}): Promise<{ok: boolean}>
 
   applyUpdates(
     opts: BackApplyUpdateOps,
@@ -183,6 +190,9 @@ export type FrontStorageAdapterTransaction = {
    * Sets a singular value.
    */
   set<T>(key: string, value: T, session: string): Promise<void>
+
+  deleteSession(session: string): Promise<void>
+
   /**
    * Pushes one or more rows to a list.
    */

@@ -422,6 +422,7 @@ export class SaazFront<
       this._reflectPresenceToBackend(),
       this._removeStalePeerPresenceStates(),
       this._reflectUpdatesToBackend(),
+      this._gcClosedSessions(),
     )
   }
 
@@ -433,14 +434,17 @@ export class SaazFront<
     const closedSessions: ClosedSession[] = await this._storage.transaction(
       async (t) =>
         await Promise.all(
-          closedSessionsLocks.map(async (closedSessionLock) => {
-            return {
-              optimisticUpdates: await t.getOptimisticUpdates(
-                closedSessionLock.peerId,
-              ),
-              peerId: closedSessionLock.peerId,
-            }
-          }),
+          closedSessionsLocks.map(
+            async (closedSessionLock): Promise<ClosedSession> => {
+              return {
+                optimisticUpdates: await t.getOptimisticUpdates(
+                  closedSessionLock.peerId,
+                ),
+                peerId: closedSessionLock.peerId,
+                lastIncorporatedPeerClock: null,
+              }
+            },
+          ),
         ),
     )
 
@@ -538,49 +542,66 @@ export class SaazFront<
   }
 
   private _reflectUpdatesToBackend() {
-    return subscribeDebounced(
-      this._atom.pointer.optimisticUpdatesQueue,
-      async (updates) => {
-        const lastIncorporatedPeerClock =
-          val(this._atom.pointer.sessionState.lastIncorporatedPeerClock) ?? -1
-
-        const toPushToBackend = updates.filter(
-          (update) => update.peerClock > lastIncorporatedPeerClock,
+    const p = prism<{
+      peerId: string
+      // lastIncorporatedPeerClock: number | null
+      updates: Transaction[]
+    }>(() => {
+      const closedSessions = val(this._atom.pointer.closedSessions)
+      for (const closedSession of closedSessions) {
+        const updatesLeftToPush = closedSession.optimisticUpdates.filter(
+          (update) =>
+            update.peerClock > (closedSession.lastIncorporatedPeerClock ?? -1),
         )
-
-        if (toPushToBackend.length !== updates.length) {
-          this._atom.setByPointer(
-            (p) => p.optimisticUpdatesQueue,
-            toPushToBackend,
-          )
-          console.warn(
-            `These updates should have been GC-ed already: `,
-            updates.filter(
-              (update) => update.peerClock <= lastIncorporatedPeerClock,
-            ),
-          )
-        }
-
-        if (toPushToBackend.length === 0) return
-
-        try {
-          const res = await this._backend.applyUpdates({
-            backendClock: lastIncorporatedPeerClock,
-            peerId: this._peerId,
-            updates: toPushToBackend,
-          })
-
-          if (res.ok) {
-            this._processBackendUpdate(res)
-          } else {
-            console.error(res.error)
-            throw new Error('Backend rejected optimistic update')
+        if (updatesLeftToPush.length > 0) {
+          return {
+            peerId: closedSession.peerId,
+            lastIncorporatedPeerClock:
+              closedSession.lastIncorporatedPeerClock ?? -1,
+            updates: updatesLeftToPush,
           }
-        } catch (errs) {
-          console.error(errs)
         }
-      },
-    )
+      }
+
+      // no closed sessions left to sync. let's sync the current session
+
+      const lastIncorporatedPeerClock =
+        val(this._atom.pointer.sessionState.lastIncorporatedPeerClock) ?? -1
+
+      const updatesLeftToPush = val(
+        this._atom.pointer.optimisticUpdatesQueue,
+      ).filter((update) => update.peerClock > lastIncorporatedPeerClock)
+
+      return {
+        updates: updatesLeftToPush,
+        lastIncorporatedPeerClock,
+        peerId: this._peerId,
+      }
+    })
+
+    return subscribeDebounced(p, async ({updates, peerId}) => {
+      if (updates.length === 0) return
+      const backendClock = val(this._atom.pointer.sessionState.backendClock) as
+        | number
+        | null
+
+      try {
+        const res = await this._backend.applyUpdates({
+          backendClock,
+          peerId,
+          updates,
+        })
+
+        if (res.ok) {
+          this._processBackendUpdate(res)
+        } else {
+          console.error(res.error)
+          throw new Error('Backend rejected optimistic update')
+        }
+      } catch (errs) {
+        console.error(errs)
+      }
+    })
   }
 
   private _processBackendUpdate(s: BackGetUpdateSinceClockResult) {
@@ -593,6 +614,8 @@ export class SaazFront<
       this._setSessionState({
         ...originalBackendState,
         lastSyncTime: Date.now(),
+        peerId: s.peerId,
+        lastIncorporatedPeerClock: s.lastIncorporatedPeerClock,
       })
       return
     } else {
@@ -605,7 +628,7 @@ export class SaazFront<
         lastIncorporatedPeerClock: s.lastIncorporatedPeerClock,
         lastSyncTime: Date.now(),
         snapshot: snapshot.value,
-        peerId: this._peerId,
+        peerId: s.peerId,
       })
     }
   }
@@ -626,6 +649,26 @@ export class SaazFront<
           )
         } catch (error) {
           console.error(error)
+        }
+      },
+    )
+  }
+
+  private _gcClosedSessions() {
+    return subscribeDebounced(
+      this._atom.pointer.closedSessions,
+      async (closedSessions) => {
+        const sessionsWithNoUpdates = closedSessions.filter(
+          (s) => s.optimisticUpdates.length === 0,
+        )
+        for (const emptySession of sessionsWithNoUpdates) {
+          this._atom.reduceByPointer(
+            (p) => p.closedSessions,
+            (a) => a.filter((c) => c.peerId !== emptySession.peerId),
+          )
+          await this._storage.transaction(async (t) => {
+            await t.deleteSession(emptySession.peerId)
+          })
         }
       },
     )
@@ -704,20 +747,65 @@ export class SaazFront<
       ...opts,
       value: ensureStateIsUptodate(opts.snapshot, this._schema),
     }
-    this._atom.setByPointer((p) => p.sessionState, s)
 
-    // let's GC the updates the backend has incorporated
-    const lastAcknowledgedPeerClock = s.lastIncorporatedPeerClock ?? -1
+    if (s.peerId === this._peerId) {
+      this._atom.setByPointer((p) => p.sessionState, s)
 
-    const existingQueue = this._atom.get().optimisticUpdatesQueue
-    if (
-      existingQueue.length > 0 &&
-      existingQueue[0].peerClock <= lastAcknowledgedPeerClock
-    ) {
-      const newQueue = existingQueue.filter(
-        (update) => update.peerClock > lastAcknowledgedPeerClock,
+      // let's GC the updates the backend has incorporated
+      const lastAcknowledgedPeerClock = s.lastIncorporatedPeerClock ?? -1
+
+      const existingQueue = this._atom.get().optimisticUpdatesQueue
+      if (
+        existingQueue.length > 0 &&
+        existingQueue[0].peerClock <= lastAcknowledgedPeerClock
+      ) {
+        const newQueue = existingQueue.filter(
+          (update) => update.peerClock > lastAcknowledgedPeerClock,
+        )
+        this._atom.setByPointer((p) => p.optimisticUpdatesQueue, newQueue)
+      }
+    } else {
+      // the session state comes from an update belonging to a different session. let's update the
+      // snapshot/backendClock and other relevant bits, but keep peerId and lastIncorporatedPeerClock unchanged
+      this._atom.reduceByPointer(
+        (p) => p.sessionState,
+        (oldSessionstate): SessionState<OpSnapshot> => {
+          return {
+            backendClock: s.backendClock,
+            lastSyncTime: s.lastSyncTime,
+            peerId: this._peerId,
+            lastIncorporatedPeerClock:
+              oldSessionstate?.lastIncorporatedPeerClock ?? null,
+            snapshot: s.snapshot,
+          }
+        },
       )
-      this._atom.setByPointer((p) => p.optimisticUpdatesQueue, newQueue)
+      const lastAcknowledgedPeerClock = s.lastIncorporatedPeerClock ?? -1
+      const index = this._atom
+        .get()
+        .closedSessions.findIndex((s) => s.peerId === this._peerId)
+      if (index === -1) return
+
+      const closedSession = this._atom.get().closedSessions[index]
+
+      if (!closedSession) {
+        return
+      }
+
+      const existingQueue = closedSession.optimisticUpdates
+      if (
+        existingQueue.length > 0 &&
+        existingQueue[0].peerClock <= lastAcknowledgedPeerClock
+      ) {
+        const newQueue = existingQueue.filter(
+          (update) => update.peerClock > lastAcknowledgedPeerClock,
+        )
+        this._atom.setByPointer((p) => p.closedSessions[index], {
+          optimisticUpdates: newQueue,
+          lastIncorporatedPeerClock: s.lastIncorporatedPeerClock,
+          peerId: s.peerId,
+        })
+      }
     }
   }
 
@@ -1153,6 +1241,7 @@ export class SaazFront<
 type ClosedSession = {
   peerId: string
   optimisticUpdates: Transaction[]
+  lastIncorporatedPeerClock: number | null
 }
 
 const finalState = memoizeFn(<S>(s: FullSnapshot<S>): {op: S; cell: {}} => {

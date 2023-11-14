@@ -105,6 +105,10 @@ class Transaction implements FrontStorageAdapterTransaction {
     return vals
   }
 
+  async deleteSession(session: string): Promise<void> {
+    delete this._draft.sessions[session]
+  }
+
   async pushToList<T extends {id: string}>(
     key: string,
     rows: T[],

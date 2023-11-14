@@ -36,6 +36,10 @@ class FrontStorageTransactionImpl {
     return v as $IntentionalAny
   }
 
+  async deleteSession(session: string): Promise<void> {
+    await this._adapterTransaction.deleteSession(session)
+  }
+
   async getMostRecentlySyncedSessionState(): Promise<
     SessionState<unknown> | undefined
   > {

@@ -44,7 +44,7 @@ export function applyOptimisticUpdateToState<
   return [{op: opSnapshotAfter, cell: cellAfter}, newRecordings]
 }
 
-export function recordInvokations<Editors extends {}, Lorenzo extends {}>(
+export function recordInvokations<Editors extends {}>(
   editors: Editors,
   fn: (editors: EditorDefinitionToEditorInvocable<Editors>) => void,
 ): Invokations {
