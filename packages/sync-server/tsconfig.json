@@ -16,8 +16,8 @@
     "baseUrl": ".",
     "composite": true,
     "paths": {
-      "@prisma/client": ["./prisma/client-generated"],
-      "@theatre/utils/*": ["../utils/src/*"]
+      "@theatre/utils/*": ["../utils/src/*"],
+      "@theatre/app/*": ["../app/src/*"]
     }
   },
   "references": [{"path": "../utils"}, {"path": "../app"}, {"path": "../saaz"}],

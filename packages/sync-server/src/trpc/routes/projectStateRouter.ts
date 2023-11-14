@@ -40,12 +40,42 @@ export const projectState = createRouter({
       return getSaazBack(opts.input.dbName).updatePresence(opts.input.opts)
     }),
 
+  saaz_closePeer: procedure
+    .input(
+      z.object({
+        dbName: z.string(),
+        opts: z.object({peerId: z.string()}),
+        studioAuth,
+      }),
+    )
+    .output(z.any())
+    .mutation(async (opts) => {
+      await opts.ctx.requireValidSession(opts)
+      return getSaazBack(opts.input.dbName).closePeer(opts.input.opts)
+    }),
+
   saaz_getUpdatesSinceClock: procedure
     .input(z.object({dbName: z.string(), opts: z.any(), studioAuth}))
     .output(z.any())
     .query(async (opts) => {
       await opts.ctx.requireValidSession(opts)
       return getSaazBack(opts.input.dbName).getUpdatesSinceClock(
+        opts.input.opts,
+      )
+    }),
+
+  saaz_getLastIncorporatedPeerClock: procedure
+    .input(
+      z.object({
+        dbName: z.string(),
+        opts: z.object({peerId: z.string()}),
+        studioAuth,
+      }),
+    )
+    .output(z.any())
+    .query(async (opts) => {
+      await opts.ctx.requireValidSession(opts)
+      return getSaazBack(opts.input.dbName).getLastIncorporatedPeerClock(
         opts.input.opts,
       )
     }),

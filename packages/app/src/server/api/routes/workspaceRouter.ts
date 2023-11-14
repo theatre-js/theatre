@@ -1,6 +1,6 @@
 import {z} from 'zod'
 import * as t from '../trpc'
-import prisma from 'src/prisma'
+import prisma from '../../../prisma'
 import {TRPCError} from '@trpc/server'
 
 export const workspaceRouter = t.createRouter({

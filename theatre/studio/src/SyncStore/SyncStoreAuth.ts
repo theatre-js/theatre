@@ -346,7 +346,7 @@ function wrapTrpcClientWithAuth<Client extends {}>(
   return pr as $IntentionalAny
 }
 
-type TrpcClientWrapped<Client extends {}> = {
+export type TrpcClientWrapped<Client extends {}> = {
   [K in keyof Client]: K extends 'query' | 'mutate' | 'subscribe'
     ? TrpcProcedureWrapped<Client[K]>
     : Client[K] extends {}

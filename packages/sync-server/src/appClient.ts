@@ -1,4 +1,5 @@
-import type {AppTrpcRouter} from '@theatre/app/src/server/trpc/routes'
+import type {AppRouter} from '@theatre/app/src/server/api/root'
+
 import {createTRPCProxyClient, httpBatchLink} from '@trpc/client'
 import superjson from 'superjson'
 
@@ -9,7 +10,7 @@ if (!appHost.startsWith('http')) {
   appHost = 'https://' + appHost
 }
 
-const appClient = createTRPCProxyClient<AppTrpcRouter>({
+const appClient = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
       url: appHost + '/api/trpc',
@@ -18,10 +19,10 @@ const appClient = createTRPCProxyClient<AppTrpcRouter>({
   transformer: superjson,
 })
 
-if (process.env.NODE_ENV === 'development') {
-  void appClient.healthCheck.query({name: 'the lib'}).then((res) => {
-    console.log('app/healthCheck', res)
-  })
-}
+// if (process.env.NODE_ENV === 'development') {
+//   void appClient..query({name: 'the lib'}).then((res) => {
+//     console.log('app/healthCheck', res)
+//   })
+// }
 
 export default appClient

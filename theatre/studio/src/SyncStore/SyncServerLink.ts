@@ -33,7 +33,7 @@ export default class SyncServerLink {
     }
   }
 
-  get api() {
+  get api(): CreateTRPCProxyClient<SyncServerRootRouter> {
     return this._client
   }
 }

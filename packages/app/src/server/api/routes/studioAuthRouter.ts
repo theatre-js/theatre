@@ -275,9 +275,10 @@ export const studioAuthRouter = t.createRouter({
         return {canEdit: false, reason: 'AccessTokenInvalid'}
       }
       const {userId} = payload
-      const proj = await prisma.project.findFirst({
+      const proj = await prisma.workspace.findFirst({
         where: {
-          userId,
+          // TODO check if user has access to project
+          // userId,
           id: opts.input.projectId,
         },
       })

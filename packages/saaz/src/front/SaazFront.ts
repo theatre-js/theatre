@@ -669,6 +669,7 @@ export class SaazFront<
           await this._storage.transaction(async (t) => {
             await t.deleteSession(emptySession.peerId)
           })
+          void this._backend.closePeer({peerId: emptySession.peerId})
         }
       },
     )

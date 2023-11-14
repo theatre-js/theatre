@@ -13,6 +13,9 @@ import type {OnDiskState} from '@theatre/sync-server/state/types/core'
 import * as Saaz from '@theatre/saaz'
 import type {ProjectId} from '@theatre/sync-server/state/types/core'
 import AppLink from '@theatre/studio/SyncStore/AppLink'
+import type {
+  TrpcClientWrapped,
+} from '@theatre/studio/SyncStore/SyncStoreAuth';
 import SyncStoreAuth from '@theatre/studio/SyncStore/SyncStoreAuth'
 import SyncServerLink from '@theatre/studio/SyncStore/SyncServerLink'
 import {schema} from '@theatre/sync-server/state/schema'
@@ -111,7 +114,7 @@ export default class StudioStore {
     }
 
     const backend =
-      typeof window === 'undefined' || true
+      typeof window === 'undefined'
         ? new SaazBack({
             storageAdapter: new Saaz.BackMemoryAdapter(),
             dbName: 'test',
@@ -302,11 +305,11 @@ export default class StudioStore {
     return this._auth.authenticate(opts)
   }
 
-  get appApi() {
+  get appApi(): TrpcClientWrapped<AppLink['api']> {
     return this._auth.appApi
   }
 
-  get syncServerApi() {
+  get syncServerApi(): TrpcClientWrapped<SyncServerLink['api']> {
     return this._auth.syncServerApi
   }
 }
@@ -342,6 +345,27 @@ function createTrpcBackend(
       })
     }
 
+  const getLastIncorporatedPeerClock: Saaz.SaazBackInterface['getLastIncorporatedPeerClock'] =
+    async (opts) => {
+      const dbName = await dbNamePromise
+
+      return await syncServerApi.projectState.saaz_getLastIncorporatedPeerClock.query(
+        {
+          dbName,
+          opts,
+        },
+      )
+    }
+
+  const closePeer: Saaz.SaazBackInterface['closePeer'] = async (opts) => {
+    const dbName = await dbNamePromise
+
+    return await syncServerApi.projectState.saaz_closePeer.mutate({
+      dbName,
+      opts,
+    })
+  }
+
   const subscribe: Saaz.SaazBackInterface['subscribe'] = async (
     opts,
     onUpdate,
@@ -365,7 +389,9 @@ function createTrpcBackend(
   return {
     applyUpdates,
     getUpdatesSinceClock,
-    subscribe: subscribe,
+    subscribe,
     updatePresence,
+    closePeer,
+    getLastIncorporatedPeerClock,
   }
 }
