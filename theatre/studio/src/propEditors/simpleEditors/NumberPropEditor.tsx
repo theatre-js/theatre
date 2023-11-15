@@ -22,6 +22,7 @@ function NumberPropEditor({
       temporarilySetValue={editingTools.temporarilySetValue}
       discardTemporaryValue={editingTools.discardTemporaryValue}
       permanentlySetValue={editingTools.permanentlySetValue}
+      defaultValue={propConfig.default}
       range={propConfig.range}
       nudge={nudge}
       autoFocus={autoFocus}

@@ -44,21 +44,25 @@ const Label = styled.label`
   }
 `
 
-const Input = styled.input`
+const Input = styled.input<{defaultValue: string}>`
   position: absolute;
   opacity: 0;
   pointer-events: none;
   width: 0;
   height: 0;
+  font-weight: ${(props) =>
+    props.value === props.defaultValue ? 'normal' : 'bold'};
 `
 
 function BasicSwitch<TLiteralOptions extends string>({
   value,
+  defaultValue,
   onChange,
   options,
   autoFocus,
 }: {
   value: TLiteralOptions
+  defaultValue: TLiteralOptions
   onChange: (val: TLiteralOptions) => void
   options: Record<TLiteralOptions, string>
   autoFocus?: boolean
@@ -78,6 +82,7 @@ function BasicSwitch<TLiteralOptions extends string>({
             type="radio"
             checked={value === key}
             value={key}
+            defaultValue={defaultValue}
             onChange={_onChange}
             name="switchbox"
             autoFocus={autoFocus}

@@ -33,7 +33,7 @@ const ColorPreviewPuck = styled.div.attrs<ColorPreviewPuckProps>((props) => ({
   border-radius: 99999px;
 `
 
-const HexInput = styled(BasicStringInput)`
+const HexInput = styled(BasicStringInput)<{defaultValue: string}>`
   flex: 1;
 `
 
@@ -57,6 +57,7 @@ const RgbaPopover = styled.div`
 `
 
 function RgbaPropEditor({
+  propConfig,
   editingTools,
   value,
   autoFocus,
@@ -105,6 +106,9 @@ function RgbaPropEditor({
         />
         <HexInput
           value={rgba2hex(value, {removeAlphaIfOpaque: true})}
+          defaultValue={rgba2hex(propConfig.default, {
+            removeAlphaIfOpaque: true,
+          })}
           temporarilySetValue={noop}
           discardTemporaryValue={noop}
           permanentlySetValue={onChange}

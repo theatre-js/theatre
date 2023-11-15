@@ -33,7 +33,7 @@ const AddImage = styled.div`
   background-size: 5px 5px;
 `
 
-const InputLabel = styled.label<{empty: boolean}>`
+const InputLabel = styled.label<{empty: boolean; changed: boolean}>`
   position: relative;
   cursor: default;
   box-sizing: border-box;
@@ -44,6 +44,7 @@ const InputLabel = styled.label<{empty: boolean}>`
   justify-content: center;
   align-items: center;
   font-size: 16px;
+  font-weight: ${(props) => (props.changed ? 'bold' : 'normal')};
 
   overflow: hidden;
   color: #ccc;
@@ -139,6 +140,7 @@ function ImagePropEditor({
     <Container empty={empty}>
       <InputLabel
         empty={empty}
+        changed={value !== propConfig.default}
         title={
           empty ? 'Upload image' : `"${value.id}" (Click to upload new image)`
         }
