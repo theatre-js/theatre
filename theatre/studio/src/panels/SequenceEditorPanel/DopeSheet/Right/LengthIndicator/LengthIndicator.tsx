@@ -15,7 +15,7 @@ import {
   includeLockFrameStampAttrs,
   useLockFrameStampPosition,
 } from '@theatre/studio/panels/SequenceEditorPanel/FrameStampPositionProvider'
-import {GoChevronLeft, GoChevronRight} from 'react-icons/all'
+import {GoChevronLeft, GoChevronRight} from 'react-icons/go'
 import LengthEditorPopover from './LengthEditorPopover'
 import {pointerEventsAutoInNormalMode} from '@theatre/studio/css'
 import BasicPopover from '@theatre/studio/uiComponents/Popover/BasicPopover'

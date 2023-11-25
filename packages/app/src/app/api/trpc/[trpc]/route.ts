@@ -1,16 +1,12 @@
 import {fetchRequestHandler} from '@trpc/server/adapters/fetch'
-import {type NextRequest} from 'next/server'
-
+import type {NextRequest} from 'next/server'
 import {appRouter} from '~/server/api/root'
 import {createTRPCContext} from '~/server/api/trpc'
 
-const handler = async (req: NextRequest) => {
-  // Since these endpoints are for @theatre/studio as a library that can be used on any origin,
-  // we must allow CORS requests from any origin.
-  if (req.method === 'OPTIONS') {
-    return new Response()
-  }
+// we don't need the trpc routes' responses to be cached
+export const dynamic = 'force-dynamic'
 
+const handler = async (req: NextRequest) => {
   const res = await fetchRequestHandler({
     endpoint: '/api/trpc',
     req,
@@ -26,12 +22,7 @@ const handler = async (req: NextRequest) => {
         : undefined,
   })
 
-  res.headers.set('Access-Control-Allow-Origin', '*')
-  res.headers.set('Access-Control-Request-Method', '*')
-  res.headers.set('Access-Control-Allow-Methods', '*')
-  res.headers.set('Access-Control-Allow-Headers', '*')
-
   return res
 }
 
-export {handler as GET, handler as POST}
+export {handler as GET, handler as POST, handler as OPTIONS}

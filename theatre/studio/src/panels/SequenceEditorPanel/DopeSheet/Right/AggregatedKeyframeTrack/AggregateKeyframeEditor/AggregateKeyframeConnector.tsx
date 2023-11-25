@@ -210,7 +210,7 @@ function useConnectorContextMenu(
 ) {
   return useContextMenu(node, {
     displayName: 'Aggregate Tween',
-    menuItems: () => {
+    items: () => {
       // see AGGREGATE_COPY_PASTE.md for explanation of this
       // code that makes some keyframes with paths for copying
       // to clipboard

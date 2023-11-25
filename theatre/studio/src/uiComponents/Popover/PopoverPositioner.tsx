@@ -18,8 +18,8 @@ export type AbsolutePlacementBoxConstraints = {
   maxY?: number
 }
 
-const PopoverPositioner: React.FC<{
-  target: HTMLElement | SVGElement | Element
+export type PopoverPositionerProps = {
+  target: Element | React.MutableRefObject<Element | null>
   onClickOutside?: (e: MouseEvent) => void
   children: () => React.ReactElement
   onPointerOutside?: {
@@ -29,7 +29,9 @@ const PopoverPositioner: React.FC<{
   verticalPlacement?: 'top' | 'bottom' | 'overlay'
   verticalGap?: number // Has no effect if verticalPlacement === 'overlay'
   constraints?: AbsolutePlacementBoxConstraints
-}> = (props) => {
+}
+
+const PopoverPositioner: React.FC<PopoverPositionerProps> = (props) => {
   const originalElement = props.children()
   const [ref, container] = useRefAndState<HTMLElement | SVGElement | null>(null)
   const style: Record<string, string> = originalElement.props.style

@@ -265,7 +265,7 @@ function useDragKeyframe(options: {
 
 function useKeyframeContextMenu(node: SVGCircleElement | null, props: IProps) {
   return useContextMenu(node, {
-    menuItems: () => {
+    items: () => {
       return [
         {
           type: 'normal',

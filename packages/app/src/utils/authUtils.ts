@@ -3,11 +3,10 @@ import type {
   NextApiRequest,
   NextApiResponse,
 } from 'next'
-import type {User} from '../../prisma/client-generated'
+import type {LibSession, User} from '../../prisma/client-generated'
 import prisma from '../prisma'
-import {v4} from 'uuid'
 import * as jose from 'jose'
-import type {$IntentionalAny} from 'src/types'
+import type {studioAccessScopes} from 'src/types'
 import {TRPCError} from '@trpc/server'
 import {z} from 'zod'
 import type {AuthOptions} from 'next-auth'
@@ -15,6 +14,8 @@ import {getServerSession} from 'next-auth'
 import GithubProvider from 'next-auth/providers/github'
 import {PrismaAdapter} from '@auth/prisma-adapter'
 import type {Adapter} from 'next-auth/adapters'
+import type {studioAuthTokens} from 'src/types'
+import type {$FixMe, $IntentionalAny} from '@theatre/utils/types'
 
 // Extend NextAuth Session type to include all fields from the User model
 declare module 'next-auth' {
@@ -58,54 +59,103 @@ export function getAppSession(
   return getServerSession(...args, nextAuthConfig)
 }
 
-export type AccessTokenPayload = {
-  userId: string
-  email: string
-}
-
 export namespace studioAuth {
+  export const jwtAlg = 'RS256'
   export const input = z.object({accessToken: z.string()})
-  function generateRefreshToken() {
-    return v4() + v4() + v4() + v4()
+  async function generateIdToken(
+    nounce: string,
+    user: User,
+    scopes: studioAccessScopes.Scopes,
+    expirationTime: Date,
+  ): Promise<string> {
+    const privateKey = await privateKeyPromise
+    const payload: studioAuthTokens.IdTokenPayload = {
+      userId: user.id,
+      email: user.email ?? '',
+      nounce,
+      scopes,
+    }
+    const jwt = await new jose.SignJWT(payload)
+      .setProtectedHeader({alg: jwtAlg})
+      .setIssuedAt()
+      .setExpirationTime(expirationTime.getTime())
+      .sign(privateKey)
+
+    return jwt
+  }
+
+  export async function parseAndVerifyIdToken(
+    idToken: string,
+  ): Promise<undefined | studioAuthTokens.IdTokenPayload> {
+    const privateKey = await privateKeyPromise
+
+    try {
+      const s = await jose.jwtVerify(idToken, privateKey, {
+        algorithms: [jwtAlg],
+      })
+      return s.payload as $FixMe
+    } catch (err) {
+      console.log(`parseAndVerifyIdToken failed:`, err)
+      return undefined
+    }
+  }
+
+  export function getIdTokenClaimsWithoutVerifying(
+    idToken: string,
+  ): undefined | studioAuthTokens.IdTokenPayload {
+    try {
+      const s = jose.decodeJwt(idToken)
+      return s as $FixMe
+    } catch (err) {
+      console.log(`getIdTokenClaimsWithoutVerifying failed:`, err)
+      return undefined
+    }
   }
 
   /**
    * Generates an access token for the given user.
    */
-  async function generateAccessToken(user: User): Promise<string> {
+  async function generateAccessToken(
+    user: User,
+    scopes: studioAccessScopes.Scopes,
+  ): Promise<string> {
     const privateKey = await privateKeyPromise
-    const payload: AccessTokenPayload = {
+    const payload: studioAuthTokens.AccessTokenPayload = {
       userId: user.id,
       email: user.email ?? '',
+      scopes,
     }
     const jwt = await new jose.SignJWT(payload)
       .setProtectedHeader({alg: 'RS256'})
       .setIssuedAt()
-      .setExpirationTime('1h')
+      .setExpirationTime('2h')
       .sign(privateKey)
 
     return jwt
   }
 
   export async function createSession(
+    nounce: string,
     user: User,
+    scopes: studioAccessScopes.Scopes,
   ): Promise<{refreshToken: string; accessToken: string}> {
-    const refreshToken = generateRefreshToken()
+    // now + 2 months
+    const validUntil = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 2)
+
+    const idToken = await generateIdToken(nounce, user, scopes, validUntil)
 
     const session = await prisma.libSession.create({
       data: {
         createdAt: new Date().toISOString(),
-        refreshToken,
-        validUntil:
-          // now + 2 months
-          new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 2).toISOString(),
+        refreshToken: idToken,
+        validUntil: validUntil.toISOString(),
         userId: user.id,
       },
     })
 
-    const accessToken = await generateAccessToken(user)
+    const accessToken = await generateAccessToken(user, scopes)
 
-    return {refreshToken, accessToken}
+    return {refreshToken: idToken, accessToken}
   }
 
   export async function destroySession(refreshToken: string) {
@@ -120,11 +170,11 @@ export namespace studioAuth {
    * Returns a new accessToken, and a new refreshToken. The old refreshToken is invalidated.
    */
   export async function refreshSession(
-    refreshToken: string,
+    originalIdToken: string,
   ): Promise<{refreshToken: string; accessToken: string}> {
     const session = await prisma.libSession.findUnique({
       where: {
-        refreshToken,
+        refreshToken: originalIdToken,
       },
     })
 
@@ -132,38 +182,33 @@ export namespace studioAuth {
       throw new Error(`Invalid refresh token`)
     }
 
+    let originalSuccessorSession: null | LibSession = null
+
+    // client has already tried to get a new refresh token using this refresh token.
     if (session.succeededByRefreshToken) {
+      // there is a grace period in which the old refresh token is still valid (in case the new one didn't reach the client due to a network error or a race condition)
       if (session.successorLinkExpresAt! < new Date()) {
+        // the grace period is over, the old refresh token is now invalid. let's delete it.
         await destroySession(session.refreshToken)
         throw new Error(`Invalid refresh token`)
       } else {
-        const newSession = await prisma.libSession.findUnique({
+        // the grace period is still active, so a new id token has been issued. We should now find and remove that token before we issue another one
+        originalSuccessorSession = await prisma.libSession.findUnique({
           where: {
             refreshToken: session.succeededByRefreshToken,
           },
         })
 
-        if (!newSession) {
+        // well, the new refresh token been removed for some reason. at this point, the client has to re-authenticate.
+        if (!originalSuccessorSession) {
+          // let's GC the old token while we're at it
+          await destroySession(session.refreshToken)
           throw new Error(`Invalid refresh token`)
         }
-
-        const user = await prisma.user.findUnique({
-          where: {
-            id: newSession.userId,
-          },
-        })
-
-        if (!user) {
-          throw new Error(`Invalid refresh token`)
-        }
-
-        const accessToken = await generateAccessToken(user)
-
-        return {refreshToken: newSession.refreshToken, accessToken}
       }
     }
 
-    // session is expired
+    // the refresh token is expired
     if (session.validUntil < new Date()) {
       await destroySession(session.refreshToken)
       throw new Error(`Invalid refresh token`)
@@ -179,16 +224,25 @@ export namespace studioAuth {
       throw new Error(`Invalid refresh token`)
     }
 
-    const {refreshToken: newRefreshToken, accessToken} =
-      await createSession(user)
+    const {nounce, scopes} = getIdTokenClaimsWithoutVerifying(originalIdToken)!
+
+    const {refreshToken: newRefreshToken, accessToken} = await createSession(
+      nounce,
+      user,
+      scopes,
+    )
 
     await prisma.libSession.update({
-      where: {refreshToken},
+      where: {refreshToken: originalIdToken},
       data: {
         succeededByRefreshToken: newRefreshToken,
         successorLinkExpresAt: new Date(Date.now() + 60).toISOString(),
       },
     })
+
+    if (originalSuccessorSession) {
+      await destroySession(originalSuccessorSession.refreshToken)
+    }
 
     return {refreshToken: newRefreshToken, accessToken}
   }
@@ -197,7 +251,7 @@ export namespace studioAuth {
     input: {
       studioAuth: {accessToken: string}
     }
-  }): Promise<AccessTokenPayload> {
+  }): Promise<studioAuthTokens.AccessTokenPayload> {
     const publicKey = await publicKeyPromise
     try {
       const res = await jose.jwtVerify(
@@ -210,7 +264,7 @@ export namespace studioAuth {
 
       const {payload} = res as $IntentionalAny
 
-      return payload as AccessTokenPayload
+      return payload as studioAuthTokens.AccessTokenPayload
     } catch (e) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',

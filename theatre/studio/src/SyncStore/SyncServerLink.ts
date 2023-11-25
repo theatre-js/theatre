@@ -19,7 +19,16 @@ export default class SyncServerLink {
     this._client = createTRPCProxyClient<SyncServerRootRouter>({
       links: [
         loggerLink({
-          enabled: (opts) => false,
+          console: {
+            log: (arg0, ...rest) =>
+              console.info('SyncServerLink ' + arg0, ...rest),
+            error: (arg0, ...rest) =>
+              console.error('SyncServerLink ' + arg0, ...rest),
+          },
+          enabled: (opts) =>
+            (process.env.NODE_ENV === 'development' &&
+              typeof window !== 'undefined') ||
+            (opts.direction === 'down' && opts.result instanceof Error),
         }),
         wsLink({client: wsClient}),
       ],

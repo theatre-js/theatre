@@ -30,6 +30,9 @@ export type UseDragOpts = {
   onDrag: (dx: number, dy: number, event: MouseEvent) => void
 }
 
+/**
+ * @deprecated Deprecated in favor of `useChordial`
+ */
 export default function useDrag(
   target: HTMLElement | undefined | null,
   opts: UseDragOpts,

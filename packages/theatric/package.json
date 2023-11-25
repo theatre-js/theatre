@@ -42,7 +42,8 @@
   "dependencies": {
     "@theatre/core": "workspace:*",
     "@theatre/react": "workspace:*",
-    "@theatre/studio": "workspace:*"
+    "@theatre/studio": "workspace:*",
+    "oauth4webapi": "^2.4.0"
   },
   "peerDependencies": {
     "react": "*"

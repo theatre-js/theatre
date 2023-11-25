@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
-import {CgSelect} from 'react-icons/all'
+import {CgSelect} from 'react-icons/cg'
 
 const Container = styled.div`
   width: 100%;

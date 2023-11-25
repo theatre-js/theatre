@@ -6,13 +6,6 @@ export type $IntentionalAny = any
 export type Asset = {type: 'image'; id: string | undefined}
 export type File = {type: 'file'; id: string | undefined}
 
-export type GenericAction = {type: string; payload: unknown}
-
-export type ReduxReducer<State extends {}> = (
-  s: undefined | State,
-  action: unknown,
-) => State
-
 export type VoidFn = () => void
 
 /**

@@ -246,7 +246,7 @@ function useConnectorContextMenu(
 
   return useContextMenu(node, {
     displayName: 'Tween',
-    menuItems: () => {
+    items: () => {
       const copyableKeyframes = copyableKeyframesFromSelection(
         props.leaf.sheetObject.address.projectId,
         props.leaf.sheetObject.address.sheetId,

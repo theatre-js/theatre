@@ -17,6 +17,7 @@
     "baseUrl": ".",
     "composite": true,
     "incremental": true,
+    "rootDir": "../..",
     "plugins": [
       {
         "name": "next"
@@ -24,7 +25,8 @@
     ],
     "paths": {
       "@prisma/client": ["./prisma/client-generated"],
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
+      "@theatre/utils/*": ["../utils/src/*"]
     },
     "noEmit": false
   },
@@ -35,5 +37,6 @@
     ".next/types/**/*.ts",
     "prisma/seed.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "references": [{"path": "../utils"}]
 }

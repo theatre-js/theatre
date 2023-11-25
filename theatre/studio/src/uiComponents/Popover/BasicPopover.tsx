@@ -37,6 +37,7 @@ const BasicPopover: React.FC<{
   className?: string
   showPopoverEdgeTriangle?: boolean
   children: React.ReactNode
+  ref?: React.Ref<HTMLDivElement>
 }> = React.forwardRef(
   (
     {

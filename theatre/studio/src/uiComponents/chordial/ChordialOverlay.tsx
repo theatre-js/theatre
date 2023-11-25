@@ -3,6 +3,7 @@ import {TooltipOverlay} from './TooltipOverlay'
 import {ContextOverlay} from './ContextOverlay'
 import {createPortal} from 'react-dom'
 import {PortalContext} from 'reakit'
+import {PopoverOverlay} from './PopoverOverlay'
 
 export const ChordialOverlay = () => {
   const portalLayer = useContext(PortalContext)
@@ -13,6 +14,7 @@ export const ChordialOverlay = () => {
     <>
       <TooltipOverlay />
       <ContextOverlay />
+      <PopoverOverlay />
     </>,
     portalLayer,
   )

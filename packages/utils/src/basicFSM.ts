@@ -9,7 +9,7 @@ type TransitionFn<EventType, ContextType> = (
   take: TakeFn<EventType>,
 ) => void
 
-type Actor<ContextType, EventType> = {
+type Actor<EventType, ContextType> = {
   pointer: Pointer<ContextType>
   send: (s: EventType) => void
 }
@@ -22,7 +22,7 @@ export function basicFSM<EventType, ContextType>(
 ): (actorOpts?: {
   name?: string
   log?: boolean
-}) => Actor<ContextType, EventType> {
+}) => Actor<EventType, ContextType> {
   return (actorOpts) => {
     const log =
       actorOpts?.log !== true

@@ -3,6 +3,32 @@ import type {$IntentionalAny} from '@theatre/utils/types'
 import {useEffect, type ElementType, type MutableRefObject} from 'react'
 import type {DragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type React from 'react'
+import type {AbsolutePlacementBoxConstraints} from '@theatre/studio/uiComponents/Popover/PopoverPositioner'
+
+export type InvokeTypePopover = {
+  type: 'popover'
+  render: (props: {close: () => void}) => React.ReactElement
+  closeWhenPointerIsDistant?: boolean
+  pointerDistanceThreshold?: number
+  closeOnClickOutside?: boolean
+  constraints?: AbsolutePlacementBoxConstraints
+  verticalGap?: number
+}
+
+export type InvokeType =
+  | InvokeTypePopover
+  | ((
+      e:
+        | {
+            type: 'MouseEvent'
+            event: MouseEvent
+          }
+        | {
+            type: 'KeyboardEvent'
+            event: KeyboardEvent
+          }
+        | undefined,
+    ) => void)
 
 export type ChordialOpts = {
   // shown on the tooltip
@@ -10,23 +36,20 @@ export type ChordialOpts = {
   // shown as the top item in the menu
   menuTitle?: string | React.ReactNode
   items: Array<ContextMenuItem>
-  invoke?: (
-    e:
-      | {type: 'MouseEvent'; event: MouseEvent}
-      | {type: 'KeyboardEvent'; event: KeyboardEvent}
-      | undefined,
-  ) => void
+  invoke?: InvokeType
   drag?: DragOpts
 }
 
-export type ContextMenuItem = {
-  type: 'normal'
-  label: string | ElementType
-  callback?: (e: React.MouseEvent) => void
-  focus?: () => void
-  enabled?: boolean
-  key?: string
-}
+export type ContextMenuItem =
+  | {
+      type: 'normal'
+      label: string | ElementType
+      callback?: (e: React.MouseEvent) => void
+      focus?: () => void
+      enabled?: boolean
+      key?: string
+    }
+  | {type: 'separator'}
 
 export type ChordialOptsFn = () => ChordialOpts
 

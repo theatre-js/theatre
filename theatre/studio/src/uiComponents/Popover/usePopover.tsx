@@ -8,7 +8,11 @@ import PopoverPositioner from './PopoverPositioner'
 import {contextMenuShownContext} from '@theatre/studio/panels/DetailPanel/DetailPanel'
 
 export type OpenFn = (
-  e: React.MouseEvent | MouseEvent | {clientX: number; clientY: number},
+  e:
+    | React.MouseEvent
+    | MouseEvent
+    | {clientX: number; clientY: number}
+    | undefined,
   target: HTMLElement | SVGElement | Element,
 ) => void
 type CloseFn = (reason: string) => void
@@ -60,6 +64,9 @@ export interface IPopover {
   isOpen: boolean
 }
 
+/**
+ * @deprecated Use useChordial() instead.
+ */
 export default function usePopover(
   opts: Opts | (() => Opts),
   render: () => React.ReactElement,
@@ -96,7 +103,7 @@ export default function usePopover(
 
     stateRef.current = {
       isOpen: true,
-      clickPoint: {clientX: e.clientX, clientY: e.clientY},
+      clickPoint: {clientX: e?.clientX ?? 0, clientY: e?.clientY ?? 0},
       target,
       opts,
       onClickOutside: onClickOutside,
@@ -179,7 +186,7 @@ export default function usePopover(
  * behaviors for parenting popovers.
  */
 function useAutoCloseLockState(options: {
-  state: State
+  state: {isOpen: boolean}
   _debug: (message: string, args?: object) => void
 }) {
   const parentLock = useContext(PopoverAutoCloseLock)

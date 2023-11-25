@@ -4,12 +4,17 @@ import debounce from 'lodash-es/debounce'
 
 const lastStateByStore = new WeakMap<Atom<{}>, {}>()
 
+export type AtomPersistor = {
+  refresh: () => void
+  flush: () => void
+}
+
 export const persistAtom = (
   atom: Atom<{}>,
   pointer: Pointer<{}>,
   onInitialize: () => void,
   storageKey: string,
-) => {
+): AtomPersistor => {
   const loadState = (s: {}) => {
     atom.setByPointer(pointer, s)
   }
@@ -36,6 +41,16 @@ export const persistAtom = (
 
   if (window) {
     window.addEventListener('beforeunload', () => schedulePersist.flush())
+  }
+
+  return {
+    refresh: () => {
+      schedulePersist.flush()
+      loadFromPersistentStorage()
+    },
+    flush: () => {
+      schedulePersist.flush()
+    },
   }
 
   function loadFromPersistentStorage() {

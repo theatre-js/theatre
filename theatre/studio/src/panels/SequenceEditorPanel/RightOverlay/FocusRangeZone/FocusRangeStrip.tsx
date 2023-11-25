@@ -133,7 +133,7 @@ const FocusRangeStrip: React.FC<{
   )
 
   const [contextMenu] = useContextMenu(rangeStripNode, {
-    menuItems: () => {
+    items: () => {
       const sheet = val(layoutP.sheet)
       const existingRange = existingRangeD.getValue()
       return [

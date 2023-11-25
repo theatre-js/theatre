@@ -7,7 +7,7 @@ import type {
 } from '@theatre/studio/panels/SequenceEditorPanel/layout/tree'
 import type {VoidFn} from '@theatre/utils/types'
 import React, {useRef} from 'react'
-import {HiOutlineChevronRight} from 'react-icons/all'
+import {HiOutlineChevronRight} from 'react-icons/hi'
 import styled from 'styled-components'
 import {propNameTextCSS} from '@theatre/studio/propEditors/utils/propNameTextCSS'
 import {usePropHighlightMouseEnter} from './usePropHighlightMouseEnter'

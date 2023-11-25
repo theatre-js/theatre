@@ -172,7 +172,7 @@ function useSingleKeyframeContextMenu(
 ) {
   return useContextMenu(target, {
     displayName: 'Keyframe',
-    menuItems: () => {
+    items: () => {
       const copyableKeyframes = copyableKeyframesFromSelection(
         props.leaf.sheetObject.address.projectId,
         props.leaf.sheetObject.address.sheetId,

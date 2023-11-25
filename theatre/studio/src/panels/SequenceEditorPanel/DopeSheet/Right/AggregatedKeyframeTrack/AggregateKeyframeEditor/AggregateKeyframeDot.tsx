@@ -100,10 +100,10 @@ export function AggregateKeyframeDot(
     props.editorProps.viewModel.type === 'sheet'
       ? null
       : props.editorProps.viewModel.type === 'sheetObject'
-      ? sheetObjectBuild(props.editorProps.viewModel, cur.keyframes)
-          ?.children ?? null
-      : propWithChildrenBuild(props.editorProps.viewModel, cur.keyframes)
-          ?.children ?? null,
+        ? sheetObjectBuild(props.editorProps.viewModel, cur.keyframes)
+            ?.children ?? null
+        : propWithChildrenBuild(props.editorProps.viewModel, cur.keyframes)
+            ?.children ?? null,
   )
 
   const presence = usePresence(props.utils.itemKey)
@@ -157,7 +157,7 @@ function useAggregateKeyframeContextMenu(
 ) {
   return useContextMenu(target, {
     displayName: 'Aggregate Keyframe',
-    menuItems: () => {
+    items: () => {
       const viewModel = props.editorProps.viewModel
       const selection = props.editorProps.selection
 
@@ -199,13 +199,13 @@ function useAggregateKeyframeContextMenu(
                 viewModel.type === 'sheet'
                   ? []
                   : viewModel.type === 'sheetObject'
-                  ? [viewModel.sheetObject.address.objectKey]
-                  : viewModel.type === 'propWithChildren'
-                  ? [
-                      viewModel.sheetObject.address.objectKey,
-                      ...viewModel.pathToProp,
-                    ]
-                  : [] // should be unreachable unless new viewModel/leaf types are added
+                    ? [viewModel.sheetObject.address.objectKey]
+                    : viewModel.type === 'propWithChildren'
+                      ? [
+                          viewModel.sheetObject.address.objectKey,
+                          ...viewModel.pathToProp,
+                        ]
+                      : [] // should be unreachable unless new viewModel/leaf types are added
               const commonPath = commonRootOfPathsToProps([
                 basePathRelativeToSheet,
                 ...kfs.map((kf) => kf.pathToProp),

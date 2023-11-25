@@ -1,6 +1,5 @@
 import {z} from 'zod'
 import {createRouter, procedure} from '..'
-import appClient from 'src/appClient'
 import {getSaazBack} from 'src/saaz'
 import {observable} from '@trpc/server/observable'
 
@@ -8,20 +7,20 @@ const studioAuth = z.object({
   accessToken: z.string(),
 })
 
-type Session = {
-  _accessToken: string
-}
+// type Session = {
+//   _accessToken: string
+// }
 
-export async function ensureSessionHasAccessToProject(
-  session: Session,
-  projectId: string,
-) {
-  const {canEdit} = await appClient.studioAuth.canIEditProject.query({
-    studioAuth: {accessToken: session._accessToken},
-    projectId,
-  })
-  return canEdit
-}
+// export async function ensureSessionHasAccessToProject(
+//   session: Session,
+//   projectId: string,
+// ) {
+//   const {canEdit} = await appClient.studioAuth.canIEditProject.query({
+//     studioAuth: {accessToken: session._accessToken},
+//     projectId,
+//   })
+//   return canEdit
+// }
 
 export const projectState = createRouter({
   saaz_applyUpdates: procedure

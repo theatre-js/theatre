@@ -1,8 +1,8 @@
 import * as jose from 'jose'
 import {TRPCError} from '@trpc/server'
-import type {AccessTokenPayload} from '@theatre/app/src/utils/authUtils'
-import type {$IntentionalAny} from 'src/types'
 import {appHost} from 'src/appClient'
+import type {studioAuthTokens} from '@theatre/app/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 
 const jwtPublicKey = fetch(appHost + `/api/jwt-public-key`)
   .then((response) => response.json())
@@ -11,12 +11,13 @@ const jwtPublicKey = fetch(appHost + `/api/jwt-public-key`)
 
 export type Session = {
   _accessToken: string
-} & AccessTokenPayload
+} & studioAuthTokens.AccessTokenPayload
 
 export async function verifyAccessTokenOrThrow(opts: {
   input: {studioAuth: {accessToken: string}}
 }): Promise<Session> {
   const {accessToken} = opts.input.studioAuth
+  console.log('verifying ', accessToken)
 
   const publicKey = await jwtPublicKey
   try {
@@ -24,12 +25,13 @@ export async function verifyAccessTokenOrThrow(opts: {
       maxTokenAge: '1h',
     })
 
-    const {payload}: {payload: AccessTokenPayload} = res as $IntentionalAny
+    const {payload}: {payload: studioAuthTokens.AccessTokenPayload} =
+      res as $IntentionalAny
 
+    console.log('authorized')
     return {_accessToken: accessToken, ...payload}
   } catch (e) {
-    console.log(`e`, e)
-    console.log('jwt invalid')
+    console.log('unauthorized')
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       cause: 'InvalidSession',

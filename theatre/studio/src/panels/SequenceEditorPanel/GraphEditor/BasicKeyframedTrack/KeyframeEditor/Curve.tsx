@@ -117,7 +117,7 @@ function useConnectorContextMenu(node: SVGElement | null, props: IProps) {
   ]
 
   return useContextMenu(node, {
-    menuItems: () => {
+    items: () => {
       return [
         {
           type: 'normal',

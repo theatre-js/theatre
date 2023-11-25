@@ -8,8 +8,26 @@ import {
 import {isSafari} from '@theatre/studio/uiComponents/isSafari'
 import type {CapturedPointer} from '@theatre/studio/UIRoot/PointerCapturing'
 import {createPointerCapturing} from '@theatre/studio/UIRoot/PointerCapturing'
-import type {ChodrialElement, ChordialOpts} from './chordialInternals'
+import type {
+  ChodrialElement,
+  ChordialOpts,
+  InvokeType,
+} from './chordialInternals'
 import {findChodrialByDomNode} from './chordialInternals'
+import {popoverActor} from './popoverActor'
+
+function handleInvoke(
+  invoke: undefined | InvokeType,
+  el: ChodrialElement,
+  mouseEvent: MouseEvent,
+) {
+  if (!invoke) return
+  if (typeof invoke === 'function') {
+    invoke({type: 'MouseEvent', event: mouseEvent})
+  } else if (invoke.type === 'popover') {
+    popoverActor.send({type: 'open', el, triggerEvent: mouseEvent})
+  }
+}
 
 export const gestureActor = basicFSM<
   | {type: 'mousedown'; mouseEvent: MouseEvent}
@@ -26,8 +44,7 @@ export const gestureActor = basicFSM<
             const el = findChodrialByDomNode(e.mouseEvent.target)
             if (!el) return
             const {invoke} = el.atom.get().optsFn()
-            if (!invoke) return
-            invoke({type: 'MouseEvent', event: e.mouseEvent})
+            handleInvoke(invoke, el, e.mouseEvent)
           }
           break
         case 'mousedown':
@@ -83,6 +100,7 @@ export const gestureActor = basicFSM<
   }
 
   function handleMouseup(
+    el: ChodrialElement,
     opts: ChordialOpts,
     dragOpts: DragOpts,
     e: MouseEvent,
@@ -104,7 +122,8 @@ export const gestureActor = basicFSM<
 
     if (!dragHappened) {
       handlers.onClick?.(e)
-      opts.invoke?.({type: 'MouseEvent', event: e})
+      handleInvoke(opts.invoke, el, e)
+      // opts.invoke?.({type: 'MouseEvent', event: e})
     }
     idle()
   }
@@ -122,6 +141,7 @@ export const gestureActor = basicFSM<
       switch (e.mouseEvent.type) {
         case 'mouseup':
           handleMouseup(
+            el,
             opts,
             dragOpts,
             e.mouseEvent,
@@ -190,6 +210,7 @@ export const gestureActor = basicFSM<
       switch (e.mouseEvent.type) {
         case 'mouseup':
           handleMouseup(
+            el,
             opts,
             dragOpts,
             e.mouseEvent,

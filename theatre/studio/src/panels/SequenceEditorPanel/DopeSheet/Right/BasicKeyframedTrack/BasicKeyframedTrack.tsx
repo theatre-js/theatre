@@ -149,7 +149,7 @@ function useBasicKeyframedTrackContextMenu(
 ) {
   return useContextMenu(node, {
     displayName: 'Keyframe Track',
-    menuItems: () => {
+    items: () => {
       const selectionKeyframes =
         val(
           getStudio()!.atomP.ahistoric.clipboard.keyframesWithRelativePaths,

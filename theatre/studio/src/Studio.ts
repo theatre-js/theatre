@@ -8,7 +8,12 @@ import type {
   ITransactionPrivateApi,
 } from './StudioStore/StudioStore'
 import StudioStore from './StudioStore/StudioStore'
-import type {IExtension, IStudio, PaneClassDefinition} from './TheatreStudio'
+import type {
+  IExtension,
+  IStudio,
+  PaneClassDefinition,
+  _StudioInitializeOpts,
+} from './TheatreStudio'
 import TheatreStudio from './TheatreStudio'
 import {nanoid} from 'nanoid/non-secure'
 import type Project from '@theatre/core/projects/Project'
@@ -32,6 +37,13 @@ import {notify} from './notify'
 import type {RafDriverPrivateAPI} from '@theatre/core/rafDrivers'
 import {persistAtom} from '@theatre/utils/persistAtom'
 import produce from 'immer'
+import Storno from './Storno/Storno'
+import Auth from './Auth'
+import type {$IntentionalAny} from '@theatre/utils/types'
+import AppLink from './SyncStore/AppLink'
+import SyncServerLink from './SyncStore/SyncServerLink'
+import type {TrpcClientWrapped} from './SyncStore/utils';
+import { wrapTrpcClientWithAuth} from './SyncStore/utils'
 
 const DEFAULT_PERSISTENCE_KEY = 'theatre-0.4'
 
@@ -65,6 +77,13 @@ studio.initialize()
 \`\`\`
 `
 
+export type StudioOpts = {
+  serverUrl: string
+  persistenceKey: string
+  usePersistentStorage: boolean
+  rafDriver: RafDriverPrivateAPI
+}
+
 export type UpdateCheckerResponse =
   | {hasUpdates: true; newVersion: string; releasePage: string}
   | {hasUpdates: false}
@@ -81,7 +100,9 @@ export class Studio {
   readonly projectsP: Pointer<Record<ProjectId, Project>> =
     this._projectsProxy.pointer
 
-  private readonly _store = new StudioStore()
+  readonly _store: StudioStore
+  readonly auth: Auth
+  private readonly _storno = new Storno()
 
   private _corePrivateApi: CoreBits['privateAPI'] | undefined
 
@@ -92,11 +113,6 @@ export class Studio {
    * An atom holding the exports of '\@theatre/core'. Will be undefined if '\@theatre/core' is never imported
    */
   private _coreAtom = new Atom<{core?: CoreExports}>({})
-
-  /**
-   * A Deferred that will resolve once studio is initialized (and its state is read from storage)
-   */
-  private readonly _initializedDeferred: Deferred<void> = defer()
 
   readonly ephemeralAtom = new Atom<{
     // reflects the value of _initializedDeferred.promise. Since it's in an atom, it can be accessed via a pointer
@@ -141,6 +157,20 @@ export class Studio {
    */
   private _coreBits: CoreBits | undefined
 
+  private _optsDeferred: Deferred<StudioOpts>
+
+  private readonly _initializedPromise: Promise<void>
+
+  readonly _rawLinks: {
+    app: Promise<AppLink>
+    syncServer: Promise<SyncServerLink>
+  }
+
+  readonly authedLinks: {
+    app: TrpcClientWrapped<AppLink['api']>
+    syncServer: TrpcClientWrapped<SyncServerLink['api']>
+  }
+
   get ticker(): Ticker {
     if (!this._rafDriver) {
       throw new Error(
@@ -156,8 +186,67 @@ export class Studio {
     return this._store.atomP
   }
 
+  get _optsPromise() {
+    return this._optsDeferred.promise
+  }
+
   constructor() {
     this.address = {studioId: nanoid(10)}
+    this._optsDeferred = defer()
+
+    const syncServerLinkDeferred = defer<SyncServerLink>()
+    const syncServerLink = syncServerLinkDeferred.promise
+    const appLink = this._optsPromise.then(
+      ({serverUrl}): AppLink =>
+        typeof window === 'undefined'
+          ? (null as $IntentionalAny)
+          : new AppLink(serverUrl),
+    )
+
+    if (typeof window !== 'undefined') {
+      void appLink
+        .then((appLink) => {
+          return appLink.api.syncServerUrl.query().then((url) => {
+            syncServerLinkDeferred.resolve(new SyncServerLink(url))
+          })
+        })
+        .catch((err) => {
+          syncServerLinkDeferred.reject(err)
+          console.error(err)
+        })
+    } else {
+      syncServerLinkDeferred.resolve(null as $IntentionalAny)
+    }
+
+    this._rawLinks = {app: appLink, syncServer: syncServerLink}
+
+    this.auth =
+      typeof window !== 'undefined' ? new Auth(this) : (null as $IntentionalAny)
+
+    this.authedLinks = {
+      syncServer: wrapTrpcClientWithAuth(
+        this._rawLinks.syncServer.then((s) => s.api),
+        (fn: any, args: any[], path): any => {
+          return this.auth.wrapTrpcProcedureWithAuth(
+            fn,
+            args as $IntentionalAny,
+            path,
+          )
+        },
+      ),
+
+      app: wrapTrpcClientWithAuth(
+        this._rawLinks.app.then((s) => s.api),
+        (fn: any, args: any[], path): any =>
+          this.auth.wrapTrpcProcedureWithAuth(
+            fn,
+            args as $IntentionalAny,
+            path,
+          ),
+      ),
+    }
+
+    this._store = new StudioStore(this)
     this.publicApi = new TheatreStudio(this)
 
     this.ui = new UI(this)
@@ -174,52 +263,17 @@ export class Studio {
         }
       }, 100)
     }
+
+    this._initializedPromise = this._init()
+
+    this._initializedPromise.catch((reason) => {
+      console.error(reason)
+      return Promise.reject(reason)
+    })
   }
 
-  async initialize(opts?: Parameters<IStudio['initialize']>[0]) {
-    if (!this._coreBits) {
-      throw new Error(
-        `You seem to have imported \`@theatre/studio\` without importing \`@theatre/core\`. Make sure to include an import of \`@theatre/core\` before calling \`studio.initializer()\`.`,
-      )
-    }
-
-    if (this._initializeFnCalled) {
-      return this._initializedDeferred.promise
-    }
-    this._initializeFnCalled = true
-
-    if (this._didWarnAboutNotInitializing) {
-      console.warn(STUDIO_INITIALIZED_LATE_MSG)
-    }
-
-    const storeOpts: Parameters<StudioStore['initialize']>[0] = {
-      persistenceKey: DEFAULT_PERSISTENCE_KEY,
-      usePersistentStorage: true,
-      serverUrl: process.env.BACKEND_URL ?? 'https://app.theatrejs.com',
-    }
-
-    if (typeof opts?.serverUrl == 'string') {
-      if (
-        // a fully formed url
-        opts.serverUrl.match(/^(https?:)?\/\//) &&
-        // not ending with a slash
-        !opts.serverUrl.endsWith('/')
-      ) {
-        storeOpts.serverUrl = opts.serverUrl
-      } else {
-        throw new Error(
-          'parameter `serverUrl` in `studio.initialize({serverUrl})` must be either undefined or a fully formed url (e.g. `https://app.theatrejs.com`)',
-        )
-      }
-    }
-
-    if (typeof opts?.persistenceKey === 'string') {
-      storeOpts.persistenceKey = opts.persistenceKey
-    }
-
-    if (opts?.usePersistentStorage === false || typeof window === 'undefined') {
-      storeOpts.usePersistentStorage = false
-    }
+  async _init() {
+    const storeOpts = await this._optsDeferred.promise
 
     const ahistoricAtomInitializedD = defer<void>()
     if (storeOpts.usePersistentStorage) {
@@ -235,42 +289,13 @@ export class Studio {
       ahistoricAtomInitializedD.resolve()
     }
 
-    if (opts?.__experimental_rafDriver) {
-      if (
-        opts.__experimental_rafDriver.type !== 'Theatre_RafDriver_PublicAPI'
-      ) {
-        throw new Error(
-          'parameter `rafDriver` in `studio.initialize({__experimental_rafDriver})` must be either be undefined, or the return type of core.createRafDriver()',
-        )
-      }
-
-      const rafDriverPrivateApi = this._coreBits.privateAPI(
-        opts.__experimental_rafDriver,
-      )
-      if (!rafDriverPrivateApi) {
-        // TODO - need to educate the user about this edge case
-        throw new Error(
-          'parameter `rafDriver` in `studio.initialize({__experimental_rafDriver})` seems to come from a different version of `@theatre/core` than the version that is attached to `@theatre/studio`',
-        )
-      }
-      this._rafDriver = rafDriverPrivateApi
-    } else {
-      this._rafDriver = this._coreBits.getCoreRafDriver()
-    }
-
-    try {
-      await this._store.initialize(storeOpts)
-    } catch (e) {
-      this._initializedDeferred.reject(e)
-      return
-    }
+    this._rafDriver = storeOpts.rafDriver
 
     if (process.env.NODE_ENV !== 'test' && typeof window !== 'undefined') {
       await this.ui.ready
     }
 
     await ahistoricAtomInitializedD.promise
-    this._initializedDeferred.resolve()
     this.ephemeralAtom.setByPointer((p) => p.initialized, true)
 
     if (process.env.NODE_ENV !== 'test') {
@@ -281,8 +306,31 @@ export class Studio {
     }
   }
 
+  async initialize(opts?: _StudioInitializeOpts) {
+    if (!this._coreBits) {
+      throw new Error(
+        `You seem to have imported \`@theatre/studio\` without importing \`@theatre/core\`. Make sure to include an import of \`@theatre/core\` before calling \`studio.initializer()\`.`,
+      )
+    }
+
+    if (this._initializeFnCalled) {
+      return this._initializedPromise
+    }
+    this._initializeFnCalled = true
+
+    if (this._didWarnAboutNotInitializing) {
+      console.warn(STUDIO_INITIALIZED_LATE_MSG)
+    }
+
+    if (this._optsDeferred.status === 'pending') {
+      this._optsDeferred.resolve(sanitizeOpts(opts, this._coreBits))
+    }
+
+    return this._initializedPromise
+  }
+
   get initialized(): Promise<void> {
-    return this._initializedDeferred.promise
+    return this._initializedPromise
   }
 
   get initializedP(): Pointer<boolean> {
@@ -332,12 +380,6 @@ export class Studio {
     undoable: boolean = true,
   ): unknown {
     return this._store.transaction(fn, undoable)
-  }
-
-  authenticate(
-    opts: Parameters<StudioStore['authenticate']>[0],
-  ): ReturnType<StudioStore['authenticate']> {
-    return this._store.authenticate(opts)
   }
 
   __dev_startHistoryFromScratch(newHistoricPart: StudioHistoricState) {
@@ -638,4 +680,60 @@ export class Studio {
   clearPersistentStorage(persistenceKey = DEFAULT_PERSISTENCE_KEY) {
     this._store.__experimental_clearPersistentStorage(persistenceKey)
   }
+}
+
+function sanitizeOpts(
+  opts: _StudioInitializeOpts | undefined,
+  coreBits: CoreBits,
+): StudioOpts {
+  const storeOpts: StudioOpts = {
+    persistenceKey: DEFAULT_PERSISTENCE_KEY,
+    usePersistentStorage: true,
+    serverUrl: process.env.BACKEND_URL ?? 'https://app.theatrejs.com',
+    rafDriver: coreBits.getCoreRafDriver(),
+  }
+
+  if (typeof opts?.serverUrl == 'string') {
+    if (
+      // a fully formed url
+      opts.serverUrl.match(/^(https?:)?\/\//) &&
+      // not ending with a slash
+      !opts.serverUrl.endsWith('/')
+    ) {
+      storeOpts.serverUrl = opts.serverUrl
+    } else {
+      throw new Error(
+        'parameter `serverUrl` in `studio.initialize({serverUrl})` must be either undefined or a fully formed url (e.g. `https://app.theatrejs.com`)',
+      )
+    }
+  }
+
+  if (typeof opts?.persistenceKey === 'string') {
+    storeOpts.persistenceKey = opts.persistenceKey
+  }
+
+  if (opts?.usePersistentStorage === false || typeof window === 'undefined') {
+    storeOpts.usePersistentStorage = false
+  }
+
+  if (opts?.__experimental_rafDriver) {
+    if (opts?.__experimental_rafDriver.type !== 'Theatre_RafDriver_PublicAPI') {
+      throw new Error(
+        'parameter `rafDriver` in `studio.initialize({__experimental_rafDriver})` must be either be undefined, or the return type of core.createRafDriver()',
+      )
+    }
+
+    const rafDriverPrivateApi = coreBits.privateAPI(
+      opts.__experimental_rafDriver,
+    )
+    if (!rafDriverPrivateApi) {
+      // TODO - need to educate the user about this edge case
+      throw new Error(
+        'parameter `rafDriver` in `studio.initialize({__experimental_rafDriver})` seems to come from a different version of `@theatre/core` than the version that is attached to `@theatre/studio`',
+      )
+    }
+    storeOpts.rafDriver = rafDriverPrivateApi
+  }
+
+  return storeOpts
 }

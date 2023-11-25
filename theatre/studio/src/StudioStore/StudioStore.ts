@@ -4,7 +4,6 @@ import type {
   StudioHistoricState,
   StudioState,
 } from '@theatre/sync-server/state/types'
-import {defer} from '@theatre/utils/defer'
 import type {$FixMe, $IntentionalAny, VoidFn} from '@theatre/utils/types'
 import {Atom} from '@theatre/dataverse'
 import type {Pointer} from '@theatre/dataverse'
@@ -12,12 +11,6 @@ import type {Draft} from 'immer'
 import type {OnDiskState} from '@theatre/sync-server/state/types/core'
 import * as Saaz from '@theatre/saaz'
 import type {ProjectId} from '@theatre/sync-server/state/types/core'
-import AppLink from '@theatre/studio/SyncStore/AppLink'
-import type {
-  TrpcClientWrapped,
-} from '@theatre/studio/SyncStore/SyncStoreAuth';
-import SyncStoreAuth from '@theatre/studio/SyncStore/SyncStoreAuth'
-import SyncServerLink from '@theatre/studio/SyncStore/SyncServerLink'
 import {schema} from '@theatre/sync-server/state/schema'
 import type {
   IInvokableDraftEditors,
@@ -26,17 +19,13 @@ import type {
 } from '@theatre/sync-server/state/schema'
 import createTransactionPrivateApi from './createTransactionPrivateApi'
 import {SaazBack} from '@theatre/saaz'
+import type {Studio} from '@theatre/studio/Studio'
+import getStudio from '@theatre/studio/getStudio'
 
 export type Drafts = {
   historic: Draft<StudioHistoricState>
   ahistoric: Draft<StudioAhistoricState>
   ephemeral: Draft<StudioEphemeralState>
-}
-
-export type StudioStoreOptions = {
-  serverUrl: string
-  persistenceKey: string
-  usePersistentStorage: boolean
 }
 
 export interface ITransactionPrivateApi {
@@ -56,15 +45,6 @@ export default class StudioStore {
   private readonly _atom: Atom<StudioState>
   readonly atomP: Pointer<StudioState>
 
-  private _appLink: Promise<AppLink>
-  private _syncServerLink: Promise<SyncServerLink>
-  private _auth: SyncStoreAuth
-
-  private _state = new Atom<{
-    ready: boolean
-  }>({ready: false})
-
-  private _optionsDeferred = defer<StudioStoreOptions>()
   private _saaz: Saaz.SaazFront<
     {$schemaVersion: number},
     IStateEditors,
@@ -72,47 +52,7 @@ export default class StudioStore {
     StudioState
   >
 
-  constructor() {
-    const syncServerLinkDeferred = defer<SyncServerLink>()
-    this._syncServerLink = syncServerLinkDeferred.promise
-    this._appLink = this._optionsDeferred.promise.then(({serverUrl}) =>
-      typeof window === 'undefined' && false
-        ? (null as $IntentionalAny)
-        : new AppLink(serverUrl),
-    )
-
-    if (typeof window !== 'undefined') {
-      void this._appLink
-        .then((appLink) => {
-          return appLink.api.syncServerUrl.query().then((url) => {
-            syncServerLinkDeferred.resolve(new SyncServerLink(url))
-          })
-        })
-        .catch((err) => {
-          syncServerLinkDeferred.reject(err)
-          console.error(err)
-        })
-    } else {
-      syncServerLinkDeferred.resolve(null as $IntentionalAny)
-    }
-
-    this._auth =
-      typeof window !== 'undefined'
-        ? new SyncStoreAuth(
-            this._optionsDeferred.promise,
-            this._appLink,
-            this._syncServerLink,
-          )
-        : (null as $IntentionalAny)
-
-    if (typeof window !== 'undefined') {
-      void this._auth.ready.then(() => {
-        this._state.setByPointer((p) => p.ready, true)
-      })
-    } else {
-      this._state.setByPointer((p) => p.ready, true)
-    }
-
+  constructor(readonly studio: Studio) {
     const backend =
       typeof window === 'undefined'
         ? new SaazBack({
@@ -121,15 +61,14 @@ export default class StudioStore {
             schema,
           })
         : createTrpcBackend(
-            this._optionsDeferred.promise.then((opts) => opts.persistenceKey),
-            this.syncServerApi,
+            this.studio._optsPromise.then((opts) => opts.persistenceKey),
           )
 
     const saaz = new Saaz.SaazFront({
       schema,
       dbName: 'test',
       storageAdapter:
-        typeof window === 'undefined' || process.env.NODE_ENV === 'test'
+        typeof window === 'undefined' || process.env.NODE_ENV === 'test' || true
           ? new Saaz.FrontMemoryAdapter()
           : new Saaz.FrontIDBAdapter('blah', 'test'),
       backend,
@@ -143,14 +82,6 @@ export default class StudioStore {
       this._atom.set(state.cell as $IntentionalAny)
     })
     this.atomP = this._atom.pointer
-  }
-
-  async initialize(opts: {
-    serverUrl: string
-    persistenceKey: string
-    usePersistentStorage: boolean
-  }): Promise<void> {
-    this._optionsDeferred.resolve(opts)
   }
 
   getState(): StudioState {
@@ -301,23 +232,20 @@ export default class StudioStore {
     // return generatedOnDiskState
   }
 
-  authenticate(opts?: Parameters<typeof this._auth.authenticate>[0]) {
-    return this._auth.authenticate(opts)
-  }
+  // get appApi(): TrpcClientWrapped<AppLink['api']> {
+  //   return this.auth.appApi
+  // }
 
-  get appApi(): TrpcClientWrapped<AppLink['api']> {
-    return this._auth.appApi
-  }
-
-  get syncServerApi(): TrpcClientWrapped<SyncServerLink['api']> {
-    return this._auth.syncServerApi
-  }
+  // get syncServerApi(): TrpcClientWrapped<SyncServerLink['api']> {
+  //   return this.auth.syncServerApi
+  // }
 }
+
 function createTrpcBackend(
   dbNamePromise: Promise<string>,
-  syncServerApi: StudioStore['syncServerApi'],
 ): Saaz.SaazBackInterface {
   const applyUpdates: Saaz.SaazBackInterface['applyUpdates'] = async (opts) => {
+    const syncServerApi = await getStudio().authedLinks.syncServer
     const dbName = await dbNamePromise
     return await syncServerApi.projectState.saaz_applyUpdates.mutate({
       dbName,
@@ -329,6 +257,8 @@ function createTrpcBackend(
     opts,
   ) => {
     const dbName = await dbNamePromise
+    const syncServerApi = await getStudio().authedLinks.syncServer
+
     return await syncServerApi.projectState.saaz_updatePresence.mutate({
       dbName,
       opts,
@@ -338,6 +268,7 @@ function createTrpcBackend(
   const getUpdatesSinceClock: Saaz.SaazBackInterface['getUpdatesSinceClock'] =
     async (opts) => {
       const dbName = await dbNamePromise
+      const syncServerApi = await getStudio().authedLinks.syncServer
 
       return await syncServerApi.projectState.saaz_getUpdatesSinceClock.query({
         dbName,
@@ -348,6 +279,7 @@ function createTrpcBackend(
   const getLastIncorporatedPeerClock: Saaz.SaazBackInterface['getLastIncorporatedPeerClock'] =
     async (opts) => {
       const dbName = await dbNamePromise
+      const syncServerApi = await getStudio().authedLinks.syncServer
 
       return await syncServerApi.projectState.saaz_getLastIncorporatedPeerClock.query(
         {
@@ -359,6 +291,7 @@ function createTrpcBackend(
 
   const closePeer: Saaz.SaazBackInterface['closePeer'] = async (opts) => {
     const dbName = await dbNamePromise
+    const syncServerApi = await getStudio().authedLinks.syncServer
 
     return await syncServerApi.projectState.saaz_closePeer.mutate({
       dbName,
@@ -371,6 +304,7 @@ function createTrpcBackend(
     onUpdate,
   ) => {
     const dbName = await dbNamePromise
+    const syncServerApi = await getStudio().authedLinks.syncServer
 
     const subscription = syncServerApi.projectState.saaz_subscribe.subscribe(
       {

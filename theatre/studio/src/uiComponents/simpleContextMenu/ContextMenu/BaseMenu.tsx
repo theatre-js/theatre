@@ -14,8 +14,11 @@ const MenuContainer = styled.ul`
   position: absolute;
   min-width: ${minWidth}px;
   z-index: 10000;
-  background: ${transparentize(0.8, '#000000')};
-  backdrop-filter: blur(8px) saturate(300%) contrast(65%) brightness(70%);
+  /* background: ${transparentize(0.4, '#000000')};
+  backdrop-filter: blur(8px) saturate(300%) contrast(65%) brightness(70%); */
+
+  background: rgb(45 55 66 / 75%);
+  backdrop-filter: blur(8px) brightness(70%);
   color: white;
   border: 0.5px solid #6262622c;
   box-sizing: border-box;
@@ -49,12 +52,15 @@ const MenuTitle = styled.div`
   } */
 `
 
-type MenuItem = {
-  label: string | ElementType
-  callback?: (e: React.MouseEvent) => void
-  enabled?: boolean
-  // subs?: Item[]
-}
+type MenuItem =
+  | {
+      type?: 'normal'
+      label: string | ElementType
+      callback?: (e: React.MouseEvent) => void
+      enabled?: boolean
+      // subs?: Item[]
+    }
+  | {type: 'separator'}
 
 const BaseMenu: React.FC<{
   items: MenuItem[]
@@ -67,21 +73,31 @@ const BaseMenu: React.FC<{
       {SHOW_OPTIONAL_MENU_TITLE && props.displayName ? (
         <MenuTitle>{props.displayName}</MenuTitle>
       ) : null}
-      {props.items.map((item, i) => (
-        <Item
-          key={`item-${i}`}
-          label={item.label}
-          enabled={item.enabled === false ? false : true}
-          onClick={(e) => {
-            if (item.callback) {
-              item.callback(e)
-            }
-            props.onRequestClose()
-          }}
-        />
-      ))}
+      {props.items.map((item, i) =>
+        item.type === 'separator' ? (
+          <Separator key={`item-${i}`} />
+        ) : (
+          <Item
+            key={`item-${i}`}
+            label={item.label}
+            enabled={item.enabled === false ? false : true}
+            onClick={(e) => {
+              if (item.callback) {
+                item.callback(e)
+              }
+              props.onRequestClose()
+            }}
+          />
+        ),
+      )}
     </MenuContainer>
   )
 })
+
+const Separator = styled.div`
+  height: 1px;
+  margin: 2px 8px;
+  background: #6262622c;
+`
 
 export default BaseMenu

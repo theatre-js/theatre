@@ -33,6 +33,9 @@ let currentCapture: null | CaptureInfo = null
 
 const isPointerBeingCaptured = () => currentCapture != null
 
+/**
+ * @deprecated Once all the `usePopover()`/`useDrag()` calls are removed, we should move this to one of the actors under `useChordial()`
+ */
 export function createPointerCapturing(forDebugName: string) {
   /** keep track of the captures being made by this user of {@link usePointerCapturing} */
   let localCapture: CaptureInfo | null
@@ -81,6 +84,7 @@ export function createPointerCapturing(forDebugName: string) {
 }
 
 /**
+ * @deprecated Once all the `usePopover()`/`useDrag()` calls are removed, we should move this to one of the actors under `useChordial()`
  * Used to ensure we're locking drag and pointer events to a single place in the UI logic.
  * Without this, we can much more easily accidentally create multiple drag handlers on
  * child / parent dom elements which both `useDrag`, for example.

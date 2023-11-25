@@ -211,7 +211,7 @@ function useMarkerContextMenu(
   },
 ) {
   return useContextMenu(node, {
-    menuItems() {
+    items() {
       return [
         {
           type: 'normal',

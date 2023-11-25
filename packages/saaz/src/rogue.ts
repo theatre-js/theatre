@@ -271,10 +271,11 @@ const traps: ProxyHandler<State> = {
       if (Object.hasOwn(mapProps, prop)) {
         const value = mapProps[prop]
 
-        if (!isCell(value))
+        if (!isCell(value)) {
           throw Error(
             `mapProps[${prop}] is not an ahistoric cell. this is a bug.`,
           )
+        }
         if (value.$type[0] === 'deleted') return undefined
         if (value.$type[0] === 'boxed') {
           const boxedValue =

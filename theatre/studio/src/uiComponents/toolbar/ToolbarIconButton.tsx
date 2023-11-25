@@ -24,7 +24,7 @@ export const Container = styled.button`
   backdrop-filter: blur(14px);
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 2px;
+  border-radius: 3px;
 
   svg {
     display: block;

@@ -8,7 +8,6 @@ import {height as itemHeight} from './Item'
 import {PortalContext} from 'reakit'
 import useOnKeyDown from '@theatre/studio/uiComponents/useOnKeyDown'
 import BaseMenu from './BaseMenu'
-import type {$IntentionalAny} from '@theatre/utils/types'
 import type {ContextMenuItem} from '@theatre/studio/uiComponents/chordial/chordialInternals'
 
 /**
@@ -27,31 +26,13 @@ export type IContextMenuItemsValue =
 export type ContextMenuProps = {
   items: IContextMenuItemsValue
   displayName?: React.ReactNode
-  clickPoint: {
+  clickPoint?: {
     clientX: number
     clientY: number
   }
   onRequestClose: () => void
   // default: true
   closeOnPointerLeave?: boolean
-}
-
-/**
- * Useful helper in development to prevent the context menu from auto-closing,
- * so its easier to inspect the DOM / change the styles, etc.
- *
- * Call window.$disableAutoCloseContextMenu() in the console to disable auto-close
- */
-const shouldAutoCloseByDefault =
-  process.env.NODE_ENV === 'development'
-    ? (): boolean =>
-        (window as $IntentionalAny).__autoCloseContextMenuByDefault ?? true
-    : (): boolean => true
-
-if (process.env.NODE_ENV === 'development') {
-  ;(window as $IntentionalAny).$disableAutoCloseContextMenu = () => {
-    ;(window as $IntentionalAny).__autoCloseContextMenuByDefault = false
-  }
 }
 
 /**
@@ -66,6 +47,14 @@ const ContextMenu: React.FC<ContextMenuProps> = (props) => {
   useLayoutEffect(() => {
     if (!rect || !container) return
 
+    const windowGap = 10
+    const windowEdges = {
+      left: windowGap,
+      top: windowGap,
+      right: windowSize.width - windowGap,
+      bottom: windowSize.height - windowGap,
+    }
+
     const preferredAnchorPoint = {
       left: rect.width / 2,
       // if there is a displayName, make sure to move the context menu up by one item,
@@ -73,21 +62,23 @@ const ContextMenu: React.FC<ContextMenuProps> = (props) => {
       top: itemHeight / 2 + (props.displayName ? itemHeight : 0),
     }
 
+    const clickPoint = props.clickPoint ?? {clientX: 0, clientY: 0}
+
     const pos = {
-      left: props.clickPoint.clientX - preferredAnchorPoint.left,
-      top: props.clickPoint.clientY - preferredAnchorPoint.top,
+      left: clickPoint.clientX - preferredAnchorPoint.left,
+      top: clickPoint.clientY - preferredAnchorPoint.top,
     }
 
-    if (pos.left < 0) {
-      pos.left = 0
-    } else if (pos.left + rect.width > windowSize.width) {
-      pos.left = windowSize.width - rect.width
+    if (pos.left < windowEdges.left) {
+      pos.left = windowEdges.left
+    } else if (pos.left + rect.width > windowEdges.right) {
+      pos.left = windowEdges.right - rect.width
     }
 
-    if (pos.top < 0) {
-      pos.top = 0
-    } else if (pos.top + rect.height > windowSize.height) {
-      pos.top = windowSize.height - rect.height
+    if (pos.top < windowEdges.top) {
+      pos.top = windowEdges.top
+    } else if (pos.top + rect.height > windowEdges.bottom) {
+      pos.top = windowEdges.bottom - rect.height
     }
 
     container.style.left = pos.left + 'px'
@@ -100,8 +91,7 @@ const ContextMenu: React.FC<ContextMenuProps> = (props) => {
         e.clientY < pos.top - pointerDistanceThreshold ||
         e.clientY > pos.top + rect.height + pointerDistanceThreshold
       ) {
-        if (props.closeOnPointerLeave !== false && shouldAutoCloseByDefault())
-          props.onRequestClose()
+        if (props.closeOnPointerLeave !== false) props.onRequestClose()
       }
     }
 

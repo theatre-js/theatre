@@ -303,7 +303,7 @@ function useAggregatedKeyframeTrackContextMenu(
   return useContextMenu(node, {
     onOpen: debugOnOpen,
     displayName: 'Aggregate Keyframe Track',
-    menuItems: () => {
+    items: () => {
       const selectionKeyframes =
         pointerToPrism(
           getStudio()!.atomP.ahistoric.clipboard.keyframesWithRelativePaths,
