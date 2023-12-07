@@ -1,6 +1,7 @@
 import {Atom} from '@theatre/dataverse'
 import type {$IntentionalAny} from '@theatre/utils/types'
-import {useEffect, type ElementType, type MutableRefObject} from 'react'
+import {useEffect} from 'react'
+import type {ElementType, MutableRefObject} from 'react'
 import type {DragOpts} from '@theatre/studio/uiComponents/useDrag'
 import type React from 'react'
 

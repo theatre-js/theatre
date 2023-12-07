@@ -30,7 +30,7 @@
     "precommit": "yarn run docs"
   },
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.36.4",
+    "@microsoft/api-extractor": "^7.38.5",
     "@theatre/dataverse": "workspace:*",
     "@theatre/utils": "workspace:*",
     "@types/jest": "^26.0.23",

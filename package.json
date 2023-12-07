@@ -33,7 +33,7 @@
   "devDependencies": {
     "@cspotcode/zx": "^6.1.2",
     "@microsoft/api-documenter": "^7.19.0",
-    "@microsoft/api-extractor": "^7.28.6",
+    "@microsoft/api-extractor": "^7.38.5",
     "@types/eslint": "^8.44.2",
     "@types/jest": "^26.0.23",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
