@@ -1,5 +1,6 @@
 import OutlinePanel from '@theatre/studio/panels/OutlinePanel/OutlinePanel'
 import DetailPanel from '@theatre/studio/panels/DetailPanel/DetailPanel'
+import NodesPanel from '@theatre/studio/panels/NodesPanel/NodesPanel'
 import React from 'react'
 import getStudio from '@theatre/studio/getStudio'
 import {useVal} from '@theatre/react'
@@ -22,6 +23,7 @@ const PanelsRoot: React.FC = () => {
       {paneEls}
       <OutlinePanel />
       <DetailPanel />
+      <NodesPanel />
       <SequenceEditorPanel />
     </>
   )

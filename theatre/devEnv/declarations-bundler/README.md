@@ -9,5 +9,5 @@ Declarations are produced in two steps:
    `tsconfig.declarations.json`. This produces a `.d.ts` file for every module
    in the project and emits them to `.temp/`.
 2. (`$ npm run build:declarations:bundle`): We then use rollup with
-   [rollup-plugin-dts](https://github.com/Swatinem/rollup-plugin-dts) to bundle
+   [rollup-plugin-flat-dts](https://github.com/run-z/rollup-plugin-flat-dts) to bundle
    the declaration files into a concise bundle.
