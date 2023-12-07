@@ -86,7 +86,6 @@
     "redux-actions": "^2.6.5",
     "rimraf": "^3.0.2",
     "rollup": "^4.6.1",
-    "rollup-plugin-flat-dts": "^2.5.0",
     "shallowequal": "^1.1.0",
     "styled-components": "^5.3.11",
     "superjson": "^1.13.1",

@@ -1,11 +1,10 @@
 import alias from '@rollup/plugin-alias'
 import path from 'path'
-import { fileURLToPath } from 'url';
-import flatDts from 'rollup-plugin-flat-dts'
-import ts from 'rollup-plugin-typescript2'
+import { fileURLToPath } from 'url'
+import dts from 'rollup-plugin-dts'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const fromPrivatePackage = (s) => path.join(__dirname, '../..', s)
 
@@ -20,7 +19,6 @@ const config = ['studio', 'core'].map((which) => {
       dir: fromPackage('dist'),
       entryFileNames: 'index.d.ts',
       format: 'es',
-      plugins: [ts({ tsconfig: '../../tsconfig.json' }), flatDts({ tsconfig: '../../tsconfig.json' })],
     },
     external: (s) => {
       if (
@@ -42,7 +40,7 @@ const config = ['studio', 'core'].map((which) => {
     },
 
     plugins: [
-      ts(),
+      dts({respectExternal: false}),
       alias({
         entries: [
           {

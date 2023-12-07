@@ -55,7 +55,6 @@
     "lint-staged": "^13.0.3",
     "node-gyp": "^9.1.0",
     "prettier": "^3.0.2",
-    "rollup-plugin-typescript2": "^0.36.0",
     "sade": "^1.8.1",
     "typescript": "5.1.6",
     "yaml": "^2.3.1"
@@ -65,6 +64,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@actions/core": "^1.10.0"
+    "@actions/core": "^1.10.0",
+    "rollup-plugin-dts": "^6.1.0"
   }
 }
