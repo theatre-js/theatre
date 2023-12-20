@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import type {Pointer, Prism} from '@theatre/dataverse'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
@@ -875,8 +876,8 @@ describe(`The exhaustive guide to dataverse`, () => {
         return internalState.hot === false
           ? 'cold'
           : internalState.handle._isFresh
-          ? 'hot:fresh'
-          : 'hot:stale'
+            ? 'hot:fresh'
+            : 'hot:stale'
       }
 
       // Every prism starts out as 'cold'

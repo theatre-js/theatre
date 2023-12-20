@@ -1,6 +1,5 @@
 import lodashGet from 'lodash-es/get'
 import type {PathToProp} from '@theatre/utils/pathToProp'
-import type {SerializableValue} from '@theatre/utils/types'
 
 /**
  * Returns the value at `path` of `v`.
@@ -14,10 +13,7 @@ import type {SerializableValue} from '@theatre/utils/types'
  * getDeep('hello', ['a']) // undefined
  * ```
  */
-export default function getDeep(
-  v: SerializableValue,
-  path: PathToProp,
-): unknown {
+export default function getDeep(v: {}, path: PathToProp): unknown {
   if (path.length === 0) return v
   return lodashGet(v, path)
 }

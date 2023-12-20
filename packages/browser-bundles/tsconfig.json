@@ -10,5 +10,9 @@
     "composite": true
   },
   "include": ["./src/**/*"],
-  "references": [{"path": "../dataverse"}, {"path": "../../theatre"}]
+  "references": [
+    {"path": "../dataverse"},
+    {"path": "../core"},
+    {"path": "../studio"}
+  ]
 }

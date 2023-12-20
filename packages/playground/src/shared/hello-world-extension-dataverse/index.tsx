@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import type {ToolsetConfig} from '@theatre/studio'
+import type {ToolsetConfig} from '@theatre/core'
 import studio from '@theatre/studio'
 import extension from '@theatre/r3f/dist/extension'
 import {Atom, prism, val} from '@theatre/dataverse'

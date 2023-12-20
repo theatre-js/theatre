@@ -2,8 +2,6 @@
 module.exports = {
   testMatch: [
     '<rootDir>/packages/*/src/**/*.test.ts',
-    '<rootDir>/theatre/*/src/**/*.test.ts',
-    '<rootDir>/theatre/*/src/**/*.test.ts',
     '<rootDir>/devEnv/**/*.test.ts',
   ],
   moduleNameMapper: {
@@ -19,8 +17,11 @@ module.exports = {
     'react-icons/(.*)': 'identity-obj-proxy',
     'react-merge-refs': 'identity-obj-proxy',
     '@trpc/client': 'identity-obj-proxy',
+    oauth4webapi: 'identity-obj-proxy',
   },
-  setupFiles: ['./theatre/shared/src/setupTestEnv.ts'],
+  setupFiles: [
+    './packages/studio/src/integration-tests/setupIntegrationTestEnv.ts',
+  ],
   automock: false,
   transform: {
     '^.+\\.tsx?$': [

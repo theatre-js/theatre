@@ -1,9 +1,13 @@
 import type {
   BasicKeyframedTrack,
   HistoricPositionalSequence,
-  Keyframe,
-  KeyframeType,
   SheetState_Historic,
+  StudioSheetItemKey,
+  UIPanelId,
+  GraphEditorColors,
+} from '@theatre/core/types/private'
+
+import type {
   ProjectAddress,
   PropAddress,
   SheetAddress,
@@ -12,11 +16,14 @@ import type {
   KeyframeId,
   SequenceTrackId,
   PaneInstanceId,
+  BasicKeyframe,
+  KeyframeType,
   SequenceMarkerId,
-  StudioSheetItemKey,
-  UIPanelId,
-  GraphEditorColors,
-} from './types'
+  SerializableMap,
+  SerializablePrimitive,
+  SerializableValue,
+  IRange,
+} from '@theatre/core/types/public'
 
 import {
   encodePathToProp,
@@ -24,13 +31,7 @@ import {
 } from '@theatre/utils/pathToProp'
 import removePathFromObject from '@theatre/utils/removePathFromObject'
 import {transformNumber} from '@theatre/utils/transformNumber'
-import type {
-  $IntentionalAny,
-  IRange,
-  SerializableMap,
-  SerializablePrimitive,
-  SerializableValue,
-} from '@theatre/utils/types'
+import type {$IntentionalAny} from '@theatre/utils/types'
 import findLastIndex from 'lodash-es/findLastIndex'
 import keyBy from 'lodash-es/keyBy'
 import pullFromArray from 'lodash-es/pull'
@@ -43,10 +44,10 @@ import type {
   StudioAhistoricState,
   StudioHistoricStateSequenceEditorMarker,
   StudioState,
-} from '@theatre/sync-server/src/state/types/studio'
+} from '@theatre/core/types/private/studio'
 import {clamp, cloneDeep} from 'lodash-es'
 import {pointableSetUtil} from '@theatre/utils/PointableSet'
-import type {ProjectState_Historic} from './types'
+import type {ProjectState_Historic} from '@theatre/core/types/private/core'
 import {current} from '@theatre/saaz'
 import type {Draft as _Draft} from 'immer'
 import type {
@@ -54,7 +55,9 @@ import type {
   Schema,
 } from '@theatre/saaz/src/types'
 import {nanoid as generateNonSecure} from 'nanoid/non-secure'
-import memoizeFn from '@theatre/utils/memoizeFn'
+import {__private} from '@theatre/core'
+
+const {keyframeUtils} = __private
 
 export const graphEditorColors: GraphEditorColors = {
   '1': {iconColor: '#b98b08'},
@@ -969,7 +972,7 @@ export namespace stateEditors {
               trackId: SequenceTrackId
               keyframeId: KeyframeId
             },
-          ): Keyframe | undefined {
+          ): BasicKeyframe | undefined {
             const track = _getTrack(draft, api, p)
             if (!track) return
             return track.keyframes.byId[p.keyframeId]
@@ -1228,7 +1231,7 @@ export namespace stateEditors {
             api: API,
             p: WithoutSheetInstance<SheetObjectAddress> & {
               trackId: SequenceTrackId
-              keyframes: Array<Keyframe>
+              keyframes: Array<BasicKeyframe>
               snappingFunction: SnappingFunction
             },
           ) {
@@ -1365,35 +1368,4 @@ export const schema: Schema<{$schemaVersion: number}, IStateEditors, {}> = {
   editors: {},
   generators: {},
   cellShape: null as $IntentionalAny as StudioState,
-}
-
-export namespace keyframeUtils {
-  export const getSortedKeyframes = (
-    keyframes: BasicKeyframedTrack['keyframes'],
-  ): Keyframe[] => {
-    const sorted = Object.values(
-      keyframes.byId,
-    ) as $IntentionalAny as Keyframe[]
-    sorted.sort((a, b) => a.position! - b.position!)
-
-    return cloneDeep(sorted)
-  }
-
-  export const getSortedKeyframesCached = memoizeFn(getSortedKeyframes)
-
-  export const fromArray = (
-    keyframes: Keyframe[],
-  ): BasicKeyframedTrack['keyframes'] => {
-    const byId: BasicKeyframedTrack['keyframes']['byId'] = {}
-    const allIds: BasicKeyframedTrack['keyframes']['allIds'] = {}
-
-    for (const keyframe of keyframes) {
-      byId[keyframe.id] = keyframe
-      allIds[keyframe.id] = true
-    }
-
-    return cloneDeep({byId, allIds})
-  }
-
-  export const fromSortedKeyframesCached = memoizeFn(fromArray)
 }

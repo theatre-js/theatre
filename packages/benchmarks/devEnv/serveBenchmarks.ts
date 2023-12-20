@@ -1,5 +1,5 @@
 import path from 'path'
-import {definedGlobals} from '../../../theatre/devEnv/definedGlobals'
+import {definedGlobals} from '../../core/devEnv/definedGlobals'
 
 const benchmarksDir = path.join(__dirname, '..')
 

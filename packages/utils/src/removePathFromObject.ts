@@ -1,5 +1,5 @@
 import type {PathToProp} from './pathToProp'
-import type {$FixMe, $IntentionalAny, SerializableMap} from './types'
+import type {$FixMe, $IntentionalAny} from './types'
 
 /**
  * Mutates `base` to remove the path `path` from it. And if deleting a key makes
@@ -14,7 +14,7 @@ import type {$FixMe, $IntentionalAny, SerializableMap} from './types'
  * ```
  */
 export default function removePathFromObject(
-  base: SerializableMap,
+  base: Record<string, unknown>,
   path: PathToProp,
 ) {
   if (typeof base !== 'object' || base === null) return

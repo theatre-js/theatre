@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react-swc'
 import path from 'path'
 import fg from 'fast-glob'
 import {getAliasesFromTsConfigForRollup} from '../../devEnv/getAliasesFromTsConfig'
-import {definedGlobals} from '../../theatre/devEnv/definedGlobals'
+import {definedGlobals} from '../core/devEnv/definedGlobals'
 import * as dotenv from 'dotenv'
 import * as fs from 'fs'
 

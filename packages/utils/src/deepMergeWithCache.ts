@@ -1,8 +1,4 @@
 import type {$IntentionalAny} from '@theatre/utils/types'
-import type {
-  DeepPartialOfSerializableValue,
-  SerializableMap,
-} from '@theatre/utils/types'
 
 /**
  * This is like `Object.assign(base, override)`, with the following differences:
@@ -48,16 +44,16 @@ import type {
  * Plus, keeping the values referentially stable helps lib authors optimize how they patch these values
  * to the rendering engine.
  */
-export default function deepMergeWithCache<T extends SerializableMap>(
-  base: DeepPartialOfSerializableValue<T>,
-  override: DeepPartialOfSerializableValue<T>,
+export default function deepMergeWithCache<T extends {}>(
+  base: Partial<T>,
+  override: Partial<T>,
   cache: WeakMap<{}, unknown>,
-): DeepPartialOfSerializableValue<T> {
+): Partial<T> {
   const _cache: WeakMap<
-    SerializableMap,
+    {},
     {
-      override: DeepPartialOfSerializableValue<T>
-      merged: DeepPartialOfSerializableValue<T>
+      override: Partial<T>
+      merged: Partial<T>
     }
   > = cache as $IntentionalAny
 
@@ -75,14 +71,10 @@ export default function deepMergeWithCache<T extends SerializableMap>(
     // @ts-ignore @todo
     merged[key] =
       typeof valueInOverride === 'object' && typeof valueInBase === 'object'
-        ? deepMergeWithCache(
-            valueInBase as SerializableMap,
-            valueInOverride,
-            cache,
-          )
+        ? deepMergeWithCache(valueInBase as {}, valueInOverride as {}, cache)
         : valueInOverride === undefined
-        ? valueInBase
-        : valueInOverride
+          ? valueInBase
+          : valueInOverride
   }
 
   cache.set(base, {override, merged})

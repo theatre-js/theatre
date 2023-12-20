@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": ".temp/declarations",
+    "lib": ["es2017", "dom", "ESNext"],
+    "rootDir": ".",
+    "composite": true,
+    "types": ["jest", "node"],
+    "emitDeclarationOnly": true
+  },
+  "references": [{"path": "../utils"}, {"path": "../dataverse"}],
+  "include": ["./globals.d.ts", "./src/**/*", "./devEnv/**/*"],
+  "exclude": ["**/node_modules", "**/.*", "**/xeno", "**/dist", "**/.temp"]
+}

@@ -91,7 +91,6 @@
     // "overrideTsconfig": {
     //   "compilerOptions": {
     //     "paths": {
-    //       // "@theatre/shared/*": ["./theatre/shared/src/*"]
     //     }
     //   }
     // }

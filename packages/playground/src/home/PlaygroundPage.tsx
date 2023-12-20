@@ -3,7 +3,7 @@ import styled, {StyleSheetManager} from 'styled-components'
 import {ItemSectionWithPreviews} from './ItemSectionWithPreviews'
 import {PlaygroundHeader} from './PlaygroundHeader'
 // @ts-ignore
-import {version} from '../../../../theatre/studio/package.json'
+import {version} from '../../../studio/package.json'
 
 const HomeContainer = styled.div`
   position: fixed;

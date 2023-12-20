@@ -8,7 +8,7 @@ import TransformControls from './TransformControls'
 import shallow from 'zustand/shallow'
 import type {Material, Mesh, Object3D} from 'three'
 import {MeshBasicMaterial, MeshPhongMaterial} from 'three'
-import type {IScrub} from '@theatre/studio'
+import type {IScrub} from '@theatre/core'
 import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
@@ -42,11 +42,9 @@ const ProxyManager: FC<ProxyManagerProps> = ({orbitControlsRef}) => {
     useVal(editorObject?.props.viewport.shading) ?? 'rendered'
 
   const sceneProxy = useMemo(() => sceneSnapshot?.clone(), [sceneSnapshot])
-  const [editableProxies, setEditableProxies] = useState<
-    {
-      [name in string]?: IEditableProxy<any>
-    }
-  >({})
+  const [editableProxies, setEditableProxies] = useState<{
+    [name in string]?: IEditableProxy<any>
+  }>({})
 
   // set up scene proxies
   useLayoutEffect(() => {

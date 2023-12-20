@@ -9,6 +9,6 @@
     "emitDeclarationOnly": true,
     "composite": true
   },
-  "references": [{"path": "../../theatre"}],
+  "references": [{"path": "../studio"}, {"path": "../core"}],
   "include": ["./src/**/*"]
 }

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip@3/schema.json",
+  "entry": [
+    "packages/*/src/index.{ts,tsx}",
+    "packages/*/devEnv/**/*.{ts,js}",
+    "devEnv/**/*.{ts,js}",
+    "packages/playground/src/**/*.{ts,tsx}"
+  ],
+  "project": ["packages/*/{src,devEnv}/**/*.{ts,tsx,js,mjs}"],
+  "typescript": {
+    "config": "packages/*/tsconfig.json"
+  }
+}

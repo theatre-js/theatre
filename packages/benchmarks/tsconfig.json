@@ -10,7 +10,8 @@
     "resolveJsonModule": true
   },
   "references": [
-    {"path": "../../theatre"},
+    {"path": "../core"},
+    {"path": "../studio"},
     {"path": "../dataverse"},
     {"path": "../r3f"}
   ],

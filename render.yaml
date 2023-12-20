@@ -23,24 +23,16 @@ services:
           property: connectionString
       - key: NODE_ENV
         value: production
-      - key: AUTH0_SECRET
+      - key: GITHUB_ID
         sync: false
-      - key: AUTH0_BASE_URL
-        fromService:
-          name: app
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
-      - key: AUTH0_ISSUER_BASE_URL
+      - key: GITHUB_SECRET
         sync: false
-      - key: AUTH0_CLIENT_ID
-        sync: false
+
       # port is provided by render
       # - key: PORT
       #   sync: false
       - key: HOST
         value: localhost
-      - key: AUTH0_CLIENT_SECRET
-        generateValue: true
       - key: STUDIO_AUTH_JWT_PRIVATE_KEY
         sync: false
       - key: STUDIO_AUTH_JWT_PUBLIC_KEY

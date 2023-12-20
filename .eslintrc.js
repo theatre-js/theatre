@@ -56,7 +56,6 @@ module.exports = {
       plugins: ['@typescript-eslint'],
       parserOptions: {
         project: [
-          './theatre/tsconfig.json',
           './packages/*/tsconfig.json',
           './packages/*/devEnv/tsconfig.json',
           './examples/*/tsconfig.json',
@@ -94,19 +93,6 @@ module.exports = {
           jsx: true,
         },
       },
-    },
-    {
-      files: [
-        `packages/*/**/*.ts`,
-        `packages/*/**/*.tsx`,
-        `packages/*/**/*.js`,
-      ],
-      // rules: {
-      //   'import/no-extraneous-dependencies': [
-      //     'error',
-      //     // {optionalDependencies: false, peerDependencies: false},
-      //   ],
-      // },
     },
   ],
 }

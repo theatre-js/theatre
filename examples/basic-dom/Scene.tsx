@@ -1,4 +1,4 @@
-import type {IScrub} from '@theatre/studio'
+import type {IScrub} from '@theatre/core'
 import studio from '@theatre/studio'
 import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {ISheet, ISheetObject, IProject} from '@theatre/core'

@@ -1,9 +1,8 @@
 import {deepStrictEqual} from 'assert'
 import type {PathToProp} from '@theatre/utils/pathToProp'
 import removePathFromObject from './removePathFromObject'
-import type {SerializableMap} from '@theatre/utils/types'
 
-const t = (objIn: SerializableMap, path: PathToProp, objOut: {}) => {
+const t = (objIn: {}, path: PathToProp, objOut: {}) => {
   removePathFromObject(objIn, path)
   deepStrictEqual(objIn, objOut)
   // expect(objIn).tomatch(objOut)

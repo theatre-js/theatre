@@ -1,10 +1,10 @@
 import SnapshotEditor from './components/SnapshotEditor'
-import type {IExtension} from '@theatre/studio'
+import type {IExtension} from '@theatre/core'
 import {prism, val} from '@theatre/dataverse'
 import {getEditorSheetObject} from './editorStuff'
 import ReactDOM from 'react-dom/client'
 import React from 'react'
-import type {ToolsetConfig} from '@theatre/studio'
+import type {ToolsetConfig} from '@theatre/core'
 import useExtensionStore from './useExtensionStore'
 import {onChange} from '@theatre/core'
 

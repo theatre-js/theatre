@@ -147,14 +147,15 @@ export function oklabToLinearSrgb(laba: Laba) {
   }
 }
 
-export type Rgba = {
+// let's not export the types, as they're duplicates of those  in core/types/public
+type Rgba = {
   r: number
   g: number
   b: number
   a: number
 }
 
-export type Laba = {
+type Laba = {
   L: number
   a: number
   b: number

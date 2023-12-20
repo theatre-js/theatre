@@ -17,10 +17,17 @@
     "composite": true,
     "paths": {
       "@theatre/utils/*": ["../utils/src/*"],
-      "@theatre/app/*": ["../app/src/*"]
+      "@theatre/app/*": ["../app/src/*"],
+      "@theatre/core/*": ["../core/src/*"],
+      "@theatre/core": ["../core/src/index.ts"]
     }
   },
-  "references": [{"path": "../utils"}, {"path": "../app"}, {"path": "../saaz"}],
+  "references": [
+    {"path": "../utils"},
+    {"path": "../app"},
+    {"path": "../saaz"},
+    {"path": "../core"}
+  ],
   "include": ["next-env.d.ts", "src/**/*", "devEnv/**/*", "prisma/seed.ts"],
   "exclude": ["node_modules"]
 }

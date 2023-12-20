@@ -10,5 +10,5 @@
     "composite": true
   },
   "include": ["./src/**/*"],
-  "references": [{"path": "../../theatre"}]
+  "references": [{"path": "../core"}, {"path": "../studio"}]
 }

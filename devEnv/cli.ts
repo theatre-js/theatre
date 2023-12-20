@@ -519,4 +519,14 @@ prog
     })
 }
 
+prog
+  .command(`depcheck`, `Check for unused or unlisted dependencies`)
+  .action(async () => {
+    /**
+     * A handy utility to check for unused or unlisted dependencies.
+     * We could also include this in the CI checks, but the current config reports some false positives. Once that's fixed, we can add it to the CI (low priority).
+     */
+    await $`yarn knip --config ./knip.config.json --include unlisted,dependencies --no-exit-code`
+  })
+
 prog.parse(process.argv)

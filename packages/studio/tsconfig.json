@@ -1,0 +1,35 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": ".temp/declarations",
+    "lib": ["es2017", "dom", "ESNext"],
+    "rootDir": ".",
+    "composite": true,
+    "types": ["jest", "node"],
+    "emitDeclarationOnly": true,
+    "plugins": [
+      {
+        "name": "@styled/typescript-styled-plugin",
+        "lint": {
+          "unknownProperties": "ignore"
+        }
+      }
+    ]
+  },
+  "references": [
+    {"path": "../core"},
+    {"path": "../utils"},
+    {"path": "../dataverse"},
+    {"path": "../react"},
+    {"path": "../app"},
+    {"path": "../sync-server"},
+    {"path": "../saaz"}
+  ],
+  "include": [
+    "../core/globals.d.ts",
+    "./globals.d.ts",
+    "./src/**/*",
+    "./devEnv/**/*"
+  ],
+  "exclude": ["**/node_modules", "**/.*", "**/xeno", "**/dist", "**/.temp"]
+}

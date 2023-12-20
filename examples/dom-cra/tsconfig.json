@@ -9,6 +9,9 @@
     "composite": true,
     "checkJs": true
   },
-  "references": [{"path": "../../theatre"}],
+  "references": [
+    {"path": "../../packages/core"},
+    {"path": "../../packages/studio"}
+  ],
   "include": ["./src/**/*"]
 }

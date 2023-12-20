@@ -1,4 +1,4 @@
-import type {IExtension} from '@theatre/studio'
+import type {IExtension} from '@theatre/core'
 import studio from '@theatre/studio'
 import '@theatre/core'
 import {extensionButton} from '../../shared/utils/useExtensionButton'

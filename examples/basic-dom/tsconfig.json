@@ -9,5 +9,8 @@
     "noEmit": true
   },
   "files": ["index.tsx", "Scene.tsx", "useDrag.ts"],
-  "references": [{"path": "../../theatre"}]
+  "references": [
+    {"path": "../../packages/core"},
+    {"path": "../../packages/studio"}
+  ]
 }
