@@ -1,4 +1,4 @@
-import studio from '@theatre/studio'
+import { getStudioSync} from '@theatre/core'
 import type {UseDragOpts} from './useDrag'
 import useDrag from './useDrag'
 import React, {useLayoutEffect, useMemo, useRef, useState} from 'react'
@@ -117,13 +117,13 @@ const Box: React.FC<{
     let firstOnDragCalled = false
     return {
       onDragStart() {
-        scrub = studio.scrub()
+        scrub = getStudioSync()!.scrub()
         initial = obj.value.pos
         firstOnDragCalled = false
       },
       onDrag(x, y) {
         if (!firstOnDragCalled) {
-          studio.setSelection([obj])
+          getStudioSync()!.setSelection([obj])
           firstOnDragCalled = true
         }
         scrub!.capture(({set}) => {
@@ -150,7 +150,7 @@ const Box: React.FC<{
   return (
     <div
       onClick={() => {
-        studio.setSelection([obj])
+        getStudioSync()!.setSelection([obj])
       }}
       ref={boxRef}
       style={{
@@ -183,7 +183,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
   const [selection, setSelection] = useState<IStudio['selection']>()
 
   useLayoutEffect(() => {
-    return studio.onSelectionChange((newState) => {
+    return getStudioSync()!.onSelectionChange((newState) => {
       setSelection(newState)
     })
   }, [])

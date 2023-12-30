@@ -10,6 +10,7 @@ import * as t from '@theatre/core/propTypes'
 import getStudio from '@theatre/studio/getStudio'
 import {getCoreTicker} from '@theatre/core/coreTicker'
 import {globals} from '@theatre/core/globals'
+import theatre from '@theatre/core'
 
 const defaultProps = {
   position: {
@@ -28,7 +29,7 @@ const defaultProps = {
 let lastProjectN = 0
 
 const studio = getStudio()!
-void studio.initialize({usePersistentStorage: false})
+void theatre.init({studio: true, usePersistentStorage: false})
 
 export async function setupTestSheet(sheetState: SheetState_Historic) {
   const projectState: ProjectState_Historic = {

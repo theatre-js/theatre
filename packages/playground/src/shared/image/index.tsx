@@ -1,5 +1,5 @@
 import {getProject, types} from '@theatre/core'
-import studio from '@theatre/studio'
+import theatre from '@theatre/core'
 import React, {useEffect, useState} from 'react'
 import ReactDom from 'react-dom/client'
 import styled from 'styled-components'
@@ -9,7 +9,7 @@ const project = getProject('Image type playground', {
     baseUrl: '/',
   },
 })
-studio.initialize()
+theatre.init({studio: true})
 const sheet = project.sheet('Image type')
 
 const Wrapper = styled.div`

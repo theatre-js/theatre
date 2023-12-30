@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import studio from '@theatre/studio'
+import theatre from '@theatre/core'
 import {getProject} from '@theatre/core'
 import {Scene} from './Scene'
 
@@ -11,7 +11,7 @@ import {Scene} from './Scene'
  * the selection behavior.
  */
 
-studio.initialize()
+theatre.init({studio: true})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <Scene

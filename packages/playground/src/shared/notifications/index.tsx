@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import studio from '@theatre/studio'
+import theatre from '@theatre/core'
 import {getProject, notify} from '@theatre/core'
 import {Scene} from './Scene'
 
-studio.initialize()
+theatre.init({studio: true})
 
 // trigger warning notification
 void getProject('Sample project').sheet('Scene').sequence.play()

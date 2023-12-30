@@ -59,7 +59,7 @@ let lastDriverId = 0
  * You can optionally make studio use this `rafDriver`. This means the parts of the studio that tick based on raf, will now tick at 5fps. This is only useful if you're doing something crazy like running the studio (and not the core) in an XR frame.
  *
  * ```js
- * studio.initialize({
+ * theatre.init({studio: true,
  *   __experimental_rafDriver: rafDriver,
  * })
  * ```

@@ -4,8 +4,7 @@ import {
   __private_allRegisteredObjects as allRegisteredObjects,
   __private_makeStoreKey as makeStoreKey,
 } from '@theatre/r3f'
-import studio from '@theatre/studio'
-import type {ISheetObject} from '@theatre/core'
+import {getStudioSync, type ISheetObject, type IStudio} from '@theatre/core'
 import type {$IntentionalAny} from '../../types'
 
 export function useSelected(): undefined | string {
@@ -14,7 +13,7 @@ export function useSelected(): undefined | string {
   stateRef.current = state
 
   useLayoutEffect(() => {
-    const setFromStudio = (selection: typeof studio.selection) => {
+    const setFromStudio = (selection: IStudio['selection']) => {
       const item = selection.find(
         (s): s is ISheetObject =>
           s.type === 'Theatre_SheetObject_PublicAPI' &&
@@ -26,6 +25,7 @@ export function useSelected(): undefined | string {
         set(makeStoreKey(item.address))
       }
     }
+    const studio = getStudioSync(true)!
     setFromStudio(studio.selection)
     return studio.onSelectionChange(setFromStudio)
   }, [])
@@ -34,6 +34,7 @@ export function useSelected(): undefined | string {
 }
 
 export function getSelected(): undefined | string {
+  const studio = getStudioSync(true)!
   const item = studio.selection.find(
     (s): s is ISheetObject =>
       s.type === 'Theatre_SheetObject_PublicAPI' &&

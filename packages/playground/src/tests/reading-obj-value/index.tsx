@@ -1,7 +1,7 @@
-import studio from '@theatre/studio'
+import theatre from '@theatre/core'
 import {getProject, types} from '@theatre/core'
 import state from './reading obj value.theatre-project-state.json'
-studio.initialize({usePersistentStorage: false})
+theatre.init({studio: true, usePersistentStorage: false})
 
 const project = getProject('reading obj value', {state})
 const TOTAL_ELEMENTS = 300
@@ -40,6 +40,7 @@ const elements = new Array(TOTAL_ELEMENTS).fill(0).map((_, idx) => {
 })
 
 void project.ready.then(() => {
+  const studio = theatre.getStudioSync()!
   // select the playback controls obj so it shows as a tweakable control
   studio.setSelection([playbackControlObj])
   for (let i = 0; i < elements.length; i++) {

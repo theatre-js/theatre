@@ -1,5 +1,5 @@
 import type {IProject, ISheet} from '@theatre/core'
-import studio from '@theatre/studio'
+import {getStudioSync} from '@theatre/core'
 import {remote} from './Remote'
 import type {BroadcastData, BroadcastDataEvent} from './Remote'
 
@@ -14,6 +14,7 @@ export default function RemoteController(project: IProject) {
    * Editor is hidden, this window receives updates
    */
   const receiveRemote = () => {
+    const studio = getStudioSync()!
     studio.ui.hide()
 
     remote.listen((msg: BroadcastData) => {
@@ -54,6 +55,7 @@ export default function RemoteController(project: IProject) {
    * Editor is visible, this window sends updates
    */
   const sendRemote = () => {
+    const studio = getStudioSync()!
     studio.ui.restore()
 
     studio.onSelectionChange((value: any[]) => {

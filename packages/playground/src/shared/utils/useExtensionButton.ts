@@ -1,4 +1,4 @@
-import studio from '@theatre/studio'
+import theatre from '@theatre/core'
 import {useEffect, useMemo, useRef} from 'react'
 
 let idCounter = 0
@@ -11,6 +11,7 @@ export function useExtensionButton(
   const refs = useRef({callback, svgSource})
   const id = useMemo(() => 'useExtensionButton#' + idCounter++, [])
   useEffect(() => {
+    const studio = theatre.getStudioSync()!
     studio.extend({
       id: id,
       toolbars: {
@@ -38,6 +39,7 @@ export function extensionButton(
   svgSource?: string,
 ) {
   const id = 'useExtensionButton#' + idCounter++
+  const studio = theatre.getStudioSync()!
   studio.extend({
     id: id,
     toolbars: {

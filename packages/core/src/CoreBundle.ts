@@ -16,7 +16,7 @@ export type CoreBits = {
 
 export default class CoreBundle {
   private _studio: Studio | undefined = undefined
-  constructor() {}
+  constructor(private _opts: {onAttach: (studio: Studio) => void}) {}
 
   get type(): 'Theatre_CoreBundle' {
     return 'Theatre_CoreBundle'
@@ -39,5 +39,6 @@ export default class CoreBundle {
     }
 
     callback(bits)
+    this._opts.onAttach(studio)
   }
 }

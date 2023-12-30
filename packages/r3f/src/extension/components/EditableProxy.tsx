@@ -1,9 +1,7 @@
 import type {Object3D} from 'three'
-import type {VFC} from 'react'
 import React, {useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import {Sphere, Html} from '@react-three/drei'
 import shallow from 'zustand/shallow'
-import studio from '@theatre/studio'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
 import {getEditorSheetObject} from '../editorStuff'
@@ -13,13 +11,14 @@ import type {Helper} from '../../main/editableFactoryConfigUtils'
 import {invalidate, useFrame, useThree} from '@react-three/fiber'
 import {useDragDetector} from './DragDetector'
 import useExtensionStore from '../useExtensionStore'
+import {getStudioSync} from '@theatre/core'
 
 export interface EditableProxyProps {
   storeKey: string
   object: Object3D
 }
 
-const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
+const EditableProxy: React.FC<EditableProxyProps> = ({storeKey, object}) => {
   const editorObject = getEditorSheetObject()
   const [setSnapshotProxyObject, editables] = useExtensionStore(
     (state) => [state.setSnapshotProxyObject, state.editables],
@@ -130,6 +129,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
             if (!theatreObject) {
               console.log('no Theatre.js object for', storeKey)
             } else {
+              const studio = getStudioSync(true)!
               studio.setSelection([theatreObject])
             }
           }
@@ -177,6 +177,7 @@ const EditableProxy: VFC<EditableProxyProps> = ({storeKey, object}) => {
                   if (!theatreObject) {
                     console.log('no Theatre.js object for', storeKey)
                   } else {
+                    const studio = getStudioSync(true)!
                     studio.setSelection([theatreObject])
                   }
                 }

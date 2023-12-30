@@ -711,7 +711,7 @@ export namespace stateEditors {
                     draft,
                     api,
                     p,
-                  ).clippedSpaceRange = {...p.range}
+                  ).clippedSpaceRange = [...p.range]
                 }
               }
 

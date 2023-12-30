@@ -1,5 +1,5 @@
 import type {IExtension} from '@theatre/core'
-import studio from '@theatre/studio'
+import theatre from '@theatre/core'
 import '@theatre/core'
 import {extensionButton} from '../../shared/utils/useExtensionButton'
 
@@ -28,7 +28,7 @@ const ext1: IExtension = {
   panes: [],
 }
 
-studio.initialize({usePersistentStorage: false})
+theatre.init({studio: true, usePersistentStorage: false})
 
 let currentStep = -1
 
@@ -45,9 +45,11 @@ extensionButton(
 
 const steps = [
   function step1() {
+    const studio = theatre.getStudioSync()!
     studio.extend(ext1)
   },
   function step2() {
+    const studio = theatre.getStudioSync()!
     studio.extend(
       {
         ...ext1,
@@ -75,6 +77,7 @@ const steps = [
     )
   },
   function step3() {
+    const studio = theatre.getStudioSync()!
     studio.extend(
       {
         ...ext1,

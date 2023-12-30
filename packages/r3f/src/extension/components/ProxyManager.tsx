@@ -8,8 +8,7 @@ import TransformControls from './TransformControls'
 import shallow from 'zustand/shallow'
 import type {Material, Mesh, Object3D} from 'three'
 import {MeshBasicMaterial, MeshPhongMaterial} from 'three'
-import type {IScrub} from '@theatre/core'
-import studio from '@theatre/studio'
+import {getStudioSync, type IScrub} from '@theatre/core'
 import {useSelected} from './useSelected'
 import {useVal} from '@theatre/react'
 import {getEditorSheetObject} from '../editorStuff'
@@ -239,6 +238,7 @@ const ProxyManager: FC<ProxyManagerProps> = ({orbitControlsRef}) => {
             }}
             onDraggingChange={(event) => {
               if (event.value) {
+                const studio = getStudioSync(true)!
                 scrub.current = studio.scrub()
               } else {
                 scrub.current.commit()

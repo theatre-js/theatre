@@ -7,13 +7,13 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import studio from '@theatre/studio'
+import theatre, {getStudioSync} from '@theatre/core'
 import type {ISheet} from '@theatre/core'
 import {types} from '@theatre/core'
 import type {ITurtle} from './turtle'
 import {drawTurtlePlan, makeTurtlePlan} from './turtle'
 
-studio.initialize()
+theatre.init({studio: true})
 
 const objConfig = {
   startingPoint: {
@@ -93,6 +93,7 @@ const TurtleRenderer: React.FC<{
         newTransform.startingPoint.y =
           oldTransform.startingPoint.y - event.deltaY / dimsRef.current.height
       }
+      const studio = getStudioSync()!
       studio.transaction((api) => {
         api.set(obj.props, newTransform)
       })

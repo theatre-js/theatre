@@ -12,7 +12,7 @@ import type {
   IExtension,
   IStudio,
   PaneClassDefinition,
-  _StudioInitializeOpts,
+  InitOpts,
 } from '@theatre/core/types/public'
 import TheatreStudio from './TheatreStudio'
 import {nanoid} from 'nanoid/non-secure'
@@ -50,8 +50,8 @@ export type CoreExports = typeof _coreExports
 
 const STUDIO_NOT_INITIALIZED_MESSAGE = `You seem to have imported '@theatre/studio' but haven't initialized it. You can initialize the studio by:
 \`\`\`
-import studio from '@theatre/studio'
-studio.initialize()
+import theatre from '@theatre/core'
+theatre.init({studio: true})
 \`\`\`
 
 * If you didn't mean to import '@theatre/studio', this means that your bundler is not tree-shaking it. This is most likely a bundler misconfiguration.
@@ -59,8 +59,8 @@ studio.initialize()
 * If you meant to import '@theatre/studio' without showing its UI, you can do that by running:
 
 \`\`\`
-import studio from '@theatre/studio'
-studio.initialize()
+import theatre from '@theatre/core'
+theatre.init({studio: true})
 studio.ui.hide()
 \`\`\`
 `
@@ -69,7 +69,7 @@ const STUDIO_INITIALIZED_LATE_MSG = `You seem to have imported '@theatre/studio'
 Theatre.js projects remain in pending mode (won't play their sequences) until the studio is initialized, so you should place the \`studio.initialize()\` line right after the import line:
 
 \`\`\`
-import studio from '@theatre/studio'
+import theatre from '@theatre/core'
 // ... and other imports
 
 studio.initialize()
@@ -305,7 +305,7 @@ export class Studio {
     }
   }
 
-  async initialize(opts?: _StudioInitializeOpts) {
+  async initialize(opts?: InitOpts) {
     if (!this._coreBits) {
       throw new Error(
         `You seem to have imported \`@theatre/studio\` without importing \`@theatre/core\`. Make sure to include an import of \`@theatre/core\` before calling \`studio.initializer()\`.`,
@@ -682,7 +682,7 @@ export class Studio {
 }
 
 function sanitizeOpts(
-  opts: _StudioInitializeOpts | undefined,
+  opts: InitOpts | undefined,
   coreBits: CoreBits,
 ): StudioOpts {
   const storeOpts: StudioOpts = {
@@ -702,7 +702,7 @@ function sanitizeOpts(
       storeOpts.serverUrl = opts.serverUrl
     } else {
       throw new Error(
-        'parameter `serverUrl` in `studio.initialize({serverUrl})` must be either undefined or a fully formed url (e.g. `https://app.theatrejs.com`)',
+        'parameter `serverUrl` in `theatre.init({studio: true, serverUrl})` must be either undefined or a fully formed url (e.g. `https://app.theatrejs.com`)',
       )
     }
   }
@@ -718,7 +718,7 @@ function sanitizeOpts(
   if (opts?.__experimental_rafDriver) {
     if (opts?.__experimental_rafDriver.type !== 'Theatre_RafDriver_PublicAPI') {
       throw new Error(
-        'parameter `rafDriver` in `studio.initialize({__experimental_rafDriver})` must be either be undefined, or the return type of core.createRafDriver()',
+        'parameter `rafDriver` in `theatre.init({studio: true, __experimental_rafDriver})` must be either be undefined, or the return type of core.createRafDriver()',
       )
     }
 
@@ -728,7 +728,7 @@ function sanitizeOpts(
     if (!rafDriverPrivateApi) {
       // TODO - need to educate the user about this edge case
       throw new Error(
-        'parameter `rafDriver` in `studio.initialize({__experimental_rafDriver})` seems to come from a different version of `@theatre/core` than the version that is attached to `@theatre/studio`',
+        'parameter `rafDriver` in `theatre.init({studio: true, __experimental_rafDriver})` seems to come from a different version of `@theatre/core` than the version that is attached to `@theatre/studio`',
       )
     }
     storeOpts.rafDriver = rafDriverPrivateApi

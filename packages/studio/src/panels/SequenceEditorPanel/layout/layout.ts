@@ -342,7 +342,7 @@ export function sequenceEditorPanelLayout(
       () => {
         return function setClippedSpaceRange(_range: IRange): void {
           studio.transaction(({stateEditors}) => {
-            const range = {..._range}
+            const range: IRange = [..._range]
             if (range[1] <= range[0]) {
               range[1] = range[0] + 1
             }

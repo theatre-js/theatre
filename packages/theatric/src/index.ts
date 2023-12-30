@@ -3,12 +3,12 @@ import type {
   IProjectConfig,
   ISheetObject,
   UnknownShorthandCompoundProps,
+  IStudio,
 } from '@theatre/core'
-import {val} from '@theatre/core'
+import {getStudio, val, init, getStudioSync} from '@theatre/core'
 import {getProject} from '@theatre/core'
 import type {Pointer} from '@theatre/dataverse'
 import {isPointer} from '@theatre/dataverse'
-import studio from '@theatre/studio'
 import isEqualWith from 'lodash-es/isEqualWith'
 import isEqual from 'lodash-es/isEqual'
 import {useEffect, useMemo, useState, useRef} from 'react'
@@ -24,13 +24,16 @@ type OmitMatching<T extends object, V> = Omit<T, KeysMatching<T, V>>
 // That way we can treeshake our own, and the user can give us theirs, if they want to.
 
 if (process.env.NODE_ENV === 'development') {
-  studio.initialize()
+  getStudio().then((studio) => {
+    init({studio: true})
+  })
 }
 
 // Just to be able to treeshake studio out of the bundle
-const maybeTransaction =
+const maybeTransaction: IStudio['transaction'] =
   process.env.NODE_ENV === 'development'
-    ? studio.transaction.bind(studio)
+    ? (...args: Parameters<IStudio['transaction']>) =>
+        getStudioSync(true)!.transaction(...args)
     : () => {}
 
 let _projectConfig: IProjectConfig['state'] | undefined = undefined
@@ -339,6 +342,7 @@ function selectObjectIfNecessary(obj: ISheetObject) {
   if (objAlreadySelected) return
   objAlreadySelected = true
   if (process.env.NODE_ENV === 'development') {
+    const studio = getStudioSync()!
     if (studio.selection.length === 0) {
       studio.setSelection([obj])
     }

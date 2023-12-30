@@ -1,4 +1,4 @@
-// import studio from '@theatre/studio'
+// import theatre from '@theatre/core'
 import {createRafDriver, getProject} from '@theatre/core'
 import type {
   UnknownShorthandCompoundProps,
@@ -13,7 +13,7 @@ const driver = createRafDriver({name: 'BenchmarkRafDriver'})
 
 setCoreRafDriver(driver)
 
-// studio.initialize({})
+// theatre.init({studio: true, })
 
 /**
  * This test will create a project with `numberOfInstances` instances of the same sheet. Each instance

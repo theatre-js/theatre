@@ -6,10 +6,9 @@ import {useLayoutEffect, useRef} from 'react'
 import React from 'react'
 import useRefAndState from './useRefAndState'
 import type {IScrub} from '@theatre/core'
-import studio from '@theatre/studio'
 import type {PerspectiveCamera as PerspectiveCameraImpl} from 'three'
 import type {ISheet} from '@theatre/core'
-import {types} from '@theatre/core'
+import {getStudioSync, types} from '@theatre/core'
 import type {ISheetObject} from '@theatre/core'
 import {useThree} from '@react-three/fiber'
 import type {$IntentionalAny} from '../../types'
@@ -138,6 +137,7 @@ function usePassValuesFromOrbitControlsToTheatre(
         // This currentScrub will continue being used and will be scheduled again onEnd
         clearTimeout(currentScrub.scheduledCommit?.timer)
       } else {
+        const studio = getStudioSync(true)!
         // start new scrub
         currentScrub = {
           scrub: studio.scrub(),

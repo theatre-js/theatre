@@ -1169,7 +1169,8 @@ export interface IStudioUI {
   renderToolset(toolsetId: string, htmlNode: HTMLElement): () => void
 }
 
-export interface _StudioInitializeOpts {
+export interface InitOpts {
+  studio?: boolean
   /**
    * The local storage key to use to persist the state.
    *
@@ -1195,29 +1196,23 @@ export interface _StudioInitializeOpts {
  * @example
  * Basic usage:
  * ```ts
- * import studio from '@theatre/studio'
+ * import theatre from '@theatre/core'
  *
- * studio.initialize()
+ * theatre.init({studio: true})
  * ```
  *
  * @example
  * Usage with **tree-shaking**:
  * ```ts
- * import studio from '@theatre/studio'
+ * import theatre from '@theatre/core'
  *
  * if (process.env.NODE_ENV !== 'production') {
- *   studio.initialize()
+ *   theatre.init({studio: true})
  * }
  * ```
  */
 export interface IStudio {
   readonly ui: IStudioUI
-
-  /**
-   * Initializes the studio. Call it once in your index.js/index.ts module.
-   * It silently ignores subsequent calls.
-   */
-  initialize(opts?: _StudioInitializeOpts): void
 
   /**
    * Runs an undo-able transaction. Creates a single undo level for all

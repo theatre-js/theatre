@@ -6,6 +6,7 @@
 
 export * from './coreExports'
 export * from './types/public'
+import {defer} from '@theatre/utils/defer'
 // export type {IProject, IProjectConfig} from './projects/TheatreProject'
 // export type {ISequence} from './sequences/TheatreSequence'
 // export type {ISheetObject} from './sheetObjects/TheatreSheetObject'
@@ -14,6 +15,37 @@ export * from './types/public'
 import CoreBundle from './CoreBundle'
 import {globalVariableNames} from './globals'
 import type {$____FixmeStudio} from '@theatre/utils/types'
+import type {IStudio, InitOpts} from './types/public'
+
+const studioDeferred = defer<$____FixmeStudio>()
+
+export async function getStudio(): Promise<IStudio> {
+  return (await studioDeferred.promise).publicApi
+}
+
+export function getStudioSync(
+  errorIfNotReady: boolean = false,
+): IStudio | undefined {
+  if (studioDeferred.status !== 'resolved') {
+    if (errorIfNotReady) throw new Error(`Studio is not ready yet.`)
+    return undefined
+  }
+  return studioDeferred.currentValue!.publicApi
+}
+
+let initCalled = false
+const initOptsDeferred = defer<InitOpts | undefined>()
+
+export async function init(opts?: InitOpts) {
+  if (initCalled) {
+    return
+  }
+  initCalled = true
+  initOptsDeferred.resolve(opts)
+}
+
+const theatre = {getStudio, getStudioSync, init}
+export default theatre
 
 type StudioBundle = $____FixmeStudio // todo
 
@@ -97,7 +129,14 @@ function registerCoreBundle() {
     }
   }
 
-  const coreBundle = new CoreBundle()
+  const coreBundle = new CoreBundle({
+    onAttach: (s) => {
+      initOptsDeferred.promise.then((opts) => {
+        s.initialize(opts)
+        studioDeferred.resolve(s)
+      })
+    },
+  })
 
   // @ts-ignore ignore
   globalContext[globalVariableNames.coreBundle] = coreBundle

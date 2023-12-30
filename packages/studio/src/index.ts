@@ -27,7 +27,7 @@ setStudio(studioPrivateAPI)
  */
 const studio: IStudio = studioPrivateAPI.publicApi
 
-export default studio
+export {}
 
 registerStudioBundle()
 
@@ -81,10 +81,6 @@ function registerStudioBundle() {
   }
 }
 
-// export {default as ToolbarSwitchSelect} from './uiComponents/toolbar/ToolbarSwitchSelect'
-// export {default as ToolbarIconButton} from './uiComponents/toolbar/ToolbarIconButton'
-export {default as ToolbarDropdownSelect} from './uiComponents/toolbar/ToolbarDropdownSelect'
-
 import {notify} from '@theatre/studio/notify'
 
 if (typeof window !== 'undefined') {
@@ -93,17 +89,3 @@ if (typeof window !== 'undefined') {
     notify,
   }
 }
-
-// export type {IScrub} from '@theatre/studio/Scrub'
-// export type {
-//   IStudio,
-//   IExtension,
-//   PaneInstance,
-//   PaneClassDefinition,
-//   IStudioUI,
-//   _StudioInitializeOpts,
-//   ToolsetConfig,
-//   ToolConfig,
-//   ToolConfigIcon,
-//   ToolConfigSwitch,
-// } from '@theatre/studio/TheatreStudio'

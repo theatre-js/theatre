@@ -89,11 +89,6 @@ export default class TheatreStudio implements IStudio {
    */
   constructor(internals: Studio) {}
 
-  initialize(opts?: Parameters<IStudio['initialize']>[0]): Promise<void> {
-    const studio = getStudio()
-    return studio.initialize(opts)
-  }
-
   extend(
     extension: IExtension,
     opts?: {__experimental_reconfigure?: boolean},

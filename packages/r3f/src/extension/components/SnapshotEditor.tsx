@@ -7,10 +7,9 @@ import {__private_allRegisteredObjects as allRegisteredObjects} from '@theatre/r
 import shallow from 'zustand/shallow'
 import root from 'react-shadow/styled-components'
 import ProxyManager from './ProxyManager'
-import studio from '@theatre/studio'
 import {useVal} from '@theatre/react'
 import styled, {createGlobalStyle, StyleSheetManager} from 'styled-components'
-import type {ISheet} from '@theatre/core'
+import {getStudioSync, type ISheet} from '@theatre/core'
 import useSnapshotEditorCamera from './useSnapshotEditorCamera'
 import {getEditorSheet, getEditorSheetObject} from '../editorStuff'
 import type {$IntentionalAny} from '../../types'
@@ -152,6 +151,7 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
   }, [])
 
   const onPointerMissed = useCallback(() => {
+    const studio = getStudioSync(true)!
     // This callback runs when the user clicks in an empty space inside a SnapshotEditor.
     // We'll try to set the current selection to the nearest sheet _if_ at least one object
     // belonging to R3F was selected previously.
@@ -169,6 +169,7 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
 
   useEffect(() => {
     if (!toolsContainer) return
+    const studio = getStudioSync(true)!
 
     return studio.ui.renderToolset('snapshot-editor', toolsContainer)
   }, [toolsContainer])
@@ -194,6 +195,7 @@ const SnapshotEditor: React.FC<{paneId: string}> = (props) => {
                     maxWidth={Math.min(bounds.width * 0.3, 250)}
                     minimized={referenceWindowVisibility === 'minimized'}
                     onToggleMinified={() => {
+                      const studio = getStudioSync(true)!
                       studio.transaction(({set}) => {
                         set(
                           getEditorSheetObject()!.props.viewport

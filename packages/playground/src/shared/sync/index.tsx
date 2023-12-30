@@ -1,7 +1,8 @@
-import studio from '@theatre/studio'
+import theatre from '@theatre/core'
 import {getProject} from '@theatre/core'
 
-studio.initialize({
+theatre.init({
+  studio: true,
   // __experimental_syncServer: 'wss://syncserver-kspg.onrender.com',
   serverUrl: 'http://localhost:3000',
   // usePersistentStorage: false,

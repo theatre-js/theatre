@@ -1,11 +1,11 @@
 import type {IScrub} from '@theatre/core'
-import studio from '@theatre/studio'
 import React, {useLayoutEffect, useMemo, useState} from 'react'
 import type {ISheet, ISheetObject, IProject} from '@theatre/core'
 import type {UseDragOpts} from './useDrag'
 import useDrag from './useDrag'
+import theatre from '@theatre/core'
 
-studio.initialize()
+theatre.init({studio: true})
 
 const boxObjectConfig = {
   x: 0,
@@ -39,12 +39,14 @@ const Box: React.FC<{
     let firstOnDragCalled = false
     return {
       onDragStart() {
+        const studio = theatre.getStudioSync()!
         scrub = studio.scrub()
         initial = obj.value
         firstOnDragCalled = false
       },
       onDrag(x, y) {
         if (!firstOnDragCalled) {
+          const studio = theatre.getStudioSync()!
           studio.setSelection([obj])
           firstOnDragCalled = true
         }
@@ -68,6 +70,7 @@ const Box: React.FC<{
   return (
     <div
       onClick={() => {
+        const studio = theatre.getStudioSync()!
         studio.setSelection([obj])
       }}
       ref={setDivRef}
@@ -95,6 +98,7 @@ export const Scene: React.FC<{project: IProject}> = ({project}) => {
   const [selection, _setSelection] = useState<Array<ISheetObject>>([])
 
   useLayoutEffect(() => {
+    const studio = theatre.getStudioSync()!
     return studio.onSelectionChange((newSelection) => {
       _setSelection(
         newSelection.filter(

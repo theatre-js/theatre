@@ -3,6 +3,7 @@ export interface Deferred<PromiseType> {
   reject: (d: unknown) => void
   promise: Promise<PromiseType>
   status: 'pending' | 'resolved' | 'rejected'
+  currentValue: PromiseType | undefined
 }
 
 /**
@@ -34,6 +35,7 @@ export function defer<PromiseType>(): Deferred<PromiseType> {
     resolve = (v) => {
       rs(v)
       deferred.status = 'resolved'
+      deferred.currentValue = v
     }
     reject = (v) => {
       rj(v)
@@ -46,6 +48,7 @@ export function defer<PromiseType>(): Deferred<PromiseType> {
     reject: reject!,
     promise,
     status: 'pending',
+    currentValue: undefined,
   }
   return deferred
 }

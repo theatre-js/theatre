@@ -1,7 +1,7 @@
-import studio from '@theatre/studio'
+import theatre from '@theatre/core'
 import {getProject} from '@theatre/core'
 
-studio.initialize({usePersistentStorage: false})
+theatre.init({studio: true, usePersistentStorage: false})
 
 const project = getProject('sample project')
 const sheet = project.sheet('sample sheet')

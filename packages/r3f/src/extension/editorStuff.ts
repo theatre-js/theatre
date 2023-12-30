@@ -1,6 +1,5 @@
 import type {ISheet, ISheetObject} from '@theatre/core'
-import {types} from '@theatre/core'
-import studio from '@theatre/studio'
+import {types, getStudioSync} from '@theatre/core'
 
 let sheet: ISheet | undefined = undefined
 let sheetObject: ISheetObject<typeof editorSheetObjectConfig> | undefined =
@@ -60,7 +59,7 @@ const editorSheetObjectConfig = {
 
 export function getEditorSheet(): ISheet {
   if (!sheet) {
-    sheet = studio.getStudioProject().sheet('R3F UI')
+    sheet = getStudioSync(true)!.getStudioProject().sheet('R3F UI')
   }
   return sheet
 }
