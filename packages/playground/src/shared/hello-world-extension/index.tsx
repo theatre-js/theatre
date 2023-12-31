@@ -4,7 +4,7 @@ import App from './App'
 import theatre from '@theatre/core'
 import extension from '@theatre/r3f/dist/extension'
 
-theatre.getStudio().then((studio) => {
+void theatre.getStudio().then((studio) => {
   studio.extend(extension)
   studio.extend({
     id: '@theatre/hello-world-extension',
@@ -92,6 +92,6 @@ theatre.getStudio().then((studio) => {
     ],
   })
 })
-theatre.init({studio: true})
+void theatre.init({studio: true})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(<App />)

@@ -131,7 +131,7 @@ function registerCoreBundle() {
 
   const coreBundle = new CoreBundle({
     onAttach: (s) => {
-      initOptsDeferred.promise.then((opts) => {
+      void initOptsDeferred.promise.then((opts) => {
         s.initialize(opts)
         studioDeferred.resolve(s)
       })

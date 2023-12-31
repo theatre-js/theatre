@@ -57,8 +57,8 @@ const Invitations = () => {
             <Button
               onClick={async () => {
                 await acceptGuestInvitation({id: invitation.workspaceId})
-                queryUtils.me.getGuestInvitations.invalidate()
-                queryUtils.workspaces.invalidate()
+                void queryUtils.me.getGuestInvitations.invalidate()
+                void queryUtils.workspaces.invalidate()
               }}
               size="sm"
             >
@@ -70,8 +70,8 @@ const Invitations = () => {
                   id: invitation.workspaceId,
                   email: me.email!,
                 })
-                queryUtils.me.getGuestInvitations.invalidate()
-                queryUtils.workspaces.invalidate()
+                void queryUtils.me.getGuestInvitations.invalidate()
+                void queryUtils.workspaces.invalidate()
               }}
               variant="ghost"
               size="sm"
@@ -91,8 +91,8 @@ const Invitations = () => {
             <Button
               onClick={async () => {
                 await acceptTeamInvitation({id: invitation.teamId})
-                queryUtils.me.getTeamInvitations.invalidate()
-                queryUtils.teams.invalidate()
+                void queryUtils.me.getTeamInvitations.invalidate()
+                void queryUtils.teams.invalidate()
               }}
               size="sm"
             >
@@ -104,8 +104,8 @@ const Invitations = () => {
                   id: invitation.teamId,
                   email: me.email!,
                 })
-                queryUtils.me.getTeamInvitations.invalidate()
-                queryUtils.teams.invalidate()
+                void queryUtils.me.getTeamInvitations.invalidate()
+                void queryUtils.teams.invalidate()
               }}
               variant="ghost"
               size="sm"

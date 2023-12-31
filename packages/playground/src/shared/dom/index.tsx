@@ -11,7 +11,7 @@ import {Scene} from './Scene'
  * the selection behavior.
  */
 
-theatre.init({studio: true})
+void theatre.init({studio: true})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <Scene

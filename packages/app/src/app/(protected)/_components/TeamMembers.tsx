@@ -21,13 +21,13 @@ export default function Members({teamId}: {teamId: string}) {
 
   async function handleRemoveMember(email: string) {
     await removeMember({id: teamId, email})
-    queryUtils.teams.getMembers.invalidate()
+    void queryUtils.teams.getMembers.invalidate()
   }
 
   async function handleChangeRole(email: string, role: 'MEMBER' | 'OWNER') {
     try {
       await changeMemberRole({id: teamId, email, role})
-      queryUtils.teams.getMembers.invalidate()
+      void queryUtils.teams.getMembers.invalidate()
     } catch (error) {
       toast({
         variant: 'destructive',

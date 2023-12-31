@@ -40,7 +40,7 @@ export default function Team({id}: {id: string}) {
               size="icon"
               className="invisible group-hover:visible"
               onClick={() => {
-                promptTeamSettings(id)
+                void promptTeamSettings(id)
               }}
             >
               <Settings className="h-4 w-4" />

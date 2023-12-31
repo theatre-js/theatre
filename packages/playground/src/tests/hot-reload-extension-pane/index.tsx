@@ -9,7 +9,7 @@ const ext1: IExtension = {
   panes: [],
 }
 
-theatre.init({studio: true, usePersistentStorage: false})
+void theatre.init({studio: true, usePersistentStorage: false})
 
 let currentStep = -1
 

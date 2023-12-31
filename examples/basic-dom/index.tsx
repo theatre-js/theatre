@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import theatre, {getProject} from '@theatre/core'
 import {Scene} from './Scene'
 
-theatre.init({studio: true})
+void theatre.init({studio: true})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <Scene project={getProject('Sample project')} />,

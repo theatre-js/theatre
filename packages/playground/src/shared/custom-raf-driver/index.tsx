@@ -10,8 +10,8 @@ setInterval(() => {
   rafDriver.tick(performance.now())
 }, 200)
 
-theatre.getStudio().then((studio) => studio.extend(extension))
-theatre.init({studio: true, __experimental_rafDriver: rafDriver})
+void theatre.getStudio().then((studio) => studio.extend(extension))
+void theatre.init({studio: true, __experimental_rafDriver: rafDriver})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <App rafDriver={rafDriver} />,
