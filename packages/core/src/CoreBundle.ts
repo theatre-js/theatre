@@ -3,7 +3,8 @@ import projectsSingleton from './projects/projectsSingleton'
 import {privateAPI} from './privateAPIs'
 import * as coreExports from './coreExports'
 import {getCoreRafDriver} from './coreTicker'
-import type {$____FixmeStudio} from '@theatre/utils/types'
+import type {$____FixmeStudio} from '@theatre/core/types/public'
+import {env} from './env'
 
 type Studio = $____FixmeStudio
 
@@ -23,7 +24,7 @@ export default class CoreBundle {
   }
 
   get version() {
-    return process.env.THEATRE_VERSION
+    return env.THEATRE_VERSION
   }
 
   getBitsForStudio(studio: Studio, callback: (bits: CoreBits) => void) {

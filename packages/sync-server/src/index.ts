@@ -3,11 +3,9 @@ import syncServerRouter from './trpc/routes'
 import {applyWSSHandler} from '@trpc/server/adapters/ws'
 import ws from 'ws'
 import http from 'http'
+import {env} from './env'
 
-const HOST =
-  process.env.HOST && process.env.HOST !== 'localhost'
-    ? process.env.HOST
-    : undefined
+const HOST = env.HOST && env.HOST !== 'localhost' ? env.HOST : undefined
 
 const server = http.createServer((req, res) => {
   const proto = req.headers['x-forwarded-proto']
@@ -23,7 +21,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, {'Content-Type': 'text/plain'})
     res.end(
       'Sync server is running. Access via ws://' +
-        process.env.HOST +
+        env.HOST +
         ' (if on ssl, use wss://)',
     )
   } else {
@@ -32,11 +30,8 @@ const server = http.createServer((req, res) => {
   }
 })
 
-server.listen(parseInt(process.env.PORT), () => {
-  console.log(
-    '✅ HTTP Server listening on ',
-    process.env.HOST + ':' + process.env.PORT,
-  )
+server.listen(parseInt(env.PORT), () => {
+  console.log('✅ HTTP Server listening on ', env.HOST + ':' + env.PORT)
 })
 
 const wss = new ws.Server({server})
@@ -48,10 +43,7 @@ wss.on('connection', (ws) => {
     console.log(`➖➖ Connection (${wss.clients.size})`)
   })
 })
-console.log(
-  '✅ WebSocket Server listening on ',
-  process.env.HOST + ':' + process.env.PORT,
-)
+console.log('✅ WebSocket Server listening on ', env.HOST + ':' + env.PORT)
 
 process.on('SIGTERM', () => {
   console.log('SIGTERM')

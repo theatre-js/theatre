@@ -1,4 +1,4 @@
-import type {$IntentionalAny} from '@theatre/utils/types'
+import type {$IntentionalAny} from '@theatre/core/types/public'
 import type {BasicKeyframedTrack} from '@theatre/core/types/private/core'
 import memoizeFn from '@theatre/utils/memoizeFn'
 import {cloneDeep} from 'lodash-es'

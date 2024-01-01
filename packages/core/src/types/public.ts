@@ -1,13 +1,15 @@
 import type {Pointer} from '@theatre/dataverse'
-import type {OnDiskState} from '@theatre/core/types/private/core'
 
 /** For `any`s that aren't meant to stay `any`*/
 export type $FixMe = any
 /** For `any`s that we don't care about */
 export type $IntentionalAny = any
 
-/** temporary any type until we move all of studio's types to core */
 export type $____FixmeStudio = any
+
+/** temporary any type until we move all of studio's types to core */
+
+export type PathToProp = Array<string | number>
 
 /**
  * This is equivalent to `Partial<Record<Key, V>>` being used to describe a sort of Map
@@ -134,9 +136,7 @@ export type SequenceMarkerId = Nominal<'SequenceMarkerId'>
  * already exists, or you should open an issue on GitHub: https://github.com/theatre-js/theatre/issues
  *
  */
-export type __UNSTABLE_Project_OnDiskState = OnDiskState
-
-import type {PathToProp} from '@theatre/utils/pathToProp'
+export type __UNSTABLE_Project_OnDiskState = unknown
 
 /**
  * Addresses are used to identify projects, sheets, objects, and other things.

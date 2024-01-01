@@ -1,4 +1,4 @@
-import type {$IntentionalAny} from '@theatre/utils/types'
+import type {$IntentionalAny} from '@theatre/core/types/public'
 import type {
   PropTypeConfig,
   PropTypeConfig_Compound,

@@ -4,9 +4,9 @@ import type {
   PropTypeConfig_AllSimples,
   PropTypeConfig_Compound,
   PropTypeConfig_Enum,
+  PathToProp,
+  $IntentionalAny,
 } from '@theatre/core/types/public'
-import type {PathToProp} from '@theatre/utils/pathToProp'
-import type {$IntentionalAny} from '@theatre/utils/types'
 import memoizeFn from '@theatre/utils/memoizeFn'
 
 /**

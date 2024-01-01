@@ -1,5 +1,4 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
     "lib": ["ESNext", "DOM"],
@@ -9,10 +8,5 @@
     "target": "es6",
     "composite": true
   },
-  "include": ["./src/**/*"],
-  "references": [
-    {"path": "../dataverse"},
-    {"path": "../core"},
-    {"path": "../studio"}
-  ]
+  "include": ["./src/**/*"]
 }

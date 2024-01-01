@@ -4,7 +4,7 @@ import type {
   SerializableMap,
   SheetId,
 } from '@theatre/core/types/public'
-import type {StrictRecord} from '@theatre/utils/types'
+import type {StrictRecord} from '@theatre/core/types/public'
 
 /**
  * Technically, all parts of the ephemeral state can be implemented

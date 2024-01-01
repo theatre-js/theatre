@@ -1,14 +1,22 @@
-/**
- * @see `../globals.d.ts` for the types of these globals
- * TODO make the globals typesafe
- */
-export const definedGlobals = {
-  'process.env.THEATRE_VERSION': JSON.stringify(
-    require('../package.json').version,
-  ),
+import {fullSchema} from '@theatre/core/envSchema'
+import type {Env} from '@theatre/core/envSchema'
+import type {$IntentionalAny} from '@theatre/utils/types'
+
+const env: Env = {
+  THEATRE_VERSION: require('../package.json').version,
+  BUILT_FOR_PLAYGROUND: 'false',
+  BACKEND_URL: `https://app.theatrejs.com`,
+}
+
+fullSchema.parse(env)
+
+export const definedGlobals: Record<string, string> = {
   // json-touch-patch (an unmaintained package) reads this value. We patch it to just 'Set', becauce
   // this is only used in `@theatre/studio`, which only supports evergreen browsers
   'global.Set': 'Set',
-  'process.env.BUILT_FOR_PLAYGROUND': JSON.stringify('false'),
-  'process.env.BACKEND_URL': JSON.stringify(`https://app.theatrejs.com`),
+}
+
+for (const entry of Object.entries(env)) {
+  const [key, value] = entry as $IntentionalAny
+  definedGlobals[`process.env.${key}`] = JSON.stringify(value)
 }

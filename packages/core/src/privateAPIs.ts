@@ -11,7 +11,7 @@ import type {
   ISheetObject,
   UnknownShorthandCompoundProps,
 } from './types/public'
-import type {$IntentionalAny} from '@theatre/utils/types'
+import type {$IntentionalAny} from '@theatre/core/types/public'
 
 const publicAPIToPrivateAPIMap = new WeakMap()
 

@@ -1,5 +1,5 @@
 import {InvalidArgumentError} from '@theatre/utils/errors'
-import type {$IntentionalAny} from '@theatre/utils/types'
+import type {$IntentionalAny} from '@theatre/core/types/public'
 import userReadableTypeOfValue from '@theatre/utils/userReadableTypeOfValue'
 import {isPlainObject} from 'lodash-es'
 import {

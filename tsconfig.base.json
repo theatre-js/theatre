@@ -17,11 +17,11 @@
     "declaration": true,
     "paths": {
       "@theatre/core": ["./packages/core/src/index.ts"],
+      "@theatre/core/*": ["./packages/core/src/*"],
       "@theatre/studio": ["./packages/studio/src/index.ts"],
       "@theatre/studio/*": ["./packages/studio/src/*"],
       "@theatre/utils/*": ["./packages/utils/src/*"],
       "@theatre/saaz": ["./packages/saaz/src/index.ts"],
-      "@theatre/core/*": ["./packages/core/src/*"],
       "@theatre/app/*": ["./packages/app/src/*"],
       "@theatre/sync-server/*": ["./packages/sync-server/src/*"],
       "@theatre/dataverse": ["./packages/dataverse/src/index.ts"],

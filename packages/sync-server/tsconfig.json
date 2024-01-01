@@ -3,16 +3,8 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
     "outDir": "dist",
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
+    "types": ["node", "jest"],
     "baseUrl": ".",
     "composite": true,
     "paths": {
@@ -28,6 +20,6 @@
     {"path": "../saaz"},
     {"path": "../core"}
   ],
-  "include": ["next-env.d.ts", "src/**/*", "devEnv/**/*", "prisma/seed.ts"],
-  "exclude": ["node_modules"]
+  "include": ["./env.d.ts", "./src/**/*", "devEnv/**/*", "./prisma/seed.ts"],
+  "exclude": ["**/node_modules", "**/.*", "**/xeno", "**/dist", "**/.temp"]
 }

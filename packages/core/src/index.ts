@@ -7,14 +7,9 @@
 export * from './coreExports'
 export * from './types/public'
 import {defer} from '@theatre/utils/defer'
-// export type {IProject, IProjectConfig} from './projects/TheatreProject'
-// export type {ISequence} from './sequences/TheatreSequence'
-// export type {ISheetObject} from './sheetObjects/TheatreSheetObject'
-// export type {ISheet} from './sheets/TheatreSheet'
-// import type StudioBundle from '@theatre/studio/StudioBundle'
 import CoreBundle from './CoreBundle'
 import {globalVariableNames} from './globals'
-import type {$____FixmeStudio} from '@theatre/utils/types'
+import type {$____FixmeStudio} from '@theatre/core/types/public'
 import type {IStudio, InitOpts} from './types/public'
 
 const studioDeferred = defer<$____FixmeStudio>()

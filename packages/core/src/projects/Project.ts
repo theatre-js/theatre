@@ -22,7 +22,10 @@ import type {
   SheetInstanceId,
 } from '@theatre/core/types/public'
 
-import type {$IntentionalAny, $____FixmeStudio} from '@theatre/utils/types'
+import type {
+  $IntentionalAny,
+  $____FixmeStudio,
+} from '@theatre/core/types/public'
 import {InvalidArgumentError} from '@theatre/utils/errors'
 import userReadableTypeOfValue from '@theatre/utils/userReadableTypeOfValue'
 

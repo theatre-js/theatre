@@ -1,7 +1,7 @@
 import {privateAPI, setPrivateAPI} from '@theatre/core/privateAPIs'
 import type {SheetObjectAddress} from '@theatre/core/types/public'
 import SimpleCache from '@theatre/utils/SimpleCache'
-import type {$FixMe, VoidFn} from '@theatre/utils/types'
+import type {$FixMe, VoidFn} from '@theatre/core/types/public'
 import type {Prism, Pointer} from '@theatre/dataverse'
 import {prism, val} from '@theatre/dataverse'
 import type SheetObject from './SheetObject'

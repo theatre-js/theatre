@@ -16,7 +16,7 @@ import type {
   SequenceTrackId,
 } from '@theatre/core/types/public'
 import SimpleCache from '@theatre/utils/SimpleCache'
-import type {$FixMe, $IntentionalAny} from '@theatre/utils/types'
+import type {$FixMe, $IntentionalAny} from '@theatre/core/types/public'
 import type {Prism, Pointer} from '@theatre/dataverse'
 import {Atom, getPointerParts, prism, val} from '@theatre/dataverse'
 import set from 'lodash-es/set'

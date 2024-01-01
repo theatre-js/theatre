@@ -4,7 +4,7 @@ import type Project from './Project'
 import type {OnDiskState} from '@theatre/core/types/private/core'
 import {globals} from '@theatre/core/globals'
 import {val} from '@theatre/dataverse'
-import type {$____FixmeStudio} from '@theatre/utils/types'
+import type {$____FixmeStudio} from '@theatre/core/types/public'
 
 type Studio = $____FixmeStudio
 
