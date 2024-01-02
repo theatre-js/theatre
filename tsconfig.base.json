@@ -20,6 +20,7 @@
       "@theatre/core/*": ["./packages/core/src/*"],
       "@theatre/studio": ["./packages/studio/src/index.ts"],
       "@theatre/studio/*": ["./packages/studio/src/*"],
+      "@theatre/utils": ["./packages/utils/src/index.ts"],
       "@theatre/utils/*": ["./packages/utils/src/*"],
       "@theatre/saaz": ["./packages/saaz/src/index.ts"],
       "@theatre/app/*": ["./packages/app/src/*"],
