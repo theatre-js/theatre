@@ -13,7 +13,7 @@ import {types} from '@theatre/core'
 import type {ITurtle} from './turtle'
 import {drawTurtlePlan, makeTurtlePlan} from './turtle'
 
-theatre.init({studio: true})
+void theatre.init({studio: true})
 
 const objConfig = {
   startingPoint: {

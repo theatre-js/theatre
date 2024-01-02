@@ -1,4 +1,4 @@
-import type {$FixMe} from '@theatre/utils/types'
+import type {$FixMe} from '@theatre/core/types/public'
 import type {
   PropTypeConfig,
   PropTypeConfig_Compound,

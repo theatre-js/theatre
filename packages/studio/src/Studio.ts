@@ -43,6 +43,7 @@ import AppLink from './SyncStore/AppLink'
 import SyncServerLink from './SyncStore/SyncServerLink'
 import type {TrpcClientWrapped} from './SyncStore/utils'
 import {wrapTrpcClientWithAuth} from './SyncStore/utils'
+import {env} from './env'
 
 const DEFAULT_PERSISTENCE_KEY = 'theatre-0.4'
 
@@ -688,7 +689,7 @@ function sanitizeOpts(
   const storeOpts: StudioOpts = {
     persistenceKey: DEFAULT_PERSISTENCE_KEY,
     usePersistentStorage: true,
-    serverUrl: process.env.BACKEND_URL ?? 'https://app.theatrejs.com',
+    serverUrl: env.BACKEND_URL ?? 'https://app.theatrejs.com',
     rafDriver: coreBits.getCoreRafDriver(),
   }
 

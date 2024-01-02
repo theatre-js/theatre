@@ -9,7 +9,7 @@ const project = getProject('Image type playground', {
     baseUrl: '/',
   },
 })
-theatre.init({studio: true})
+void theatre.init({studio: true})
 const sheet = project.sheet('Image type')
 
 const Wrapper = styled.div`

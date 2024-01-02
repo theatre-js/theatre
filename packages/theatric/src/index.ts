@@ -24,8 +24,8 @@ type OmitMatching<T extends object, V> = Omit<T, KeysMatching<T, V>>
 // That way we can treeshake our own, and the user can give us theirs, if they want to.
 
 if (process.env.NODE_ENV === 'development') {
-  getStudio().then((studio) => {
-    init({studio: true})
+  void getStudio().then((studio) => {
+    void init({studio: true})
   })
 }
 

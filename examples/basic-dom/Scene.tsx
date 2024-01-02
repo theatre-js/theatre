@@ -5,7 +5,7 @@ import type {UseDragOpts} from './useDrag'
 import useDrag from './useDrag'
 import theatre from '@theatre/core'
 
-theatre.init({studio: true})
+void theatre.init({studio: true})
 
 const boxObjectConfig = {
   x: 0,

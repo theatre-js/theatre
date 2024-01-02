@@ -9,7 +9,7 @@ import type {
   SequenceTrackId,
   SheetId,
 } from '@theatre/core/types/public'
-import type {StrictRecord} from '@theatre/utils/types'
+import type {StrictRecord} from '@theatre/core/types/public'
 
 export interface SheetState_Historic {
   /**

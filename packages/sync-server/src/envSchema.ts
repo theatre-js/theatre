@@ -2,7 +2,6 @@ import z from 'zod'
 
 // the env variables that are only required in development
 const devOnly = z.object({
-  NODE_ENV: z.literal('development'),
   DEV_DB_PORT: z.string(),
   DEV_DB_PASSWORD: z.string(),
 })
@@ -22,16 +21,23 @@ const commonSchema = z.object({
 })
 
 // the env variables that are required in development (devOnly and commonSchema)
-export const devSchema = commonSchema.merge(devOnly)
+export const devSchema = commonSchema
+  .extend({
+    NODE_ENV: z.literal('development'),
+  })
+  .merge(devOnly)
 
 // the env variables that are only required in production
-const productionOnly = z.object({
-  NODE_ENV: z.literal('production'),
-})
+const productionOnly = z.object({})
+
 // the env variables that are required in production (productionOnly + commonSchema)
-export const productionSchema = commonSchema.merge(productionOnly)
+export const productionSchema = commonSchema
+  .extend({
+    NODE_ENV: z.literal('production'),
+  })
+  .merge(productionOnly)
 
 // the env variables that are required in both development and production
-export const fullSchema = productionSchema.merge(devOnly)
+export const fullSchema = z.union([productionSchema, devSchema])
 
 export type Env = z.infer<typeof fullSchema>

@@ -14,7 +14,7 @@ import type {
   SheetId,
   SheetInstanceId,
 } from '@theatre/core/types/public'
-import type {StrictRecord} from '@theatre/utils/types'
+import type {StrictRecord} from '@theatre/core/types/public'
 import type {
   SheetObjectActionsConfig,
   SheetObjectPropTypeConfig,

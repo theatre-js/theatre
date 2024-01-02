@@ -3,6 +3,7 @@ import type {$IntentionalAny} from '@theatre/core/types/public'
 import getStudio from '@theatre/studio/getStudio'
 import React from 'react'
 import styled from 'styled-components'
+import {env} from '@theatre/studio/env'
 
 const Container = styled.div`
   width: 138px;
@@ -113,7 +114,7 @@ const UpdateDot = styled.div`
   border-radius: 50%;
 `
 
-const version: string = process.env.THEATRE_VERSION ?? '0.4.0'
+const version: string = env.THEATRE_VERSION ?? '0.4.0'
 
 const untaggedVersion: string = version.match(/^[^\-]+/)![0]
 

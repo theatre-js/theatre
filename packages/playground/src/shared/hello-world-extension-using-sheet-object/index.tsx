@@ -13,7 +13,7 @@ const dataConfig = {
   }),
 }
 
-theatre.getStudio().then((studio) => {
+void theatre.getStudio().then((studio) => {
   studio.extend(extension)
   studio.extend({
     id: '@theatre/hello-world-extension',
@@ -62,6 +62,6 @@ theatre.getStudio().then((studio) => {
     panes: [],
   })
 })
-theatre.init({studio: true})
+void theatre.init({studio: true})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(<App />)

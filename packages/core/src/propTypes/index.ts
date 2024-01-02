@@ -1,4 +1,4 @@
-import type {$FixMe, $IntentionalAny} from '@theatre/utils/types'
+import type {$FixMe, $IntentionalAny} from '@theatre/core/types/public'
 import userReadableTypeOfValue from '@theatre/utils/userReadableTypeOfValue'
 
 import {

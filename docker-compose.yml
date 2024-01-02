@@ -4,7 +4,7 @@ version: '3.8'
 name: theatre-monorepo
 services:
   node:
-    image: mcr.microsoft.com/playwright:v1.36.0-jammy
+    image: mcr.microsoft.com/playwright:v1.40.0-jammy
     volumes:
       - .:/app
       # This ignores all node_modules folders/sub-folders so that we can have a separate installation

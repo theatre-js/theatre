@@ -64,7 +64,7 @@ export default function InviteGuestsDialog({
         id: workspaceId,
         invites: [{email: values.email, accessLevel: values.accessLevel}],
       })
-      queryUtils.workspaces.invalidate()
+      void queryUtils.workspaces.invalidate()
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -157,7 +157,7 @@ function Guests({workspaceId}: {workspaceId: string}) {
 
   async function handleRemoveGuest(email: string) {
     await removeGuest({id: workspaceId, email})
-    queryUtils.workspaces.getGuests.invalidate()
+    void queryUtils.workspaces.getGuests.invalidate()
   }
 
   async function handleChangeAccessLevel(
@@ -165,7 +165,7 @@ function Guests({workspaceId}: {workspaceId: string}) {
     accessLevel: 'READ' | 'READ_WRITE',
   ) {
     await changeAccessLevel({id: workspaceId, email, accessLevel})
-    queryUtils.workspaces.getGuests.invalidate()
+    void queryUtils.workspaces.getGuests.invalidate()
   }
 
   return (

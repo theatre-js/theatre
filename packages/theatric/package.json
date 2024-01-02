@@ -22,7 +22,7 @@
     "typecheck": "yarn run build",
     "build": "run-s build:ts build:js build:api-json",
     "build:ts": "tsc --build ./tsconfig.json",
-    "build:js": "node -r esbuild-register ./devEnv/build.ts",
+    "build:js": "tsx ./devEnv/build.ts",
     "build:api-json": "api-extractor run --local --config devEnv/api-extractor.json",
     "prepublish": "node ../../devEnv/ensurePublishing.js",
     "clean": "rm -rf ./dist && rm -f tsconfig.tsbuildinfo"
@@ -34,9 +34,9 @@
     "@types/node": "^15.6.2",
     "@types/react": "^18.2.18",
     "esbuild": "^0.12.15",
-    "esbuild-register": "^2.5.0",
     "lodash-es": "^4.17.21",
     "npm-run-all": "^4.1.5",
+    "tsx": "4.7.0",
     "typescript": "5.1.6"
   },
   "dependencies": {

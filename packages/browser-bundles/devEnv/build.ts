@@ -1,22 +1,22 @@
 import * as path from 'path'
-import {build} from 'esbuild'
-import type {Plugin} from 'esbuild'
+import * as esbuild from 'esbuild'
+import {definedGlobals} from '../../core/devEnv/definedGlobals'
 
-const definedGlobals = {
-  global: 'window',
-  'process.env.THEATRE_VERSION': JSON.stringify(
-    require('../package.json').version,
-  ),
-}
-
-function createBundles(watch: boolean) {
+function createBundles() {
   const pathToPackage = path.join(__dirname, '../')
-  const esbuildConfig: Parameters<typeof build>[0] = {
+  const esbuildConfig: Parameters<typeof esbuild.context>[0] = {
     bundle: true,
     sourcemap: true,
-    define: definedGlobals,
-    watch,
+    define: {
+      ...definedGlobals,
+      __IS_VISUAL_REGRESSION_TESTING: 'false',
+      'process.env.NODE_ENV': '"production"',
+    },
     platform: 'browser',
+    supported: {
+      // 'unicode-escapes': false,
+      'template-literal': false,
+    },
     loader: {
       '.png': 'dataurl',
       '.glb': 'dataurl',
@@ -28,37 +28,24 @@ function createBundles(watch: boolean) {
     conditions: ['browser', 'node'],
   }
 
-  // build({
-  //   ...esbuildConfig,
-  //   entryPoints: [path.join(pathToPackage, 'src/core-only.ts')],
-  //   outfile: path.join(pathToPackage, 'dist/core-only.js'),
-  //   format: 'iife',
-  // })
-
-  void build({
+  void esbuild.build({
     ...esbuildConfig,
     entryPoints: [path.join(pathToPackage, 'src/core-and-studio.ts')],
     outfile: path.join(pathToPackage, 'dist/core-and-studio.js'),
     format: 'iife',
+    minifyIdentifiers: false,
+    minifySyntax: true,
+    minifyWhitespace: false,
+    treeShaking: true,
   })
 
-  void build({
+  void esbuild.build({
     ...esbuildConfig,
     entryPoints: [path.join(pathToPackage, 'src/core-only.ts')],
     outfile: path.join(pathToPackage, 'dist/core-only.min.js'),
     minify: true,
     format: 'iife',
-    define: {
-      ...definedGlobals,
-      'process.env.NODE_ENV': JSON.stringify('production'),
-    },
   })
-
-  // build({
-  //   ...esbuildConfig,
-  //   outfile: path.join(pathToPackage, 'dist/index.mjs'),
-  //   format: 'esm',
-  // })
 }
 
-createBundles(false)
+createBundles()

@@ -3,6 +3,7 @@ import {defer} from '@theatre/utils/defer'
 import type {$IntentionalAny} from '@theatre/core/types/public'
 import getStudio from './getStudio'
 import type {UpdateCheckerResponse} from './Studio'
+import {env} from './env'
 
 const UPDATE_CHECK_INTERVAL = 30 * 60 * 1000 // check for updates every 30 minutes
 const TIME_TO_WAIT_ON_ERROR = 1000 * 60 * 60 // an hour
@@ -28,12 +29,12 @@ async function waitTilUIIsVisible(): Promise<undefined> {
 }
 
 export default async function checkForUpdates() {
-  if (process.env.BUILT_FOR_PLAYGROUND === 'true') {
+  if (env.BUILT_FOR_PLAYGROUND === 'true') {
     // Build for playground. Skipping update check
     return
   }
 
-  if (process.env.THEATRE_VERSION?.match(/COMPAT/)) {
+  if (env.THEATRE_VERSION?.match(/COMPAT/)) {
     // Built for compat tests. Skipping update check
     return
   }
@@ -60,7 +61,7 @@ export default async function checkForUpdates() {
     try {
       const response = await fetch(
         new Request(
-          `https://updates.theatrejs.com/updates/${process.env.THEATRE_VERSION}`,
+          `https://updates.theatrejs.com/updates/${env.THEATRE_VERSION}`,
         ),
       )
       if (response.ok) {

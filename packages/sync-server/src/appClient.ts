@@ -1,9 +1,9 @@
 import type {AppRouter} from '@theatre/app/src/server/api/root'
-
 import {createTRPCProxyClient, httpBatchLink} from '@trpc/client'
 import superjson from 'superjson'
+import {env} from './env'
 
-export let appHost = process.env.APP_URL
+export let appHost = env.APP_URL
 // if host does not start with a protocol:
 if (!appHost.startsWith('http')) {
   // then assume it's https

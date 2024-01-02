@@ -27,21 +27,24 @@ $.quote = function quote(arg) {
   )
 }
 
+const packagesToBuild = [
+  '@theatre/dataverse',
+  '@theatre/saaz',
+  '@theatre/core',
+  '@theatre/studio',
+  '@theatre/react',
+  '@theatre/r3f',
+  'theatric',
+  '@theatre/browser-bundles',
+]
+
 prog
   .command(
     'build clean',
     'Cleans the build artifacts and output directories of all the main packages',
   )
   .action(async () => {
-    const packages = [
-      '@theatre/saaz',
-      'theatre',
-      '@theatre/dataverse',
-      '@theatre/react',
-      '@theatre/browser-bundles',
-      '@theatre/r3f',
-      'theatric',
-    ]
+    const packages = [...packagesToBuild]
 
     await Promise.all([
       ...packages.map((workspace) => $`yarn workspace ${workspace} run clean`),
@@ -49,22 +52,11 @@ prog
   })
 
 prog.command('build', 'Builds all the main packages').action(async () => {
-  const packagesToBuild = [
-    '@theatre/saaz',
-    'theatre',
-    '@theatre/dataverse',
-    '@theatre/react',
-    '@theatre/browser-bundles',
-    '@theatre/r3f',
-    'theatric',
-  ]
   async function build() {
-    await Promise.all([
-      $`yarn run build:ts`,
-      ...packagesToBuild.map(
-        (workspace) => $`yarn workspace ${workspace} run build`,
-      ),
-    ])
+    await $`yarn run build:ts`
+    for (const workspace of packagesToBuild) {
+      await $`yarn workspace ${workspace} run build`
+    }
   }
 
   void build()
@@ -80,42 +72,13 @@ prog
      *
      * It assigns the same version number to all packages (like lerna's fixed mode).
      **/
-    const packagesToBuild = [
-      '@theatre/saaz',
-      'theatre',
-      '@theatre/dataverse',
-      '@theatre/react',
-      '@theatre/browser-bundles',
-      '@theatre/r3f',
-      'theatric',
-    ]
 
-    const packagesToPublish = [
-      '@theatre/core',
-      '@theatre/studio',
-      '@theatre/dataverse',
-      '@theatre/saaz',
-      '@theatre/react',
-      '@theatre/browser-bundles',
-      '@theatre/r3f',
-      'theatric',
-    ]
+    const packagesToPublish = [...packagesToBuild]
 
     /**
      * All these packages will have the same version from monorepo/package.json
      */
-    const packagesWhoseVersionsShouldBump = [
-      '.',
-      'theatre',
-      'theatre/core',
-      'theatre/studio',
-      'packages/dataverse',
-      'packages/react',
-      'packages/saaz',
-      'packages/browser-bundles',
-      'packages/r3f',
-      'packages/theatric',
-    ]
+    const packagesWhoseVersionsShouldBump = ['.', ...packagesToPublish]
 
     // our packages will check for this env variable to make sure their
     // prepublish script is only called from the `$ cd /path/to/monorepo; yarn run release`

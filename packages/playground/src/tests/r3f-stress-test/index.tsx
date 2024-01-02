@@ -7,8 +7,8 @@ import getStudio from '@theatre/studio/getStudio'
 
 const studioPrivate = getStudio()
 
-theatre.getStudio().then((studio) => studio.extend(extension))
-theatre.init({studio: true})
+void theatre.getStudio().then((studio) => studio.extend(extension))
+void theatre.init({studio: true})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(<App />)
 

@@ -8,7 +8,7 @@
     "compat-tests"
   ],
   "scripts": {
-    "cli": "node -r esbuild-register devEnv/cli.ts",
+    "cli": "tsx devEnv/cli.ts",
     "playground": "yarn workspace playground run serve",
     "benchmarks": "yarn workspace benchmarks run serve",
     "test:e2e": "yarn workspace playground run test",
@@ -38,7 +38,6 @@
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
     "esbuild": "^0.18.18",
-    "esbuild-register": "^3.4.2",
     "eslint": "^8.56.0",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-jsx-a11y": "^6.7.1",
@@ -58,6 +57,7 @@
     "node-gyp": "^9.1.0",
     "prettier": "^3.1.1",
     "sade": "^1.8.1",
+    "tsx": "4.7.0",
     "typescript": "5.1.6",
     "yaml": "^2.3.1"
   },

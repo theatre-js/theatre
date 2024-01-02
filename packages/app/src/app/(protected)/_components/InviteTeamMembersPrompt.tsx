@@ -53,7 +53,7 @@ const InviteTeamMembersPrompt: FC<{id: string}> = ({id}) => {
         id,
         invites: [{email: values.email, role: values.role}],
       })
-      queryUtils.teams.invalidate()
+      void queryUtils.teams.invalidate()
     } catch (error) {
       toast({
         variant: 'destructive',

@@ -8,7 +8,7 @@
     "dist/**/*"
   ],
   "scripts": {
-    "serve": "node -r esbuild-register devEnv/serveBenchmarks.ts",
+    "serve": "tsx devEnv/serveBenchmarks.ts",
     "typecheck": "yarn run build",
     "build": "tsc --build ./tsconfig.json"
   },
@@ -24,7 +24,7 @@
     "@types/node": "^18.11.9",
     "@types/react": "^18.0.25",
     "esbuild": "^0.15.15",
-    "esbuild-register": "^3.4.1",
+    "tsx": "4.7.0",
     "typescript": "5.1.6"
   }
 }

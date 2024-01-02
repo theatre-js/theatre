@@ -1,7 +1,8 @@
 import theatre from '@theatre/core'
 import {getProject, types} from '@theatre/core'
 import state from './reading obj value.theatre-project-state.json'
-theatre.init({studio: true, usePersistentStorage: false})
+
+void theatre.init({studio: true, usePersistentStorage: false})
 
 const project = getProject('reading obj value', {state})
 const TOTAL_ELEMENTS = 300

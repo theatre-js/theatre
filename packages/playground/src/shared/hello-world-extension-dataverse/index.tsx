@@ -22,7 +22,7 @@ import {onChange} from '@theatre/core'
  * This will ensure that our switch's value matches its state and is reflected in the UI via `set(toolset)`.
  */
 
-theatre.getStudio().then((studio) => {
+void theatre.getStudio().then((studio) => {
   studio.extend(extension)
   studio.extend({
     id: '@theatre/hello-world-extension',
@@ -70,6 +70,6 @@ theatre.getStudio().then((studio) => {
     panes: [],
   })
 })
-theatre.init({studio: true})
+void theatre.init({studio: true})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(<App />)

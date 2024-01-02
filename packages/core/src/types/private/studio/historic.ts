@@ -8,7 +8,7 @@ import type {
   SequenceMarkerId,
 } from '@theatre/core/types/public'
 import type {PathToProp_Encoded} from '@theatre/utils/pathToProp'
-import type {StrictRecord} from '@theatre/utils/types'
+import type {StrictRecord} from '@theatre/core/types/public'
 import type {PointableSet} from '@theatre/utils/PointableSet'
 import type {
   ObjectAddressKey,

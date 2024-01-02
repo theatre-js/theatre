@@ -37,7 +37,7 @@ function validateEnv() {
     throw new Error(`DATABASE_URL protocol must be postgresql: Given: ${url}`)
   }
 
-  if (!isProduction) {
+  if (env.NODE_ENV !== 'production') {
     if (
       env.DATABASE_URL !==
       `postgresql://postgres:${env.DEV_DB_PASSWORD}@localhost:${env.DEV_DB_PORT}/postgres`

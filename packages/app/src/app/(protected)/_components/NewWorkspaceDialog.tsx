@@ -56,8 +56,8 @@ export default function NewWorkspaceDialog({teamId}: {teamId: string}) {
         description: values.description,
         teamId,
       })
-      queryUtils.teams.invalidate()
-      queryUtils.workspaces.invalidate()
+      void queryUtils.teams.invalidate()
+      void queryUtils.workspaces.invalidate()
     } catch (error) {
       toast({
         variant: 'destructive',

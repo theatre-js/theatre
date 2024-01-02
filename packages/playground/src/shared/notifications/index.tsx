@@ -4,7 +4,7 @@ import theatre from '@theatre/core'
 import {getProject, notify} from '@theatre/core'
 import {Scene} from './Scene'
 
-theatre.init({studio: true})
+void theatre.init({studio: true})
 
 // trigger warning notification
 void getProject('Sample project').sheet('Scene').sequence.play()

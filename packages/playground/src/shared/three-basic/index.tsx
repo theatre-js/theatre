@@ -4,7 +4,7 @@ import theatre from '@theatre/core'
 import {getProject} from '@theatre/core'
 import ThreeScene from './ThreeScene'
 
-theatre.init({studio: true})
+void theatre.init({studio: true})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <ThreeScene project={getProject('Three Basic')} />,
