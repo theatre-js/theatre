@@ -1,6 +1,7 @@
 import sade from 'sade'
 import {path} from '@cspotcode/zx'
 import * as esbuild from 'esbuild'
+// eslint-disable-next-line no-relative-imports
 import {definedGlobals} from '../../core/devEnv/definedGlobals'
 
 const prog = sade('cli')
