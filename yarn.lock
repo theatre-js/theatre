@@ -9943,7 +9943,6 @@ __metadata:
     cross-env: ^7.0.3
     dotenv: ^16.3.1
     esbuild: ^0.18.20
-    esbuild-register: ^3.4.2
     eslint-config-next: 13.4.13
     jose: ^4.14.4
     jsonwebtoken: ^9.0.1
@@ -9981,8 +9980,8 @@ __metadata:
     "@theatre/core": "*"
     "@theatre/studio": "*"
     esbuild: ^0.19.11
-    esbuild-register: ^3.5.0
     npm-run-all: ^4.1.5
+    tsx: 4.7.0
     typescript: 5.1.6
   languageName: unknown
   linkType: soft
@@ -9994,10 +9993,10 @@ __metadata:
     "@cspotcode/zx": ^6.1.2
     "@verdaccio/types": ^10.8.0
     esbuild: ^0.18.18
-    esbuild-register: ^3.4.2
     node-cleanup: ^2.1.2
     playwright: ^1.29.1
     prettier: ^2.6.2
+    tsx: 4.7.0
     verdaccio: ^5.26.1
     verdaccio-auth-memory: ^10.2.2
     verdaccio-memory: ^10.3.2
@@ -10026,13 +10025,13 @@ __metadata:
     "@types/node": ^20.10.5
     "@types/rollup": 0.54.0
     esbuild: 0.18.17
-    esbuild-register: 2.5.0
     fast-deep-equal: ^3.1.3
     lodash-es: 4.17.21
     rollup: ^4.9.2
     rollup-plugin-dts: ^6.1.0
     sade: ^1.8.1
     timing-function: ^0.2.3
+    tsx: 4.7.0
     typescript: 5.1.6
     zod: ^3.21.4
     zod-validation-error: ^1.3.1
@@ -10070,9 +10069,9 @@ __metadata:
     "@types/lodash-es": ^4.17.4
     "@types/node": ^15.6.2
     esbuild: ^0.12.15
-    esbuild-register: ^2.5.0
     lodash-es: ^4.17.21
     npm-run-all: ^4.1.5
+    tsx: 4.7.0
     typedoc: ^0.24.8
     typedoc-plugin-markdown: ^3.15.4
     typescript: 5.1.6
@@ -10095,7 +10094,6 @@ __metadata:
     "@types/styled-components": ^5.1.26
     "@types/three": 0.155.0
     esbuild: ^0.18.17
-    esbuild-register: ^3.4.2
     lodash-es: ^4.17.21
     npm-run-all: ^4.1.5
     polished: ^4.1.3
@@ -10109,6 +10107,7 @@ __metadata:
     styled-components: ^5.3.11
     three: 0.155.0
     three-stdlib: ^2.24.1
+    tsx: 4.7.0
     typescript: 5.1.6
     zustand: ^3.5.1
   peerDependencies:
@@ -10133,10 +10132,10 @@ __metadata:
     "@types/react": ^17.0.9
     "@types/react-dom": ^17.0.6
     esbuild: ^0.12.15
-    esbuild-register: ^2.5.0
     lodash-es: ^4.17.21
     npm-run-all: ^4.1.5
     queue-microtask: ^1.2.3
+    tsx: 4.7.0
     typescript: 5.1.6
   peerDependencies:
     react: "*"
@@ -10155,7 +10154,6 @@ __metadata:
     "@types/lodash-es": ^4.17.4
     "@types/node": ^15.6.2
     esbuild: ^0.12.15
-    esbuild-register: ^2.5.0
     fast-deep-equal: ^3.1.3
     idb: ^7.1.1
     immer: ^9.0.6
@@ -10163,6 +10161,7 @@ __metadata:
     lodash-es: ^4.17.21
     nanoid: ^4.0.2
     npm-run-all: ^4.1.5
+    tsx: 4.7.0
     typedoc: ^0.24.8
     typedoc-plugin-markdown: ^3.15.4
     typescript: 5.1.6
@@ -10203,7 +10202,6 @@ __metadata:
     "@types/uuid": ^8.3.0
     blob-compare: 1.1.0
     esbuild: ^0.18.17
-    esbuild-register: 2.5.0
     fuzzy: ^0.1.3
     idb-keyval: ^6.2.0
     identity-obj-proxy: ^3.0.0
@@ -10230,6 +10228,7 @@ __metadata:
     styled-components: ^5.3.11
     superjson: 1.13.1
     timing-function: ^0.2.3
+    tsx: 4.7.0
     typescript: 5.1.6
     typescript-styled-plugin: ^0.18.3
   peerDependencies:
@@ -10281,7 +10280,6 @@ __metadata:
     "@types/lodash-es": ^4.17.4
     "@types/node": ^15.6.2
     esbuild: ^0.12.15
-    esbuild-register: ^2.5.0
     fast-deep-equal: ^3.1.3
     idb: ^7.1.1
     immer: ^9.0.6
@@ -10290,6 +10288,7 @@ __metadata:
     nanoid: ^4.0.2
     npm-run-all: ^4.1.5
     propose: ^0.0.5
+    tsx: 4.7.0
     typedoc: ^0.24.8
     typedoc-plugin-markdown: ^3.15.4
     typescript: 5.1.6
@@ -14206,7 +14205,7 @@ __metadata:
     "@types/node": ^18.11.9
     "@types/react": ^18.0.25
     esbuild: ^0.15.15
-    esbuild-register: ^3.4.1
+    tsx: 4.7.0
     typescript: 5.1.6
   languageName: unknown
   linkType: soft
@@ -18406,49 +18405,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-register@npm:2.5.0, esbuild-register@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "esbuild-register@npm:2.5.0"
-  dependencies:
-    esbuild: ^0.11.5
-    jsonc-parser: ^3.0.0
-  checksum: 6895d3b3fc89f67711a1185e932c56c0d818c31f8407e03dcc588048cf1faa7f4bd3c2b032d0f6e19b0245e968d8fdadae668a1d2f92a302a8df348521be72c8
-  languageName: node
-  linkType: hard
-
-"esbuild-register@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "esbuild-register@npm:3.4.1"
-  dependencies:
-    debug: ^4.3.4
-  peerDependencies:
-    esbuild: ">=0.12 <1"
-  checksum: 02750477b7215101bd2ffa3eae5064026586afd9a5267e94f5b81722c85c8063794c06328e618b5a93d7b0db4138a092417cfc024471b8a3616d212d09e3d868
-  languageName: node
-  linkType: hard
-
-"esbuild-register@npm:^3.4.2":
-  version: 3.4.2
-  resolution: "esbuild-register@npm:3.4.2"
-  dependencies:
-    debug: ^4.3.4
-  peerDependencies:
-    esbuild: ">=0.12 <1"
-  checksum: f65d1ccb58b1ccbba376efb1fc023abe22731d9b79eead1b0120e57d4413318f063696257a5af637b527fa1d3f009095aa6edb1bf6ff69d637a9ab281fb727b3
-  languageName: node
-  linkType: hard
-
-"esbuild-register@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "esbuild-register@npm:3.5.0"
-  dependencies:
-    debug: ^4.3.4
-  peerDependencies:
-    esbuild: ">=0.12 <1"
-  checksum: f4307753c9672a2c901d04a1165031594a854f0a4c6f4c1db08aa393b68a193d38f2df483dc8ca0513e89f7b8998415e7e26fb9830989fb8cdccc5fb5f181c6b
-  languageName: node
-  linkType: hard
-
 "esbuild-sunos-64@npm:0.14.54":
   version: 0.14.54
   resolution: "esbuild-sunos-64@npm:0.14.54"
@@ -18579,15 +18535,6 @@ __metadata:
   bin:
     esbuild: bin/esbuild
   checksum: c6e1ffa776978a45697763a07ec9b16411db3d3b3997b2c4a0165a211727fce8b63b87165a28d8ef60d3a28b98197bbbc2833e51b89888a4437e0a483dffc8ff
-  languageName: node
-  linkType: hard
-
-"esbuild@npm:^0.11.5":
-  version: 0.11.23
-  resolution: "esbuild@npm:0.11.23"
-  bin:
-    esbuild: bin/esbuild
-  checksum: d55bea84f94e7854fa6fb013ffc63747f2286001b3d73c2a7beb605e6e4847c24ff2cde0660f03045d06d083695c8082423b007a9ee8687e70b52719458bfdd6
   languageName: node
   linkType: hard
 
@@ -19059,7 +19006,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.19.11":
+"esbuild@npm:^0.19.11, esbuild@npm:~0.19.10":
   version: 0.19.11
   resolution: "esbuild@npm:0.19.11"
   dependencies:
@@ -21277,6 +21224,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"fsevents@npm:~2.3.3":
+  version: 2.3.3
+  resolution: "fsevents@npm:2.3.3"
+  dependencies:
+    node-gyp: latest
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
 "function-bind@npm:^1.1.1":
   version: 1.1.1
   resolution: "function-bind@npm:1.1.1"
@@ -21498,6 +21454,15 @@ fsevents@^1.2.7:
   version: 4.5.0
   resolution: "get-tsconfig@npm:4.5.0"
   checksum: 687ee2bd69a5a07db2e2edeb4d6c41c3debb38f6281a66beb643e3f5b520252e27fcbbb5702bdd9a5f05dcf8c1d2e0150a4d8a960ad75cbdea74e06a51e91b02
+  languageName: node
+  linkType: hard
+
+"get-tsconfig@npm:^4.7.2":
+  version: 4.7.2
+  resolution: "get-tsconfig@npm:4.7.2"
+  dependencies:
+    resolve-pkg-maps: ^1.0.0
+  checksum: 172358903250eff0103943f816e8a4e51d29b8e5449058bdf7266714a908a48239f6884308bd3a6ff28b09f692b9533dbebfd183ab63e4e14f073cda91f1bca9
   languageName: node
   linkType: hard
 
@@ -25869,13 +25834,6 @@ fsevents@^1.2.7:
   version: 2.3.1
   resolution: "jsonc-parser@npm:2.3.1"
   checksum: de37640bd1d0dcc5b2e19f2514b3c2e05832ec6fdb86da65102509524d3eef0f2cc49bd471a0b28b8af2f8069bbca8396a9bd5cad4ae04001e1893e47df265eb
-  languageName: node
-  linkType: hard
-
-"jsonc-parser@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "jsonc-parser@npm:3.0.0"
-  checksum: 1df2326f1f9688de30c70ff19c5b2a83ba3b89a1036160da79821d1361090775e9db502dc57a67c11b56e1186fc1ed70b887f25c5febf9a3ec4f91435836c99d
   languageName: node
   linkType: hard
 
@@ -33413,6 +33371,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"resolve-pkg-maps@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "resolve-pkg-maps@npm:1.0.0"
+  checksum: 1012afc566b3fdb190a6309cc37ef3b2dcc35dff5fa6683a9d00cd25c3247edfbc4691b91078c97adc82a29b77a2660c30d791d65dab4fc78bfc473f60289977
+  languageName: node
+  linkType: hard
+
 "resolve-url-loader@npm:^3.1.2":
   version: 3.1.4
   resolution: "resolve-url-loader@npm:3.1.4"
@@ -36381,7 +36346,6 @@ fsevents@^1.2.7:
     "@typescript-eslint/eslint-plugin": ^6.16.0
     "@typescript-eslint/parser": ^6.16.0
     esbuild: ^0.18.18
-    esbuild-register: ^3.4.2
     eslint: ^8.56.0
     eslint-plugin-import: 2.29.1
     eslint-plugin-jsx-a11y: ^6.7.1
@@ -36401,6 +36365,7 @@ fsevents@^1.2.7:
     node-gyp: ^9.1.0
     prettier: ^3.1.1
     sade: ^1.8.1
+    tsx: 4.7.0
     typescript: 5.1.6
     yaml: ^2.3.1
   languageName: unknown
@@ -36419,10 +36384,10 @@ fsevents@^1.2.7:
     "@types/node": ^15.6.2
     "@types/react": ^18.2.18
     esbuild: ^0.12.15
-    esbuild-register: ^2.5.0
     lodash-es: ^4.17.21
     npm-run-all: ^4.1.5
     oauth4webapi: ^2.4.0
+    tsx: 4.7.0
     typescript: 5.1.6
   peerDependencies:
     react: "*"
@@ -36995,6 +36960,22 @@ fsevents@^1.2.7:
   peerDependencies:
     typescript: ">=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta"
   checksum: 1843f4c1b2e0f975e08c4c21caa4af4f7f65a12ac1b81b3b8489366826259323feb3fc7a243123453d2d1a02314205a7634e048d4a8009921da19f99755cdc48
+  languageName: node
+  linkType: hard
+
+"tsx@npm:4.7.0":
+  version: 4.7.0
+  resolution: "tsx@npm:4.7.0"
+  dependencies:
+    esbuild: ~0.19.10
+    fsevents: ~2.3.3
+    get-tsconfig: ^4.7.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.mjs
+  checksum: a3a17fa8a40dbe0aff26fb2bc71a069e568152e0685b0bd9a31ea1091806274ba14882551433ed01efa7eae16f1aa965e2e47f3075ec1e914c42cf5dfce1f924
   languageName: node
   linkType: hard
 

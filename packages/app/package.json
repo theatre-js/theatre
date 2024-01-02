@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "cli": "node -r esbuild-register devEnv/cli.ts",
+    "cli": "tsx devEnv/cli.ts",
     "start": "yarn cli prod start",
     "lint": "next lint",
     "prebuild": "yarn cli prebuild",
@@ -44,7 +44,6 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "esbuild": "^0.18.20",
-    "esbuild-register": "^3.4.2",
     "eslint-config-next": "13.4.13",
     "jose": "^4.14.4",
     "lucide-react": "^0.289.0",

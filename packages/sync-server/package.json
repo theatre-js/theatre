@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "yarn cli build",
-    "cli": "node -r esbuild-register devEnv/cli.ts",
+    "cli": "tsx devEnv/cli.ts",
     "prebuild": "yarn cli prebuild",
     "postinstall": "prisma generate"
   },
