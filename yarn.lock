@@ -9977,8 +9977,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@theatre/browser-bundles@workspace:packages/browser-bundles"
   dependencies:
-    "@theatre/core": "*"
-    "@theatre/studio": "*"
+    "@theatre/core": "workspace:*"
+    "@theatre/studio": "workspace:*"
     esbuild: ^0.19.11
     npm-run-all: ^4.1.5
     tsx: 4.7.0
@@ -10012,7 +10012,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@theatre/core@*, @theatre/core@workspace:*, @theatre/core@workspace:packages/core":
+"@theatre/core@workspace:*, @theatre/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@theatre/core@workspace:packages/core"
   dependencies:
@@ -10179,7 +10179,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@theatre/studio@*, @theatre/studio@workspace:*, @theatre/studio@workspace:packages/studio":
+"@theatre/studio@workspace:*, @theatre/studio@workspace:packages/studio":
   version: 0.0.0-use.local
   resolution: "@theatre/studio@workspace:packages/studio"
   dependencies:

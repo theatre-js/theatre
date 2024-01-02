@@ -55,10 +55,12 @@ prog.command('build', 'Builds all the main packages').action(async () => {
   async function build() {
     await Promise.all([
       $`yarn run build:ts`,
-      ...packagesToBuild.map(
-        (workspace) => $`yarn workspace ${workspace} run build`,
-      ),
+      ...packagesToBuild
+        // let's skip the browser bundles package, becuase it depends on other packages being built first
+        .filter((s) => s !== '@theatre/browser-bundles')
+        .map((workspace) => $`yarn workspace ${workspace} run build`),
     ])
+    await $`yarn workspace @theatre/browser-bundles run build`
   }
 
   void build()
