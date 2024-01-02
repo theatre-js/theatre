@@ -6,9 +6,7 @@ const fromPackages = (s) => path.join(__dirname, '../../../', s)
 const fromPackage = (s) => path.join(__dirname, '../..', s)
 
 const config = {
-  input: {
-    core: fromPackage(`.temp/declarations/src/index.d.ts`),
-  },
+  input: fromPackage(`.temp/declarations/src/index.d.ts`),
   output: {
     dir: fromPackage('dist'),
     entryFileNames: 'index.d.ts',
@@ -31,7 +29,14 @@ const config = {
   },
 
   plugins: [
-    dts({respectExternal: true}),
+    dts({
+      respectExternal: true,
+      compilerOptions: {
+        paths: {
+          '@theatre/core': [fromPackage(`.temp/declarations/src`)],
+        },
+      },
+    }),
     alias({
       entries: [
         {

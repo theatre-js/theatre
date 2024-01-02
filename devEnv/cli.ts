@@ -28,14 +28,14 @@ $.quote = function quote(arg) {
 }
 
 const packagesToBuild = [
+  '@theatre/dataverse',
   '@theatre/saaz',
   '@theatre/core',
   '@theatre/studio',
-  '@theatre/dataverse',
   '@theatre/react',
-  '@theatre/browser-bundles',
   '@theatre/r3f',
   'theatric',
+  '@theatre/browser-bundles',
 ]
 
 prog
@@ -53,14 +53,10 @@ prog
 
 prog.command('build', 'Builds all the main packages').action(async () => {
   async function build() {
-    await Promise.all([
-      $`yarn run build:ts`,
-      ...packagesToBuild
-        // let's skip the browser bundles package, becuase it depends on other packages being built first
-        .filter((s) => s !== '@theatre/browser-bundles')
-        .map((workspace) => $`yarn workspace ${workspace} run build`),
-    ])
-    await $`yarn workspace @theatre/browser-bundles run build`
+    await $`yarn run build:ts`
+    for (const workspace of packagesToBuild) {
+      await $`yarn workspace ${workspace} run build`
+    }
   }
 
   void build()
