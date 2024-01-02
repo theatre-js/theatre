@@ -29,7 +29,6 @@ async function bundleTypes() {
 }
 
 async function bundle(watch: boolean) {
-  console.log('bu')
   const esbuildConfig: Parameters<typeof esbuild.context>[0] = {
     entryPoints: [path.join(packageRoot, 'src/index.ts')],
     target: ['es6'],
