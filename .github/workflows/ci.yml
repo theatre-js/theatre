@@ -8,7 +8,7 @@ on:
 
 jobs:
   Build:
-    runs-on: buildjet-16vcpu-ubuntu-2204
+    runs-on: buildjet-8vcpu-ubuntu-2204
 
     strategy:
       matrix:
@@ -24,7 +24,7 @@ jobs:
 
       - run: yarn cli build
   Lint:
-    runs-on: buildjet-16vcpu-ubuntu-2204
+    runs-on: buildjet-8vcpu-ubuntu-2204
 
     strategy:
       matrix:
@@ -43,7 +43,7 @@ jobs:
           yarn lint:all --max-warnings 0
 
   Test:
-    runs-on: buildjet-16vcpu-ubuntu-2204
+    runs-on: buildjet-8vcpu-ubuntu-2204
 
     strategy:
       matrix:
@@ -63,7 +63,7 @@ jobs:
     # skip this until the new API is ready
     if: false
     name: Visual regression tests
-    runs-on: buildjet-16vcpu-ubuntu-2204
+    runs-on: buildjet-8vcpu-ubuntu-2204
 
     strategy:
       matrix:
@@ -83,7 +83,7 @@ jobs:
   Compatibility-Tests:
     # skip this until the new API is ready
     if: false
-    runs-on: buildjet-16vcpu-ubuntu-2204
+    runs-on: buildjet-8vcpu-ubuntu-2204
 
     strategy:
       matrix:
