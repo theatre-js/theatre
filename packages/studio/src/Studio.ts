@@ -300,9 +300,11 @@ export class Studio {
 
     if (process.env.NODE_ENV !== 'test') {
       this.ui.render()
-      checkForUpdates().catch((err) => {
-        console.error(err)
-      })
+      if (navigator.onLine) {
+        checkForUpdates().catch((err) => {
+          console.error(err)
+        })
+      }
     }
   }
 
