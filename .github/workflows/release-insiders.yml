@@ -16,7 +16,7 @@ jobs:
     if:
       ${{ github.event.issue.pull_request && contains(github.event.comment.body,
       '/release insiders') }}
-    runs-on: ubuntu-latest
+    runs-on: buildjet-8vcpu-ubuntu-2204
 
     permissions:
       issues: write
