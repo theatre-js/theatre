@@ -7,7 +7,7 @@ runs:
     # This will skip the install step if the cache is hit.
     - name: Restore node_modules
       id: yarn-node-modules-cache
-      uses: actions/cache@v3
+      uses: buildjet/cache@v3
       with:
         path: |
           **/node_modules
@@ -32,7 +32,7 @@ runs:
     # Thanks to https://github.com/rafaelbiten for this step https://github.com/microsoft/playwright/issues/7249#issuecomment-1385567519
     - name: Cache Playwright Browsers for Playwright's Version
       id: cache-playwright-browsers
-      uses: actions/cache@v3
+      uses: buildjet/cache@v3
       with:
         path: ~/.cache/ms-playwright
         key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
