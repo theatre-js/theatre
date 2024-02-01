@@ -14,7 +14,7 @@
  
 </p>
 
-> ✨ Update: [We're hiring – join the core team!](https://join.theatrejs.com/)
+> ✨ Update: [We're hiring – join the core team!](https://www.theatrejs.com/join)
 
 Theatre.js is an animation library for high-fidelity motion graphics. It is
 designed to help you express detailed animation, enabling you to create
